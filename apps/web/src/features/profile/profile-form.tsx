@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { profileSchema, type ProfileInput } from "@pumni/validators";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { updateProfile } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
 
 type ProfileFormProps = {
   defaultValues: {
@@ -27,8 +27,6 @@ type ProfileFormProps = {
 };
 
 export function ProfileForm({ defaultValues }: ProfileFormProps) {
-  const [isPending, setIsPending] = useState(false);
-
   const form = useForm<ProfileInput>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -38,21 +36,44 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
     },
   });
 
-  const onSubmit = async (data: ProfileInput) => {
-    setIsPending(true);
-    try {
+  const updateProfileMutation = useMutation<
+    Awaited<ReturnType<typeof updateProfile>>,
+    Error,
+    ProfileInput,
+    { previousValues: ProfileInput }
+  >({
+    mutationFn: async (data) => {
       const result = await updateProfile(data);
+
       if (!result.ok) {
-        toast.error(result.message);
-        return;
+        throw new Error(result.message);
       }
+
+      return result;
+    },
+    onMutate: (nextValues) => {
+      const previousValues = form.getValues();
+      form.reset(nextValues, { keepTouched: true });
+
+      return { previousValues };
+    },
+    onSuccess: () => {
       toast.success("Profile updated successfully!");
-    } catch {
-      toast.error("Failed to update profile.");
-    } finally {
-      setIsPending(false);
-    }
+    },
+    onError: (error, _variables, context) => {
+      if (context) {
+        form.reset(context.previousValues, { keepTouched: true });
+      }
+
+      toast.error(error.message || "Failed to update profile.");
+    },
+  });
+
+  const onSubmit = async (data: ProfileInput) => {
+    updateProfileMutation.mutate(data);
   };
+
+  const isPending = updateProfileMutation.isPending;
 
   return (
     <Card className="border-border bg-card">
