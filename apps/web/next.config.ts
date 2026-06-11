@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   typedRoutes: true,
   reactCompiler: true,
+  cacheComponents: true,
   experimental: {
     staleTimes: { static: 180, dynamic: 30 },
     turbopackFileSystemCacheForDev: true,

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 import { requireUser } from "@pumni/auth";
 import { createSupabaseServerClient } from "@pumni/supabase/server";
 import { profileSchema, type ProfileInput } from "@pumni/validators";
@@ -37,7 +37,7 @@ export async function updateProfile(input: ProfileInput): Promise<UpdateProfileR
     };
   }
 
-  revalidatePath("/settings/profile");
+  updateTag(`profile:${user.id}`);
 
   return { ok: true };
 }
