@@ -1,56 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { resetPasswordSchema, type ResetPasswordInput } from "@pumni/validators";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
+import { resetPasswordAction, type AuthFormState } from "../auth-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { toast } from "sonner";
+
+const initialState: AuthFormState = {};
 
 export default function ResetPasswordPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const supabase = createSupabaseBrowserClient();
-
-  const form = useForm<ResetPasswordInput>({
-    resolver: zodResolver(resetPasswordSchema),
-    defaultValues: {
-      password: "",
-    },
-  });
-
-  const onSubmit = async (data: ResetPasswordInput) => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: data.password,
-      });
-
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-
-      toast.success("Password updated successfully!");
-      router.push("/dashboard");
-    } catch {
-      toast.error("An unexpected error occurred.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [state, formAction, pending] = useActionState(resetPasswordAction, initialState);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black p-4 sm:p-6 lg:p-8">
@@ -65,38 +24,41 @@ export default function ResetPasswordPage() {
             <CardTitle>Reset Password</CardTitle>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
+            <form action={formAction} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium text-neutral-300">
+                  New Password
+                </label>
+                <Input
+                  id="password"
                   name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-neutral-300">New Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="••••••••"
-                          type="password"
-                          autoComplete="new-password"
-                          disabled={isLoading}
-                          className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400" />
-                    </FormItem>
-                  )}
+                  placeholder="••••••••"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                  disabled={pending}
+                  className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
                 />
+                {state.errors?.password?.[0] ? (
+                  <p className="text-sm text-red-400">{state.errors.password[0]}</p>
+                ) : null}
+              </div>
 
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-white text-black hover:bg-neutral-200 transition-colors"
-                >
-                  {isLoading ? "Updating..." : "Update Password"}
-                </Button>
-              </form>
-            </Form>
+              {state.message ? (
+                <p className="text-sm text-red-400" aria-live="polite">
+                  {state.message}
+                </p>
+              ) : null}
+
+              <Button
+                type="submit"
+                disabled={pending}
+                className="w-full bg-white text-black hover:bg-neutral-200 transition-colors"
+              >
+                {pending ? "Updating..." : "Update Password"}
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </div>

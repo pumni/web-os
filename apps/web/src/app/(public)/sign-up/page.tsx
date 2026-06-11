@@ -1,11 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpSchema, type SignUpInput } from "@pumni/validators";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
+import Link from "next/link";
+import { signUpAction, type AuthFormState } from "../auth-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,58 +13,11 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { toast } from "sonner";
-import Link from "next/link";
+
+const initialState: AuthFormState = {};
 
 export default function SignUpPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const supabase = createSupabaseBrowserClient();
-
-  const form = useForm<SignUpInput>({
-    resolver: zodResolver(signUpSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      fullName: "",
-    },
-  });
-
-  const onSubmit = async (data: SignUpInput) => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            full_name: data.fullName,
-          },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-
-      toast.success("Account created! Please check your email for verification.");
-      router.push("/sign-in");
-    } catch {
-      toast.error("An unexpected error occurred.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [state, formAction, pending] = useActionState(signUpAction, initialState);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black p-4 sm:p-6 lg:p-8">
@@ -85,81 +35,80 @@ export default function SignUpPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
+            <form action={formAction} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="fullName" className="text-sm font-medium text-neutral-300">
+                  Full Name
+                </label>
+                <Input
+                  id="fullName"
                   name="fullName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-neutral-300">Full Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="John Doe"
-                          type="text"
-                          disabled={isLoading}
-                          className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400" />
-                    </FormItem>
-                  )}
+                  placeholder="John Doe"
+                  type="text"
+                  required
+                  disabled={pending}
+                  className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
                 />
+                {state.errors?.fullName?.[0] ? (
+                  <p className="text-sm text-red-400">{state.errors.fullName[0]}</p>
+                ) : null}
+              </div>
 
-                <FormField
-                  control={form.control}
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-neutral-300">
+                  Email
+                </label>
+                <Input
+                  id="email"
                   name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-neutral-300">Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="name@example.com"
-                          type="email"
-                          autoCapitalize="none"
-                          autoComplete="email"
-                          autoCorrect="off"
-                          disabled={isLoading}
-                          className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400" />
-                    </FormItem>
-                  )}
+                  placeholder="name@example.com"
+                  type="email"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect="off"
+                  required
+                  disabled={pending}
+                  className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
                 />
+                {state.errors?.email?.[0] ? (
+                  <p className="text-sm text-red-400">{state.errors.email[0]}</p>
+                ) : null}
+              </div>
 
-                <FormField
-                  control={form.control}
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium text-neutral-300">
+                  Password
+                </label>
+                <Input
+                  id="password"
                   name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-neutral-300">Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="••••••••"
-                          type="password"
-                          autoComplete="new-password"
-                          disabled={isLoading}
-                          className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400" />
-                    </FormItem>
-                  )}
+                  placeholder="••••••••"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                  disabled={pending}
+                  className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
                 />
+                {state.errors?.password?.[0] ? (
+                  <p className="text-sm text-red-400">{state.errors.password[0]}</p>
+                ) : null}
+              </div>
 
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-white text-black hover:bg-neutral-200 transition-colors"
-                >
-                  {isLoading ? "Signing up..." : "Sign Up"}
-                </Button>
-              </form>
-            </Form>
+              {state.message ? (
+                <p className="text-sm text-red-400" aria-live="polite">
+                  {state.message}
+                </p>
+              ) : null}
+
+              <Button
+                type="submit"
+                disabled={pending}
+                className="w-full bg-white text-black hover:bg-neutral-200 transition-colors"
+              >
+                {pending ? "Signing up..." : "Sign Up"}
+              </Button>
+            </form>
           </CardContent>
           <CardFooter className="flex flex-wrap items-center justify-center gap-1 border-t border-neutral-800/50 py-4 text-sm text-neutral-400">
             <span>Already have an account?</span>

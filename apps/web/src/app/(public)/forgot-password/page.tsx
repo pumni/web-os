@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { forgotPasswordSchema, type ForgotPasswordInput } from "@pumni/validators";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
+import { useActionState } from "react";
+import Link from "next/link";
+import { forgotPasswordAction, type AuthFormState } from "../auth-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,47 +13,11 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { toast } from "sonner";
-import Link from "next/link";
+
+const initialState: AuthFormState = {};
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const supabase = createSupabaseBrowserClient();
-
-  const form = useForm<ForgotPasswordInput>({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: "",
-    },
-  });
-
-  const onSubmit = async (data: ForgotPasswordInput) => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-
-      toast.success("Password reset email sent! Check your inbox.");
-    } catch {
-      toast.error("An unexpected error occurred.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [state, formAction, pending] = useActionState(forgotPasswordAction, initialState);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black p-4 sm:p-6 lg:p-8">
@@ -73,40 +35,42 @@ export default function ForgotPasswordPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
+            <form action={formAction} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium text-neutral-300">
+                  Email
+                </label>
+                <Input
+                  id="email"
                   name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-neutral-300">Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="name@example.com"
-                          type="email"
-                          autoCapitalize="none"
-                          autoComplete="email"
-                          autoCorrect="off"
-                          disabled={isLoading}
-                          className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-400" />
-                    </FormItem>
-                  )}
+                  placeholder="name@example.com"
+                  type="email"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  autoCorrect="off"
+                  required
+                  disabled={pending}
+                  className="border-neutral-800 bg-neutral-950 text-white placeholder-neutral-500 focus-visible:ring-neutral-700"
                 />
+                {state.errors?.email?.[0] ? (
+                  <p className="text-sm text-red-400">{state.errors.email[0]}</p>
+                ) : null}
+              </div>
 
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-white text-black hover:bg-neutral-200 transition-colors"
-                >
-                  {isLoading ? "Sending..." : "Send Reset Link"}
-                </Button>
-              </form>
-            </Form>
+              {state.message ? (
+                <p className="text-sm text-neutral-300" aria-live="polite">
+                  {state.message}
+                </p>
+              ) : null}
+
+              <Button
+                type="submit"
+                disabled={pending}
+                className="w-full bg-white text-black hover:bg-neutral-200 transition-colors"
+              >
+                {pending ? "Sending..." : "Send Reset Link"}
+              </Button>
+            </form>
           </CardContent>
           <CardFooter className="flex flex-wrap items-center justify-center gap-1 border-t border-neutral-800/50 py-4 text-sm text-neutral-400">
             <Link href="/sign-in" className="font-medium text-white hover:underline">
