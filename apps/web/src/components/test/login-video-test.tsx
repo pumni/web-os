@@ -8,9 +8,10 @@
  * production UI. It is intentionally self-contained so it can be
  * deleted in one shot (see ./README.md for removal steps).
  *
- * Browser note: autoplay WITH sound is blocked until the user
- * interacts with the page. We attempt unmuted autoplay; if blocked we
- * fall back to muted playback and unmute on the first user gesture.
+ * Behaviour: the video does NOT autoplay. The player loads cued and
+ * paused; it only starts when the user presses the play button on the
+ * fullscreen splash. That click is also the user gesture browsers
+ * require to start playback WITH sound.
  * ------------------------------------------------------------------
  */
 
@@ -91,33 +92,14 @@ const initialState: AuthFormState = {};
 export function LoginVideoTest() {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
-  const [needsUnmute, setNeedsUnmute] = useState(false);
+  const [entered, setEntered] = useState(false);
+  const [volume, setVolume] = useState(50);
+  const [muted, setMuted] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [state, formAction, pending] = useActionState(signInAction, initialState);
 
   useEffect(() => {
     let cancelled = false;
-
-    const enableSound = () => {
-      const player = playerRef.current;
-      if (!player) return;
-      player.unMute();
-      player.setVolume(100);
-      player.playVideo();
-      setNeedsUnmute(false);
-      removeGestureListeners();
-    };
-
-    const gestureEvents: Array<keyof DocumentEventMap> = [
-      "pointerdown",
-      "keydown",
-      "touchstart",
-    ];
-    const removeGestureListeners = () => {
-      for (const evt of gestureEvents) {
-        document.removeEventListener(evt, enableSound);
-      }
-    };
 
     loadYouTubeApi().then((YT) => {
       if (cancelled || !containerRef.current) return;
@@ -127,8 +109,7 @@ export function LoginVideoTest() {
         width: "100%",
         height: "100%",
         playerVars: {
-          autoplay: 1,
-          mute: 0, // attempt sound immediately
+          autoplay: 0, // do NOT autoplay — wait for the play button
           controls: 0,
           loop: 1,
           playlist: VIDEO_ID, // required for single-video loop
@@ -138,41 +119,56 @@ export function LoginVideoTest() {
           iv_load_policy: 3,
           origin: window.location.origin,
         },
-        events: {
-          onReady: () => {
-            const player = playerRef.current;
-            if (!player) return;
-            player.unMute();
-            player.setVolume(100);
-            player.playVideo();
-
-            // If the browser blocked unmuted autoplay, fall back to
-            // muted playback and unmute on the first user gesture.
-            window.setTimeout(() => {
-              const p = playerRef.current;
-              if (!p) return;
-              const isPlaying = p.getPlayerState() === window.YT?.PlayerState.PLAYING;
-              if (!isPlaying || p.isMuted()) {
-                p.mute();
-                p.playVideo();
-                setNeedsUnmute(true);
-                for (const evt of gestureEvents) {
-                  document.addEventListener(evt, enableSound, { once: true });
-                }
-              }
-            }, 1200);
-          },
-        },
       });
     });
 
     return () => {
       cancelled = true;
-      removeGestureListeners();
       playerRef.current?.destroy();
       playerRef.current = null;
     };
   }, []);
+
+  // The play button starts the (so-far paused) video. This click is also
+  // the user gesture browsers require to start playback with sound.
+  const enterWithSound = () => {
+    const player = playerRef.current;
+    if (player) {
+      player.unMute();
+      player.setVolume(volume);
+      player.playVideo();
+    }
+    setMuted(false);
+    setEntered(true);
+  };
+
+  const handleVolumeChange = (next: number) => {
+    setVolume(next);
+    const player = playerRef.current;
+    if (!player) return;
+    player.setVolume(next);
+    if (next === 0) {
+      player.mute();
+      setMuted(true);
+    } else if (muted) {
+      player.unMute();
+      setMuted(false);
+    }
+  };
+
+  const toggleMute = () => {
+    const player = playerRef.current;
+    if (!player) return;
+    if (muted) {
+      player.unMute();
+      player.setVolume(volume === 0 ? 50 : volume);
+      if (volume === 0) setVolume(50);
+      setMuted(false);
+    } else {
+      player.mute();
+      setMuted(true);
+    }
+  };
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-black">
@@ -201,24 +197,44 @@ export function LoginVideoTest() {
         </Button>
       </div>
 
-      {/* "Bật tiếng" prompt when autoplay-with-sound was blocked */}
-      {needsUnmute ? (
-        <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2">
-          <Button
+      {/* Volume control — shown after the user has entered */}
+      {entered ? (
+        <div className="absolute bottom-4 left-4 z-20 flex items-center gap-3 rounded-full bg-black/50 px-4 py-2 backdrop-blur">
+          <button
             type="button"
-            onClick={() => {
-              const player = playerRef.current;
-              if (!player) return;
-              player.unMute();
-              player.setVolume(100);
-              player.playVideo();
-              setNeedsUnmute(false);
-            }}
-            className="bg-white/90 text-black backdrop-blur hover:bg-white"
+            onClick={toggleMute}
+            aria-label={muted ? "Bật tiếng" : "Tắt tiếng"}
+            className="text-lg leading-none text-white"
           >
-            🔊 Bật tiếng
-          </Button>
+            {muted || volume === 0 ? "🔇" : "🔊"}
+          </button>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={muted ? 0 : volume}
+            onChange={(e) => handleVolumeChange(Number(e.target.value))}
+            aria-label="Âm lượng"
+            className="h-1 w-32 cursor-pointer accent-white"
+          />
+          <span className="w-8 text-right text-xs tabular-nums text-neutral-300">
+            {muted ? 0 : volume}
+          </span>
         </div>
+      ) : null}
+
+      {/* Fullscreen splash — the play button starts the video (with sound) */}
+      {!entered ? (
+        <button
+          type="button"
+          onClick={enterWithSound}
+          className="group absolute inset-0 z-40 flex cursor-pointer flex-col items-center justify-center gap-4 bg-black/70 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+        >
+          <span className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-white/80 text-3xl transition-transform group-hover:scale-110">
+            ▶
+          </span>
+          <span className="text-sm text-neutral-300">Bấm để phát video (có âm thanh)</span>
+        </button>
       ) : null}
 
       {/* Login modal — video keeps playing behind it */}

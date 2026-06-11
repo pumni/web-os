@@ -20,9 +20,9 @@ That's it — nothing else imports this component.
 
 ## Notes
 
-- Autoplay **with sound** is blocked by browsers until the user interacts
-  with the page. The component attempts unmuted autoplay and falls back to
-  muted playback + auto-unmute on the first click/keypress (plus a visible
-  "🔊 Bật tiếng" button).
+- The video does **not** autoplay. It loads cued/paused and only starts when
+  the user presses the play button on the fullscreen splash. That click is
+  also the user gesture browsers require to start playback **with sound**.
+- A volume slider + mute toggle appear (bottom-left) after the video starts.
 - The sign-in form markup is duplicated here (rather than shared) on purpose,
   so deleting the test leaves the real `sign-in/page.tsx` untouched.
