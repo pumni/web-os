@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "exactOptionalPropertyTypes": false,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@pumni/ui": ["../../packages/ui/src/index.ts"],
+      "@pumni/env": ["../../packages/env/src/index.ts"],
+      "@pumni/auth": ["../../packages/auth/src/index.ts"],
+      "@pumni/supabase": ["../../packages/supabase/src/index.ts"],
+      "@pumni/supabase/browser": ["../../packages/supabase/src/browser.ts"],
+      "@pumni/supabase/server": ["../../packages/supabase/src/server.ts"],
+      "@pumni/supabase/service-role": ["../../packages/supabase/src/service-role.ts"],
+      "@pumni/validators": ["../../packages/validators/src/index.ts"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

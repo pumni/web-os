@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@pumni/supabase/server": ["../supabase/src/server.ts"]
+    }
+  },
+  "include": ["src/**/*"]
+}
