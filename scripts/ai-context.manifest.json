@@ -1,0 +1,78 @@
+{
+  "requiredFiles": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "llms.txt",
+    ".aiignore",
+    "apps/web/AGENTS.md",
+    "docs/ai/index.md",
+    "docs/architecture/overview.md",
+    "docs/conventions/server-client-boundary.md",
+    "docs/conventions/data-fetching.md",
+    "docs/conventions/feature-module.md",
+    "docs/conventions/supabase-security.md",
+    "docs/conventions/testing.md",
+    "docs/quality-gates.md"
+  ],
+  "thinWrappers": [
+    {
+      "path": "CLAUDE.md",
+      "maxBytes": 1500,
+      "requiredText": ["AGENTS.md"]
+    },
+    {
+      "path": "GEMINI.md",
+      "maxBytes": 1500,
+      "requiredText": ["AGENTS.md"]
+    }
+  ],
+  "requiredPackageScripts": [
+    "ai:check",
+    "ai:eval",
+    "lint",
+    "typecheck",
+    "test",
+    "build"
+  ],
+  "requiredAiIgnorePatterns": [
+    ".env",
+    ".env*",
+    "!.env.example",
+    ".git/",
+    "node_modules/",
+    ".next/",
+    ".turbo/",
+    "dist/",
+    "coverage/",
+    "*.log"
+  ],
+  "frontmatterRequired": [
+    "docs/architecture/overview.md",
+    "docs/conventions/server-client-boundary.md",
+    "docs/conventions/data-fetching.md",
+    "docs/conventions/feature-module.md",
+    "docs/conventions/supabase-security.md",
+    "docs/conventions/testing.md"
+  ],
+  "indexRequiredReferences": [
+    "AGENTS.md",
+    "docs/architecture/overview.md",
+    "docs/conventions/server-client-boundary.md",
+    "docs/conventions/data-fetching.md",
+    "docs/conventions/feature-module.md",
+    "docs/conventions/supabase-security.md",
+    "docs/conventions/testing.md",
+    "docs/quality-gates.md",
+    ".agents/skills",
+    "docs/ai/task-routes"
+  ],
+  "skillValidation": {
+    "yamlRequiredFields": ["name", "description"],
+    "markdownRequiredSections": ["Rules", "Checklist"]
+  },
+  "evalValidation": {
+    "yamlRequiredFields": ["name", "category", "description"],
+    "markdownRequiredSections": ["Scenario Goal", "Mock Input Prompt", "Evaluation Criteria"]
+  }
+}

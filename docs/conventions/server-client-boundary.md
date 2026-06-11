@@ -1,3 +1,8 @@
+---
+description: Rules for server-only isolation, "use client" usage, service-role secrets, and state placement.
+when-to-load: When adding "use client", touching the Supabase service-role client, or deciding server vs client code.
+---
+
 # Server / Client Boundary
 
 ## Core Rules

@@ -1,3 +1,8 @@
+---
+description: Where feature code lives (actions.ts, queries.ts, components) and when to promote to packages.
+when-to-load: When creating or extending a feature under apps/web/src/features.
+---
+
 # Feature Module Convention
 
 Start product features inside `apps/web/src/features/<feature-name>`.

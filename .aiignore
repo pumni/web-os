@@ -1,0 +1,17 @@
+# Secrets — never read or surface
+.env
+.env*
+!.env.example
+
+# VCS & dependencies
+.git/
+node_modules/
+
+# Build & cache output
+.next/
+.turbo/
+dist/
+coverage/
+
+# Noise
+*.log

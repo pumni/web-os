@@ -13,6 +13,10 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "format": "turbo format",
+    "ai:check": "bun scripts/check-ai-context.mjs",
+    "ai:secrets": "bun scripts/check-secrets.mjs",
+    "ai:review:static": "bun scripts/check-review-gate-rules.mjs",
+    "ai:eval": "bun scripts/run-ai-evals.mjs",
     "clean": "git clean -xdf node_modules .next dist .turbo"
   },
   "devDependencies": {

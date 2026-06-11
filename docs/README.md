@@ -1,5 +1,7 @@
 # Docs
 
+AI agents start at `ai/index.md` (linked from the root `AGENTS.md`).
+
 Project documentation is split by purpose:
 
 - `architecture/overview.md` explains the repo layout and package boundaries.

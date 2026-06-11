@@ -1,3 +1,8 @@
+---
+description: When to use Server Components, TanStack Query, and Zustand; state ownership rules.
+when-to-load: When adding data fetching, a query/mutation hook, or any Zustand store.
+---
+
 # Data Fetching Convention
 
 ## Server-Rendered Components
