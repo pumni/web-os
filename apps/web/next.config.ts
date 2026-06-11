@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   typedRoutes: true,
+  reactCompiler: true,
   experimental: {
     staleTimes: { static: 180, dynamic: 30 },
     turbopackFileSystemCacheForDev: true,
