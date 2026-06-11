@@ -9,7 +9,14 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
@@ -49,12 +56,8 @@ export default function ResetPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-neutral-950 to-black p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col space-y-2 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-white">
-            Pumni OS
-          </h1>
-          <p className="text-sm text-neutral-400">
-            Set your new account password.
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Pumni OS</h1>
+          <p className="text-sm text-neutral-400">Set your new account password.</p>
         </div>
 
         <Card className="border-neutral-800 bg-neutral-900/50 backdrop-blur-xl text-white">

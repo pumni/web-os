@@ -5,13 +5,9 @@ import { requireUser } from "@pumni/auth";
 import { createSupabaseServerClient } from "@pumni/supabase/server";
 import { profileSchema, type ProfileInput } from "@pumni/validators";
 
-export type UpdateProfileResult =
-  | { ok: true }
-  | { ok: false; message: string };
+export type UpdateProfileResult = { ok: true } | { ok: false; message: string };
 
-export async function updateProfile(
-  input: ProfileInput,
-): Promise<UpdateProfileResult> {
+export async function updateProfile(input: ProfileInput): Promise<UpdateProfileResult> {
   const user = await requireUser();
   const parsed = profileSchema.safeParse(input);
 

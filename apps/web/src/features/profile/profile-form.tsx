@@ -7,7 +7,14 @@ import { profileSchema, type ProfileInput } from "@pumni/validators";
 import { updateProfile } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
@@ -63,7 +70,12 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="username" disabled={isPending} {...field} value={field.value || ""} />
+                    <Input
+                      placeholder="username"
+                      disabled={isPending}
+                      {...field}
+                      value={field.value || ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -77,7 +89,12 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Full Name" disabled={isPending} {...field} value={field.value || ""} />
+                    <Input
+                      placeholder="Full Name"
+                      disabled={isPending}
+                      {...field}
+                      value={field.value || ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -91,7 +108,12 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
                 <FormItem>
                   <FormLabel>Avatar URL</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://example.com/avatar.png" disabled={isPending} {...field} value={field.value || ""} />
+                    <Input
+                      placeholder="https://example.com/avatar.png"
+                      disabled={isPending}
+                      {...field}
+                      value={field.value || ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

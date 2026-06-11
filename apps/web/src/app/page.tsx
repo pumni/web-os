@@ -17,13 +17,18 @@ export default async function LandingPage() {
           Pumni Web OS
         </h1>
         <p className="text-lg sm:text-xl text-neutral-400 max-w-lg mx-auto">
-          A modern, reusable monorepo SaaS starter foundation built with Next.js App Router, Bun workspaces, and Supabase SSR.
+          A modern, reusable monorepo SaaS starter foundation built with Next.js App Router, Bun
+          workspaces, and Supabase SSR.
         </p>
         <div className="flex justify-center gap-4 pt-4">
           <Button asChild className="bg-white text-black hover:bg-neutral-200">
             <Link href="/sign-in">Sign In</Link>
           </Button>
-          <Button asChild variant="outline" className="border-neutral-800 hover:bg-neutral-900 text-white">
+          <Button
+            asChild
+            variant="outline"
+            className="border-neutral-800 hover:bg-neutral-900 text-white"
+          >
             <Link href="/sign-up">Sign Up</Link>
           </Button>
         </div>

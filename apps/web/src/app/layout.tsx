@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Pumni Web OS",
-  description: "A modern, reusable SaaS Starter base with Next.js App Router, Bun workspaces, and Supabase SSR.",
+  description:
+    "A modern, reusable SaaS Starter base with Next.js App Router, Bun workspaces, and Supabase SSR.",
 };
 
 export default function RootLayout({

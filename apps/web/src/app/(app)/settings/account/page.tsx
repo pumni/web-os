@@ -8,7 +8,9 @@ export default function AccountSettingsPage() {
         </p>
       </div>
       <div className="rounded-lg border border-border bg-card p-6">
-        <p className="text-sm text-muted-foreground">Account settings are not implemented in Part 1.</p>
+        <p className="text-sm text-muted-foreground">
+          Account settings are not implemented in Part 1.
+        </p>
       </div>
     </div>
   );
