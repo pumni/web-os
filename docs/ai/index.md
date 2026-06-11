@@ -15,6 +15,9 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Supabase / RLS / keys                       | `docs/conventions/supabase-security.md`          |
 | Testing scope & commands                    | `docs/conventions/testing.md`                    |
 | Quality gates (verification commands)       | `docs/quality-gates.md`                          |
+| Command / PowerShell discipline (Windows)   | `docs/ai/agent-command-policy.md`                |
+| Common mistakes (❌/✅ pairs)               | `docs/ai/common-mistakes.md`                     |
+| Self-review before "done"                   | `.agents/workflows/review-gate.md`               |
 | Reusable procedures (scaffolding)           | `.agents/skills/*/SKILL.md` (added on demand)    |
 | Task routes & risk levels                   | `docs/ai/task-routes/*.md` (added on demand)     |
 

@@ -7,6 +7,9 @@
     ".aiignore",
     "apps/web/AGENTS.md",
     "docs/ai/index.md",
+    "docs/ai/agent-command-policy.md",
+    "docs/ai/common-mistakes.md",
+    ".agents/workflows/review-gate.md",
     "docs/architecture/overview.md",
     "docs/conventions/server-client-boundary.md",
     "docs/conventions/data-fetching.md",
@@ -48,6 +51,8 @@
     "*.log"
   ],
   "frontmatterRequired": [
+    "docs/ai/agent-command-policy.md",
+    "docs/ai/common-mistakes.md",
     "docs/architecture/overview.md",
     "docs/conventions/server-client-boundary.md",
     "docs/conventions/data-fetching.md",

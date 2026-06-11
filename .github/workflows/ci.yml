@@ -34,6 +34,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: AI context check
+        run: bun run ai:check
+
       - name: Lint
         run: bun run lint
 
@@ -45,3 +48,6 @@ jobs:
 
       - name: Build
         run: bun run build
+
+      - name: AI regression evals
+        run: bun run ai:eval

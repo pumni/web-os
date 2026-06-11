@@ -61,7 +61,7 @@ State ownership: server state stays in Server Components or TanStack Query cache
 
 ## Key Commands
 
-`bun run ai:check`, `bun run ai:eval`, `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`. E2E (separate): `cd apps/web && bunx playwright test`. Full gate ownership: `docs/quality-gates.md`.
+`bun run ai:check`, `bun run ai:eval`, `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`. E2E (separate): `cd apps/web && bunx playwright test`. Full gate ownership: `docs/quality-gates.md`. PowerShell rules & command discipline (Windows): `docs/ai/agent-command-policy.md`.
 
 ## Read Routing
 
