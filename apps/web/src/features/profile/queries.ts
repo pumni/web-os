@@ -26,6 +26,7 @@ async function getProfileByUserId(userId: string, fallback: ProfileFallback) {
   cacheTag(`profile:${userId}`);
   cacheLife("minutes");
 
+  // Service role bypasses RLS; userId must come from requireUser() and stay in this filter.
   const supabase = createSupabaseServiceRoleClient();
 
   const { data, error } = await supabase

@@ -7,7 +7,7 @@ const clientEnvSchema = z.object({
 });
 
 const serverEnvSchema = clientEnvSchema.extend({
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
 });
 
 export const clientEnv = clientEnvSchema.parse({
