@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  poweredByHeader: false,
+  typedRoutes: true,
+  experimental: {
+    staleTimes: { static: 180, dynamic: 30 },
+    turbopackFileSystemCacheForDev: true,
+    optimizePackageImports: ["lucide-react"],
+  },
 };
 
 export default nextConfig;
