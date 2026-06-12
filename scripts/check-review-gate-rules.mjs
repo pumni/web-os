@@ -16,6 +16,10 @@
  *   query-result-in-zustand         Query data mirrored to store B1
  *   missing-loading-state           useQuery w/o isLoading       B2
  *   route-business-logic            logic in app/ route files    B2
+ *   server-action-missing-auth      action write w/o auth        B1
+ *   server-action-missing-revalidation action write w/o cache    B2
+ *   client-secret-env               private env in client        B1
+ *   server-only-in-client           server module in client      B1
  *
  * Note: a direct-env-access rule was considered but dropped — the project's
  * convention (docs/conventions/supabase-security.md, a P2 source) states that
@@ -28,6 +32,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { RULES, RULE_INFO } from './review-gate-rules.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,59 +57,6 @@ const SKIP_DIRS = new Set(['node_modules', '.git', '.next', '.turbo', 'coverage'
 // Server-side I/O surfaces where a swallowed error is a real risk.
 const API_SERVICE_PATTERN =
   /(?:^|\/)(?:apps\/web\/src\/features\/[^/]+\/(?:actions|queries)\.ts|apps\/web\/src\/lib\/.*\.ts|packages\/[^/]+\/src\/.*\.ts)$/;
-
-const RULES = {
-  SELECT_STAR: 'supabase-select-star',
-  SERVICE_ROLE_CLIENT: 'service-role-client',
-  TRUSTED_USER_ID_WRITE: 'trusted-client-user-id-write',
-  SWALLOWED_ERROR: 'swallowed-error',
-  MISSING_AUTH_UID_POLICY: 'missing-auth-uid-policy',
-  RPC_USER_ID_WITHOUT_AUTH_CHECK: 'rpc-user-id-without-auth-check',
-  MUTATION_WITHOUT_INVALIDATION: 'mutation-without-invalidation',
-  QUERY_RESULT_IN_ZUSTAND: 'query-result-in-zustand',
-  MISSING_LOADING_STATE: 'missing-loading-state',
-  ROUTE_BUSINESS_LOGIC: 'route-business-logic',
-};
-
-const RULE_INFO = {
-  [RULES.SELECT_STAR]: { severity: 'B1', fix: 'Replace with explicit projection columns.' },
-  [RULES.SERVICE_ROLE_CLIENT]: {
-    severity: 'P0',
-    fix: 'Remove service-role / secret key usage from client-bundle ("use client") code. Service-role is server-only.',
-  },
-  [RULES.TRUSTED_USER_ID_WRITE]: {
-    severity: 'B1',
-    fix: 'Write user_id from a Server Action using auth.uid(), or document RLS WITH CHECK auth.uid() evidence.',
-  },
-  [RULES.SWALLOWED_ERROR]: {
-    severity: 'B1',
-    fix: 'Throw, return an explicit failure value, or log diagnostic context before continuing.',
-  },
-  [RULES.MISSING_AUTH_UID_POLICY]: {
-    severity: 'B1',
-    fix: 'Add an auth.uid() owner predicate or document why the policy is not user-owned.',
-  },
-  [RULES.RPC_USER_ID_WITHOUT_AUTH_CHECK]: {
-    severity: 'B1',
-    fix: 'Compare p_user_id to auth.uid() or derive the user id internally from auth.uid().',
-  },
-  [RULES.MUTATION_WITHOUT_INVALIDATION]: {
-    severity: 'B2',
-    fix: 'Add onSuccess/onSettled invalidateQueries() or setQueryData() so the cache reflects the mutation.',
-  },
-  [RULES.QUERY_RESULT_IN_ZUSTAND]: {
-    severity: 'B1',
-    fix: 'Use TanStack Query data directly. Zustand holds client UI state only, never server data.',
-  },
-  [RULES.MISSING_LOADING_STATE]: {
-    severity: 'B2',
-    fix: 'Handle isLoading/isPending: show a loading indicator, skeleton, or placeholder while data is undefined.',
-  },
-  [RULES.ROUTE_BUSINESS_LOGIC]: {
-    severity: 'B2',
-    fix: 'Move mutations / network logic into a feature hook (apps/web/src/features). Route files compose UI only.',
-  },
-};
 
 function toPosix(filePath) {
   return filePath.replaceAll(path.sep, '/');
@@ -265,6 +217,31 @@ function getCallArgument(content, callStart) {
   return { text: content.slice(openIndex + 1, closeIndex), start: openIndex + 1, end: closeIndex };
 }
 
+function collectFunctionBlocks(content) {
+  const blocks = [];
+  const declarations = /export\s+async\s+function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*(?::[^{]+)?\{/g;
+  const exportedAsyncConsts =
+    /export\s+const\s+([A-Za-z_$][\w$]*)\s*=\s*async\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*(?::[^{]+)?=>\s*\{/g;
+
+  for (const regex of [declarations, exportedAsyncConsts]) {
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+      const openIndex = match.index + match[0].lastIndexOf('{');
+      const closeIndex = findBlockEnd(content, openIndex);
+      if (openIndex < 0 || closeIndex < 0) continue;
+      blocks.push({
+        name: match[1],
+        start: match.index,
+        bodyStart: openIndex + 1,
+        bodyEnd: closeIndex,
+        text: content.slice(openIndex + 1, closeIndex),
+      });
+    }
+  }
+
+  return blocks.sort((a, b) => a.start - b.start);
+}
+
 function previousIdentifierObjectContainsUserId(content, identifier, beforeIndex) {
   const prefix = content.slice(Math.max(0, beforeIndex - 7000), beforeIndex);
   const declarationRegex = new RegExp(`(?:const|let|var)\\s+${identifier}\\s*=\\s*([\\s\\S]{0,2500}?);`, 'g');
@@ -363,6 +340,49 @@ function analyzeServiceRoleClient(files, findings) {
     while ((m = re.exec(content)) !== null) {
       addFinding(findings, RULES.SERVICE_ROLE_CLIENT, rel, content, m.index, m[0],
         'Client-bundle ("use client") code references a service-role / secret credential.');
+    }
+  }
+}
+
+function analyzeClientSecretEnv(files, findings) {
+  const dotEnv = /\bprocess\.env\.([A-Za-z_][A-Za-z0-9_]*)/g;
+  const bracketEnv = /\bprocess\.env\[['"]([A-Za-z_][A-Za-z0-9_]*)['"]\]/g;
+
+  for (const file of files) {
+    if (!CLIENT_CODE_EXTENSIONS.has(path.extname(file))) continue;
+    const content = readText(file);
+    if (!isClientFile(content)) continue;
+    const rel = relPath(file);
+
+    for (const regex of [dotEnv, bracketEnv]) {
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        const envName = match[1];
+        if (envName.startsWith('NEXT_PUBLIC_')) continue;
+        addFinding(findings, RULES.CLIENT_SECRET_ENV, rel, content, match.index, match[0],
+          `Client-bundle ("use client") code reads private environment variable ${envName}.`);
+      }
+    }
+  }
+}
+
+function analyzeServerOnlyImportsInClient(files, findings) {
+  const importPattern = /\bimport\s+(?:type\s+)?(?:[^'"]+\s+from\s+)?['"]([^'"]+)['"]/g;
+  const serverOnlySpecifier =
+    /^(?:server-only|next\/server|@pumni\/auth(?:\/.*)?|@pumni\/env(?:\/.*)?|@pumni\/supabase\/server(?:\/.*)?|@pumni\/[^/]+\/server(?:\/.*)?|.*\/server)$/;
+
+  for (const file of files) {
+    if (!CLIENT_CODE_EXTENSIONS.has(path.extname(file))) continue;
+    const content = readText(file);
+    if (!isClientFile(content)) continue;
+    const rel = relPath(file);
+    let match;
+
+    while ((match = importPattern.exec(content)) !== null) {
+      const specifier = match[1];
+      if (!serverOnlySpecifier.test(specifier)) continue;
+      addFinding(findings, RULES.SERVER_ONLY_IN_CLIENT, rel, content, match.index, match[0],
+        `Client-bundle ("use client") code imports server-only module ${specifier}.`);
     }
   }
 }
@@ -550,12 +570,49 @@ function analyzeRouteBusinessLogic(files, findings) {
   }
 }
 
+function analyzeServerActionWrites(files, findings) {
+  const ACTION_FILE = /^apps\/web\/src\/features\/[^/]+\/actions\.ts$/;
+  const writePattern = /\.from\(\s*['"`][^'"`]+['"`]\s*\)[\s\S]{0,1400}?\.(insert|update|upsert|delete)\s*\(/;
+  const hasAuthCheck = /\b(?:requireUser|getUser)\s*\(|\bauth\s*\.\s*getUser\s*\(/;
+  const hasRevalidation = /\b(?:revalidatePath|revalidateTag|updateTag|redirect)\s*\(/;
+
+  for (const file of files) {
+    const rel = relPath(file);
+    if (!ACTION_FILE.test(rel)) continue;
+    const content = readText(file);
+    if (!/^﻿?\s*(?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*['"]use server['"]/.test(content.slice(0, 400))) {
+      continue;
+    }
+
+    const blocks = collectFunctionBlocks(content);
+    for (const block of blocks) {
+      const writeMatch = writePattern.exec(block.text);
+      if (!writeMatch) continue;
+      const writeIndex = block.bodyStart + writeMatch.index;
+
+      if (!hasAuthCheck.test(block.text)) {
+        addFinding(findings, RULES.SERVER_ACTION_MISSING_AUTH, rel, content, writeIndex,
+          content.slice(writeIndex, writeIndex + 140),
+          `Server Action ${block.name} writes through Supabase without a detected user auth check.`);
+      }
+
+      if (!hasRevalidation.test(block.text)) {
+        addFinding(findings, RULES.SERVER_ACTION_MISSING_REVALIDATION, rel, content, writeIndex,
+          content.slice(writeIndex, writeIndex + 140),
+          `Server Action ${block.name} writes through Supabase without cache revalidation or redirect.`);
+      }
+    }
+  }
+}
+
 // -- driver -------------------------------------------------------------------
 
 function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
   const findings = [];
   analyzeSelectStar(files, findings);
   analyzeServiceRoleClient(files, findings);
+  analyzeClientSecretEnv(files, findings);
+  analyzeServerOnlyImportsInClient(files, findings);
   analyzeTrustedUserIdWrites(files, findings, sqlEvidence);
   analyzeSwallowedErrors(files, findings);
   analyzeMissingAuthUidPolicies(sqlFiles, findings);
@@ -564,6 +621,7 @@ function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
   analyzeQueryResultInZustand(files, findings);
   analyzeMissingLoadingState(files, findings);
   analyzeRouteBusinessLogic(files, findings);
+  analyzeServerActionWrites(files, findings);
   return findings.filter((f) => !isAllowlisted(allowlist, f));
 }
 
@@ -579,9 +637,12 @@ function printFinding(f) {
 function runSelfTest() {
   const serverFile = 'apps/web/src/features/selftest/actions.ts';
   const clientFile = 'apps/web/src/features/selftest/form.tsx';
+  const stateFile = 'apps/web/src/features/selftest/panel.tsx';
+  const routeFile = 'apps/web/src/app/selftest/page.tsx';
   const sqlFile = 'supabase/migrations/00000000000000_selftest.sql';
 
   const serverFixture = `
+    "use server";
     import 'server-only';
     import { createSupabaseServerClient } from '@pumni/supabase/server';
     export async function listAll() {
@@ -594,13 +655,43 @@ function runSelfTest() {
       } catch (error) {
       }
     }
+    export async function unsafeWrite(input) {
+      const supabase = createSupabaseServerClient();
+      return supabase.from('profiles').update({ username: input.username }).eq('id', input.id);
+    }
   `;
   const clientFixture = `
     'use client';
+    import { requireUser } from '@pumni/auth';
     import { supabase } from '@pumni/supabase/client';
+    const privateEnv = process.env.SUPABASE_SERVICE_ROLE_KEY;
     const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     export async function badWrite(userId) {
       return supabase.from('orphan_table').upsert({ user_id: userId, name: 'x' });
+    }
+  `;
+  const stateFixture = `
+    "use client";
+    import { useEffect } from 'react';
+    import { useMutation, useQuery } from '@tanstack/react-query';
+    import { useProfileStore } from '@/stores/profile';
+    import { saveProfile } from './actions';
+    export function SelftestPanel() {
+      const { data } = useQuery({ queryKey: ['selftest'], queryFn: async () => ({ name: 'x' }) });
+      const setProfile = useProfileStore((state) => state.setProfile);
+      useEffect(() => {
+        setProfile(data);
+      }, [data, setProfile]);
+      const mutation = useMutation({ mutationFn: saveProfile });
+      return <button onClick={() => mutation.mutate(data)}>Save {data?.name}</button>;
+    }
+  `;
+  const routeFixture = `
+    "use client";
+    import { useMutation } from '@tanstack/react-query';
+    export default function Page() {
+      const mutation = useMutation({ mutationFn: async () => ({ ok: true }) });
+      return <button onClick={() => mutation.mutate()}>Save</button>;
     }
   `;
   const sqlFixture = `
@@ -616,6 +707,8 @@ function runSelfTest() {
   const map = {
     [resolveRel(serverFile)]: serverFixture,
     [resolveRel(clientFile)]: clientFixture,
+    [resolveRel(stateFile)]: stateFixture,
+    [resolveRel(routeFile)]: routeFixture,
     [resolveRel(sqlFile)]: sqlFixture,
   };
   const original = fs.readFileSync;
@@ -624,28 +717,23 @@ function runSelfTest() {
 
   try {
     const findings = runAnalysis({
-      files: [resolveRel(serverFile), resolveRel(clientFile)],
+      files: [resolveRel(serverFile), resolveRel(clientFile), resolveRel(stateFile), resolveRel(routeFile)],
       sqlFiles: [resolveRel(sqlFile)],
       sqlEvidence: sqlFixture,
       allowlist: {},
     });
     const found = new Set(findings.map((f) => f.ruleId));
-    const expected = [
-      RULES.SELECT_STAR,
-      RULES.SWALLOWED_ERROR,
-      RULES.SERVICE_ROLE_CLIENT,
-      RULES.TRUSTED_USER_ID_WRITE,
-      RULES.MISSING_AUTH_UID_POLICY,
-      RULES.RPC_USER_ID_WITHOUT_AUTH_CHECK,
-    ];
+    const expected = Object.values(RULES);
     const missing = expected.filter((r) => !found.has(r));
     if (missing.length > 0) {
       console.error(`Self-test FAILED. Missing rules: ${missing.join(', ')}`);
+      console.error(`Rule types fired: ${[...found].sort().join(', ') || '(none)'}`);
       console.error('Findings:');
       for (const f of findings) printFinding(f);
       process.exit(1);
     }
-    console.log(`Review gate static rule self-test passed (${found.size} rule types fired).`);
+    console.log(`Review gate static rule self-test passed (${expected.length}/${expected.length} expected rule types fired).`);
+    console.log(`Rule types fired: ${[...found].sort().join(', ')}`);
   } finally {
     fs.readFileSync = original;
   }

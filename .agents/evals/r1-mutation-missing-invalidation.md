@@ -2,6 +2,8 @@
 name: r1-mutation-missing-invalidation
 category: state
 description: Evaluates whether an agent invalidates or updates TanStack Query cache after client-side mutations.
+automated-rule: mutation-without-invalidation
+covered-rules: [mutation-without-invalidation, trusted-client-user-id-write]
 ---
 
 # R1 Mutation Missing Invalidation

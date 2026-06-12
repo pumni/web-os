@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
+import { RULES } from './review-gate-rules.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,6 +40,36 @@ function resolveRel(relativePath) {
 
 function readFile(relativePath) {
   return fs.readFileSync(resolveRel(relativePath), 'utf8');
+}
+
+function parseFrontmatter(relativePath) {
+  const content = readFile(relativePath);
+  if (!content.startsWith('---\n') && !content.startsWith('---\r\n')) return null;
+  const end = content.indexOf('\n---', 4);
+  if (end === -1) return null;
+
+  const frontmatter = {};
+  for (const rawLine of content.slice(4, end).split(/\r?\n/)) {
+    const match = /^([A-Za-z0-9_-]+):\s*(.*)$/.exec(rawLine);
+    if (!match) continue;
+    const [, key, rawValue] = match;
+    const value = rawValue.trim();
+    if (value === 'true') {
+      frontmatter[key] = true;
+    } else if (value === 'false') {
+      frontmatter[key] = false;
+    } else if (value.startsWith('[') && value.endsWith(']')) {
+      frontmatter[key] = value
+        .slice(1, -1)
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean);
+    } else {
+      frontmatter[key] = value;
+    }
+  }
+
+  return frontmatter;
 }
 
 function reportError(message) {
@@ -357,6 +388,83 @@ function checkStructuredMarkdown({ dir, kind, validation, isFileEntry }) {
   }
 }
 
+function collectEvalFiles() {
+  const evalDir = resolveRel('.agents/evals');
+  if (!fs.existsSync(evalDir)) return [];
+  return fs.readdirSync(evalDir)
+    .filter((fileName) => fileName.endsWith('.md'))
+    .map((fileName) => `.agents/evals/${fileName}`)
+    .sort();
+}
+
+function checkEvalRuleMapping() {
+  const ruleIds = new Set(Object.values(RULES));
+
+  for (const relativePath of collectEvalFiles()) {
+    const frontmatter = parseFrontmatter(relativePath);
+    if (!frontmatter) continue;
+
+    const automatedRule = frontmatter['automated-rule'];
+    const isManual = frontmatter.manual === true;
+    if (!automatedRule && !isManual) {
+      reportError(`${relativePath} must declare automated-rule: <rule-id> or manual: true.`);
+    }
+    if (automatedRule && !ruleIds.has(automatedRule)) {
+      reportError(`${relativePath} automated-rule references unknown static rule: ${automatedRule}`);
+    }
+
+    const coveredRules = frontmatter['covered-rules'] ?? [];
+    if (!Array.isArray(coveredRules)) {
+      reportError(`${relativePath} covered-rules must be an inline YAML array.`);
+      continue;
+    }
+    for (const ruleId of coveredRules) {
+      if (!ruleIds.has(ruleId)) {
+        reportError(`${relativePath} covered-rules references unknown static rule: ${ruleId}`);
+      }
+    }
+  }
+}
+
+function checkRuleInventory() {
+  const inventoryPath = '.agents/workflows/review-gate.md';
+  const content = readFile(inventoryPath);
+  const headingIndex = content.indexOf('## Static Rule Inventory');
+  if (headingIndex < 0) {
+    reportError(`${inventoryPath} is missing ## Static Rule Inventory.`);
+    return;
+  }
+
+  const inventory = content.slice(headingIndex);
+  for (const ruleId of Object.values(RULES)) {
+    if (!inventory.includes(`\`${ruleId}\``)) {
+      reportError(`${inventoryPath} Static Rule Inventory is missing rule id: ${ruleId}`);
+    }
+  }
+}
+
+function checkGoldenExamplePaths() {
+  const relativePath = 'docs/ai/golden-examples.md';
+  const content = readFile(relativePath);
+  const pathRegex = /`([^`]+)`/g;
+  const checked = new Set();
+  let match;
+
+  while ((match = pathRegex.exec(content)) !== null) {
+    const candidate = match[1].trim().split('#')[0];
+    if (!/^(?:apps|packages|supabase|docs|\.agents)\//.test(candidate)) continue;
+    if (candidate.includes('*') || candidate.includes('<')) continue;
+    if (checked.has(candidate)) continue;
+    checked.add(candidate);
+
+    if (!fs.existsSync(resolveRel(candidate))) {
+      reportError(
+        `Golden example path does not exist in ${relativePath}:${lineNumber(content, match.index)} -> ${candidate}`,
+      );
+    }
+  }
+}
+
 function checkLlmsTxt() {
   const llmsPath = resolveRel('llms.txt');
   if (!fs.existsSync(llmsPath)) {
@@ -381,13 +489,16 @@ checkRequiredFiles();
 checkFrontmatter();
 checkStructuredMarkdown({ dir: '.agents/skills', kind: 'Skill', validation: SKILL_VALIDATION, isFileEntry: false });
 checkStructuredMarkdown({ dir: '.agents/evals', kind: 'Eval', validation: EVAL_VALIDATION, isFileEntry: true });
+checkEvalRuleMapping();
 checkAiDocSizes();
 checkEntrypointSizes();
 checkThinWrappers();
 checkMarkdownLinks();
 checkDocPathReferences();
+checkGoldenExamplePaths();
 checkContextIndexCoverage();
 checkTaskRoutes();
+checkRuleInventory();
 checkPackageScripts();
 checkAiIgnoreCoverage();
 checkLlmsTxt();

@@ -2,6 +2,8 @@
 name: r2-supabase-rls-migration
 category: supabase
 description: Evaluates whether an agent creates a Supabase migration with RLS, owner policies, grants, and safe RPC behavior.
+automated-rule: missing-auth-uid-policy
+covered-rules: [missing-auth-uid-policy, rpc-user-id-without-auth-check]
 ---
 
 # R2 Supabase RLS Migration

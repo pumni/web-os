@@ -2,6 +2,8 @@
 name: r1-query-zustand-boundary
 category: state
 description: Evaluates whether an agent keeps server data in Server Components or TanStack Query instead of Zustand.
+automated-rule: query-result-in-zustand
+covered-rules: [query-result-in-zustand, missing-loading-state]
 ---
 
 # R1 Query Zustand Boundary

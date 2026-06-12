@@ -46,11 +46,15 @@ Enforcement files make the context deterministic.
 - `scripts/ai-context.manifest.json`: required files, scripts, wrappers, and
   validation schemas.
 - `scripts/check-ai-context.mjs`: context structure, links, frontmatter, and
-  wrapper validation.
+  wrapper validation; also checks eval-to-rule mapping, review-gate rule
+  inventory, and golden-example path existence.
 - `scripts/check-secrets.mjs`: committed secret and env-file scan.
+- `scripts/review-gate-rules.mjs`: single source of truth for static rule ids,
+  severities, fixes, and summaries.
 - `scripts/check-review-gate-rules.mjs`: static security and architecture
-  checks for web roots.
-- `scripts/run-ai-evals.mjs`: deterministic AI policy gate.
+  checks for web roots, with a self-test fixture for every static rule.
+- `scripts/run-ai-evals.mjs`: deterministic AI policy gate with static rule
+  coverage reporting.
 
 Current scan roots are web monorepo roots: `apps/web/src`, `packages`, and
 `supabase/migrations`. Do not replace them with mobile roots like `src` or
@@ -77,10 +81,15 @@ Add a skill when a repeated implementation pattern needs a checklist or template
 Every skill must have YAML frontmatter with `name` and `description`, an H1, and
 `## Rules` plus `## Checklist`.
 
-Add an eval when a prompt pattern or regression cannot be captured reliably by a
-static rule. Every eval must have YAML frontmatter with `name`, `category`, and
-`description`, an H1, and sections for `Scenario Goal`, `Mock Input Prompt`, and
-`Evaluation Criteria`.
+Add an eval when a prompt pattern or regression needs durable coverage. Every
+eval must have YAML frontmatter with `name`, `category`, `description`, and
+either `automated-rule: <static-rule-id>` or `manual: true`; use
+`covered-rules: [...]` when one eval intentionally covers multiple static
+rules. It must also have an H1 and sections for `Scenario Goal`, `Mock Input
+Prompt`, and `Evaluation Criteria`.
 
 Add or change static rules only when the pattern is deterministic enough to avoid
-false positives across normal Next.js web code.
+false positives across normal Next.js web code. When a static rule changes,
+update `scripts/review-gate-rules.mjs`, its self-test fixture, eval coverage,
+and the Static Rule Inventory in `.agents/workflows/review-gate.md` in the same
+diff.

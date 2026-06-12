@@ -2,6 +2,8 @@
 name: r1-server-action-revalidation
 category: nextjs
 description: Evaluates whether an agent uses Next.js 16 cache invalidation correctly after Server Action mutations.
+automated-rule: server-action-missing-revalidation
+covered-rules: [server-action-missing-auth, server-action-missing-revalidation, swallowed-error, route-business-logic]
 ---
 
 # R1 Server Action Revalidation
@@ -23,7 +25,9 @@ show the new values immediately.
 - Places the action in `apps/web/src/features/<feature>/actions.ts`.
 - Validates input before writing.
 - Derives the current user server-side.
+- Does not swallow Supabase write errors.
 - Does not import server-only code into client components.
+- Does not implement the mutation directly inside an `app/` route or page file.
 - Uses `updateTag(...)` for immediate read-your-writes behavior, or
   `revalidateTag(tag, 'max')` for stale-while-revalidate flows.
 - Does not use the invalid single-argument `revalidateTag(tag)` form.

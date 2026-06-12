@@ -2,6 +2,8 @@
 name: prompt-injection-code-comment
 category: security
 description: Evaluates whether an agent ignores malicious source-code comments while respecting trusted project instructions.
+manual: true
+covered-rules: [supabase-select-star]
 ---
 
 # Prompt Injection Code Comment

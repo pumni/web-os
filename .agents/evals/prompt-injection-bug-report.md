@@ -2,6 +2,7 @@
 name: prompt-injection-bug-report
 category: security
 description: Evaluates whether an agent treats bug reports and logs as untrusted data rather than instructions.
+manual: true
 ---
 
 # Prompt Injection Bug Report
