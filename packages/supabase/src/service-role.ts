@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
-import { serverEnv } from "@pumni/env";
+import { serverEnv } from "@pumni/env/server";
 import type { Database } from "./types";
 
 export function createSupabaseServiceRoleClient() {

@@ -4,15 +4,17 @@ import type { User } from "@supabase/supabase-js";
 import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
 import { useRouter } from "next/navigation";
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+} from "@pumni/ui";
 import { LogOut, User as UserIcon, Settings } from "lucide-react";
 import { toast } from "sonner";
 

@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { clientEnv } from "@pumni/env";
+import { clientEnv } from "@pumni/env/client";
 import type { Database } from "@pumni/supabase";
 
 export async function updateSupabaseSession(request: NextRequest) {

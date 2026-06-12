@@ -16,7 +16,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-border bg-card lg:block">
+    <aside className="glass-bar fixed inset-y-0 left-0 z-20 hidden w-64 border-r lg:block">
       <div className="flex h-16 items-center border-b border-border px-6 font-bold text-lg tracking-tight text-foreground">
         Pumni Web OS
       </div>

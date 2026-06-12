@@ -1,0 +1,127 @@
+/*
+ * Pumni OS — Liquid Glass utilities
+ * ----------------------------------
+ * Reusable frosted-glass surfaces for FLOATING layers only
+ * (topbar, dock, window titlebar, dialog, sheet, popover, command palette,
+ * toast). Never apply to large background areas — `backdrop-filter` is
+ * GPU-intensive. Blur is held in the 8–16px range via `--glass-blur`.
+ *
+ * The translucent fill (`--glass-bg`) doubles as a contrast scrim so text /
+ * icons stay readable against any background state (WCAG 2.2: 4.5:1 text,
+ * 3:1 UI). Accessibility fallbacks below honour user system preferences.
+ */
+
+@utility glass-panel {
+  /* Translucent fill (padding-box) + gradient hairline (border-box) for a
+     refractive Liquid Glass edge that keeps its border-radius. */
+  background:
+    linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
+    linear-gradient(
+        135deg,
+        var(--glass-highlight),
+        color-mix(in oklch, var(--glass-border) 60%, transparent) 45%,
+        transparent 80%
+      )
+      border-box;
+  border: 1px solid transparent;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  /* brand-tinted glow for depth + inset top hairline for the "liquid" sheen */
+  box-shadow: var(--shadow-glass), inset 0 1px 0 0 var(--glass-highlight);
+}
+
+@utility glass-window {
+  background:
+    linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
+    linear-gradient(
+        135deg,
+        var(--glass-highlight),
+        color-mix(in oklch, var(--glass-border) 60%, transparent) 45%,
+        transparent 80%
+      )
+      border-box;
+  border: 1px solid transparent;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  box-shadow: var(--shadow-glass-glow), inset 0 1px 0 0 var(--glass-highlight);
+}
+
+@utility glass-surface {
+  background:
+    linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
+    linear-gradient(
+        135deg,
+        var(--glass-highlight),
+        color-mix(in oklch, var(--glass-border) 60%, transparent) 45%,
+        transparent 80%
+      )
+      border-box;
+  border: 1px solid transparent;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  box-shadow: var(--shadow-glass-glow), inset 0 1px 0 0 var(--glass-highlight);
+}
+
+/* Bar variant for topbars / docks: glass look, hairline edge only. */
+@utility glass-bar {
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  border-color: var(--glass-border);
+  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+}
+
+@utility glass-titlebar {
+  background-color: color-mix(in oklch, var(--glass-bg) 82%, var(--popover));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  border-color: var(--glass-border);
+  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+}
+
+/*
+ * Accessibility — reduced transparency.
+ * Some users (and OS "Reduce transparency" settings) need solid surfaces.
+ * Fall back to an opaque popover surface and drop the blur entirely.
+ */
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel,
+  .glass-window,
+  .glass-surface,
+  .glass-bar,
+  .glass-titlebar {
+    background: var(--popover);
+    border-color: var(--border);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Brand gradient text for hero headings. */
+@utility text-gradient-brand {
+  background-image: linear-gradient(
+    110deg,
+    var(--brand-gradient-from),
+    var(--brand-gradient-via) 55%,
+    var(--brand-gradient-to)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/*
+ * Accessibility — reduced motion.
+ * Global safety net: neutralise animations/transitions for users who ask
+ * for less motion (purposeful motion is the default, calm is the fallback).
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

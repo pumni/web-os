@@ -483,6 +483,73 @@ function checkLlmsTxt() {
   }
 }
 
+function collectFiles(relativeDir, extensions) {
+  const dir = resolveRel(relativeDir);
+  if (!fs.existsSync(dir)) return [];
+
+  const results = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const entryPath = path.join(dir, entry.name);
+    const entryRelativePath = relPath(entryPath);
+
+    if (entry.isDirectory()) {
+      results.push(...collectFiles(entryRelativePath, extensions));
+      continue;
+    }
+
+    if (entry.isFile() && extensions.some((extension) => entry.name.endsWith(extension))) {
+      results.push(entryRelativePath);
+    }
+  }
+
+  return results;
+}
+
+function checkDesignTokenBoundaries() {
+  const allowedTokenFiles = new Set([
+    'packages/ui/src/styles/tokens.css',
+    'packages/ui/src/styles/theme.css',
+  ]);
+  const files = [
+    ...collectFiles('apps/web/src', ['.css', '.ts', '.tsx']),
+    ...collectFiles('packages/ui/src', ['.css', '.ts', '.tsx']),
+  ];
+  const rawColorPattern = /oklch\(/g;
+  const primitiveVarPattern = /var\(--(?:indigo|violet|neutral|red|emerald|amber)-/g;
+
+  for (const relativePath of files) {
+    if (allowedTokenFiles.has(relativePath)) continue;
+
+    const content = readFile(relativePath);
+    for (const pattern of [rawColorPattern, primitiveVarPattern]) {
+      pattern.lastIndex = 0;
+      let match;
+      while ((match = pattern.exec(content)) !== null) {
+        reportError(
+          `Design token boundary violation in ${relativePath}:${lineNumber(content, match.index)} -> ${match[0]}`,
+        );
+      }
+    }
+  }
+}
+
+function checkUiPackageBoundaries() {
+  const files = collectFiles('packages/ui/src', ['.ts', '.tsx']);
+  const forbiddenImportPattern =
+    /(?:from\s+['"]|import\s*\(\s*['"])(@\/|server-only|@pumni\/(?:auth|supabase|env|features|validators|config|test-utils))/g;
+
+  for (const relativePath of files) {
+    const content = readFile(relativePath);
+    forbiddenImportPattern.lastIndex = 0;
+    let match;
+    while ((match = forbiddenImportPattern.exec(content)) !== null) {
+      reportError(
+        `@pumni/ui boundary violation in ${relativePath}:${lineNumber(content, match.index)} -> ${match[1]}`,
+      );
+    }
+  }
+}
+
 console.log('Running AI context validation...');
 
 checkRequiredFiles();
@@ -502,6 +569,8 @@ checkRuleInventory();
 checkPackageScripts();
 checkAiIgnoreCoverage();
 checkLlmsTxt();
+checkDesignTokenBoundaries();
+checkUiPackageBoundaries();
 checkSecretsIntegration();
 
 if (errors > 0) {

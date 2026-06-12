@@ -1,0 +1,87 @@
+/*
+ * Pumni OS — Tier 1: Primitive tokens
+ * ------------------------------------
+ * Raw, context-free values in OKLCH (perceptually uniform).
+ * DO NOT consume these directly in components — go through the semantic
+ * layer in `theme.css`. These exist only to be referenced by aliases.
+ */
+
+:root {
+  /* --- Brand: Indigo --- */
+  --indigo-50: oklch(0.962 0.018 272.314);
+  --indigo-100: oklch(0.93 0.034 272.788);
+  --indigo-200: oklch(0.87 0.065 274.039);
+  --indigo-300: oklch(0.785 0.115 274.713);
+  --indigo-400: oklch(0.673 0.182 276.935);
+  --indigo-500: oklch(0.585 0.233 277.117);
+  --indigo-600: oklch(0.511 0.262 276.966);
+  --indigo-700: oklch(0.457 0.24 277.023);
+  --indigo-800: oklch(0.398 0.195 277.366);
+  --indigo-900: oklch(0.359 0.144 278.697);
+  --indigo-950: oklch(0.257 0.09 281.288);
+
+  /* --- Brand accent: Violet --- */
+  --violet-300: oklch(0.811 0.111 293.571);
+  --violet-400: oklch(0.702 0.183 293.541);
+  --violet-500: oklch(0.606 0.25 292.717);
+  --violet-600: oklch(0.541 0.281 293.009);
+
+  /* --- Neutrals: Slate --- */
+  --neutral-0: oklch(1 0 0);
+  --neutral-50: oklch(0.984 0.003 247.858);
+  --neutral-100: oklch(0.968 0.007 247.896);
+  --neutral-200: oklch(0.929 0.013 255.508);
+  --neutral-300: oklch(0.869 0.022 252.894);
+  --neutral-400: oklch(0.704 0.04 256.788);
+  --neutral-500: oklch(0.554 0.046 257.417);
+  --neutral-600: oklch(0.446 0.043 257.281);
+  --neutral-700: oklch(0.372 0.044 257.287);
+  --neutral-800: oklch(0.279 0.041 260.031);
+  --neutral-900: oklch(0.208 0.042 265.755);
+  --neutral-950: oklch(0.129 0.042 264.695);
+  --neutral-1000: oklch(0 0 0);
+
+  /* --- Status --- */
+  --red-400: oklch(0.704 0.191 22.216);
+  --red-500: oklch(0.637 0.237 25.331);
+  --red-600: oklch(0.577 0.245 27.325);
+  --emerald-400: oklch(0.765 0.177 163.223);
+  --emerald-500: oklch(0.696 0.17 162.48);
+  --emerald-600: oklch(0.596 0.145 163.225);
+  --amber-400: oklch(0.828 0.189 84.429);
+  --amber-500: oklch(0.769 0.188 70.08);
+
+  /* --- Radius scale --- */
+  --radius-base: 0.625rem; /* 10px — slightly softer than legacy 8px */
+
+  /* --- Glass blur (kept in the GPU-friendly 8–15px range) --- */
+  --blur-glass-sm: 8px;
+  --blur-glass: 12px;
+  --blur-glass-lg: 16px;
+
+  /* --- Elevation shadows (tuned for floating glass layers) --- */
+  --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+  --shadow-2: 0 4px 12px -2px oklch(0 0 0 / 0.12), 0 2px 4px -2px oklch(0 0 0 / 0.08);
+  --shadow-glass: 0 8px 32px -8px oklch(0.257 0.09 281.288 / 0.35), 0 2px 8px -2px oklch(0 0 0 / 0.15);
+  /* Brand-tinted glow for floating glass — gives surfaces a cinematic halo */
+  --shadow-glass-glow: 0 16px 50px -12px oklch(0.585 0.233 277.117 / 0.45),
+    0 8px 24px -8px oklch(0 0 0 / 0.25);
+
+  /* --- Z-index: OS layering --- */
+  --z-base: 0;
+  --z-window: 100;
+  --z-window-active: 110;
+  --z-dock: 800;
+  --z-topbar: 850;
+  --z-overlay: 900;
+  --z-modal: 1000;
+  --z-command: 1100;
+  --z-toast: 1200;
+
+  /* --- Motion --- */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}

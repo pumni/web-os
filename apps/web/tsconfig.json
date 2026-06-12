@@ -7,6 +7,8 @@
       "@/*": ["./src/*"],
       "@pumni/ui": ["../../packages/ui/src/index.ts"],
       "@pumni/env": ["../../packages/env/src/index.ts"],
+      "@pumni/env/client": ["../../packages/env/src/client.ts"],
+      "@pumni/env/server": ["../../packages/env/src/server.ts"],
       "@pumni/auth": ["../../packages/auth/src/index.ts"],
       "@pumni/supabase": ["../../packages/supabase/src/index.ts"],
       "@pumni/supabase/browser": ["../../packages/supabase/src/browser.ts"],

@@ -1,5 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
-import { clientEnv } from "@pumni/env";
+import { clientEnv } from "@pumni/env/client";
 import type { Database } from "./types";
 
 export function createSupabaseBrowserClient() {

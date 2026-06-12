@@ -6,8 +6,7 @@ import { profileSchema, type ProfileInput } from "@pumni/validators";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { updateProfile } from "./actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button, Input } from "@pumni/ui";
 import {
   Form,
   FormControl,
@@ -16,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@pumni/ui";
 
 type ProfileFormProps = {
   defaultValues: {

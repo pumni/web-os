@@ -3,7 +3,9 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
-      "@pumni/env": ["../env/src/index.ts"]
+      "@pumni/env": ["../env/src/index.ts"],
+      "@pumni/env/client": ["../env/src/client.ts"],
+      "@pumni/env/server": ["../env/src/server.ts"]
     }
   },
   "include": ["src/**/*"]

@@ -2,14 +2,16 @@
 
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
 import {
+  Button,
+  Card,
+  CardContent,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@pumni/ui";
 
 const themeOptions = [
   { value: "system", label: "System", icon: MonitorIcon },
@@ -23,7 +25,7 @@ export default function AppearanceSettingsPage() {
   const SelectedIcon = selectedTheme.icon;
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">Appearance</h1>
         <p className="text-sm text-muted-foreground">
@@ -31,35 +33,37 @@ export default function AppearanceSettingsPage() {
         </p>
       </div>
 
-      <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-6 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h2 className="text-base font-medium text-card-foreground">Theme</h2>
-          <p className="text-sm text-muted-foreground">Choose how the interface is displayed.</p>
-        </div>
+      <Card>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h2 className="text-base font-medium text-card-foreground">Theme</h2>
+            <p className="text-sm text-muted-foreground">Choose how the interface is displayed.</p>
+          </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full justify-start sm:w-36">
-              <SelectedIcon className="size-4" />
-              {selectedTheme.label}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-36">
-            <DropdownMenuRadioGroup value={selectedTheme.value} onValueChange={setTheme}>
-              {themeOptions.map((option) => {
-                const Icon = option.icon;
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-full justify-start sm:w-36">
+                <SelectedIcon className="size-4" />
+                {selectedTheme.label}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-36">
+              <DropdownMenuRadioGroup value={selectedTheme.value} onValueChange={setTheme}>
+                {themeOptions.map((option) => {
+                  const Icon = option.icon;
 
-                return (
-                  <DropdownMenuRadioItem key={option.value} value={option.value}>
-                    <Icon className="size-4" />
-                    {option.label}
-                  </DropdownMenuRadioItem>
-                );
-              })}
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </section>
+                  return (
+                    <DropdownMenuRadioItem key={option.value} value={option.value}>
+                      <Icon className="size-4" />
+                      {option.label}
+                    </DropdownMenuRadioItem>
+                  );
+                })}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardContent>
+      </Card>
     </div>
   );
 }

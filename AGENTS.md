@@ -71,6 +71,7 @@ Start with `docs/ai/index.md`, then load only task-relevant canonical files:
 - Server/Client boundary: `docs/conventions/server-client-boundary.md`
 - Data fetching (Server Components / Query / Zustand): `docs/conventions/data-fetching.md`
 - Feature module layout: `docs/conventions/feature-module.md`
+- Design system (OKLCH tokens, Liquid Glass, `@pumni/ui`): `docs/conventions/design-system.md`
 - Supabase / RLS / keys: `docs/conventions/supabase-security.md`
 - Testing scope & commands: `docs/conventions/testing.md`
 - Quality gates: `docs/quality-gates.md`

@@ -18,8 +18,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signInAction, type AuthFormState } from "@/app/(public)/auth-actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button, Input } from "@pumni/ui";
 import {
   Card,
   CardContent,
@@ -27,7 +26,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@pumni/ui";
 
 const VIDEO_ID = "bp4_7T9J6Fg";
 
