@@ -17,6 +17,8 @@
     "ai:secrets": "bun scripts/check-secrets.mjs",
     "ai:review:static": "bun scripts/check-review-gate-rules.mjs",
     "ai:eval": "bun scripts/run-ai-evals.mjs",
+    "ai:local": "bun run ai:check && bun run typecheck",
+    "ai:premerge": "bun run ai:check && bun run ai:eval && bun run lint && bun run typecheck && bun run test && bun run build",
     "clean": "git clean -xdf node_modules .next dist .turbo"
   },
   "devDependencies": {

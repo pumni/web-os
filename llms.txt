@@ -4,6 +4,11 @@
 /AGENTS.md
 /docs/ai/index.md
 /apps/web/AGENTS.md
+/docs/ai/agent-behavior.md
+/docs/ai/prompt-playbook.md
+/docs/ai/context-system-overview.md
+/docs/ai/context-maintenance.md
+/docs/ai/golden-examples.md
 /docs/architecture/overview.md
 /docs/conventions/server-client-boundary.md
 /docs/conventions/data-fetching.md
