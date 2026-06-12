@@ -81,3 +81,19 @@ or `actions.ts`/`queries.ts` (`docs/conventions/feature-module.md`).
 
 ❌ `try { await save(); } catch (e) {}` in `actions.ts`/`queries.ts`.
 ✅ Throw, return an explicit failure, or log before continuing.
+
+## 10. Next.js 16 cache invalidation
+
+❌ `revalidateTag('profile')`
+✅ `revalidateTag('profile', 'max')` for stale-while-revalidate, or
+`updateTag('profile')` inside Server Actions when users must read their own
+writes immediately.
+
+## 11. Instant navigation exports
+
+❌ Adding `export const unstable_instant` to a `"use client"` route file.
+✅ Export it only from Server Component route segments that should be validated
+for instant navigation. Protected layouts should either put auth behind a local
+Suspense boundary with a static fallback shell, or use
+`export const unstable_instant = false` if they intentionally cannot be instant.
+Never render protected children in the fallback shell before auth resolves.

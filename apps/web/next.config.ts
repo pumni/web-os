@@ -8,8 +8,6 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   experimental: {
     staleTimes: { static: 180, dynamic: 30 },
-    turbopackFileSystemCacheForDev: true,
-    optimizePackageImports: ["lucide-react"],
   },
 };
 
