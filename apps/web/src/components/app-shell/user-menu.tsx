@@ -17,6 +17,7 @@ import {
 } from "@pumni/ui";
 import { LogOut, User as UserIcon, Settings } from "lucide-react";
 import { toast } from "sonner";
+import * as React from "react";
 
 type UserMenuProps = {
   user: User;
@@ -25,8 +26,11 @@ type UserMenuProps = {
 export function UserMenu({ user }: UserMenuProps) {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
+  const [isSigningOut, setIsSigningOut] = React.useState(false);
 
   const handleSignOut = async () => {
+    if (isSigningOut) return;
+    setIsSigningOut(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
@@ -38,18 +42,29 @@ export function UserMenu({ user }: UserMenuProps) {
       router.refresh();
     } catch {
       toast.error("Failed to sign out.");
+    } finally {
+      setIsSigningOut(false);
     }
   };
 
   const email = user.email ?? "";
   const initial = email ? email[0]?.toUpperCase() : "U";
+  const avatarUrl =
+    typeof user.user_metadata["avatar_url"] === "string"
+      ? user.user_metadata["avatar_url"]
+      : undefined;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="relative rounded-full p-0"
+          aria-label="Open user menu"
+        >
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.user_metadata["avatar_url"]} alt={email} />
+            <AvatarImage src={avatarUrl} alt={email} />
             <AvatarFallback>{initial}</AvatarFallback>
           </Avatar>
         </Button>
@@ -74,11 +89,15 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={handleSignOut}
+          disabled={isSigningOut}
+          onSelect={(event) => {
+            event.preventDefault();
+            void handleSignOut();
+          }}
           className="text-destructive focus:text-destructive-foreground focus:bg-destructive"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Sign Out</span>
+          <span>{isSigningOut ? "Signing out..." : "Sign Out"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

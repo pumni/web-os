@@ -1,15 +1,8 @@
 /**
- * Animated mesh-gradient wallpaper behind the OS shell. Decorative only
- * (aria-hidden); motion freezes under prefers-reduced-motion. Styles live in
- * `@pumni/ui/styles/desktop.css`.
+ * Calm, near-flat app backdrop: the neutral page colour with a couple of very
+ * faint static brand glows near the top (styles in
+ * `@pumni/ui/styles/desktop.css`). Decorative only (aria-hidden).
  */
 export function DesktopBackground() {
-  return (
-    <div aria-hidden className="os-desktop">
-      <div className="os-blob os-blob-1" />
-      <div className="os-blob os-blob-2" />
-      <div className="os-blob os-blob-3" />
-      <div className="os-blob os-blob-4" />
-    </div>
-  );
+  return <div aria-hidden className="os-desktop" />;
 }

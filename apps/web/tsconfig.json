@@ -2,6 +2,9 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "preserve",
+    // Relaxed from the strict base (`tsconfig.base.json` enables it): Next.js
+    // generated route/prop types are not exactOptionalPropertyTypes-clean.
+    // Library packages keep it enabled — this override is app-local on purpose.
     "exactOptionalPropertyTypes": false,
     "paths": {
       "@/*": ["./src/*"],

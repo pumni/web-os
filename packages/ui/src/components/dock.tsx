@@ -12,7 +12,10 @@ function Dock({ className, ...props }: React.ComponentProps<"nav">) {
       data-slot="dock"
       aria-label="Application dock"
       style={{ zIndex: "var(--z-dock)" }}
-      className={cn("glass-bar flex items-center gap-1 rounded-2xl border p-1.5", className)}
+      className={cn(
+        "glass-bar relative flex items-center gap-1 overflow-visible rounded-2xl border p-1.5",
+        className,
+      )}
       {...props}
     />
   );

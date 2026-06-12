@@ -38,22 +38,24 @@
   --radius: var(--radius-base);
 
   /* Liquid Glass surfaces (translucent fill doubles as the contrast scrim) */
-  --glass-bg: oklch(1 0 0 / 0.62);
-  --glass-border: oklch(1 0 0 / 0.5);
-  --glass-highlight: oklch(1 0 0 / 0.6);
+  --glass-bg: oklch(1 0 0 / 0.5);
+  --glass-border: oklch(0.129 0.042 264.695 / 0.62);
+  --glass-highlight: oklch(1 0 0 / 0.65);
+  /* Luminous glass rim — translucent white hairline that catches the light */
+  --glass-edge: oklch(1 0 0 / 0.6);
   --glass-scrim: oklch(0.984 0.003 247.858 / 0.55);
   --glass-blur: var(--blur-glass);
 
   /* Brand expression */
   --brand-gradient-from: var(--indigo-500);
   --brand-gradient-via: var(--violet-500);
-  --brand-gradient-to: oklch(0.68 0.26 328);
+  --brand-gradient-to: oklch(0.62 0.13 300);
 
   /* OS desktop ambience */
   --desktop-blob-primary: var(--indigo-500);
   --desktop-blob-secondary: var(--violet-500);
   --desktop-blob-accent: var(--brand-gradient-to);
-  --desktop-blob-cyan: oklch(0.82 0.13 200);
+  --desktop-blob-cyan: oklch(0.8 0.06 235);
 
   /* Window controls */
   --window-control-close: var(--red-500);
@@ -91,22 +93,23 @@
   --ring: var(--indigo-400);
 
   /* Dark glass: darker translucent fill + brighter hairline border */
-  --glass-bg: oklch(0.208 0.042 265.755 / 0.55);
-  --glass-border: oklch(1 0 0 / 0.12);
-  --glass-highlight: oklch(1 0 0 / 0.08);
+  --glass-bg: oklch(0.208 0.042 265.755 / 0.45);
+  --glass-border: oklch(1 0 0 / 0.4);
+  --glass-highlight: oklch(1 0 0 / 0.3);
+  --glass-edge: oklch(1 0 0 / 0.24);
   --glass-scrim: oklch(0.129 0.042 264.695 / 0.5);
   --glass-blur: var(--blur-glass);
 
   /* Brand expression */
   --brand-gradient-from: var(--indigo-400);
   --brand-gradient-via: var(--violet-400);
-  --brand-gradient-to: oklch(0.74 0.2 328);
+  --brand-gradient-to: oklch(0.7 0.12 300);
 
   /* OS desktop ambience */
   --desktop-blob-primary: var(--indigo-500);
   --desktop-blob-secondary: var(--violet-500);
   --desktop-blob-accent: var(--brand-gradient-to);
-  --desktop-blob-cyan: oklch(0.76 0.12 200);
+  --desktop-blob-cyan: oklch(0.74 0.06 235);
 
   /* Window controls */
   --window-control-close: var(--red-500);

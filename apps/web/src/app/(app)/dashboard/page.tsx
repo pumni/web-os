@@ -41,10 +41,10 @@ export default async function DashboardPage() {
           return (
             <Card
               key={card.title}
-              className="gap-4 transition-all duration-(--duration-base) hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
+              className="gap-4 transition-all duration-(--duration-base) hover:-translate-y-1 hover:[box-shadow:var(--shadow-glass-glow),inset_0_1px_1px_-0.5px_var(--glass-highlight)]"
             >
               <CardHeader>
-                <div className="flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/30">
+                <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-(--brand-gradient-from) to-(--brand-gradient-via) text-primary-foreground shadow-sm ring-1 ring-white/15">
                   <Icon className="size-5" />
                 </div>
                 <CardTitle>{card.title}</CardTitle>

@@ -1,15 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
+import type { ComponentType } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, Settings, Palette } from "lucide-react";
+import { LayoutDashboard, User, Settings, Palette, ComponentIcon } from "lucide-react";
 
-const navItems = [
+const navItems: ReadonlyArray<{
+  href: Route;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+}> = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/settings/profile", label: "Profile", icon: User },
   { href: "/settings/account", label: "Account", icon: Settings },
   { href: "/settings/appearance", label: "Appearance", icon: Palette },
+  { href: "/design-system" as Route, label: "Design System", icon: ComponentIcon },
 ] as const;
 
 export function AppSidebar() {

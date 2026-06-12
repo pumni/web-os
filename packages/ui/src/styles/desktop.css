@@ -1,10 +1,10 @@
 /*
  * Pumni OS — Desktop ambience
  * ----------------------------
- * The animated mesh-gradient "wallpaper" that lives behind the OS shell so the
- * Liquid Glass surfaces have something vivid to refract. Plus dock
- * magnification. Motion is frozen automatically under prefers-reduced-motion
- * (global rule in glass.css).
+ * A calm, near-flat backdrop: the neutral page colour plus a couple of very
+ * faint, STATIC brand glows near the top (Linear / Stripe style). Enough for
+ * the Liquid Glass surfaces to pick up a little colour without a loud animated
+ * wallpaper. Plus dock magnification.
  */
 
 .os-desktop {
@@ -13,95 +13,32 @@
   z-index: 0;
   overflow: hidden;
   background-color: var(--background);
+  background-image:
+    radial-gradient(
+      58% 48% at 50% -8%,
+      color-mix(in oklch, var(--desktop-blob-primary) 14%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      36% 36% at 88% 2%,
+      color-mix(in oklch, var(--desktop-blob-secondary) 9%, transparent),
+      transparent 65%
+    );
 }
 
-/* Uniform veil tames blob intensity so foreground text stays legible. */
-.os-desktop::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-color: color-mix(in oklch, var(--background) 32%, transparent);
-}
-
-.os-blob {
-  position: absolute;
-  width: 44rem;
-  height: 44rem;
-  border-radius: 9999px;
-  filter: blur(90px);
-  opacity: 0.55;
-  will-change: transform;
-}
-
-.dark .os-blob {
-  opacity: 0.42;
-}
-
-.os-blob-1 {
-  top: -12rem;
-  left: -8rem;
-  background: var(--desktop-blob-primary);
-  animation: os-drift-1 22s var(--ease-in-out) infinite alternate;
-}
-
-.os-blob-2 {
-  top: -8rem;
-  right: -10rem;
-  background: var(--desktop-blob-secondary);
-  animation: os-drift-2 26s var(--ease-in-out) infinite alternate;
-}
-
-.os-blob-3 {
-  bottom: -14rem;
-  left: 28%;
-  background: var(--desktop-blob-accent);
-  animation: os-drift-3 30s var(--ease-in-out) infinite alternate;
-}
-
-.os-blob-4 {
-  top: 30%;
-  right: 18%;
-  width: 32rem;
-  height: 32rem;
-  background: var(--desktop-blob-cyan);
-  opacity: 0.4;
-  animation: os-drift-4 34s var(--ease-in-out) infinite alternate;
-}
-
-@keyframes os-drift-1 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(9rem, 5rem, 0) scale(1.18);
-  }
-}
-
-@keyframes os-drift-2 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1.05);
-  }
-  to {
-    transform: translate3d(-7rem, 6rem, 0) scale(1);
-  }
-}
-
-@keyframes os-drift-3 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(6rem, -5rem, 0) scale(1.2);
-  }
-}
-
-@keyframes os-drift-4 {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  to {
-    transform: translate3d(-6rem, -4rem, 0) scale(1.1);
-  }
+/* Dark surfaces swallow colour, so let the glows read a touch stronger. */
+.dark .os-desktop {
+  background-image:
+    radial-gradient(
+      58% 48% at 50% -8%,
+      color-mix(in oklch, var(--desktop-blob-primary) 20%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      36% 36% at 88% 2%,
+      color-mix(in oklch, var(--desktop-blob-secondary) 13%, transparent),
+      transparent 65%
+    );
 }
 
 /*
@@ -119,4 +56,13 @@
 [data-slot="dock-item"]:hover + [data-slot="dock-item"],
 [data-slot="dock-item"]:has(+ [data-slot="dock-item"]:hover) {
   transform: translateY(-0.3rem) scale(1.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="dock-item"],
+  [data-slot="dock-item"]:hover,
+  [data-slot="dock-item"]:hover + [data-slot="dock-item"],
+  [data-slot="dock-item"]:has(+ [data-slot="dock-item"]:hover) {
+    transform: none;
+  }
 }

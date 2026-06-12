@@ -1,5 +1,7 @@
+"use client";
+
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot } from "radix-ui";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "../lib/cn";
@@ -39,8 +41,8 @@ function GlassSurface({
 }: React.ComponentProps<"div"> &
   VariantProps<typeof glassSurfaceVariants> & {
     asChild?: boolean;
-  }) {
-  const Comp = asChild ? Slot : "div";
+}) {
+  const Comp = asChild ? Slot.Root : "div";
 
   return (
     <Comp

@@ -1,10 +1,11 @@
 "use client";
 
 import * as React from "react";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { LayoutDashboard, Palette, SearchIcon, Settings, User } from "lucide-react";
+import { ComponentIcon, LayoutDashboard, Palette, SearchIcon, Settings, User } from "lucide-react";
 
-import { CommandPalette, type CommandItem } from "@/components/ui/command-palette";
+import { CommandPalette, type CommandItem } from "@pumni/ui";
 
 /**
  * Wires the command palette into the OS shell: a ⌘K / Ctrl+K hotkey plus a
@@ -53,6 +54,13 @@ export function OsCommand() {
         keywords: "theme dark light mode",
         icon: <Palette />,
         onSelect: () => router.push("/settings/appearance"),
+      },
+      {
+        id: "design-system",
+        label: "Design System",
+        keywords: "tokens components qa visual",
+        icon: <ComponentIcon />,
+        onSelect: () => router.push("/design-system" as Route),
       },
     ],
     [router],

@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Tailwind v4 auto-detects sources only inside this app. `@pumni/ui` lives in a
+   sibling workspace package, so its component class names (glass-panel, Card
+   layout, dropdown/search animations, …) must be registered explicitly or they
+   get purged and those components render unstyled. */
+@source "../../../../packages/ui/src";
+
 /* Pumni OS design system — 3-tier tokens + Liquid Glass (see docs/conventions/design-system.md) */
 @import "@pumni/ui/styles/tokens.css";
 @import "@pumni/ui/styles/theme.css";

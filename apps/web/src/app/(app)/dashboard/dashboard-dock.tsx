@@ -17,7 +17,10 @@ export function DashboardDock() {
   const pathname = usePathname();
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 flex justify-center px-4">
+    <div
+      className="pointer-events-none fixed inset-x-0 flex justify-center px-4"
+      style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))", zIndex: "var(--z-dock)" }}
+    >
       <Dock className="pointer-events-auto">
         {dockItems.map((item) => {
           const Icon = item.icon;

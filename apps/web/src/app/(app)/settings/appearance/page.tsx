@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
@@ -19,9 +20,28 @@ const themeOptions = [
   { value: "dark", label: "Dark", icon: MoonIcon },
 ] as const;
 
+function subscribeToClientReady() {
+  return () => {};
+}
+
+function getClientReadySnapshot() {
+  return true;
+}
+
+function getServerReadySnapshot() {
+  return false;
+}
+
 export default function AppearanceSettingsPage() {
   const { theme = "system", setTheme } = useTheme();
-  const selectedTheme = themeOptions.find((option) => option.value === theme) ?? themeOptions[0];
+  const mounted = React.useSyncExternalStore(
+    subscribeToClientReady,
+    getClientReadySnapshot,
+    getServerReadySnapshot,
+  );
+
+  const selectedTheme =
+    themeOptions.find((option) => option.value === (mounted ? theme : "system")) ?? themeOptions[0];
   const SelectedIcon = selectedTheme.icon;
 
   return (
@@ -48,7 +68,7 @@ export default function AppearanceSettingsPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-36">
-              <DropdownMenuRadioGroup value={selectedTheme.value} onValueChange={setTheme}>
+              <DropdownMenuRadioGroup value={selectedTheme.value} onValueChange={(value) => setTheme(value)}>
                 {themeOptions.map((option) => {
                   const Icon = option.icon;
 

@@ -4,8 +4,6 @@ import * as React from "react";
 import { SearchIcon } from "lucide-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 
-import { cn } from "@/lib/utils";
-
 export type CommandItem = {
   id: string;
   label: string;
@@ -24,16 +22,11 @@ type CommandPaletteProps = {
   emptyMessage?: string;
 };
 
-/**
- * Command palette (⌘K-style) built on Radix Dialog — focus trap + ESC come for
- * free; arrow/Enter navigation and filtering are handled here. Glass surface,
- * zero extra dependencies. Caller owns open state (e.g. a global hotkey).
- */
 function CommandPalette({
   open,
   onOpenChange,
   items,
-  placeholder = "Type a command or search…",
+  placeholder = "Type a command or search...",
   emptyMessage = "No results found.",
 }: CommandPaletteProps) {
   const [query, setQuery] = React.useState("");
@@ -56,7 +49,6 @@ function CommandPalette({
     onOpenChange(next);
   }
 
-  // Keep the active item in view.
   React.useEffect(() => {
     listRef.current
       ?.querySelector<HTMLElement>(`[data-index="${activeIndex}"]`)
@@ -66,7 +58,7 @@ function CommandPalette({
   function select(index: number) {
     const item = filtered[index];
     if (!item) return;
-    onOpenChange(false);
+    handleOpenChange(false);
     item.onSelect();
   }
 
@@ -106,8 +98,8 @@ function CommandPalette({
             <input
               autoFocus
               value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
+              onChange={(event) => {
+                setQuery(event.target.value);
                 setActiveIndex(0);
               }}
               placeholder={placeholder}
@@ -142,9 +134,7 @@ function CommandPalette({
                   data-active={index === activeIndex}
                   onClick={() => select(index)}
                   onMouseMove={() => setActiveIndex(index)}
-                  className={cn(
-                    "flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-foreground outline-none transition-colors data-[active=true]:bg-accent data-[active=true]:text-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground",
-                  )}
+                  className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-foreground outline-none transition-colors data-[active=true]:bg-accent data-[active=true]:text-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground"
                 >
                   {item.icon}
                   <span className="flex-1 truncate">{item.label}</span>

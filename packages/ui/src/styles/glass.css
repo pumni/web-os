@@ -12,69 +12,66 @@
  */
 
 @utility glass-panel {
-  /* Translucent fill (padding-box) + gradient hairline (border-box) for a
-     refractive Liquid Glass edge that keeps its border-radius. */
-  background:
-    linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
-    linear-gradient(
-        135deg,
-        var(--glass-highlight),
-        color-mix(in oklch, var(--glass-border) 60%, transparent) 45%,
-        transparent 80%
-      )
-      border-box;
-  border: 1px solid transparent;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
-  /* brand-tinted glow for depth + inset top hairline for the "liquid" sheen */
-  box-shadow: var(--shadow-glass), inset 0 1px 0 0 var(--glass-highlight);
+  /* Frosted fill + ONE translucent `--glass-edge` hairline. The float/depth is
+     carried by the layered drop shadow — no extra edge lines that read as a
+     thick or double-coloured border. */
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-edge);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  /* layered drop shadow for float + a soft inner top sheen (no hard 2nd line) */
+  box-shadow: var(--shadow-glass), inset 0 1px 1px -0.5px var(--glass-highlight);
 }
 
 @utility glass-window {
-  background:
-    linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
-    linear-gradient(
-        135deg,
-        var(--glass-highlight),
-        color-mix(in oklch, var(--glass-border) 60%, transparent) 45%,
-        transparent 80%
-      )
-      border-box;
-  border: 1px solid transparent;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
-  box-shadow: var(--shadow-glass-glow), inset 0 1px 0 0 var(--glass-highlight);
+  /* Frosted fill + ONE translucent `--glass-edge` hairline. The float/depth is
+     carried by the layered drop shadow — no extra edge lines that read as a
+     thick or double-coloured border. */
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-edge);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  box-shadow: var(--shadow-glass-glow), inset 0 1px 1px -0.5px var(--glass-highlight);
+}
+
+.glass-window[data-active="false"] {
+  background: var(--popover);
+  border-color: var(--border);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: var(--shadow-glass-glow-soft), inset 0 1px 1px -0.5px var(--glass-highlight);
+}
+
+.glass-window[data-active="false"] .glass-titlebar {
+  background: color-mix(in oklch, var(--popover) 92%, var(--muted));
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 @utility glass-surface {
-  background:
-    linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
-    linear-gradient(
-        135deg,
-        var(--glass-highlight),
-        color-mix(in oklch, var(--glass-border) 60%, transparent) 45%,
-        transparent 80%
-      )
-      border-box;
-  border: 1px solid transparent;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
-  box-shadow: var(--shadow-glass-glow), inset 0 1px 0 0 var(--glass-highlight);
+  /* Frosted fill + ONE translucent `--glass-edge` hairline. The float/depth is
+     carried by the layered drop shadow — no extra edge lines that read as a
+     thick or double-coloured border. */
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-edge);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  box-shadow: var(--shadow-glass-glow-soft), inset 0 1px 1px -0.5px var(--glass-highlight);
 }
 
 /* Bar variant for topbars / docks: glass look, hairline edge only. */
 @utility glass-bar {
   background-color: var(--glass-bg);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   border-color: var(--glass-border);
   box-shadow: inset 0 1px 0 0 var(--glass-highlight);
 }
 
 @utility glass-titlebar {
   background-color: color-mix(in oklch, var(--glass-bg) 82%, var(--popover));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   border-color: var(--glass-border);
   box-shadow: inset 0 1px 0 0 var(--glass-highlight);
 }
@@ -95,6 +92,86 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
+}
+
+/*
+ * Browser fallback — backdrop-filter reached modern baseline recently, so keep
+ * glass layers readable on older browsers by using the opaque surface path.
+ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-panel,
+  .glass-window,
+  .glass-surface,
+  .glass-bar,
+  .glass-titlebar {
+    background: var(--popover);
+    border-color: var(--border);
+    box-shadow: var(--shadow-2);
+  }
+}
+
+/*
+ * Accessibility — higher contrast.
+ * Keep the glass role but raise the translucent fill toward the opaque
+ * popover surface and use a solid semantic border for clearer edges.
+ */
+@media (prefers-contrast: more) {
+  .glass-panel,
+  .glass-window,
+  .glass-surface,
+  .glass-bar,
+  .glass-titlebar {
+    --glass-bg: color-mix(in oklch, var(--popover) 92%, transparent);
+
+    border-color: var(--border);
+  }
+}
+
+/*
+ * Accessibility — Windows forced colors.
+ * System colors preserve visible surfaces and focus even when gradients,
+ * shadows, and Tailwind ring box-shadows are ignored.
+ */
+@media (forced-colors: active) {
+  .glass-panel,
+  .glass-window,
+  .glass-surface,
+  .glass-bar,
+  .glass-titlebar {
+    background: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  [data-slot="button"]:focus-visible,
+  [data-slot="input"]:focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
+}
+
+.glass-a11y-preview[data-transparency="reduced"] .glass-panel,
+.glass-a11y-preview[data-transparency="reduced"] .glass-window,
+.glass-a11y-preview[data-transparency="reduced"] .glass-surface,
+.glass-a11y-preview[data-transparency="reduced"] .glass-bar,
+.glass-a11y-preview[data-transparency="reduced"] .glass-titlebar {
+  background: var(--popover);
+  border-color: var(--border);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.glass-a11y-preview[data-contrast="more"] .glass-panel,
+.glass-a11y-preview[data-contrast="more"] .glass-window,
+.glass-a11y-preview[data-contrast="more"] .glass-surface,
+.glass-a11y-preview[data-contrast="more"] .glass-bar,
+.glass-a11y-preview[data-contrast="more"] .glass-titlebar {
+  --glass-bg: color-mix(in oklch, var(--popover) 92%, transparent);
+
+  border-color: var(--border);
 }
 
 /* Brand gradient text for hero headings. */

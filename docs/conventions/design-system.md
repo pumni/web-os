@@ -37,12 +37,12 @@ Apps consume semantic utilities (`bg-primary`, `text-muted-foreground`,
 | Token | Role |
 | --- | --- |
 | `background` / `foreground` | Page surface + default text |
-| `card` / `popover` (+ `-foreground`) | Raised solid surfaces |
+| `card` / `popover` (+ `-foreground`) | Raised surfaces (`Card` defaults to glass; `variant="solid"` for dense content) |
 | `primary` (+ `-foreground`) | Brand actions (Indigo) |
 | `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
 | `border` / `input` / `ring` | Hairlines, fields, focus ring |
-| `glass-bg` / `glass-border` / `glass-highlight` / `glass-scrim` / `glass-blur` | Liquid Glass surfaces |
+| `glass-bg` / `glass-border` / `glass-edge` / `glass-highlight` / `glass-scrim` / `glass-blur` | Liquid Glass surfaces (`glass-edge` = luminous rim) |
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
 | `window-control-*` | Window traffic-light controls |
@@ -53,8 +53,10 @@ and runtime utilities must consume semantic or component-scoped tokens instead.
 
 ## Liquid Glass — use with intent
 
-Glass is for **floating layers only**: topbar, dock, window titlebar, dialog,
-sheet, popover, command palette, toast. The flat shell/background stays opaque.
+Glass is for **floating layers and cards**: topbar, dock, window titlebar,
+dialog, sheet, popover, command palette, toast, and the default `Card` surface.
+Large background areas and the flat shell stay opaque. Use `Card`'s
+`variant="solid"` when content is dense or contrast-critical.
 
 - Apply the role-based utility that matches the layer: `.glass-bar`
   (topbars/docks/sidebar rails), `.glass-panel` (dialogs, sheets, popovers,
@@ -84,8 +86,8 @@ Components live in `packages/ui/src/components/` and are exported from
 
 - Current shared primitives include `Button`, `Card`, `Input`, `Label`,
   `Avatar`, `GlassSurface`, `Dock`, `Window`, `Dialog`, `DropdownMenu`,
-  `Sheet`, `Separator`, and `Skeleton`. Import them from `@pumni/ui`, not from
-  `apps/web/src/components/ui`.
+  `Sheet`, `Form`, `CommandPalette`, `Toaster`, `Separator`, and `Skeleton`.
+  Import them from `@pumni/ui`, not from `apps/web/src/components/ui`.
 - `cva` for variants; `data-slot` / `data-variant` attributes for styling hooks.
 - Merge classes with `cn()` (exported from `@pumni/ui`).
 - Build interactive primitives on Radix; keep them client-safe (no server-only
@@ -98,6 +100,31 @@ Components live in `packages/ui/src/components/` and are exported from
 - `@pumni/ui` is a pure UI package. It must not import app aliases (`@/`),
   `server-only`, Supabase, auth, env, validators, feature packages, or test
   utilities.
+
+### Optional: scaffold a standard primitive with the shadcn CLI
+
+`@pumni/ui` is hand-owned — `shadcn add` is **not** the source of truth, only a
+seed for *standard* registry primitives (Select, Tooltip, Popover, Tabs…). OS
+components (`Window`, `Dock`, `GlassSurface`, …) are always written by hand.
+
+`packages/ui/components.json` configures the CLI to drop files into this package
+(new-york, lucide, `@/` → `src/`). Run it **from inside the package** so it
+reads the local config and lands deps in `packages/ui/package.json`:
+
+```sh
+cd packages/ui && bunx --bun shadcn@latest add <primitive>
+```
+
+The generated file is a starting point, not finished. Before exporting it,
+**refactor it to house style** — this is mandatory, not optional:
+
+1. **Rewrite the `cn` import to relative** (`@/lib/cn` → `../lib/cn`). The CLI
+   emits the `@/` alias, but inside `@pumni/ui` that alias collides with the
+   app's `@/` at build time — the package rule above forbids it.
+2. Replace any inlined `oklch(...)`/primitive scales with semantic tokens.
+3. Keep `data-slot` / `data-variant` hooks; add the role-specific glass utility
+   if it is a floating layer.
+4. Add the export to `packages/ui/src/index.ts` (the barrel) by hand.
 
 Promote from `apps/web` to `@pumni/ui` only at a real reuse boundary (see
 `docs/conventions/feature-module.md`).
