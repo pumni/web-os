@@ -1,15 +1,22 @@
 "use client";
 
+import type { Route } from "next";
+import type { ComponentType } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Palette, Settings, User } from "lucide-react";
+import { LayoutDashboard, Palette, Settings, User, Music } from "lucide-react";
 
 import { Dock, DockItem } from "@pumni/ui";
 
-const dockItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/settings/profile", label: "Profile", icon: User },
-  { href: "/settings/account", label: "Account", icon: Settings },
-  { href: "/settings/appearance", label: "Appearance", icon: Palette },
+const dockItems: ReadonlyArray<{
+  href: Route;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+}> = [
+  { href: "/dashboard" as Route, label: "Dashboard", icon: LayoutDashboard },
+  { href: "/sky-player" as Route, label: "Sky Player", icon: Music },
+  { href: "/settings/profile" as Route, label: "Profile", icon: User },
+  { href: "/settings/account" as Route, label: "Account", icon: Settings },
+  { href: "/settings/appearance" as Route, label: "Appearance", icon: Palette },
 ] as const;
 
 export function DashboardDock() {

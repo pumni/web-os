@@ -7,6 +7,12 @@ import { cn } from "../lib/cn";
  * Card surface. `glass` (default) is the modern Liquid Glass treatment —
  * translucent frosted fill, hairline edge, layered depth. `solid` keeps the
  * opaque raised surface for dense, contrast-critical content.
+ *
+ * `interactive` opts a clickable card into CSS micro-feedback (hover lift +
+ * press depress, both `motion-safe`-gated). Leave it off for passive surfaces —
+ * a static card must not depress. This is the CSS counterpart to the JS
+ * `recipes.hoverLift`; reach for the recipe only when the card is already a
+ * `motion.*` element (e.g. inside a stagger).
  */
 const cardVariants = cva("flex flex-col gap-6 rounded-xl py-6 text-card-foreground", {
   variants: {
@@ -14,22 +20,28 @@ const cardVariants = cva("flex flex-col gap-6 rounded-xl py-6 text-card-foregrou
       glass: "glass-panel",
       solid: "border bg-card shadow-sm",
     },
+    interactive: {
+      true: "cursor-pointer transition-[transform,box-shadow] duration-[var(--duration-base)] ease-snappy motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)",
+      false: "",
+    },
   },
   defaultVariants: {
     variant: "glass",
+    interactive: false,
   },
 });
 
 function Card({
   className,
   variant,
+  interactive,
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof cardVariants>) {
   return (
     <div
       data-slot="card"
       data-variant={variant ?? "glass"}
-      className={cn(cardVariants({ variant }), className)}
+      className={cn(cardVariants({ variant, interactive }), className)}
       {...props}
     />
   );

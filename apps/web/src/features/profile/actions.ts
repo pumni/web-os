@@ -37,6 +37,18 @@ export async function updateProfile(input: ProfileInput): Promise<UpdateProfileR
     };
   }
 
+  // Synchronize auth user metadata so requireUser() returns updated data instantly
+  const { error: authError } = await supabase.auth.updateUser({
+    data: {
+      avatar_url: parsed.data.avatarUrl || null,
+      full_name: parsed.data.fullName || null,
+    },
+  });
+
+  if (authError) {
+    console.error("Failed to sync user metadata to auth:", authError.message);
+  }
+
   updateTag(`profile:${user.id}`);
 
   return { ok: true };

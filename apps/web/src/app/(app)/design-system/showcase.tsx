@@ -87,6 +87,9 @@ import {
   TooltipTrigger,
   Window,
   cn,
+  motion,
+  recipes,
+  useReducedMotion,
 } from "@pumni/ui";
 
 type DemoFormValues = {
@@ -126,6 +129,8 @@ export function DesignSystemShowcase() {
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [commandOpen, setCommandOpen] = React.useState(false);
   const [motionWindowOpen, setMotionWindowOpen] = React.useState(true);
+  const [staggerKey, setStaggerKey] = React.useState(0);
+  const shouldReduceMotion = useReducedMotion();
   const [previewTransparency, setPreviewTransparency] = React.useState<"standard" | "reduced">(
     "standard",
   );
@@ -658,6 +663,86 @@ export function DesignSystemShowcase() {
                   </Window>
                 )}
               </AnimatePresence>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Motion recipes</CardTitle>
+            <CardDescription>
+              Named JS gestures from <code>recipes</code> (@pumni/ui) for orchestration, plus the
+              CSS micro-feedback counterpart. Both gate on reduced-motion.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <motion.div
+                {...(shouldReduceMotion ? {} : recipes.hoverLift)}
+                className="cursor-default rounded-xl border border-border bg-card p-4"
+              >
+                <p className="text-sm font-medium text-card-foreground">hoverLift</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Hover to rise, press to settle. Snappy curve — for cards and tiles.
+                </p>
+              </motion.div>
+              <motion.button
+                type="button"
+                {...(shouldReduceMotion ? {} : recipes.pressScale)}
+                onClick={() => toast.info("pressScale tapped.")}
+                className="rounded-xl border border-border bg-primary p-4 text-left text-primary-foreground"
+              >
+                <p className="text-sm font-medium">pressScale</p>
+                <p className="mt-1 text-sm text-primary-foreground/80">
+                  Tap for a tactile depress on a motion-driven control.
+                </p>
+              </motion.button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-foreground">
+                  staggerContainer / staggerItem
+                </span>
+                <Button variant="outline" size="sm" onClick={() => setStaggerKey((key) => key + 1)}>
+                  Replay
+                </Button>
+              </div>
+              <motion.ul
+                key={staggerKey}
+                {...(shouldReduceMotion ? {} : recipes.staggerContainer)}
+                className="grid gap-2 sm:grid-cols-3"
+              >
+                {["Mount", "in", "sequence"].map((word) => (
+                  <motion.li
+                    key={word}
+                    {...(shouldReduceMotion ? {} : recipes.staggerItem)}
+                    className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground"
+                  >
+                    {word}
+                  </motion.li>
+                ))}
+              </motion.ul>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-sm font-medium text-foreground">
+                CSS micro-feedback (no motion dep)
+              </span>
+              <Card interactive>
+                <CardContent>
+                  <p className="text-sm font-medium text-card-foreground">
+                    interactive Card · Button press
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Hover lift and press depress ride <code>--press-scale</code>, gated by
+                    motion-safe — the CSS path for simple controls. Press any button above to feel
+                    the same token.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </CardContent>
         </Card>

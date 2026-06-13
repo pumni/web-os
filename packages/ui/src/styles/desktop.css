@@ -10,7 +10,10 @@
 .os-desktop {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  /* Sits behind in-flow app content so the shell wrapper needs no lifting
+     z-index of its own — that keeps all chrome + windows in one shared
+     stacking context where the --z-* scale orders them globally. */
+  z-index: var(--z-desktop, -1);
   overflow: hidden;
   background-color: var(--background);
   background-image:

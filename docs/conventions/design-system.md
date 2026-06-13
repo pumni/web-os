@@ -18,6 +18,24 @@ Token source of truth lives in `@pumni/ui`:
 
 These are imported once in `apps/web/src/app/globals.css`.
 
+## Anti-slop guardrails (read first)
+
+The fastest way to stay on-brand: these are the rules an agent breaks when it
+falls back to generic Tailwind. Each is enforced or explained in full below.
+
+| Don't (generic slop) | Do (Pumni) | Why |
+| --- | --- | --- |
+| `bg-neutral-900`, `text-white`, raw `oklch(...)` | Semantic utilities — `bg-card`, `text-muted-foreground` | `pumniNoRawColor` ESLint rule blocks it |
+| `bg-black/40` for scrims | `bg-overlay` | One owned scrim token, theme-aware |
+| `rounded-[14px]`, `rounded-2xl` everywhere | Named radius utilities off `--radius-base` | One personalizable knob, not magic px |
+| `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-[var(--duration-base)]` | Brand curves + owned timing |
+| Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
+| Glass on hero / page backgrounds | Glass only on floating layers; opaque shell | `backdrop-filter` is GPU-heavy |
+| Eyeballing contrast on glass/accents | Trust the gated tokens; verify 4.5:1 / 3:1 | `glass-contrast` test owns the cascade |
+
+This isn't taste-by-vibe: colour, radius, and contrast are enforced by ESLint +
+tests, so "on-brand" is a gate, not a guideline.
+
 ## Token tiers (do not exceed three)
 
 1. **Primitive** (`tokens.css`) — raw OKLCH values and scales (`--indigo-500`,
@@ -88,10 +106,24 @@ Type scale and motion are **owned tokens**, not borrowed Tailwind defaults.
   in CSS-driven transitions).
 - **JS animations** — the `motion` library reads timing from `lib/motion.ts`
   (`duration`, `easing`, `transition`, or `motionTokens`), a hand-kept mirror of
-  the CSS motion primitives. Change a curve in `tokens.css` → change it there too.
+  the CSS motion primitives. Change a curve in `tokens.css` → change it there too
+  (`apps/web/src/test/design-system/motion-tokens.test.ts` fails if the two drift).
   motion's JS animations are **not** silenced by the CSS reduced-motion media
   query, so motion components must call `useReducedMotion()` and degrade
   themselves (see `Window`).
+- **Micro-feedback is CSS, not JS.** Simple hover/press on a control is a CSS
+  transform gated by `motion-safe:`, not a motion dep. `Button` has a built-in
+  press depress; `Card` opts in via the `interactive` prop (hover lift + press).
+  Both ride the `--press-scale` token. Reach for JS only when you need
+  orchestration (stagger, presence) or the element is already a `motion.*`.
+- **Interaction recipes (JS)** — named house gestures composed from the tokens
+  above, exported from `@pumni/ui` as `recipes` (and on `motionTokens.recipes`).
+  Spread them onto a `motion.*` element instead of hand-rolling `whileHover`
+  numbers: `hoverLift` (card/tile rise), `pressScale` (button/icon press),
+  `staggerContainer` + `staggerItem` (list/grid entrance), `fadeRise` (content
+  enter/exit — wrap in `AnimatePresence`). They describe the full-energy path
+  only, so the component still gates with `useReducedMotion()` (same rule as
+  above).
 - **Presence / enter-exit** — `Window` is a `motion.section` with spring
   enter/exit; wrap a conditionally-rendered `Window` in `AnimatePresence`
   (re-exported from `@pumni/ui`, so apps don't add their own `motion` dep) to get
@@ -121,6 +153,44 @@ must match its parent's radius. The IntelliSense `suggestCanonicalClasses` hint
 can't resolve these `calc(var())` tokens — verify against this table, don't follow
 it blindly.
 
+## Stacking / z-index (one owned scale)
+
+There is **one** z-index scale and it lives in `tokens.css` (`--z-*`). It is the
+single source of truth for *cross-component* layering — both the OS floating
+primitives and the app-shell chrome read it. The order, low → high:
+
+| Token / utility | Value | Layer |
+| --- | --- | --- |
+| `--z-desktop` | `-1` | Fixed OS wallpaper (`.os-desktop`), behind content |
+| `--z-base` | `0` | In-flow app content |
+| `z-window` / `z-window-active` | `100` / `110` | OS windows (`Window`) |
+| `z-sidebar` | `700` | Persistent shell rail |
+| `z-dock` | `800` | Floating dock |
+| `z-topbar` | `850` | Top app bar |
+| `z-overlay` | `900` | Scrim behind modals/sheets/popovers |
+| `z-modal` | `1000` | Dialog / sheet panel |
+| `z-command` | `1100` | Command palette |
+| `z-toast` | `1200` | Toasts (always frontmost) |
+
+**Rules:**
+
+- **Never hand-pick a raw `z-40` / `z-50` for a layer that can overlap another
+  component.** The OS scale (100–1200) and Tailwind's default scale (0–50) are
+  different axes; a chrome bar left on `z-40` is silently *below* any floating
+  `Window` (110) and gets painted over — this is the class of bug this section
+  exists to prevent. Chrome consumes the named utilities (`z-topbar`,
+  `z-sidebar`, …) exposed from `theme.css`; `@pumni/ui` primitives consume the
+  tokens directly via inline `style={{ zIndex: "var(--z-…)" }}`.
+- **Don't trap the scale in a needless stacking context.** The shell wrapper
+  carries no `z-index`, and the wallpaper sits at `--z-desktop: -1`, so chrome
+  and windows share one stacking context and the table above orders them
+  globally. Adding a positive `z-index` to a wrapper re-imprisons everything
+  inside it and the global order stops holding.
+- **Component-internal z is fine** (e.g. an avatar status dot, a tooltip arrow,
+  a decorative blob behind a card). Those don't escape their component, so they
+  use plain Tailwind `z-10` / `-z-10` locally. The token scale is only for
+  layers that compete *across* components.
+
 ## Personalization (accent + glass)
 
 Runtime personalization rides the existing tier-2 layer — no separate theming
@@ -129,11 +199,21 @@ next-themes provider) writes `data-accent` / `data-glass` onto the root element,
 and `styles/personalization.css` overrides the semantic tokens for those scopes
 exactly like `.dark` does.
 
+- **No FOUC** — the provider only reflects the attributes in `useEffect`, so a
+  non-default accent/glass would flash at first paint. Render
+  `PersonalizationScript` (from `@pumni/ui`) as the first child of `<body>` — an
+  inline blocking script that applies the stored attributes before first paint,
+  the same way next-themes does for `.dark` (see `apps/web/src/app/layout.tsx`).
 - **Accent** — `indigo` (default, no attribute), `violet`, `rose`. Each only
   overrides `--primary` / `--ring`; the accent surface (`--accent`,
   `--accent-foreground`) is derived from the live `--primary` via `color-mix`.
-  Stops sit in the verified lightness band so the white `--primary-foreground`
-  keeps contrast. Read/set via `usePersonalization()`.
+  In dark mode `.dark[data-accent]` leans the on-accent text further toward
+  `--foreground` (the dark accent surface is dark, so the light-mode 80%-primary
+  mix would fail AA), and rose keeps `red-600` in dark (lighter `red-500` drops
+  the white `--primary-foreground` below AA). These pairs are **gated**, not
+  eyeballed — `apps/web/src/test/design-system/glass-contrast.test.ts` resolves
+  the cascade (incl. `color-mix in oklch`) and asserts ≥4.5:1 for every accent ×
+  light/dark. Read/set via `usePersonalization()`.
 - **Glass** — `soft` / `default` / `strong` bias the shared `--glass-blur`.
 - Mode-aware accents use compound `.dark[data-accent="…"]` selectors (the
   attribute and `.dark` live on the same root node). `personalization.css` is
@@ -142,8 +222,8 @@ exactly like `.dark` does.
 ## Visual regression
 
 The showcase doubles as a visual contract. `apps/web/e2e/design-system-visual.spec.ts`
-snapshots the `showcase-root` element (light, dark, and a violet accent) via
-Playwright. To keep it reachable without auth, the showcase is rendered at the
+snapshots the `showcase-root` element (light, dark, violet + rose accents, and
+strong glass) via Playwright. To keep it reachable without auth, the showcase is rendered at the
 public, production-gated route `app/design-system-preview` (outside the `(app)`
 group); set `ENABLE_DESIGN_PREVIEW=1` to expose it against a production build.
 
@@ -178,9 +258,13 @@ Components live in `packages/ui/src/components/` and are exported from
   or secret imports — see `docs/conventions/server-client-boundary.md`).
 - Consume semantic tokens only. Floating layers get the role-specific glass
   utility for their layer.
-- Do not inline raw color values (`oklch(...)`) or primitive scale variables in
+- Do not inline raw color values (`oklch(...)`), primitive scale variables, or
+  Tailwind's built-in colour palette (`bg-neutral-900`, `text-white`, …) in
   component classes. Add a semantic/component token first, then consume that
-  token.
+  token. **Enforced** by the `pumniNoRawColor` ESLint rule
+  (`packages/config/eslint.mjs`, applied to `@pumni/ui` and `apps/web` — tests
+  excluded) and by `bun run ai:check`; styles/token files are the only place
+  primitives are allowed.
 - `@pumni/ui` is a pure UI package. It must not import app aliases (`@/`),
   `server-only`, Supabase, auth, env, validators, feature packages, or test
   utilities.

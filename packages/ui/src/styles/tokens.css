@@ -104,16 +104,22 @@
     0 12px 28px -8px oklch(0 0 0 / 0.18), 0 28px 56px -18px oklch(0 0 0 / 0.22),
     0 0 0 1px oklch(0.585 0.15 277.117 / 0.04);
 
-  /* --- Z-index: OS layering --- */
+  /* --- Z-index: single owned OS layering scale (see design-system.md).
+     EVERY cross-component layer — shell chrome AND floating primitives —
+     reads these tokens. Never hand-pick a raw Tailwind `z-40`: a chrome layer
+     on the 0–50 scale will be leap-frogged by a token-based floating layer
+     (a `Window` at 110 painting over a `z-40` topbar is exactly that bug). --- */
+  --z-desktop: -1;        /* fixed OS wallpaper, painted behind app content */
   --z-base: 0;
-  --z-window: 100;
-  --z-window-active: 110;
-  --z-dock: 800;
-  --z-topbar: 850;
-  --z-overlay: 900;
-  --z-modal: 1000;
-  --z-command: 1100;
-  --z-toast: 1200;
+  --z-window: 100;        /* OS window (inactive) */
+  --z-window-active: 110; /* focused OS window */
+  --z-sidebar: 700;       /* persistent shell rail */
+  --z-dock: 800;          /* floating dock */
+  --z-topbar: 850;        /* top app bar (above windows + rail) */
+  --z-overlay: 900;       /* scrim behind modals / sheets / popovers */
+  --z-modal: 1000;        /* dialog / sheet panel */
+  --z-command: 1100;      /* command palette */
+  --z-toast: 1200;        /* toasts — always frontmost */
 
   /* --- Motion --- */
   --duration-fast: 120ms;
@@ -121,4 +127,7 @@
   --duration-slow: 320ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Tactile press depress for interactive surfaces (CSS micro-feedback, gated
+     behind `motion-safe`). Unitless = uniform scale. */
+  --press-scale: 0.97;
 }

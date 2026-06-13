@@ -13,6 +13,7 @@ export default async function ProfileSettingsPage() {
 
       <ProfileForm
         defaultValues={{
+          id: profile.id,
           username: profile.username,
           fullName: profile.full_name,
           avatarUrl: profile.avatar_url,

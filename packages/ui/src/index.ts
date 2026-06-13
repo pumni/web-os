@@ -1,8 +1,8 @@
 export { cn } from "./lib/cn";
-export { duration, easing, motionTokens, transition } from "./lib/motion";
+export { duration, easing, motionTokens, recipes, transition } from "./lib/motion";
 // Centralise motion presence orchestration so apps don't add their own `motion`
 // dependency (single version, clean package boundary).
-export { AnimatePresence } from "motion/react";
+export { AnimatePresence, motion, useReducedMotion } from "motion/react";
 export {
   Avatar,
   AvatarBadge,

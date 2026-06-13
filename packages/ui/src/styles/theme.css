@@ -201,6 +201,19 @@
   --ease-fluid: var(--ease-out);
   --ease-snappy: var(--ease-in-out);
 
+  /* Z-index — the OS layering scale as named utilities (z-window, z-topbar,
+     z-sidebar, …). Chrome and floating layers consume these instead of raw
+     `z-40`, so the rendered order always matches the scale in tokens.css. */
+  --z-index-window: var(--z-window);
+  --z-index-window-active: var(--z-window-active);
+  --z-index-sidebar: var(--z-sidebar);
+  --z-index-dock: var(--z-dock);
+  --z-index-topbar: var(--z-topbar);
+  --z-index-overlay: var(--z-overlay);
+  --z-index-modal: var(--z-modal);
+  --z-index-command: var(--z-command);
+  --z-index-toast: var(--z-toast);
+
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }

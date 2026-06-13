@@ -3,7 +3,7 @@
 import * as React from "react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { ComponentIcon, LayoutDashboard, Palette, SearchIcon, Settings, User } from "lucide-react";
+import { ComponentIcon, LayoutDashboard, Palette, SearchIcon, Settings, User, Music } from "lucide-react";
 
 import { CommandPalette, type CommandItem } from "@pumni/ui";
 
@@ -33,6 +33,13 @@ export function OsCommand() {
         label: "Dashboard",
         icon: <LayoutDashboard />,
         onSelect: () => router.push("/dashboard"),
+      },
+      {
+        id: "sky-player",
+        label: "Sky Player",
+        keywords: "music song sheet play cotl instrument",
+        icon: <Music />,
+        onSelect: () => router.push("/sky-player" as Route),
       },
       {
         id: "profile",

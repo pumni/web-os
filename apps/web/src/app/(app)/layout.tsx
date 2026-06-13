@@ -25,7 +25,7 @@ async function AuthenticatedAppShell({ children }: Readonly<{ children: React.Re
 function ProtectedShellFallback() {
   return (
     <div className="min-h-dvh bg-background">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-border bg-card lg:block">
+      <aside className="fixed inset-y-0 left-0 z-sidebar hidden w-64 border-r border-border bg-card lg:block">
         <div className="flex h-16 items-center border-b border-border px-6">
           <div className="h-5 w-32 rounded bg-muted" />
         </div>
@@ -36,7 +36,7 @@ function ProtectedShellFallback() {
         </div>
       </aside>
       <div className="flex min-h-dvh flex-col lg:pl-64">
-        <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-topbar flex h-16 shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6 lg:px-8">
           <div className="h-5 w-32 rounded bg-muted lg:hidden" />
           <div className="h-8 w-8 rounded-full bg-muted" />
         </header>

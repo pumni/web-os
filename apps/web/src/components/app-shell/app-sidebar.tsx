@@ -1,54 +1,117 @@
 "use client";
 
 import Link from "next/link";
-import type { Route } from "next";
-import type { ComponentType } from "react";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@pumni/ui";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, User, Settings, Palette, ComponentIcon } from "lucide-react";
+import { useAppUiStore, useSidebarCollapsed } from "@/stores/app-ui-store";
+import { navItems } from "./nav-items";
+import { SIDEBAR_WIDTH } from "./sidebar-config";
 
-const navItems: ReadonlyArray<{
-  href: Route;
-  label: string;
-  icon: ComponentType<{ className?: string }>;
-}> = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/settings/profile", label: "Profile", icon: User },
-  { href: "/settings/account", label: "Account", icon: Settings },
-  { href: "/settings/appearance", label: "Appearance", icon: Palette },
-  { href: "/design-system" as Route, label: "Design System", icon: ComponentIcon },
-] as const;
+type AppSidebarProps = Readonly<{ defaultCollapsed: boolean }>;
 
-export function AppSidebar() {
+/** Platform-aware modifier label for the keyboard hint. */
+function modKey(): string {
+  if (typeof navigator === "undefined") return "Ctrl";
+  return /mac|iphone|ipad/i.test(navigator.userAgent) ? "⌘" : "Ctrl";
+}
+
+export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
   const pathname = usePathname();
+  const collapsed = useSidebarCollapsed(defaultCollapsed);
+  const toggleCollapsed = useAppUiStore((state) => state.toggleSidebarCollapsed);
+
+  // Ctrl/Cmd+B toggles the rail, matching the convention in VS Code / Linear.
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "b") {
+        event.preventDefault();
+        toggleCollapsed();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [toggleCollapsed]);
 
   return (
-    <aside className="glass-bar fixed inset-y-0 left-0 z-20 hidden w-64 border-r lg:block">
-      <div className="flex h-16 items-center border-b border-border px-6 font-bold text-lg tracking-tight text-foreground">
-        Pumni Web OS
-      </div>
+    <TooltipProvider delayDuration={0}>
+      <aside
+        className={cn(
+          "glass-bar fixed inset-y-0 left-0 z-sidebar hidden border-r transition-[width] duration-300 ease-out lg:block",
+          collapsed ? SIDEBAR_WIDTH.collapsed.rail : SIDEBAR_WIDTH.expanded.rail,
+        )}
+      >
+        <div
+          className={cn(
+            "flex h-16 items-center border-b border-border",
+            collapsed ? "justify-center px-2" : "justify-between px-4",
+          )}
+        >
+          {!collapsed && (
+            <span className="truncate font-bold text-lg tracking-tight text-foreground">
+              Pumni Web OS
+            </span>
+          )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleCollapsed}
+                aria-label={collapsed ? "Mở rộng thanh bên" : "Thu gọn thanh bên"}
+                aria-pressed={collapsed}
+              >
+                {collapsed ? (
+                  <PanelLeftOpen className="size-4" />
+                ) : (
+                  <PanelLeftClose className="size-4" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="flex items-center gap-2">
+              {collapsed ? "Mở rộng" : "Thu gọn"}
+              <kbd className="rounded border border-border/60 bg-muted/60 px-1.5 font-mono text-[0.7rem] text-muted-foreground">
+                {modKey()} B
+              </kbd>
+            </TooltipContent>
+          </Tooltip>
+        </div>
 
-      <nav className="space-y-1 p-4">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-    </aside>
+        <nav className={cn("space-y-1 p-3", !collapsed && "px-4")}>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            const link = (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-label={item.label}
+                className={cn(
+                  "flex items-center gap-3 rounded-md py-2 text-sm font-medium transition-colors",
+                  collapsed ? "justify-center px-2" : "px-3",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                )}
+              >
+                <Icon className="size-4 shrink-0" />
+                {!collapsed && <span className="truncate">{item.label}</span>}
+              </Link>
+            );
+
+            if (!collapsed) return link;
+
+            return (
+              <Tooltip key={item.href}>
+                <TooltipTrigger asChild>{link}</TooltipTrigger>
+                <TooltipContent side="right">{item.label}</TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </nav>
+      </aside>
+    </TooltipProvider>
   );
 }
