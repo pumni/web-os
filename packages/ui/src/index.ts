@@ -1,4 +1,8 @@
 export { cn } from "./lib/cn";
+export { duration, easing, motionTokens, transition } from "./lib/motion";
+// Centralise motion presence orchestration so apps don't add their own `motion`
+// dependency (single version, clean package boundary).
+export { AnimatePresence } from "motion/react";
 export {
   Avatar,
   AvatarBadge,
@@ -18,7 +22,25 @@ export {
   CardTitle,
   cardVariants,
 } from "./components/card";
+export { Checkbox } from "./components/checkbox";
 export { CommandPalette, type CommandItem } from "./components/command-palette";
+export {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuPortal,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "./components/context-menu";
 export {
   Dialog,
   DialogClose,
@@ -62,6 +84,34 @@ export {
 export { GlassSurface, glassSurfaceVariants } from "./components/glass-surface";
 export { Input } from "./components/input";
 export { Label } from "./components/label";
+export {
+  ACCENTS,
+  type Accent,
+  type GlassLevel,
+  GLASS_LEVELS,
+  PersonalizationProvider,
+  PersonalizationScript,
+  usePersonalization,
+} from "./components/personalization-provider";
+export {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from "./components/popover";
+export { ScrollArea, ScrollBar } from "./components/scroll-area";
+export {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "./components/select";
 export { Separator } from "./components/separator";
 export {
   Sheet,
@@ -75,4 +125,12 @@ export {
 } from "./components/sheet";
 export { Skeleton } from "./components/skeleton";
 export { Toaster } from "./components/sonner";
+export { Switch } from "./components/switch";
+export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs";
+export {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./components/tooltip";
 export { Window } from "./components/window";

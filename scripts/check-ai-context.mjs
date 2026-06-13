@@ -509,6 +509,7 @@ function checkDesignTokenBoundaries() {
   const allowedTokenFiles = new Set([
     'packages/ui/src/styles/tokens.css',
     'packages/ui/src/styles/theme.css',
+    'packages/ui/src/styles/personalization.css',
   ]);
   const files = [
     ...collectFiles('apps/web/src', ['.css', '.ts', '.tsx']),

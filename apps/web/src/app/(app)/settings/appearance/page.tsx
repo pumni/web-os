@@ -4,14 +4,18 @@ import * as React from "react";
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
+  ACCENTS,
   Button,
   Card,
   CardContent,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
+  GLASS_LEVELS,
+  usePersonalization,
 } from "@pumni/ui";
 
 const themeOptions = [
@@ -34,6 +38,7 @@ function getServerReadySnapshot() {
 
 export default function AppearanceSettingsPage() {
   const { theme = "system", setTheme } = useTheme();
+  const { accent, glass, setAccent, setGlass } = usePersonalization();
   const mounted = React.useSyncExternalStore(
     subscribeToClientReady,
     getClientReadySnapshot,
@@ -82,6 +87,63 @@ export default function AppearanceSettingsPage() {
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h2 className="text-base font-medium text-card-foreground">Accent</h2>
+            <p className="text-sm text-muted-foreground">
+              Brand colour used across primary actions and focus rings.
+            </p>
+          </div>
+
+          <div className="flex gap-2">
+            {ACCENTS.map((value) => (
+              <button
+                key={value}
+                type="button"
+                // Scope each swatch to its accent so `bg-primary` resolves to that
+                // accent's live brand colour — no raw primitives in the component.
+                data-accent={value}
+                aria-label={value}
+                aria-pressed={accent === value}
+                onClick={() => setAccent(value)}
+                className={cn(
+                  "size-7 rounded-full border-2 bg-primary capitalize transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                  accent === value ? "border-foreground" : "border-transparent",
+                )}
+              />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h2 className="text-base font-medium text-card-foreground">Glass intensity</h2>
+            <p className="text-sm text-muted-foreground">
+              Blur strength applied to floating glass surfaces.
+            </p>
+          </div>
+
+          <div className="inline-flex rounded-md border border-border bg-card p-1">
+            {GLASS_LEVELS.map((value) => (
+              <Button
+                key={value}
+                type="button"
+                size="sm"
+                variant={glass === value ? "secondary" : "ghost"}
+                aria-pressed={glass === value}
+                onClick={() => setGlass(value)}
+                className="capitalize"
+              >
+                {value}
+              </Button>
+            ))}
+          </div>
         </CardContent>
       </Card>
     </div>

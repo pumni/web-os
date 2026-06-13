@@ -2,11 +2,14 @@
 
 import * as React from "react";
 import { Maximize2, Minus, X } from "lucide-react";
+import { motion, useReducedMotion, type HTMLMotionProps } from "motion/react";
 
 import { cn } from "../lib/cn";
+import { transition } from "../lib/motion";
 
-type WindowProps = React.ComponentProps<"section"> & {
+type WindowProps = Omit<HTMLMotionProps<"section">, "title" | "children"> & {
   title: React.ReactNode;
+  children?: React.ReactNode;
   active?: boolean;
   onClose?: () => void;
   onMinimize?: () => void;
@@ -25,7 +28,7 @@ function WindowControl({
       aria-label={label}
       title={label}
       className={cn(
-        "inline-flex size-3.5 items-center justify-center rounded-full text-transparent transition-colors hover:text-black/60 focus-visible:text-black/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-2.5",
+        "inline-flex size-3.5 items-center justify-center rounded-full text-transparent transition-colors hover:text-[color:var(--window-control-icon)] focus-visible:text-[color:var(--window-control-icon)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-2.5",
         className,
       )}
       {...props}
@@ -42,18 +45,24 @@ function Window({
   onMaximize,
   toolbar,
   children,
+  style,
   ...props
 }: WindowProps) {
+  // motion runs JS animations, which the global CSS reduced-motion media query
+  // cannot neutralise — so honour the preference here explicitly.
+  const shouldReduce = useReducedMotion();
+
   return (
-    <section
+    <motion.section
       data-slot="window"
       data-active={active}
       aria-label={typeof title === "string" ? title : undefined}
-      style={{ zIndex: active ? "var(--z-window-active)" : "var(--z-window)" }}
-      className={cn(
-        "glass-window flex flex-col overflow-hidden rounded-xl data-[active=false]:opacity-95",
-        className,
-      )}
+      style={{ zIndex: active ? "var(--z-window-active)" : "var(--z-window)", ...style }}
+      initial={shouldReduce ? false : { opacity: 0, scale: 0.96, y: 8 }}
+      animate={{ opacity: active ? 1 : 0.95, scale: 1, y: 0 }}
+      exit={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 8 }}
+      transition={shouldReduce ? { duration: 0 } : transition.fluid}
+      className={cn("glass-window flex flex-col overflow-hidden rounded-xl", className)}
       {...props}
     >
       <header
@@ -91,7 +100,7 @@ function Window({
       <div data-slot="window-body" className="min-h-0 flex-1 overflow-auto bg-card/60 p-4">
         {children}
       </div>
-    </section>
+    </motion.section>
   );
 }
 

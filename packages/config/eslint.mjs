@@ -52,3 +52,51 @@ export const pumniUiBoundary = [
     },
   },
 ];
+
+/*
+ * Token-first guard. The design system is token-first (docs/conventions/design-system.md):
+ * components consume SEMANTIC tokens (bg-primary, text-foreground, bg-overlay…), never raw
+ * OKLCH values, Tier-1 primitive scale vars, or Tailwind's built-in colour palette. Until now
+ * this lived only in prose review — these patterns make a violation fail `lint`.
+ *
+ * Uses esquery regex attribute matchers on string Literals and TemplateElements (where
+ * className strings live). Patterns are intentionally narrow to avoid false positives.
+ */
+const RAW_COLOR_PATTERNS = [
+  // Inline raw OKLCH.
+  "oklch\\(",
+  // Tier-1 primitive scale CSS vars (must stay inside token/theme files).
+  "--(?:indigo|violet|neutral|red|emerald|amber)-",
+  // Tailwind built-in colour palette utilities (e.g. bg-neutral-900, text-blue-500).
+  "\\b(?:bg|text|border|ring|from|via|to|fill|stroke|outline|divide|decoration|shadow|caret|accent)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\\d{2,3}\\b",
+  // Raw black/white utilities (use bg-overlay / semantic tokens instead).
+  "\\b(?:bg|text|border|ring|from|via|to|fill|stroke|outline)-(?:black|white)\\b",
+];
+
+const RAW_COLOR_MESSAGE =
+  "Design system is token-first: use a semantic token (bg-primary, text-foreground, border-border, bg-overlay, text-gradient-brand…) instead of a raw OKLCH value, Tier-1 primitive var, or Tailwind built-in palette utility. See docs/conventions/design-system.md.";
+
+/** @type {import("eslint").Linter.RuleEntry} */
+export const restrictedRawColor = [
+  "error",
+  ...RAW_COLOR_PATTERNS.flatMap((pattern) => [
+    { selector: `Literal[value=/${pattern}/]`, message: RAW_COLOR_MESSAGE },
+    { selector: `TemplateElement[value.raw=/${pattern}/]`, message: RAW_COLOR_MESSAGE },
+  ]),
+];
+
+/**
+ * Flat-config fragment forbidding raw colour/primitive usage in TS/TSX source.
+ * Tests are excluded: they legitimately reference colour strings (e.g. "oklch(")
+ * to PARSE and assert on tokens, not to style UI.
+ */
+export const pumniNoRawColor = [
+  {
+    name: "pumni/no-raw-color",
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: ["src/test/**", "**/*.test.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": restrictedRawColor,
+    },
+  },
+];

@@ -27,7 +27,37 @@ describe("DesignSystemShowcase", () => {
     expect(screen.getByText("Controls")).toBeInTheDocument();
     expect(screen.getByText("Menus")).toBeInTheDocument();
     expect(screen.getByText("Feedback")).toBeInTheDocument();
+    expect(screen.getByText("Overlays")).toBeInTheDocument();
+    expect(screen.getByText("Scroll area")).toBeInTheDocument();
+    expect(screen.getByText("Selection")).toBeInTheDocument();
+    expect(screen.getByText("Tabs")).toBeInTheDocument();
+    expect(screen.getByText("Window motion")).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Application dock" })).toBeInTheDocument();
+  });
+
+  it("renders the motion window demo mounted by default", () => {
+    render(React.createElement(DesignSystemShowcase));
+
+    expect(screen.getByRole("button", { name: "Hide window" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Motion window" })).toBeInTheDocument();
+  });
+
+  it("renders form-control primitives with the default active tab", () => {
+    render(React.createElement(DesignSystemShowcase));
+
+    expect(screen.getByRole("switch", { name: /reduce motion/i })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: /enable notifications/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "General" })).toHaveAttribute("data-state", "active");
+    expect(screen.getByRole("tab", { name: "Appearance" })).toHaveAttribute("data-state", "inactive");
+  });
+
+  it("opens the right-click context menu surface", () => {
+    render(React.createElement(DesignSystemShowcase));
+
+    fireEvent.contextMenu(screen.getByText("Right-click area"));
+
+    expect(screen.getByRole("menuitem", { name: /new folder/i })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: /remove/i })).toBeInTheDocument();
   });
 
   it("opens dialog and sends toast feedback", () => {

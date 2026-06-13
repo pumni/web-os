@@ -1,0 +1,80 @@
+/*
+ * Pumni OS — Personalization layer
+ * --------------------------------
+ * Runtime accent + glass overrides applied by `PersonalizationProvider` on the
+ * root element. Mirrors how `.dark` overrides semantic tokens, so every colour
+ * value stays in the styles layer and components remain token-only.
+ *
+ * Light/dark accents use compound `.dark[data-accent]` selectors because the
+ * provider sets `data-accent` on the SAME root node next-themes flags `.dark`.
+ * These overrides match the lightness band of the verified brand/status pairs
+ * (indigo primary, red destructive) so the white `--primary-foreground` keeps
+ * its contrast. Personalization.css is imported AFTER theme.css; accent rules
+ * tie on specificity with `:root`/`.dark` and win on source order.
+ */
+
+/*
+ * The default indigo accent sets NO root attribute (the provider removes it), so
+ * `:root`/`.dark` already carry the indigo `--primary`. These explicit
+ * `[data-accent="indigo"]` rules let a SCOPED element (e.g. the appearance accent
+ * swatch) opt back into indigo regardless of the live root accent. They mirror the
+ * indigo `--primary`/`--ring` from theme.css.
+ */
+[data-accent="indigo"] {
+  --primary: var(--indigo-600);
+  --ring: var(--indigo-500);
+}
+.dark[data-accent="indigo"] {
+  --primary: var(--indigo-500);
+  --ring: var(--indigo-400);
+}
+
+[data-accent="violet"] {
+  --primary: var(--violet-600);
+  --ring: var(--violet-500);
+}
+.dark[data-accent="violet"] {
+  --primary: var(--violet-500);
+  --ring: var(--violet-400);
+}
+
+[data-accent="rose"] {
+  --primary: var(--red-600);
+  --ring: var(--red-500);
+}
+.dark[data-accent="rose"] {
+  /* Red is high-chroma: a lighter red-500 drops white `--primary-foreground` below
+     WCAG AA (3.85:1), so dark rose keeps red-600 to stay readable (gated by
+     glass-contrast.test.ts). */
+  --primary: var(--red-600);
+  --ring: var(--red-500);
+}
+
+/*
+ * Derive the subtle accent surface + on-accent text from the active primary, so
+ * hover/selected states track whichever accent is live without per-accent stops.
+ * The default (indigo) keeps its hand-tuned `--accent` from theme.css untouched
+ * because the provider sets no attribute for it.
+ */
+[data-accent] {
+  --accent: color-mix(in oklch, var(--primary) 14%, var(--card));
+  --accent-foreground: color-mix(in oklch, var(--primary) 80%, var(--foreground));
+}
+
+/*
+ * Dark mode: the dark accent surface is dark, so an 80%-primary on-accent text
+ * dips below WCAG AA (≈2.8:1). Lean the on-accent text toward the light
+ * `--foreground` so accent hover/selected text stays readable (gated by
+ * glass-contrast.test.ts). `.dark[data-accent]` (0,2,0) outranks `[data-accent]`.
+ */
+.dark[data-accent] {
+  --accent-foreground: color-mix(in oklch, var(--primary) 45%, var(--foreground));
+}
+
+/* Glass intensity — bias the shared blur token without touching surfaces. */
+[data-glass="soft"] {
+  --glass-blur: var(--blur-glass-sm);
+}
+[data-glass="strong"] {
+  --glass-blur: var(--blur-glass-lg);
+}

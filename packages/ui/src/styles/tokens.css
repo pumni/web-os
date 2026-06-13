@@ -54,6 +54,37 @@
   /* --- Radius scale --- */
   --radius-base: 0.625rem; /* 10px — slightly softer than legacy 8px */
 
+  /* --- Typography: raw size + paired line-height scale ---
+     Distinct names from the Tailwind `--text-*` namespace they bridge into
+     (see theme.css) to avoid self-referential `var()` cycles. */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+
+  --line-height-xs: 1rem;
+  --line-height-sm: 1.25rem;
+  --line-height-base: 1.5rem;
+  --line-height-lg: 1.75rem;
+  --line-height-xl: 1.75rem;
+  --line-height-2xl: 2rem;
+  --line-height-3xl: 2.25rem;
+  --line-height-4xl: 2.5rem;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Tighten large display text; dense OS chrome stays optically neutral. */
+  --letter-spacing-tight: -0.015em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.025em;
+
   /* --- Glass blur (kept in the GPU-friendly 8–15px range) --- */
   --blur-glass-sm: 8px;
   --blur-glass: 12px;

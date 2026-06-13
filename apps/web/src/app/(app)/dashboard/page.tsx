@@ -44,7 +44,7 @@ export default async function DashboardPage() {
               className="gap-4 transition-all duration-(--duration-base) hover:-translate-y-1 hover:[box-shadow:var(--shadow-glass-glow),inset_0_1px_1px_-0.5px_var(--glass-highlight)]"
             >
               <CardHeader>
-                <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-(--brand-gradient-from) to-(--brand-gradient-via) text-primary-foreground shadow-sm ring-1 ring-white/15">
+                <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-(--brand-gradient-from) to-(--brand-gradient-via) text-primary-foreground shadow-sm ring-1 ring-[color:var(--glass-highlight)]">
                   <Icon className="size-5" />
                 </div>
                 <CardTitle>{card.title}</CardTitle>

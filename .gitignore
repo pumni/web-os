@@ -33,6 +33,12 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 supabase/.branches
 supabase/.temp
 
+# Playwright (keep `*-snapshots/` baselines; ignore run artifacts)
+test-results
+playwright-report
+blob-report
+.playwright
+
 # IntelliJ based IDEs
 .idea
 

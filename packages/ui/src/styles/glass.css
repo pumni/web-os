@@ -48,17 +48,6 @@
   backdrop-filter: none;
 }
 
-@utility glass-surface {
-  /* Frosted fill + ONE translucent `--glass-edge` hairline. The float/depth is
-     carried by the layered drop shadow — no extra edge lines that read as a
-     thick or double-coloured border. */
-  background-color: var(--glass-bg);
-  border: 1px solid var(--glass-edge);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  box-shadow: var(--shadow-glass-glow-soft), inset 0 1px 1px -0.5px var(--glass-highlight);
-}
-
 /* Bar variant for topbars / docks: glass look, hairline edge only. */
 @utility glass-bar {
   background-color: var(--glass-bg);
@@ -84,7 +73,6 @@
 @media (prefers-reduced-transparency: reduce) {
   .glass-panel,
   .glass-window,
-  .glass-surface,
   .glass-bar,
   .glass-titlebar {
     background: var(--popover);
@@ -101,7 +89,6 @@
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-panel,
   .glass-window,
-  .glass-surface,
   .glass-bar,
   .glass-titlebar {
     background: var(--popover);
@@ -118,7 +105,6 @@
 @media (prefers-contrast: more) {
   .glass-panel,
   .glass-window,
-  .glass-surface,
   .glass-bar,
   .glass-titlebar {
     --glass-bg: color-mix(in oklch, var(--popover) 92%, transparent);
@@ -135,7 +121,6 @@
 @media (forced-colors: active) {
   .glass-panel,
   .glass-window,
-  .glass-surface,
   .glass-bar,
   .glass-titlebar {
     background: Canvas;
@@ -155,7 +140,6 @@
 
 .glass-a11y-preview[data-transparency="reduced"] .glass-panel,
 .glass-a11y-preview[data-transparency="reduced"] .glass-window,
-.glass-a11y-preview[data-transparency="reduced"] .glass-surface,
 .glass-a11y-preview[data-transparency="reduced"] .glass-bar,
 .glass-a11y-preview[data-transparency="reduced"] .glass-titlebar {
   background: var(--popover);
@@ -166,7 +150,6 @@
 
 .glass-a11y-preview[data-contrast="more"] .glass-panel,
 .glass-a11y-preview[data-contrast="more"] .glass-window,
-.glass-a11y-preview[data-contrast="more"] .glass-surface,
 .glass-a11y-preview[data-contrast="more"] .glass-bar,
 .glass-a11y-preview[data-contrast="more"] .glass-titlebar {
   --glass-bg: color-mix(in oklch, var(--popover) 92%, transparent);

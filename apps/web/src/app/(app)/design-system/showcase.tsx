@@ -15,6 +15,7 @@ import {
   UserIcon,
 } from "lucide-react";
 import {
+  AnimatePresence,
   Avatar,
   AvatarFallback,
   AvatarGroup,
@@ -25,8 +26,16 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Checkbox,
   CommandPalette,
   type CommandItem,
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuTrigger,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -51,6 +60,15 @@ import {
   GlassSurface,
   Input,
   Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  ScrollArea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Separator,
   Sheet,
   SheetContent,
@@ -59,6 +77,14 @@ import {
   SheetHeader,
   SheetTitle,
   Skeleton,
+  Switch,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
   Window,
   cn,
 } from "@pumni/ui";
@@ -99,6 +125,7 @@ export function DesignSystemShowcase() {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [commandOpen, setCommandOpen] = React.useState(false);
+  const [motionWindowOpen, setMotionWindowOpen] = React.useState(true);
   const [previewTransparency, setPreviewTransparency] = React.useState<"standard" | "reduced">(
     "standard",
   );
@@ -466,6 +493,171 @@ export function DesignSystemShowcase() {
               <Button variant="destructive" onClick={() => toast.error("Error toast.")}>
                 Error
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Overlays</CardTitle>
+            <CardDescription>Tooltip, popover, and right-click context menu.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap items-start gap-3">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline">Hover me</Button>
+              </TooltipTrigger>
+              <TooltipContent>Solid tooltip surface</TooltipContent>
+            </Tooltip>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline">Popover</Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">Quick settings</p>
+                  <p className="text-sm text-muted-foreground">
+                    Glass popover anchored to its trigger.
+                  </p>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <ContextMenu>
+              <ContextMenuTrigger asChild>
+                <div className="flex h-20 w-full items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">
+                  Right-click area
+                </div>
+              </ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuLabel>Desktop</ContextMenuLabel>
+                <ContextMenuSeparator />
+                <ContextMenuItem onSelect={() => toast.info("New folder.")}>
+                  New folder
+                </ContextMenuItem>
+                <ContextMenuItem onSelect={() => toast.info("Refresh.")}>
+                  Refresh
+                  <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+                </ContextMenuItem>
+                <ContextMenuSeparator />
+                <ContextMenuItem variant="destructive" onSelect={() => toast.error("Removed.")}>
+                  Remove
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
+          </CardContent>
+        </Card>
+
+        <Card className="xl:col-span-2">
+          <CardHeader>
+            <CardTitle>Scroll area</CardTitle>
+            <CardDescription>Custom scrollbar for dense OS window content.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-40 rounded-md border border-border">
+              <div className="space-y-2 p-3">
+                {Array.from({ length: 12 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground"
+                  >
+                    Row {index + 1}
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Selection</CardTitle>
+            <CardDescription>Switch, checkbox, and select inputs.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="qa-switch">Reduce motion</Label>
+              <Switch id="qa-switch" defaultChecked />
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox id="qa-check" defaultChecked />
+              <Label htmlFor="qa-check">Enable notifications</Label>
+            </div>
+            <div className="space-y-2">
+              <Label>Theme</Label>
+              <Select defaultValue="system">
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select theme" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="light">Light</SelectItem>
+                  <SelectItem value="dark">Dark</SelectItem>
+                  <SelectItem value="system">System</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="xl:col-span-2">
+          <CardHeader>
+            <CardTitle>Tabs</CardTitle>
+            <CardDescription>Content switching for settings panels.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="general">
+              <TabsList>
+                <TabsTrigger value="general">General</TabsTrigger>
+                <TabsTrigger value="appearance">Appearance</TabsTrigger>
+                <TabsTrigger value="advanced">Advanced</TabsTrigger>
+              </TabsList>
+              <TabsContent value="general" className="pt-3 text-sm text-muted-foreground">
+                General workspace preferences.
+              </TabsContent>
+              <TabsContent value="appearance" className="pt-3 text-sm text-muted-foreground">
+                Theme, accent, and glass intensity.
+              </TabsContent>
+              <TabsContent value="advanced" className="pt-3 text-sm text-muted-foreground">
+                Developer and experimental options.
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="grid gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Window motion</CardTitle>
+            <CardDescription>
+              Spring enter/exit via motion + AnimatePresence. Timing reads from the motion tokens
+              and honours reduced-motion.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setMotionWindowOpen((open) => !open)}
+            >
+              {motionWindowOpen ? "Hide window" : "Show window"}
+            </Button>
+            <div className="min-h-44">
+              <AnimatePresence>
+                {motionWindowOpen && (
+                  <Window key="motion-demo" title="Motion window" className="h-40">
+                    <p className="text-sm leading-6 text-muted-foreground">
+                      Mount and unmount this window to see the spring transition. The same primitive
+                      powers OS windows on the desktop.
+                    </p>
+                  </Window>
+                )}
+              </AnimatePresence>
             </div>
           </CardContent>
         </Card>

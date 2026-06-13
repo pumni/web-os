@@ -43,9 +43,10 @@ Apps consume semantic utilities (`bg-primary`, `text-muted-foreground`,
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
 | `border` / `input` / `ring` | Hairlines, fields, focus ring |
 | `glass-bg` / `glass-border` / `glass-edge` / `glass-highlight` / `glass-scrim` / `glass-blur` | Liquid Glass surfaces (`glass-edge` = luminous rim) |
+| `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) — never raw `bg-black/40` |
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
-| `window-control-*` | Window traffic-light controls |
+| `window-control-*` | Window traffic-light controls (`-icon` = dark glyph on the dots) |
 
 Primitive color variables (`--indigo-*`, `--violet-*`, `--neutral-*`, status
 scales, and raw `oklch(...)`) are restricted to token/theme files. Components
@@ -61,8 +62,8 @@ Large background areas and the flat shell stay opaque. Use `Card`'s
 - Apply the role-based utility that matches the layer: `.glass-bar`
   (topbars/docks/sidebar rails), `.glass-panel` (dialogs, sheets, popovers,
   command palettes), `.glass-window` (OS windows), or `.glass-titlebar` (window
-  titlebars). `.glass-surface` remains as the compatibility utility for legacy
-  floating surfaces.
+  titlebars). The `GlassSurface` component wraps these roles behind a `variant`
+  prop.
 - **Never** put glass on large background areas or stack many glass layers —
   `backdrop-filter` is GPU-intensive. Keep blur in **8–16px** (`--glass-blur`).
 - The translucent fill (`--glass-bg`) is the **contrast scrim**: verify text and
@@ -70,6 +71,88 @@ Large background areas and the flat shell stay opaque. Use `Card`'s
   background states.
 - Fallbacks are built in: `prefers-reduced-transparency` → opaque surface, no
   blur; `prefers-reduced-motion` → animations/transitions neutralised.
+
+## Typography & motion utilities
+
+Type scale and motion are **owned tokens**, not borrowed Tailwind defaults.
+
+- **Type scale** — `text-xs` … `text-4xl` carry the design system's paired
+  size + line-height (raw values in `tokens.css`, bridged in `theme.css`).
+  Weights: `font-normal/medium/semibold/bold`; tracking: `tracking-tight`
+  (large display text), `tracking-normal`, `tracking-wide`.
+- **Easing** — `ease-fluid` (emphasized decelerate, for entrances) and
+  `ease-snappy` (symmetric, for moves/reorders) are the brand curves. Prefer
+  them over raw `ease-out`.
+- **Duration** — Tailwind has no `--duration-*` namespace, so durations live as
+  the `--duration-fast|base|slow` CSS vars (use `duration-[var(--duration-base)]`
+  in CSS-driven transitions).
+- **JS animations** — the `motion` library reads timing from `lib/motion.ts`
+  (`duration`, `easing`, `transition`, or `motionTokens`), a hand-kept mirror of
+  the CSS motion primitives. Change a curve in `tokens.css` → change it there too.
+  motion's JS animations are **not** silenced by the CSS reduced-motion media
+  query, so motion components must call `useReducedMotion()` and degrade
+  themselves (see `Window`).
+- **Presence / enter-exit** — `Window` is a `motion.section` with spring
+  enter/exit; wrap a conditionally-rendered `Window` in `AnimatePresence`
+  (re-exported from `@pumni/ui`, so apps don't add their own `motion` dep) to get
+  the exit animation. **Radix-driven overlays (`Dialog`, `Sheet`,
+  `CommandPalette`) keep their CSS enter/exit** — Radix already manages presence,
+  and forcing motion there fights its mounting for little visual gain.
+
+## Radius scale
+
+One knob drives the whole UI: `--radius-base` (`0.625rem`, deliberately softer
+than the legacy 8px for the Liquid Glass look). The `@theme inline` scale derives
+every step from it via `calc()`, so components consume **named utilities only** —
+never magic `rounded-[Npx]` values.
+
+| Utility | Value (at base 10px) | Typical use |
+| --- | --- | --- |
+| `rounded-xs` | `calc(--radius - 6px)` = 4px | Checkboxes, tiny indicators, tooltip arrow |
+| `rounded-sm` | `calc(--radius - 4px)` = 6px | Menu items, inline chips |
+| `rounded-md` | `calc(--radius - 2px)` = 8px | Buttons, inputs, dropdown/menu content |
+| `rounded-lg` | `--radius` = 10px | Dialogs |
+| `rounded-xl` | `calc(--radius + 4px)` = 14px | Cards, windows, sheets, command palette |
+| `rounded-2xl` / `rounded-3xl` | +8px / +16px | Large hero surfaces |
+
+This is the shadcn-on-v4 pattern (not Tailwind's fixed native scale) so the base
+stays a single personalizable knob. `rounded-[inherit]` is allowed where a child
+must match its parent's radius. The IntelliSense `suggestCanonicalClasses` hint
+can't resolve these `calc(var())` tokens — verify against this table, don't follow
+it blindly.
+
+## Personalization (accent + glass)
+
+Runtime personalization rides the existing tier-2 layer — no separate theming
+engine. `PersonalizationProvider` (from `@pumni/ui`, mount it inside the
+next-themes provider) writes `data-accent` / `data-glass` onto the root element,
+and `styles/personalization.css` overrides the semantic tokens for those scopes
+exactly like `.dark` does.
+
+- **Accent** — `indigo` (default, no attribute), `violet`, `rose`. Each only
+  overrides `--primary` / `--ring`; the accent surface (`--accent`,
+  `--accent-foreground`) is derived from the live `--primary` via `color-mix`.
+  Stops sit in the verified lightness band so the white `--primary-foreground`
+  keeps contrast. Read/set via `usePersonalization()`.
+- **Glass** — `soft` / `default` / `strong` bias the shared `--glass-blur`.
+- Mode-aware accents use compound `.dark[data-accent="…"]` selectors (the
+  attribute and `.dark` live on the same root node). `personalization.css` is
+  imported **after** `theme.css` so its same-specificity rules win on order.
+
+## Visual regression
+
+The showcase doubles as a visual contract. `apps/web/e2e/design-system-visual.spec.ts`
+snapshots the `showcase-root` element (light, dark, and a violet accent) via
+Playwright. To keep it reachable without auth, the showcase is rendered at the
+public, production-gated route `app/design-system-preview` (outside the `(app)`
+group); set `ENABLE_DESIGN_PREVIEW=1` to expose it against a production build.
+
+- Run: `cd apps/web && bunx playwright test design-system-visual`.
+- Baselines are **platform-specific** (Playwright suffixes the OS). Generate them
+  in the CI runner with `--update-snapshots`; do **not** commit Windows baselines
+  for a Linux CI. `*-snapshots/` folders are committed; run artifacts are ignored.
+- Determinism comes from `reducedMotion: "reduce"` (drives our reduced-motion
+  paths so the motion `Window` and CSS transitions settle instantly).
 
 ## Adding a token
 
@@ -85,9 +168,10 @@ Components live in `packages/ui/src/components/` and are exported from
 `packages/ui/src/index.ts`. Follow the established pattern:
 
 - Current shared primitives include `Button`, `Card`, `Input`, `Label`,
-  `Avatar`, `GlassSurface`, `Dock`, `Window`, `Dialog`, `DropdownMenu`,
-  `Sheet`, `Form`, `CommandPalette`, `Toaster`, `Separator`, and `Skeleton`.
-  Import them from `@pumni/ui`, not from `apps/web/src/components/ui`.
+  `Checkbox`, `Switch`, `Select`, `Tabs`, `Avatar`, `GlassSurface`, `Dock`,
+  `Window`, `Dialog`, `DropdownMenu`, `ContextMenu`, `Popover`, `Tooltip`,
+  `ScrollArea`, `Sheet`, `Form`, `CommandPalette`, `Toaster`, `Separator`, and
+  `Skeleton`. Import them from `@pumni/ui`, not from `apps/web/src/components/ui`.
 - `cva` for variants; `data-slot` / `data-variant` attributes for styling hooks.
 - Merge classes with `cn()` (exported from `@pumni/ui`).
 - Build interactive primitives on Radix; keep them client-safe (no server-only

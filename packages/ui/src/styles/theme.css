@@ -61,6 +61,11 @@
   --window-control-close: var(--red-500);
   --window-control-minimize: var(--amber-400);
   --window-control-maximize: var(--emerald-500);
+  /* Dark glyphs on the traffic-light dots, both themes (macOS-style). */
+  --window-control-icon: oklch(0 0 0 / 0.6);
+
+  /* Modal / sheet scrim */
+  --overlay: oklch(0 0 0 / 0.4);
 }
 
 .dark {
@@ -115,6 +120,9 @@
   --window-control-close: var(--red-500);
   --window-control-minimize: var(--amber-400);
   --window-control-maximize: var(--emerald-500);
+
+  /* Deeper scrim reads better over a dark backdrop. */
+  --overlay: oklch(0 0 0 / 0.6);
 }
 
 /*
@@ -150,11 +158,48 @@
   /* Glass tokens, also usable as Tailwind color utilities when needed */
   --color-glass: var(--glass-bg);
   --color-glass-border: var(--glass-border);
+  --color-overlay: var(--overlay);
 
+  --radius-xs: calc(var(--radius) - 6px);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 16px);
+
+  /* Type scale — owned size + paired line-height (text-xs … text-4xl). */
+  --text-xs: var(--font-size-xs);
+  --text-xs--line-height: var(--line-height-xs);
+  --text-sm: var(--font-size-sm);
+  --text-sm--line-height: var(--line-height-sm);
+  --text-base: var(--font-size-base);
+  --text-base--line-height: var(--line-height-base);
+  --text-lg: var(--font-size-lg);
+  --text-lg--line-height: var(--line-height-lg);
+  --text-xl: var(--font-size-xl);
+  --text-xl--line-height: var(--line-height-xl);
+  --text-2xl: var(--font-size-2xl);
+  --text-2xl--line-height: var(--line-height-2xl);
+  --text-3xl: var(--font-size-3xl);
+  --text-3xl--line-height: var(--line-height-3xl);
+  --text-4xl: var(--font-size-4xl);
+  --text-4xl--line-height: var(--line-height-4xl);
+
+  --font-weight-normal: var(--weight-normal);
+  --font-weight-medium: var(--weight-medium);
+  --font-weight-semibold: var(--weight-semibold);
+  --font-weight-bold: var(--weight-bold);
+
+  --tracking-tight: var(--letter-spacing-tight);
+  --tracking-normal: var(--letter-spacing-normal);
+  --tracking-wide: var(--letter-spacing-wide);
+
+  /* Motion — surface the primitive easings as utilities (ease-fluid /
+     ease-snappy). Durations stay as `--duration-*` CSS vars (tokens.css) and
+     the JS bridge in lib/motion.ts; Tailwind has no `--duration-*` namespace. */
+  --ease-fluid: var(--ease-out);
+  --ease-snappy: var(--ease-in-out);
 
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
