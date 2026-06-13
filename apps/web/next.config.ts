@@ -6,6 +6,13 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   reactCompiler: true,
   cacheComponents: true,
+  images: {
+    localPatterns: [
+      {
+        pathname: "/api/media/image/**",
+      },
+    ],
+  },
   experimental: {
     staleTimes: { static: 180, dynamic: 30 },
     // `@pumni/ui` is a barrel package; this lets Next import only the used

@@ -126,6 +126,7 @@ export {
 export { Skeleton } from "./components/skeleton";
 export { Toaster } from "./components/sonner";
 export { Switch } from "./components/switch";
+export { Slider } from "./components/slider";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs";
 export {
   Tooltip,

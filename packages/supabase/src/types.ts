@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -114,6 +114,63 @@ export type Database = {
           theme?: string
           timezone?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      media_watch_history: {
+        Row: {
+          completed: boolean
+          created_at: string
+          jellyfin_item_id: string
+          last_watched_at: string
+          position_ticks: number
+          runtime_ticks: number
+          title: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          jellyfin_item_id: string
+          last_watched_at?: string
+          position_ticks?: number
+          runtime_ticks?: number
+          title: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          jellyfin_item_id?: string
+          last_watched_at?: string
+          position_ticks?: number
+          runtime_ticks?: number
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      media_favorites: {
+        Row: {
+          created_at: string
+          jellyfin_item_id: string
+          media_type: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          jellyfin_item_id: string
+          media_type: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          jellyfin_item_id?: string
+          media_type?: string
+          title?: string
           user_id?: string
         }
         Relationships: []

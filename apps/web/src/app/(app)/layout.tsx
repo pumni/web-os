@@ -1,8 +1,20 @@
 import { Suspense } from "react";
-import { requireUser } from "@pumni/auth";
+import type { User } from "@supabase/supabase-js";
+import { getCurrentUser } from "@pumni/auth";
+import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell/app-shell";
 
-export const unstable_instant = { prefetch: "static" };
+export const unstable_instant = {
+  prefetch: "static",
+  samples: [
+    {
+      params: { itemId: "00000000000000000000000000000000" },
+      cookies: [
+        { name: "pumni-sidebar", value: null }
+      ]
+    }
+  ]
+};
 
 export default function ProtectedLayout({
   children,
@@ -17,7 +29,26 @@ export default function ProtectedLayout({
 }
 
 async function AuthenticatedAppShell({ children }: Readonly<{ children: React.ReactNode }>) {
-  const user = await requireUser();
+  const user = await getCurrentUser();
+
+  if (!user) {
+    const isBuild = process.env.NEXT_PHASE?.includes("build");
+    if (isBuild) {
+      // Static prerender during `next build` runs without a session; supply a
+      // typed placeholder so the shell can render its skeleton.
+      const dummyUser: User = {
+        id: "00000000-0000-0000-0000-000000000000",
+        email: "guest@pumni.os",
+        app_metadata: {},
+        user_metadata: { avatar_url: null },
+        aud: "authenticated",
+        created_at: new Date(0).toISOString(),
+      };
+      return <AppShell user={dummyUser}>{children}</AppShell>;
+    } else {
+      redirect("/sign-in");
+    }
+  }
 
   return <AppShell user={user}>{children}</AppShell>;
 }

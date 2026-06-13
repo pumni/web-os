@@ -66,7 +66,7 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
   const [isCropOpen, setIsCropOpen] = React.useState(false);
   const [crop, setCrop] = React.useState({ x: 0, y: 0 });
   const [zoom, setZoom] = React.useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<any>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const [isCropProcessing, setIsCropProcessing] = React.useState(false);
 
   React.useEffect(() => {
@@ -265,8 +265,8 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
       }
 
       setSelectedFileBlob(null);
-    } catch (error: any) {
-      toast.error(error.message || "Failed to save profile.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to save profile.");
       setPreviewUrl(data.avatarUrl || null);
     } finally {
       setIsUploading(false);
@@ -310,13 +310,13 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
                         </Avatar>
 
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-overlay/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100">
-                          <Camera className="h-5 w-5 text-white" />
-                          <span className="mt-1 text-[10px] font-medium text-white">Change</span>
+                          <Camera className="h-5 w-5" style={{ color: "white" }} />
+                          <span className="mt-1 text-[10px] font-medium" style={{ color: "white" }}>Change</span>
                         </div>
 
                         {isUploading && (
                           <div className="absolute inset-0 flex items-center justify-center bg-overlay/60 backdrop-blur-[1px]">
-                            <Loader2 className="h-6 w-6 animate-spin text-white" />
+                            <Loader2 className="h-6 w-6 animate-spin" style={{ color: "white" }} />
                           </div>
                         )}
                       </div>
@@ -421,7 +421,7 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
           </DialogHeader>
 
           <div className="px-6 py-4">
-            <div className="relative h-64 w-full overflow-hidden rounded-md border border-border bg-neutral-900">
+            <div className="relative h-64 w-full overflow-hidden rounded-md border border-border" style={{ backgroundColor: "#171717" }}>
               {rawFileUrl && (
                 <Cropper
                   image={rawFileUrl}
