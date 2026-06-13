@@ -32,9 +32,6 @@ export async function fetchJellyfin<T = unknown>(
 ): Promise<T> {
   const url = `${serverEnv.JELLYFIN_URL}${endpoint}`;
   const response = await fetch(url, {
-    // Fail fast instead of hanging the serverless function when Jellyfin is
-    // unreachable (e.g. the Tailscale host isn't routable from this server).
-    signal: AbortSignal.timeout(10_000),
     ...options,
     headers: {
       ...getJellyfinAuthHeaders(),
@@ -81,7 +78,6 @@ export async function getStreamingToken(): Promise<JellyfinStreamingToken> {
 
   const response = await fetch(`${serverEnv.JELLYFIN_URL}/Users/AuthenticateByName`, {
     method: "POST",
-    signal: AbortSignal.timeout(10_000),
     headers: {
       "Content-Type": "application/json",
       Authorization: `MediaBrowser Client="${CLIENT_NAME}", Device="PumniBrowser", DeviceId="pumni-web-os-browser", Version="${CLIENT_VERSION}"`,
