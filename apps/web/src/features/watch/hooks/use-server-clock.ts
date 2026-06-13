@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export function useServerClock() {
   const [ready, setReady] = useState(false);
@@ -9,6 +9,8 @@ export function useServerClock() {
 
   useEffect(() => {
     let active = true;
+    let isFirstSync = true;
+
     async function syncClock() {
       try {
         const t0 = Date.now();
@@ -18,14 +20,20 @@ export function useServerClock() {
         const t1 = Date.now();
         const rtt = t1 - t0;
         if (active) {
-          const offset = serverNow - (t0 + rtt / 2);
+          const rawOffset = serverNow - (t0 + rtt / 2);
+          // Light EMA to prevent clock jumping abruptly during active sessions
+          const offset = isFirstSync
+            ? rawOffset
+            : 0.8 * clockOffsetRef.current + 0.2 * rawOffset;
+          
+          isFirstSync = false;
           clockOffsetRef.current = offset;
           setClockOffset(offset);
           setReady(true);
         }
       } catch (err) {
         console.error("Failed to sync clock, falling back to local time", err);
-        if (active) {
+        if (active && isFirstSync) {
           clockOffsetRef.current = 0;
           setClockOffset(0);
           setReady(true);
@@ -33,14 +41,18 @@ export function useServerClock() {
       }
     }
     syncClock();
+
+    const interval = setInterval(() => {
+      void syncClock();
+    }, 300_000);
+
     return () => {
       active = false;
+      clearInterval(interval);
     };
   }, []);
 
-  const serverClock = useCallback(() => {
-    return Date.now() + clockOffsetRef.current;
-  }, []);
+  const serverClock = () => Date.now() + clockOffsetRef.current;
 
   return {
     ready,

@@ -131,6 +131,9 @@ export type Database = {
           source_ref: string
           source_type: Database["public"]["Enums"]["watch_source_type"]
           updated_at: string
+          current_queue_item_id: string | null
+          last_active_at: string
+          host_heartbeat_at: string
         }
         Insert: {
           anchor_position?: number
@@ -144,6 +147,9 @@ export type Database = {
           source_ref: string
           source_type: Database["public"]["Enums"]["watch_source_type"]
           updated_at?: string
+          current_queue_item_id?: string | null
+          last_active_at?: string
+          host_heartbeat_at?: string
         }
         Update: {
           anchor_position?: number
@@ -157,6 +163,60 @@ export type Database = {
           source_ref?: string
           source_type?: Database["public"]["Enums"]["watch_source_type"]
           updated_at?: string
+          current_queue_item_id?: string | null
+          last_active_at?: string
+          host_heartbeat_at?: string
+        }
+        Relationships: []
+      }
+      room_members: {
+        Row: {
+          room_id: string
+          user_id: string
+          joined_at: string
+        }
+        Insert: {
+          room_id: string
+          user_id: string
+          joined_at?: string
+        }
+        Update: {
+          room_id?: string
+          user_id?: string
+          joined_at?: string
+        }
+        Relationships: []
+      }
+      watch_queue_items: {
+        Row: {
+          id: string
+          room_id: string
+          position: number
+          source_type: Database["public"]["Enums"]["watch_source_type"]
+          source_ref: string
+          title: string | null
+          added_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          room_id: string
+          position: number
+          source_type: Database["public"]["Enums"]["watch_source_type"]
+          source_ref: string
+          title?: string | null
+          added_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          room_id?: string
+          position?: number
+          source_type?: Database["public"]["Enums"]["watch_source_type"]
+          source_ref?: string
+          title?: string | null
+          added_by?: string | null
+          created_at?: string
         }
         Relationships: []
       }
@@ -165,7 +225,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_room_member: {
+        Args: {
+          p_room_id: string
+        }
+        Returns: boolean
+      }
+      leave_room: {
+        Args: {
+          p_room_id: string
+        }
+        Returns: undefined
+      }
+      transfer_room_host: {
+        Args: {
+          p_room_id: string
+          p_new_host: string
+        }
+        Returns: undefined
+      }
+      claim_room_host: {
+        Args: {
+          p_room_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       watch_source_type: "youtube" | "url"

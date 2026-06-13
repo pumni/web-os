@@ -2,15 +2,6 @@ import { Suspense } from "react";
 import { getCurrentUser } from "@pumni/auth";
 import { redirect } from "next/navigation";
 
-export const unstable_instant = {
-  prefetch: "static",
-  samples: [
-    {
-      params: { roomId: "00000000000000000000000000000000" }
-    }
-  ]
-};
-
 
 export default function WatchLayout({
   children,
@@ -40,7 +31,7 @@ async function AuthenticatedWatchShell({
 
   return (
     <div
-      className="min-h-dvh flex items-center justify-center p-0 md:p-6"
+      className="min-h-dvh flex flex-col p-0 md:p-4"
       style={{ backgroundColor: "black" }}
     >
       {children}

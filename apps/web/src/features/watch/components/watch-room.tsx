@@ -1,56 +1,130 @@
 "use client";
 
-import React, { useRef, useState, useTransition, useCallback, useEffect } from "react";
+import React, { useRef, useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import type { MediaPlayerInstance } from "@vidstack/react";
-import { Button, Card, CardContent, Input, Label, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Tabs, TabsList, TabsTrigger } from "@pumni/ui";
+import { 
+  Button, 
+  Input, 
+  Label, 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle, 
+  Tabs, 
+  TabsList, 
+  TabsTrigger,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle
+} from "@pumni/ui";
 import { toast } from "sonner";
-import { Copy, ArrowLeft } from "lucide-react";
+import { Copy, ArrowLeft, ListVideo } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { useServerClock } from "../hooks/use-server-clock";
 import { useRoomChannel } from "../hooks/use-room-channel";
 import { useSyncController } from "../hooks/use-sync-controller";
 import { SyncPlayer } from "./sync-player";
 import { RoomControls } from "./room-controls";
-import { ParticipantRail } from "./participant-rail";
 import { SyncIndicator } from "./sync-indicator";
-import { setRoomSource } from "../actions";
-import type { Room, PlaybackAnchor } from "../types";
+import { SideDock } from "./side-dock";
+import { setRoomSource, leaveRoom } from "../actions";
+import { useRoomQuery } from "../hooks/use-room-query";
+import { useQueueQuery } from "../hooks/use-room-queue";
+import { watchKeys } from "../query-keys";
+import type { Room, PlaybackAnchor, QueueItem } from "../types";
+import { TapToPlayOverlay } from "./tap-to-play-overlay";
+import { HostClaimBanner } from "./host-claim-banner";
+import { useHostHeartbeat } from "../hooks/use-host-heartbeat";
+import { useMemberProfiles } from "../hooks/use-room-members";
 
 interface WatchRoomProps {
   room: Room;
   userId: string;
+  initialQueueItems: QueueItem[];
 }
 
-export function WatchRoom({ room, userId }: WatchRoomProps) {
+export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const playerRef = useRef<MediaPlayerInstance>(null);
 
-  // Source change modal state
+  // Mobile Side Dock Sheet state
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Source change modal state (Host only)
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
   const [newSourceType, setNewSourceType] = useState<"youtube" | "url">("youtube");
   const [newSourceRef, setNewSourceRef] = useState("");
 
-  const isHost = room.host_id === userId;
+  const queryClient = useQueryClient();
 
-  // 1. Sync clock
+  // 1. Join room membership on mount, then refetch member-gated data.
+  // RSC render cannot INSERT, so membership is registered client-side; the
+  // queue is RLS-gated on membership, so we MUST invalidate after joining or a
+  // link-joiner sees an empty queue until staleTime expires.
+  useEffect(() => {
+    let cancelled = false;
+    async function join(attempt = 0) {
+      try {
+        const res = await fetch(`/api/watch/${room.id}/join`, { method: "POST" });
+        if (!res.ok) throw new Error(`join failed: ${res.status}`);
+        if (cancelled) return;
+        await queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
+        await queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
+      } catch (err) {
+        if (cancelled) return;
+        if (attempt < 3) {
+          setTimeout(() => void join(attempt + 1), 1000 * (attempt + 1));
+        } else {
+          console.error("Failed to join room after retries", err);
+          toast.error("Không thể tham gia phòng. Một số thao tác có thể bị hạn chế — hãy tải lại trang.");
+        }
+      }
+    }
+    void join();
+    return () => {
+      cancelled = true;
+    };
+  }, [room.id, queryClient]);
+
+  // 2. Sync clock
   const { ready: clockReady, serverClock } = useServerClock();
+
+  // 3. Query hooks
+  const { data: currentRoom } = useRoomQuery(room.id, room);
+  const { data: queueItems } = useQueueQuery(room.id, initialQueueItems);
+
+  const isHost = currentRoom.host_id === userId;
+
+  useHostHeartbeat(currentRoom.id, isHost);
 
   // We use a ref to sever the circular hook dependency
   const onAnchorRef = useRef<(anchor: PlaybackAnchor) => void>(() => {});
 
-  // 2. Realtime channel (Presence + Broadcast + DB Postgres Changes)
-  const { currentRoom, participants, broadcastAnchor } = useRoomChannel(
-    room,
+  // 4. Realtime channel (Broadcast anchor + Presence + postgres_changes).
+  const { participants, broadcastAnchor, channelStatus } = useRoomChannel(
+    currentRoom,
     userId,
     isHost,
-    useCallback((anchor) => onAnchorRef.current(anchor), [])
+    (anchor) => onAnchorRef.current(anchor)
   );
 
-  // 3. Controller
-  const { syncStatus, handleReceiveAnchor, playerHandlers } = useSyncController(
+  // 5. Sync Controller (Soft-lock + Resync)
+  const {
+    syncStatus,
+    isFollowingHost,
+    needsGesture,
+    resync,
+    resumeFromGesture,
+    handleReceiveAnchor,
+    playerHandlers,
+  } = useSyncController(
     playerRef,
     currentRoom,
     isHost,
@@ -58,10 +132,33 @@ export function WatchRoom({ room, userId }: WatchRoomProps) {
     broadcastAnchor
   );
 
+  const { data: profiles = {} } = useMemberProfiles(participants.map((p) => p.userId));
+
   // Wire up the ref inside useEffect to comply with render purity rules
   useEffect(() => {
     onAnchorRef.current = handleReceiveAnchor;
   }, [handleReceiveAnchor]);
+
+  const hostPresent = participants.some((p) => p.isHost);
+  const [showClaim, setShowClaim] = useState(false);
+  useEffect(() => {
+    if (isHost || hostPresent) {
+      setShowClaim(false);
+      return;
+    }
+    const t = setTimeout(() => setShowClaim(true), 10_000);
+    return () => clearTimeout(t);
+  }, [isHost, hostPresent]);
+
+  // Leaving is a DELIBERATE user action — never an effect teardown or
+  // `beforeunload`. Those fire on React StrictMode's dev double-mount and on
+  // tab churn, which (via delete-on-empty) previously deleted the freshly
+  // created room and produced a 404. Empty-room cleanup happens here on an
+  // explicit leave; abandoned rooms (tab closed) are reaped by the TTL cron.
+  const handleLeave = () => {
+    void leaveRoom(currentRoom.id);
+    router.push("/watch" as Route);
+  };
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(currentRoom.code);
@@ -93,6 +190,7 @@ export function WatchRoom({ room, userId }: WatchRoomProps) {
           toast.success("Đổi nguồn phát thành công!");
           setIsSourceModalOpen(false);
           setNewSourceRef("");
+          void queryClient.invalidateQueries({ queryKey: watchKeys.room(currentRoom.id) });
         } else {
           toast.error(res.message || "Đổi nguồn phát thất bại.");
         }
@@ -113,17 +211,17 @@ export function WatchRoom({ room, userId }: WatchRoomProps) {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 p-4">
+    <div className="w-full flex-1 flex flex-col gap-4 p-4 min-h-0 select-none">
       {/* Top Header Bar */}
-      <div className="flex items-center justify-between w-full select-none">
+      <div className="flex items-center justify-between w-full select-none shrink-0">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => router.push("/watch" as Route)}
+            onClick={handleLeave}
             aria-label="Back to Lobby"
           >
-            <ArrowLeft className="size-5" />
+            <ArrowLeft className="size-5 text-foreground" />
           </Button>
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
@@ -131,6 +229,15 @@ export function WatchRoom({ room, userId }: WatchRoomProps) {
                 Phòng xem chung
               </h1>
               <SyncIndicator status={syncStatus} />
+              {channelStatus !== "connected" && (
+                <span
+                  role="status"
+                  aria-live="polite"
+                  className="inline-flex items-center rounded-sm bg-destructive/10 border border-destructive/20 px-2 py-0.5 text-[10px] font-medium text-destructive animate-pulse"
+                >
+                  Mất kết nối...
+                </span>
+              )}
             </div>
             <span className="text-[10px] text-muted-foreground">
               Mã phòng: <span className="font-mono font-bold text-foreground">{currentRoom.code}</span>
@@ -140,19 +247,32 @@ export function WatchRoom({ room, userId }: WatchRoomProps) {
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={handleCopyCode} className="text-xs">
-            Sao chép mã
+            Mã phòng
           </Button>
           <Button variant="ghost" size="sm" onClick={handleCopyLink} className="text-xs">
             <Copy className="size-3.5 mr-1" />
             Sao chép link
           </Button>
+
+          {/* Mobile Sheet Trigger */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsSheetOpen(true)}
+            className="lg:hidden flex"
+            aria-label="Hàng chờ và Người xem"
+          >
+            <ListVideo className="size-5" />
+          </Button>
         </div>
       </div>
 
-      {/* Main Grid: Player on left (or center), info/presence on right (or bottom) */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-        {/* Left Side: Sync Player */}
-        <div className="lg:col-span-3 flex flex-col gap-4">
+      {showClaim && !isHost && <HostClaimBanner roomId={currentRoom.id} />}
+
+      {/* Main Zones Layout */}
+      <div className="flex flex-col lg:flex-row gap-4 flex-1 items-stretch min-h-0">
+        {/* Left: Stage (Video Player) */}
+        <div className="flex-1 flex flex-col justify-center min-w-0">
           <SyncPlayer
             sourceType={currentRoom.source_type}
             sourceRef={currentRoom.source_ref}
@@ -162,39 +282,46 @@ export function WatchRoom({ room, userId }: WatchRoomProps) {
             <RoomControls
               isHost={isHost}
               onSourceChange={() => setIsSourceModalOpen(true)}
+              isFollowingHost={isFollowingHost}
+              resync={resync}
             />
+            {needsGesture && <TapToPlayOverlay onResume={resumeFromGesture} />}
           </SyncPlayer>
         </div>
 
-        {/* Right Side: Participant list & Room Status */}
-        <div className="lg:col-span-1 flex flex-col gap-4">
-          <Card className="border border-border/40">
-            <CardContent className="p-4 flex flex-col gap-4">
-              <ParticipantRail participants={participants} />
-              
-              <div className="border-t border-border/20 pt-4 flex flex-col gap-2 select-none">
-                <span className="text-xs font-semibold text-muted-foreground">
-                  Thông tin phát
-                </span>
-                <div className="flex flex-col gap-1 text-[11px]">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Nguồn:</span>
-                    <span className="text-foreground font-medium capitalize">
-                      {currentRoom.source_type}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <span className="text-muted-foreground shrink-0">Video:</span>
-                    <span className="text-foreground font-mono truncate max-w-[120px]" title={currentRoom.source_ref}>
-                      {currentRoom.source_ref}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Right: Side Dock (Desktop only) */}
+        <div className="hidden lg:block w-[340px] shrink-0 min-h-0">
+          <SideDock
+            roomId={currentRoom.id}
+            userId={userId}
+            isHost={isHost}
+            participants={participants}
+            queueItems={queueItems}
+            currentQueueItemId={currentRoom.current_queue_item_id}
+            profiles={profiles}
+          />
         </div>
       </div>
+
+      {/* Mobile Drawer (Sheet) */}
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-md p-0 bg-background/95 border-l border-border/20 flex flex-col h-full">
+          <SheetHeader className="p-4 border-b border-border/20 shrink-0">
+            <SheetTitle className="text-sm font-semibold">Bảng điều khiển</SheetTitle>
+          </SheetHeader>
+          <div className="flex-1 overflow-hidden min-h-0">
+            <SideDock
+              roomId={currentRoom.id}
+              userId={userId}
+              isHost={isHost}
+              participants={participants}
+              queueItems={queueItems}
+              currentQueueItemId={currentRoom.current_queue_item_id}
+              profiles={profiles}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Source Change Dialog (Host only) */}
       {isHost && (

@@ -49,3 +49,27 @@ export function isValidHttpUrl(url: string): boolean {
     return false;
   }
 }
+
+/**
+ * Trả về một vị trí double precision nằm giữa hai vị trí trước và sau.
+ * Dùng cho fractional indexing để sắp xếp danh sách mà chỉ cần update 1 dòng.
+ */
+export function fractionalPosition(before: number | null, after: number | null): number {
+  if (before === null && after === null) return 0.0;
+  if (before === null) return after! - 1.0;
+  if (after === null) return before! + 1.0;
+  return (before + after) / 2.0;
+}
+
+/**
+ * Computes a structural signature for a watch room.
+ * This signature changes only when structural fields (source type, source ref, host, or active queue item) change.
+ */
+export function getStructuralSignature(room: {
+  source_type: string;
+  source_ref: string;
+  host_id: string;
+  current_queue_item_id: string | null;
+}): string {
+  return `${room.source_type}|${room.source_ref}|${room.host_id}|${room.current_queue_item_id || ""}`;
+}

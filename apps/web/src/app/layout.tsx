@@ -46,6 +46,17 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        {/* Swallow Vidstack's benign "provider destroyed" promise rejection (fired
+            when the media provider is torn down mid-load: React StrictMode
+            double-mount in dev, or a legitimate source swap). Capture-phase +
+            earliest registration so it runs before Next's dev error-overlay
+            listener and stops it from surfacing a false runtime error. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){if(typeof window==='undefined')return;window.addEventListener('unhandledrejection',function(e){var r=e.reason;var m=typeof r==='string'?r:(r&&r.message);if(m==='provider destroyed'){e.stopImmediatePropagation();e.preventDefault();}},true);})();",
+          }}
+        />
         {/* Pre-paint: reflect stored accent/glass onto <html> before first paint (no FOUC). */}
         <PersonalizationScript />
         <ThemeProvider>

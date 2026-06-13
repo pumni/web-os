@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useMemo } from "react";
 import {
   MediaPlayer,
   MediaProvider,
@@ -31,21 +31,24 @@ export function SyncPlayer({
   onRateChange,
   children,
 }: SyncPlayerProps) {
-  const onProviderChange = useCallback((provider: MediaProviderAdapter | null) => {
+  const onProviderChange = (provider: MediaProviderAdapter | null) => {
     if (isHLSProvider(provider)) {
       provider.library = () => import("hls.js");
     }
-  }, []);
+  };
 
-  const src = sourceType === "youtube"
-    ? `https://www.youtube.com/watch?v=${sourceRef}`
-    : sourceRef;
-
-  const type = sourceType === "youtube"
-    ? "video/youtube"
-    : sourceRef.includes(".m3u8")
-      ? "application/x-mpegurl"
-      : "video/mp4";
+  // Memoize the source object so an unrelated re-render (presence sync, queue
+  // update, control visibility) does not hand Vidstack a fresh object identity
+  // and tear down + reload the provider mid-flight.
+  const source = useMemo(() => {
+    if (sourceType === "youtube") {
+      return { src: `https://www.youtube.com/watch?v=${sourceRef}`, type: "video/youtube" } as const;
+    }
+    if (sourceRef.includes(".m3u8")) {
+      return { src: sourceRef, type: "application/x-mpegurl" } as const;
+    }
+    return { src: sourceRef, type: "video/mp4" } as const;
+  }, [sourceType, sourceRef]);
 
   return (
     <div
@@ -54,7 +57,7 @@ export function SyncPlayer({
     >
       <MediaPlayer
         ref={playerRef}
-        src={{ src, type }}
+        src={source}
         crossOrigin="anonymous"
         playsInline
         keyTarget="document"

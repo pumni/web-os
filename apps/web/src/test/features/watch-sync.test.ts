@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateExpectedPosition, extractYouTubeId, isValidHttpUrl } from "../../features/watch/sync-math";
+import { calculateExpectedPosition, extractYouTubeId, isValidHttpUrl, getStructuralSignature } from "../../features/watch/sync-math";
 
 describe("Watch synced playback math & helpers", () => {
   describe("calculateExpectedPosition", () => {
@@ -72,6 +72,50 @@ describe("Watch synced playback math & helpers", () => {
     it("should reject invalid urls and protocols", () => {
       expect(isValidHttpUrl("ftp://example.com")).toBe(false);
       expect(isValidHttpUrl("not-a-link")).toBe(false);
+    });
+  });
+
+  describe("getStructuralSignature", () => {
+    it("should return identical signature when structural fields are unchanged", () => {
+      const room = {
+        source_type: "youtube" as const,
+        source_ref: "dQw4w9WgXcQ",
+        host_id: "user-1",
+        current_queue_item_id: "item-1",
+        is_playing: false,
+        anchor_position: 12.3,
+      };
+
+      const sig1 = getStructuralSignature(room);
+
+      // Change anchor states
+      const roomUpdated = {
+        ...room,
+        is_playing: true,
+        anchor_position: 45.6,
+      };
+
+      const sig2 = getStructuralSignature(roomUpdated);
+      expect(sig1).toBe(sig2);
+    });
+
+    it("should return different signature when structural fields change", () => {
+      const room = {
+        source_type: "youtube" as const,
+        source_ref: "dQw4w9WgXcQ",
+        host_id: "user-1",
+        current_queue_item_id: "item-1",
+      };
+
+      const sig1 = getStructuralSignature(room);
+
+      const roomWithNewSource = {
+        ...room,
+        source_ref: "another-video",
+      };
+
+      const sig2 = getStructuralSignature(roomWithNewSource);
+      expect(sig1).not.toBe(sig2);
     });
   });
 });
