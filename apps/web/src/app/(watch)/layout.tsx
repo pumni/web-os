@@ -6,10 +6,11 @@ export const unstable_instant = {
   prefetch: "static",
   samples: [
     {
-      params: { itemId: "00000000000000000000000000000000" }
+      params: { roomId: "00000000000000000000000000000000" }
     }
   ]
 };
+
 
 export default function WatchLayout({
   children,

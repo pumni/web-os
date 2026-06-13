@@ -17,7 +17,6 @@
         "@hookform/resolvers": "^5.4.0",
         "@pumni/auth": "workspace:*",
         "@pumni/env": "workspace:*",
-        "@pumni/jellyfin": "workspace:*",
         "@pumni/supabase": "workspace:*",
         "@pumni/ui": "workspace:*",
         "@pumni/validators": "workspace:*",
@@ -91,17 +90,6 @@
     "packages/features": {
       "name": "@pumni/features",
       "devDependencies": {
-        "typescript": "^5",
-      },
-    },
-    "packages/jellyfin": {
-      "name": "@pumni/jellyfin",
-      "dependencies": {
-        "@pumni/env": "workspace:*",
-        "server-only": "^0.0.1",
-      },
-      "devDependencies": {
-        "@types/node": "^20",
         "typescript": "^5",
       },
     },
@@ -370,8 +358,6 @@
     "@pumni/env": ["@pumni/env@workspace:packages/env"],
 
     "@pumni/features": ["@pumni/features@workspace:packages/features"],
-
-    "@pumni/jellyfin": ["@pumni/jellyfin@workspace:packages/jellyfin"],
 
     "@pumni/supabase": ["@pumni/supabase@workspace:packages/supabase"],
 

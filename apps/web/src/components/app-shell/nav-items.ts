@@ -1,6 +1,6 @@
 import type { Route } from "next";
 import type { ComponentType } from "react";
-import { ComponentIcon, Film, LayoutDashboard, Music, Palette, Settings, User } from "lucide-react";
+import { Clapperboard, ComponentIcon, LayoutDashboard, Music, Palette, Settings, User } from "lucide-react";
 
 export type NavItem = {
   href: Route;
@@ -12,7 +12,7 @@ export type NavItem = {
 export const navItems: ReadonlyArray<NavItem> = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/sky-player" as Route, label: "Sky Player", icon: Music },
-  { href: "/media" as Route, label: "Cinema", icon: Film },
+  { href: "/watch" as Route, label: "Watch Together", icon: Clapperboard },
   { href: "/settings/profile", label: "Profile", icon: User },
   { href: "/settings/account", label: "Account", icon: Settings },
   { href: "/settings/appearance", label: "Appearance", icon: Palette },

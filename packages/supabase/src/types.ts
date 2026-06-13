@@ -118,60 +118,45 @@ export type Database = {
         }
         Relationships: []
       }
-      media_watch_history: {
+      watch_rooms: {
         Row: {
-          completed: boolean
+          anchor_position: number
+          anchor_server_ts: string
+          code: string
           created_at: string
-          jellyfin_item_id: string
-          last_watched_at: string
-          position_ticks: number
-          runtime_ticks: number
-          title: string
-          user_id: string
+          host_id: string
+          id: string
+          is_playing: boolean
+          playback_rate: number
+          source_ref: string
+          source_type: Database["public"]["Enums"]["watch_source_type"]
+          updated_at: string
         }
         Insert: {
-          completed?: boolean
+          anchor_position?: number
+          anchor_server_ts?: string
+          code: string
           created_at?: string
-          jellyfin_item_id: string
-          last_watched_at?: string
-          position_ticks?: number
-          runtime_ticks?: number
-          title: string
-          user_id: string
+          host_id: string
+          id?: string
+          is_playing?: boolean
+          playback_rate?: number
+          source_ref: string
+          source_type: Database["public"]["Enums"]["watch_source_type"]
+          updated_at?: string
         }
         Update: {
-          completed?: boolean
+          anchor_position?: number
+          anchor_server_ts?: string
+          code?: string
           created_at?: string
-          jellyfin_item_id?: string
-          last_watched_at?: string
-          position_ticks?: number
-          runtime_ticks?: number
-          title?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      media_favorites: {
-        Row: {
-          created_at: string
-          jellyfin_item_id: string
-          media_type: string
-          title: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          jellyfin_item_id: string
-          media_type: string
-          title: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          jellyfin_item_id?: string
-          media_type?: string
-          title?: string
-          user_id?: string
+          host_id?: string
+          id?: string
+          is_playing?: boolean
+          playback_rate?: number
+          source_ref?: string
+          source_type?: Database["public"]["Enums"]["watch_source_type"]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -183,7 +168,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      watch_source_type: "youtube" | "url"
     }
     CompositeTypes: {
       [_ in never]: never

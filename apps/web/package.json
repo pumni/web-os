@@ -15,7 +15,6 @@
     "@hookform/resolvers": "^5.4.0",
     "@pumni/auth": "workspace:*",
     "@pumni/env": "workspace:*",
-    "@pumni/jellyfin": "workspace:*",
     "@pumni/supabase": "workspace:*",
     "@pumni/ui": "workspace:*",
     "@pumni/validators": "workspace:*",

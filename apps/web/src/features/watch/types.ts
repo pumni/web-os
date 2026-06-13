@@ -1,0 +1,18 @@
+import type { Database } from "@pumni/supabase";
+
+export type SourceType = Database["public"]["Enums"]["watch_source_type"];
+export type Room = Database["public"]["Tables"]["watch_rooms"]["Row"];
+
+export type PlaybackAnchor = {
+  isPlaying: boolean;
+  anchorPosition: number; // in seconds
+  anchorServerTs: number; // in epoch ms server time
+  playbackRate: number;
+};
+
+export type Participant = {
+  presenceRef?: string;
+  userId: string;
+  isHost: boolean;
+  joinedAt: number;
+};
