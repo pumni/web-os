@@ -18,25 +18,17 @@ export const unstable_instant = {
 
 export default function ProtectedLayout({
   children,
-  modal,
 }: Readonly<{
   children: React.ReactNode;
-  modal?: React.ReactNode;
 }>) {
   return (
     <Suspense fallback={<ProtectedShellFallback />}>
-      <AuthenticatedAppShell modal={modal}>{children}</AuthenticatedAppShell>
+      <AuthenticatedAppShell>{children}</AuthenticatedAppShell>
     </Suspense>
   );
 }
 
-async function AuthenticatedAppShell({
-  children,
-  modal,
-}: Readonly<{
-  children: React.ReactNode;
-  modal?: React.ReactNode;
-}>) {
+async function AuthenticatedAppShell({ children }: Readonly<{ children: React.ReactNode }>) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -52,13 +44,13 @@ async function AuthenticatedAppShell({
         aud: "authenticated",
         created_at: new Date(0).toISOString(),
       };
-      return <AppShell user={dummyUser}>{children}{modal}</AppShell>;
+      return <AppShell user={dummyUser}>{children}</AppShell>;
     } else {
       redirect("/sign-in");
     }
   }
 
-  return <AppShell user={user}>{children}{modal}</AppShell>;
+  return <AppShell user={user}>{children}</AppShell>;
 }
 
 function ProtectedShellFallback() {
