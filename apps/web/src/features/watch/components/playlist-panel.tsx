@@ -239,7 +239,6 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
           <Tabs
             value={sourceType}
             onValueChange={(val) => setSourceType(val as "youtube" | "url")}
-            disableTransition
           >
             <TabsList className="h-6 p-0.5 bg-muted border border-border rounded-md gap-0.5">
               <TabsTrigger value="youtube" className="text-xs h-5 px-2 py-0">YT</TabsTrigger>

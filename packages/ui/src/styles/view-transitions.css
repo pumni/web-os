@@ -7,11 +7,25 @@
 
 @supports (view-transition-name: none) {
   @media (prefers-reduced-motion: no-preference) {
-    /* Default cross-fade */
-    ::view-transition-old(root) {
+    /* Disable default full-page root cross-fade to prevent flashing during component transitions */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none !important;
+      mix-blend-mode: normal !important;
+    }
+
+    /* Scoped card transitions (prevent text stretching during height morphing) */
+    ::view-transition-old(watch-lobby-card),
+    ::view-transition-new(watch-lobby-card) {
+      object-fit: none !important;
+      object-position: top center !important;
+    }
+
+    ::view-transition-old(watch-lobby-card) {
       animation: var(--duration-base) var(--ease-fluid) both fade-out;
     }
-    ::view-transition-new(root) {
+
+    ::view-transition-new(watch-lobby-card) {
       animation: var(--duration-base) var(--ease-fluid) both fade-in;
     }
 

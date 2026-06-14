@@ -8,7 +8,7 @@ import { cn } from "../lib/cn";
 function Tabs({
   className,
   onValueChange,
-  disableTransition = false,
+  disableTransition = true,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Root> & {
   disableTransition?: boolean;
