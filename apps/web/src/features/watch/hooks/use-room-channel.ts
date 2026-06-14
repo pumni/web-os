@@ -173,7 +173,7 @@ export function useRoomChannel(
     });
 
     return () => {
-      activeChannel.unsubscribe();
+      void supabase.removeChannel(activeChannel);
       channelRef.current = null;
     };
   }, [room.id, userId, queryClient]);
