@@ -153,7 +153,7 @@ export function DesignSystemShowcase() {
   const [sliderValue, setSliderValue] = React.useState([45]);
   const shouldReduceMotion = useReducedMotion();
 
-  const { accent, glass, setAccent, setGlass } = usePersonalization();
+  const { accent, glass, density, setAccent, setGlass, setDensity } = usePersonalization();
 
   const [previewTransparency, setPreviewTransparency] = React.useState<"standard" | "reduced">(
     "standard",
@@ -912,6 +912,35 @@ export function DesignSystemShowcase() {
               <p className="text-xs text-muted-foreground">
                 Current intensity: <span className="font-mono font-semibold capitalize text-foreground">{glass || "default"}</span>.
                 Applies <code>data-glass</code> parameter to override global variables.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Data Density personalization */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Data Density</CardTitle>
+              <CardDescription>Adjust control spacing and height for high-density layouts.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="inline-flex rounded-md border bg-card p-1">
+                {(["comfortable", "compact"] as const).map((value) => (
+                  <Button
+                    key={value}
+                    type="button"
+                    size="sm"
+                    variant={density === value ? "secondary" : "ghost"}
+                    aria-pressed={density === value}
+                    onClick={() => setDensity(value)}
+                    className="capitalize"
+                  >
+                    {value}
+                  </Button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Current density: <span className="font-mono font-semibold capitalize text-foreground">{density || "comfortable"}</span>.
+                Applies <code>data-density</code> parameter to override control height (h-control: 36px ↔ 32px) and paddings.
               </p>
             </CardContent>
           </Card>

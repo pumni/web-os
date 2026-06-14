@@ -1,32 +1,37 @@
 "use client";
-
+ 
 import * as React from "react";
-
+ 
 export type Accent = "cyan" | "indigo" | "violet" | "rose";
 export type GlassLevel = "soft" | "default" | "strong";
-
+export type Density = "comfortable" | "compact";
+ 
 // `cyan` is the brand default (no root attribute); `indigo` is kept as the
 // previous brand hue, now a selectable accent.
 export const ACCENTS: readonly Accent[] = ["cyan", "indigo", "violet", "rose"];
 export const GLASS_LEVELS: readonly GlassLevel[] = ["soft", "default", "strong"];
-
+export const DENSITIES: readonly Density[] = ["comfortable", "compact"];
+ 
 type PersonalizationContextValue = {
   accent: Accent;
   glass: GlassLevel;
+  density: Density;
   setAccent: (accent: Accent) => void;
   setGlass: (glass: GlassLevel) => void;
+  setDensity: (density: Density) => void;
 };
-
+ 
 const PersonalizationContext = React.createContext<PersonalizationContextValue | null>(null);
-
+ 
 export const ACCENT_KEY = "pumni-accent";
 export const GLASS_KEY = "pumni-glass";
-
+export const DENSITY_KEY = "pumni-density";
+ 
 // Accent/glass values that set a root attribute (the defaults — cyan / default —
 // are represented by the ABSENCE of the attribute, matching the provider effects).
 const ATTR_ACCENTS = ACCENTS.filter((accent) => accent !== "cyan");
 const ATTR_GLASS = GLASS_LEVELS.filter((level) => level !== "default");
-
+ 
 /*
  * Pre-paint personalization script.
  * next-themes injects its own blocking script for `.dark`, but accent/glass are
@@ -43,6 +48,8 @@ const PERSONALIZATION_SCRIPT =
   `if(${JSON.stringify(ATTR_ACCENTS)}.indexOf(a)>-1){d.setAttribute("data-accent",a)}else{d.removeAttribute("data-accent")}` +
   `var g=localStorage.getItem(${JSON.stringify(GLASS_KEY)});` +
   `if(${JSON.stringify(ATTR_GLASS)}.indexOf(g)>-1){d.setAttribute("data-glass",g)}else{d.removeAttribute("data-glass")}` +
+  `var dn=localStorage.getItem(${JSON.stringify(DENSITY_KEY)});` +
+  `if(dn==="compact"){d.setAttribute("data-density","compact")}else{d.removeAttribute("data-density")}` +
   `}catch(e){}})();`;
 
 /**
@@ -64,46 +71,61 @@ function PersonalizationProvider({
   children,
   defaultAccent = "cyan",
   defaultGlass = "default",
+  defaultDensity = "comfortable",
 }: {
   children: React.ReactNode;
   defaultAccent?: Accent;
   defaultGlass?: GlassLevel;
+  defaultDensity?: Density;
 }) {
   const [accent, setAccentState] = React.useState<Accent>(defaultAccent);
   const [glass, setGlassState] = React.useState<GlassLevel>(defaultGlass);
-
+  const [density, setDensityState] = React.useState<Density>(defaultDensity);
+ 
   // Hydrate from storage after mount so SSR and the first client render match.
   React.useEffect(() => {
     setAccentState(readStored(ACCENT_KEY, ACCENTS, defaultAccent));
     setGlassState(readStored(GLASS_KEY, GLASS_LEVELS, defaultGlass));
-  }, [defaultAccent, defaultGlass]);
-
+    setDensityState(readStored(DENSITY_KEY, DENSITIES, defaultDensity));
+  }, [defaultAccent, defaultGlass, defaultDensity]);
+ 
   // Reflect onto the root element — the same node next-themes flags `.dark`.
   React.useEffect(() => {
     const root = document.documentElement;
     if (accent === "cyan") root.removeAttribute("data-accent");
     else root.setAttribute("data-accent", accent);
   }, [accent]);
-
+ 
   React.useEffect(() => {
     const root = document.documentElement;
     if (glass === "default") root.removeAttribute("data-glass");
     else root.setAttribute("data-glass", glass);
   }, [glass]);
 
+  React.useEffect(() => {
+    const root = document.documentElement;
+    if (density === "comfortable") root.removeAttribute("data-density");
+    else root.setAttribute("data-density", density);
+  }, [density]);
+ 
   const setAccent = React.useCallback((next: Accent) => {
     setAccentState(next);
     if (typeof window !== "undefined") window.localStorage.setItem(ACCENT_KEY, next);
   }, []);
-
+ 
   const setGlass = React.useCallback((next: GlassLevel) => {
     setGlassState(next);
     if (typeof window !== "undefined") window.localStorage.setItem(GLASS_KEY, next);
   }, []);
 
+  const setDensity = React.useCallback((next: Density) => {
+    setDensityState(next);
+    if (typeof window !== "undefined") window.localStorage.setItem(DENSITY_KEY, next);
+  }, []);
+ 
   const value = React.useMemo<PersonalizationContextValue>(
-    () => ({ accent, glass, setAccent, setGlass }),
-    [accent, glass, setAccent, setGlass],
+    () => ({ accent, glass, density, setAccent, setGlass, setDensity }),
+    [accent, glass, density, setAccent, setGlass, setDensity],
   );
 
   return (

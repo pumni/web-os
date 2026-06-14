@@ -309,6 +309,7 @@ exactly like `.dark` does.
   the cascade (incl. `color-mix in oklch`) and asserts ≥ APCA Lc 60 for every accent ×
   light/dark. Read/set via `usePersonalization()`.
 - **Glass** — `soft` / `default` / `strong` bias the shared `--glass-blur`.
+- **Density** — `comfortable` (default, no attribute) or `compact`. Under `[data-density="compact"]`, the semantic token variables `--control-height` (mapped to Tailwind spacing utility `--spacing-control` as `h-control`/`size-control`) and `--control-py` (mapped as `--spacing-control-y` / `py-control-y`) scale controls down dynamically (e.g. height shrinks from 36px/h-9 to 32px/h-8).
 - Mode-aware accents use compound `.dark[data-accent="…"]` selectors (the
   attribute and `.dark` live on the same root node). `personalization.css` is
   imported **after** `theme.css` so its same-specificity rules win on order.

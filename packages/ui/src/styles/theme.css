@@ -296,6 +296,10 @@
   --z-index-tooltip: var(--z-tooltip);
   --z-index-toast: var(--z-toast);
 
+  /* Spacing and control heights for dynamic density support */
+  --spacing-control: var(--control-height);
+  --spacing-control-y: var(--control-py);
+
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }

@@ -118,4 +118,10 @@ describe("z-index layering scale — semantic ordering", () => {
     // Pressed must be stronger than hover
     expect(Number(matchPressed![1])).toBeGreaterThan(Number(matchHover![1]));
   });
+
+  it("density tokens are present in tokens.css", () => {
+    expect(tokenCss).toContain("--control-height-comfortable");
+    expect(tokenCss).toContain("--control-height-compact");
+    expect(tokenCss).toContain("[data-density=\"compact\"]");
+  });
 });

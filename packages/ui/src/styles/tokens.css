@@ -218,4 +218,19 @@
    /* lớp phủ pressed */
    --state-selected: 10%;
    /* lớp phủ selected/active */
+
+   /* --- Density & Spacing --- */
+   --control-height-comfortable: 2.25rem; /* 36px (h-9) */
+   --control-height-compact: 2rem;       /* 32px (h-8) */
+   --control-height: var(--control-height-comfortable);
+
+   --control-py-comfortable: 0.5rem;     /* 8px (py-2) */
+   --control-py-compact: 0.375rem;       /* 6px (py-1.5) */
+   --control-py: var(--control-py-comfortable);
+}
+
+/* Document-level override for compact density */
+[data-density="compact"] {
+  --control-height: var(--control-height-compact);
+  --control-py: var(--control-py-compact);
 }
