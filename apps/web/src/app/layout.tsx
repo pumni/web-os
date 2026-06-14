@@ -45,7 +45,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-background text-foreground">
         {/* Swallow Vidstack's benign "provider destroyed" promise rejection (fired
             when the media provider is torn down mid-load: React StrictMode
             double-mount in dev, or a legitimate source swap). Capture-phase +
