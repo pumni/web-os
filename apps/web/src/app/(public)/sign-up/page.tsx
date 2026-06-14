@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { signUpAction, type AuthFormState } from "../auth-actions";
 import { AuthShell } from "../auth-shell";
-import { Button, Input, Label } from "@pumni/ui";
+import { Input, Label, SubmitButton } from "@pumni/ui";
 
 const initialState: AuthFormState = {};
 
@@ -85,9 +85,9 @@ export default function SignUpPage() {
           </p>
         ) : null}
 
-        <Button type="submit" disabled={pending} className="w-full">
+        <SubmitButton className="w-full">
           {pending ? "Signing up..." : "Sign Up"}
-        </Button>
+        </SubmitButton>
       </form>
     </AuthShell>
   );

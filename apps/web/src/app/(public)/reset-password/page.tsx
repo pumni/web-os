@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { resetPasswordAction, type AuthFormState } from "../auth-actions";
 import { AuthShell } from "../auth-shell";
-import { Button, Input, Label } from "@pumni/ui";
+import { Input, Label, SubmitButton } from "@pumni/ui";
 
 const initialState: AuthFormState = {};
 
@@ -37,9 +37,9 @@ export default function ResetPasswordPage() {
           </p>
         ) : null}
 
-        <Button type="submit" disabled={pending} className="w-full">
+        <SubmitButton className="w-full">
           {pending ? "Updating..." : "Update Password"}
-        </Button>
+        </SubmitButton>
       </form>
     </AuthShell>
   );

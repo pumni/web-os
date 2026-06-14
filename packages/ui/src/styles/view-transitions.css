@@ -14,7 +14,85 @@
       mix-blend-mode: normal !important;
     }
 
-    /* Scoped card transitions (prevent text stretching during height morphing) */
+    /* ---- Keyframes ---- */
+
+    @keyframes vt-fade-out {
+      to { opacity: 0; }
+    }
+    @keyframes vt-fade-in {
+      from { opacity: 0; }
+    }
+    @keyframes vt-fade-out-light {
+      to { opacity: 0.3; }
+    }
+    @keyframes vt-fade-in-light {
+      from { opacity: 0.3; }
+    }
+    @keyframes vt-slide-to-left {
+      to { transform: translateX(-30px); }
+    }
+    @keyframes vt-slide-from-right {
+      from { transform: translateX(30px); }
+    }
+    @keyframes vt-slide-to-right {
+      to { transform: translateX(30px); }
+    }
+    @keyframes vt-slide-from-left {
+      from { transform: translateX(-30px); }
+    }
+    @keyframes vt-zoom-out {
+      to { transform: scale(0.95); }
+    }
+    @keyframes vt-zoom-in {
+      from { transform: scale(1.05); }
+    }
+
+    /* ============================================================
+       Named transition groups
+       ============================================================ */
+
+    /* ---- slide-forward: navigate deeper (forward navigation) ---- */
+    ::view-transition-old(slide-forward) {
+      animation: var(--duration-slow) var(--ease-fluid) both vt-slide-to-left,
+                 var(--duration-base) var(--ease-out) both vt-fade-out-light;
+    }
+    ::view-transition-new(slide-forward) {
+      animation: var(--duration-slow) var(--ease-fluid) both vt-slide-from-right,
+                 var(--duration-base) var(--ease-out) both vt-fade-in-light;
+    }
+
+    /* ---- slide-back: navigate shallower (back navigation) ---- */
+    ::view-transition-old(slide-back) {
+      animation: var(--duration-slow) var(--ease-fluid) both vt-slide-to-right,
+                 var(--duration-base) var(--ease-out) both vt-fade-out-light;
+    }
+    ::view-transition-new(slide-back) {
+      animation: var(--duration-slow) var(--ease-fluid) both vt-slide-from-left,
+                 var(--duration-base) var(--ease-out) both vt-fade-in-light;
+    }
+
+    /* ---- morph-zoom: shared-element morph (same element, different page) ---- */
+    ::view-transition-group(morph-zoom) {
+      animation-duration: var(--duration-slow);
+      animation-timing-function: var(--ease-fluid);
+    }
+    ::view-transition-old(morph-zoom) {
+      animation: var(--duration-base) var(--ease-out) both vt-fade-out;
+    }
+    ::view-transition-new(morph-zoom) {
+      animation: var(--duration-slow) var(--ease-spring) both vt-zoom-in,
+                 var(--duration-base) var(--ease-out) both vt-fade-in;
+    }
+
+    /* ---- card-crossfade: same-route content transition (tabs, filters) ---- */
+    ::view-transition-old(card-crossfade) {
+      animation: var(--duration-base) var(--ease-out) both vt-fade-out;
+    }
+    ::view-transition-new(card-crossfade) {
+      animation: var(--duration-base) var(--ease-fluid) both vt-fade-in;
+    }
+
+    /* ---- Scoped card transitions (prevent text stretching during height morphing) ---- */
     ::view-transition-old(watch-lobby-card),
     ::view-transition-new(watch-lobby-card) {
       object-fit: none !important;
@@ -22,18 +100,11 @@
     }
 
     ::view-transition-old(watch-lobby-card) {
-      animation: var(--duration-base) var(--ease-fluid) both fade-out;
+      animation: var(--duration-base) var(--ease-fluid) both vt-fade-out;
     }
 
     ::view-transition-new(watch-lobby-card) {
-      animation: var(--duration-base) var(--ease-fluid) both fade-in;
-    }
-
-    @keyframes fade-out {
-      to { opacity: 0; }
-    }
-    @keyframes fade-in {
-      from { opacity: 0; }
+      animation: var(--duration-base) var(--ease-fluid) both vt-fade-in;
     }
   }
 }

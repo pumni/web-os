@@ -630,7 +630,7 @@ export function DesignSystemShowcase() {
             <CardContent className="space-y-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-between">
+                  <Button variant="outline" pressable={false} className="w-full justify-between">
                     Open Dropdown
                     <ExternalLinkIcon className="size-4" />
                   </Button>
@@ -697,7 +697,7 @@ export function DesignSystemShowcase() {
 
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline">Open Popover</Button>
+                  <Button variant="outline" pressable={false}>Open Popover</Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-72">
                   <div className="space-y-2">

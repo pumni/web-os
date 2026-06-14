@@ -61,6 +61,7 @@ export function UserMenu({ user }: UserMenuProps) {
         <Button
           variant="ghost"
           size="icon-sm"
+          pressable={false}
           className="relative rounded-full p-0"
           aria-label="Open user menu"
         >

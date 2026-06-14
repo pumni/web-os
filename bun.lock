@@ -131,12 +131,14 @@
       "devDependencies": {
         "@pumni/config": "workspace:*",
         "@types/react": "^19",
+        "@types/react-dom": "^19",
         "eslint": "^9",
         "typescript": "^5",
         "typescript-eslint": "^8",
       },
       "peerDependencies": {
         "react": "^19",
+        "react-dom": "^19",
       },
     },
     "packages/validators": {

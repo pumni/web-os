@@ -67,7 +67,7 @@ export default function AppearanceSettingsPage() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-start sm:w-36">
+              <Button variant="outline" pressable={false} className="w-full justify-start sm:w-36">
                 <SelectedIcon className="size-4" />
                 {selectedTheme.label}
               </Button>

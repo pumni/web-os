@@ -1,0 +1,86 @@
+/*
+ * Pumni OS — @starting-style reference (NOT ACTIVE)
+ * --------------------------------------------------
+ * This file documents the @starting-style progressive enhancement
+ * pattern for overlay entry animations. It is NOT currently imported
+ * in globals.css because the existing tw-animate-css data-state
+ * animations already handle entry/exit correctly.
+ *
+ * When browser support for transition-behavior: allow-discrete is
+ * universal (Chrome 117+, Safari 18+, Firefox TBD), the migration
+ * plan is:
+ *
+ * 1. Gate tw-animate-css animations behind:
+ *      @supports not (transition-behavior: allow-discrete) { ... }
+ * 2. Activate @starting-style transitions as the primary system
+ * 3. Target data-slot attributes instead of custom classes:
+ *      [data-slot="dialog-content"][data-state="open"] { ... }
+ *
+ * The patterns below are written as reference for that migration.
+ * Do NOT add these classes to TSX components — they conflict with
+ * the active tw-animate-css keyframe animations.
+ *
+ * Key insight: @starting-style requires CSS `transition`, while
+ * tw-animate-css uses CSS `animation`. They cannot coexist on the
+ * same element because transition and animation fight for control
+ * of the same properties (transform, opacity).
+ */
+
+/* ==================== REFERENCE PATTERNS ==================== */
+
+/*
+ * Overlay scrim — fade entrance
+ *
+ * .overlay-scrim-entrance {
+ *   opacity: 0;
+ *   transition: opacity var(--duration-base) var(--ease-out),
+ *               display var(--duration-base) allow-discrete,
+ *               overlay var(--duration-base) allow-discrete;
+ *   @starting-style { opacity: 0; }
+ *   &[data-state="open"] { opacity: 1; }
+ * }
+ */
+
+/*
+ * Dialog content — zoom + fade entrance (centered)
+ *
+ * .dialog-entrance {
+ *   opacity: 0;
+ *   transform: scale(0.95);
+ *   transition: opacity var(--duration-base) var(--ease-out),
+ *               transform var(--duration-base) var(--ease-spring),
+ *               display var(--duration-base) allow-discrete,
+ *               overlay var(--duration-base) allow-discrete;
+ *   @starting-style { opacity: 0; transform: scale(0.92); }
+ *   &[data-state="open"] { opacity: 1; transform: scale(1); }
+ * }
+ */
+
+/*
+ * Popover content — zoom + fade entrance
+ * (same pattern as dialog, applies to Popover, DropdownMenu,
+ *  ContextMenu, Select, Tooltip)
+ *
+ * .popover-entrance {
+ *   opacity: 0;
+ *   transform: scale(0.95);
+ *   transition: opacity var(--duration-base) var(--ease-out),
+ *               transform var(--duration-base) var(--ease-spring),
+ *               display var(--duration-base) allow-discrete,
+ *               overlay var(--duration-base) allow-discrete;
+ *   @starting-style { opacity: 0; transform: scale(0.92); }
+ *   &[data-state="open"] { opacity: 1; transform: scale(1); }
+ * }
+ */
+
+/*
+ * Sheet slide — directional entrance
+ *
+ * .sheet-slide-right {
+ *   transform: translateX(100%);
+ *   transition: transform var(--duration-slow) var(--ease-fluid),
+ *               display var(--duration-slow) allow-discrete;
+ *   @starting-style { transform: translateX(100%); }
+ *   &[data-state="open"] { transform: translateX(0); }
+ * }
+ */

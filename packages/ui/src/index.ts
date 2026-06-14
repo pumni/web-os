@@ -14,6 +14,7 @@ export {
 } from "./components/avatar";
 export { BentoGrid, BentoGridItem, type BentoTier } from "./components/bento-grid";
 export { Button, buttonVariants } from "./components/button";
+export { SubmitButton } from "./components/submit-button";
 export {
   Card,
   CardAction,
