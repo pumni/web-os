@@ -1,5 +1,0 @@
-{
-  "crons": [
-    { "path": "/api/watch/cleanup", "schedule": "0 * * * *" }
-  ]
-}
