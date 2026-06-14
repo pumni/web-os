@@ -5,7 +5,7 @@ when-to-load: When styling UI, adding design tokens, building components, or wor
 
 # Pumni OS Design System
 
-Pumni Web OS uses a token-first surface system built from OKLCH primitives, semantic roles, motion tokens, and shared `@pumni/ui` primitives. Accessibility (WCAG 2.2) and `backdrop-filter` performance are treated as infrastructure, not afterthoughts.
+Pumni Web OS uses a token-first surface system built from OKLCH primitives, semantic roles, motion tokens, and shared `@pumni/ui` primitives. Accessibility (WCAG 2.2 for structure — focus, DOM order, reduced-motion/transparency; **APCA** for contrast) and `backdrop-filter` performance are treated as infrastructure, not afterthoughts.
 
 Token source of truth lives in `@pumni/ui`:
 
@@ -28,7 +28,7 @@ falls back to generic Tailwind. Each is enforced or explained in full below.
 | `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-[var(--duration-base)]` | Brand curves + owned timing |
 | Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
 | Glass on hero / page backgrounds | Glass only on floating layers; opaque shell | `backdrop-filter` is GPU-heavy |
-| Eyeballing contrast on glass/accents | Trust the gated tokens; verify 4.5:1 / 3:1 | `glass-contrast` test owns the cascade |
+| Eyeballing contrast on glass/accents | Trust the gated tokens; verify APCA Lc 60 / Lc 25 | `glass-contrast` test owns the cascade |
 | `backdrop-blur-md` | Glass utility / `GlassSurface` | Reduced-transparency and performance fallbacks |
 | `bg-card/40`, `border-border/20` | Solid surface tokens (opaque, `border-border`) | Surfaces are opaque in the unified system |
 | `shadow-md`, `shadow-lg` (Tailwind built-in) on content | `shadow-card` / `shadow-raised` (owned elevation) | One elevation ladder; floating depth comes from the `glass-*` utilities |
@@ -77,7 +77,7 @@ Translucent glass layers are reserved for **floating layers**: Dialog, Sheet, Po
 
 - Apply the role-based utility that matches the layer: `.glass-bar` (topbars/docks/sidebar rails), `.glass-panel` (dialogs, sheets, popovers, command palettes), `.glass-window` (OS windows), or `.glass-titlebar` (window titlebars). The `GlassSurface` component wraps these roles behind a `variant` prop.
 - **Never** put glass on large background areas or stack many glass layers — `backdrop-filter` is GPU-intensive. Keep blur in **8–16px** (`--glass-blur`).
-- The translucent fill (`--glass-bg`) is the **contrast scrim**: verify text and icons meet **4.5:1** (text) / **3:1** (UI) against both light and dark background states.
+- The translucent fill (`--glass-bg`) is the **contrast scrim**: verify text and icons meet **APCA Lc 60** (text) / **Lc 25** (UI) against both light and dark background states.
 - Fallbacks are built in: `prefers-reduced-transparency` → opaque surface, no blur; `prefers-reduced-motion` → animations/transitions neutralized.
 
 ### Surface vocabulary (closed set)
@@ -92,16 +92,22 @@ Every surface must use one of these roles.
 | **Control fill** | `bg-muted` (rest) + `motion-safe:hover:bg-muted/80` (hover only) | Small inline controls: `TabsList`, chips, code pills. Hover may keep ONE opacity step (`/80`); rest state is opaque. |
 | **Status tint** | `bg-{destructive\|warning\|success\|primary}/10 border-{…}/20 text-{…}` | Inline status chips/banners. Standardized to **/10 fill + /20 border**, nothing else. |
 
-### Contrast gating (dual-standard)
+### Contrast gating (APCA)
 
-All semantic color pairs are **dual-gated** by automated tests:
+All semantic color pairs are gated by automated tests using **APCA** (Accessible
+Perceptual Contrast Algorithm — the WCAG 3.0 draft model), **not** the WCAG 2.x
+luminance ratio. APCA is perceptually accurate across light *and* dark, where the
+WCAG 2.x formula over-scores dark-mode pairs due to its luminance bias.
 
-| Standard | Algorithm | Threshold (text) | Threshold (UI) | Status |
-|---|---|---|---|---|
-| WCAG 2.2 | Relative luminance ratio | ≥ 4.5:1 | ≥ 3:1 | Current legal standard |
-| APCA | Perceptual contrast (Lc) | ≥ Lc 60 | ≥ Lc 25 | WCAG 3.0 draft, forward-looking |
+| Algorithm | Threshold (text) | Threshold (UI / non-text) |
+|---|---|---|
+| APCA (Lc) | ≥ Lc 60 | ≥ Lc 25 |
 
-Both must pass. The APCA gate catches dark-mode pairs that WCAG 2.x over-scores due to its luminance formula bias. See [glass-contrast.test.ts](file:///D:/Dev/web-os/apps/web/src/test/design-system/glass-contrast.test.ts).
+Lc 60 is the body-text floor; a few surfaces carry deliberately tuned thresholds
+in the test (dark `muted` text Lc 55, accent surface Lc 45, status tints
+per-token). See [glass-contrast.test.ts](file:///D:/Dev/web-os/apps/web/src/test/design-system/glass-contrast.test.ts).
+This is the **single** contrast source of truth — do not reintroduce a WCAG 2.x
+ratio gate.
 
 **Hard rules:**
 
@@ -271,7 +277,7 @@ exactly like `.dark` does.
   mix would fail AA), and rose keeps `red-600` in dark (lighter `red-500` drops
   the white `--primary-foreground` below AA). These pairs are **gated**, not
   eyeballed — `apps/web/src/test/design-system/glass-contrast.test.ts` resolves
-  the cascade (incl. `color-mix in oklch`) and asserts ≥4.5:1 for every accent ×
+  the cascade (incl. `color-mix in oklch`) and asserts ≥ APCA Lc 60 for every accent ×
   light/dark. Read/set via `usePersonalization()`.
 - **Glass** — `soft` / `default` / `strong` bias the shared `--glass-blur`.
 - Mode-aware accents use compound `.dark[data-accent="…"]` selectors (the

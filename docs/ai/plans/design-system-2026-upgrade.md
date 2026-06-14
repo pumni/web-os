@@ -98,7 +98,7 @@ Map span theo bảng (dùng `cva`, named utility — KHÔNG raw px):
 - **Chống CLS:** thêm prop `minHeight?: string` (mặc định set `min-h-[...]` qua named — nếu cần px thì đặt ở token/inline style, KHÔNG `rounded-[]`; min-height px là chấp nhận được vì không phải màu/radius). Khi `loading`, render `<Skeleton>` (đã có trong `@pumni/ui`) đúng kích thước tile.
 - **Container query reflow:** ví dụ tile feature đổi layout dọc→ngang khi hẹp: dùng biến thể `@max-[28rem]:flex-col` / `@min-[28rem]:flex-row` trên nội dung (Tailwind v4 container variants), không media query viewport.
 
-### 2.3 A11y (WCAG 2.2 — báo cáo nhấn mạnh, đúng)
+### 2.3 A11y cấu trúc (focus / DOM order / aria — WCAG 2.2; contrast thì dùng APCA)
 - **DOM order = visual order:** không dùng `order-*`/grid-flow đảo thứ tự đọc; không `tabindex > 0`.
 - Tile chứa số đơn lẻ (vd "142k") phải có `aria-label` mô tả đầy đủ → thêm prop `ariaLabel?: string` đặt lên `Card` container.
 - Tile tương tác: focus ring qua `:focus-visible` (Card `interactive` đã có ring? kiểm tra — nếu chưa, thêm `focus-visible:ring-2 focus-visible:ring-ring`).

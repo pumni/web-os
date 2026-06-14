@@ -45,9 +45,11 @@
   --radius: var(--radius-base);
 
   /* Typographic compensation (no-op in light) */
-  --font-weight-body:    var(--weight-normal);     /* 400 */
-  --font-weight-heading: var(--weight-semibold);    /* 600 */
-  --tracking-body:       var(--letter-spacing-normal);
+  --font-weight-body: var(--weight-normal);
+  /* 400 */
+  --font-weight-heading: var(--weight-semibold);
+  /* 600 */
+  --tracking-body: var(--letter-spacing-normal);
 
   /* Glass surfaces (translucent fill doubles as the contrast scrim).
      Expressed as <neutral primitive> at an alpha via color-mix so the glass
@@ -96,7 +98,7 @@
 
   --card: color-mix(in oklch, var(--primary) 3%, var(--neutral-900));
   --card-foreground: var(--neutral-50);
-  --popover: color-mix(in oklch, var(--primary) 3%, var(--neutral-900));
+  --popover: color-mix(in oklch, var(--primary) 3%, var(--neutral-880));
   --popover-foreground: var(--neutral-50);
 
   --primary: var(--cyan-500);
@@ -127,9 +129,12 @@
   --ring: var(--cyan-400);
 
   /* Typographic compensation - counter halation */
-  --font-weight-body:    var(--font-weight-body-dark);    /* 350 */
-  --font-weight-heading: var(--font-weight-heading-dark);  /* 550 */
-  --tracking-body:       var(--tracking-body-dark);        /* 0.01em */
+  --font-weight-body: var(--font-weight-body-dark);
+  /* 350 */
+  --font-weight-heading: var(--font-weight-heading-dark);
+  /* 550 */
+  --tracking-body: var(--tracking-body-dark);
+  /* 0.01em */
 
   /* Dark glass: darker translucent fill + brighter hairline border */
   --glass-bg: color-mix(in oklch, var(--neutral-900) 36%, transparent);
@@ -219,9 +224,12 @@
   --radius-3xl: calc(var(--radius) + 16px);
 
   /* Nested radius - R_child = R_parent - gap */
-  --radius-nested-xl: calc(var(--radius-xl) - var(--radius-nest-gap));  /* card child */
-  --radius-nested-lg: calc(var(--radius-lg) - var(--radius-nest-gap));  /* dialog child */
-  --radius-nested-2xl: calc(var(--radius-2xl) - var(--radius-nest-gap)); /* hero child */
+  --radius-nested-xl: calc(var(--radius-xl) - var(--radius-nest-gap));
+  /* card child */
+  --radius-nested-lg: calc(var(--radius-lg) - var(--radius-nest-gap));
+  /* dialog child */
+  --radius-nested-2xl: calc(var(--radius-2xl) - var(--radius-nest-gap));
+  /* hero child */
 
   /* Type scale — owned size + paired line-height (text-xs … text-4xl). */
   --text-xs: var(--font-size-xs);
@@ -247,7 +255,7 @@
   --font-weight-bold: var(--weight-bold);
 
   /* Dark-mode typographic compensation */
-  --font-weight-body:    var(--font-weight-body);
+  --font-weight-body: var(--font-weight-body);
   --font-weight-heading: var(--font-weight-heading);
 
   --tracking-tight: var(--letter-spacing-tight);

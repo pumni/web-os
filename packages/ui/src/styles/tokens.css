@@ -7,169 +7,192 @@
  */
 
 :root {
-  /* --- Brand: Indigo --- */
-  --indigo-50: oklch(0.962 0.018 272.314);
-  --indigo-100: oklch(0.93 0.034 272.788);
-  --indigo-200: oklch(0.87 0.065 274.039);
-  --indigo-300: oklch(0.785 0.115 274.713);
-  --indigo-400: oklch(0.673 0.12 276.935);
-  --indigo-500: oklch(0.585 0.15 277.117);
-  --indigo-600: oklch(0.511 0.16 276.966);
-  --indigo-700: oklch(0.457 0.15 277.023);
-  /* Dark-end chroma tapers monotonically after the 600 peak (was a 0.195 spike
+   /* --- Brand: Indigo --- */
+   --indigo-50: oklch(0.962 0.018 272.314);
+   --indigo-100: oklch(0.93 0.034 272.788);
+   --indigo-200: oklch(0.87 0.065 274.039);
+   --indigo-300: oklch(0.785 0.115 274.713);
+   --indigo-400: oklch(0.673 0.12 276.935);
+   --indigo-500: oklch(0.585 0.15 277.117);
+   --indigo-600: oklch(0.511 0.16 276.966);
+   --indigo-700: oklch(0.457 0.15 277.023);
+   /* Dark-end chroma tapers monotonically after the 600 peak (was a 0.195 spike
      at 800 from hand-tuning over multiple style rounds — see plan). */
-  --indigo-800: oklch(0.398 0.135 277.366);
-  --indigo-900: oklch(0.359 0.11 278.697);
-  --indigo-950: oklch(0.257 0.075 281.288);
+   --indigo-800: oklch(0.398 0.135 277.366);
+   --indigo-900: oklch(0.359 0.11 278.697);
+   --indigo-950: oklch(0.257 0.075 281.288);
 
-  /* --- Brand: Cyan-teal (primary, ~200°) ---
+   /* --- Brand: Cyan-teal (primary, ~200°) ---
      The brand hue. Lightness on the primary stops (500/600) is pulled darker
      than the indigo equivalents because cyan carries far more luminance — the
      primary takes WHITE foreground AND is used as `text-primary`/`text-ring`, so
      it must stay dark enough for AA (gated by glass-contrast.test.ts). */
-  --cyan-50: oklch(0.971 0.02 200);
-  --cyan-100: oklch(0.935 0.04 200);
-  --cyan-200: oklch(0.879 0.068 200);
-  --cyan-300: oklch(0.795 0.1 200.5);
-  --cyan-400: oklch(0.7 0.115 201);
-  --cyan-500: oklch(0.555 0.115 202);
-  --cyan-600: oklch(0.495 0.105 203);
-  --cyan-700: oklch(0.44 0.092 204);
-  --cyan-800: oklch(0.385 0.078 205);
-  --cyan-900: oklch(0.335 0.063 206);
-  --cyan-950: oklch(0.24 0.044 207);
+   --cyan-50: oklch(0.971 0.02 200);
+   --cyan-100: oklch(0.935 0.04 200);
+   --cyan-200: oklch(0.879 0.068 200);
+   --cyan-300: oklch(0.795 0.1 200.5);
+   --cyan-400: oklch(0.7 0.115 201);
+   --cyan-500: oklch(0.555 0.115 202);
+   --cyan-600: oklch(0.495 0.105 203);
+   --cyan-700: oklch(0.44 0.092 204);
+   --cyan-800: oklch(0.385 0.078 205);
+   --cyan-900: oklch(0.335 0.063 206);
+   --cyan-950: oklch(0.24 0.044 207);
 
-  /* --- Brand accent: Violet (kept as a selectable accent) --- */
-  --violet-300: oklch(0.811 0.111 293.571);
-  --violet-400: oklch(0.702 0.12 293.541);
-  --violet-500: oklch(0.606 0.15 292.717);
-  --violet-600: oklch(0.541 0.15 293.009);
+   /* --- Brand accent: Violet (kept as a selectable accent) --- */
+   --violet-300: oklch(0.811 0.111 293.571);
+   --violet-400: oklch(0.702 0.12 293.541);
+   --violet-500: oklch(0.606 0.15 292.717);
+   --violet-600: oklch(0.541 0.15 293.009);
 
-  /* --- Neutrals: Obsidian Slate --- */
-  --neutral-0: oklch(1 0 0);
-  --neutral-50: oklch(0.985 0.003 247.858);
-  --neutral-100: oklch(0.968 0.007 247.896);
-  --neutral-200: oklch(0.929 0.013 255.508);
-  --neutral-300: oklch(0.869 0.022 252.894);
-  --neutral-400: oklch(0.704 0.035 256.788);
-  --neutral-500: oklch(0.554 0.04 257.417);
-  --neutral-600: oklch(0.446 0.038 257.281);
-  --neutral-700: oklch(0.330 0.028 260.0);
-  --neutral-800: oklch(0.220 0.024 260.0);
-  --neutral-900: oklch(0.130 0.020 260.0);
-  --neutral-950: oklch(0.085 0.015 260.0);
-  --neutral-1000: oklch(0 0 0);
+   /* --- Neutrals: Obsidian Slate --- */
+   --neutral-0: oklch(1 0 0);
+   --neutral-50: oklch(0.985 0.003 247.858);
+   --neutral-100: oklch(0.968 0.007 247.896);
+   --neutral-200: oklch(0.929 0.013 255.508);
+   --neutral-300: oklch(0.869 0.022 252.894);
+   --neutral-400: oklch(0.704 0.035 256.788);
+   --neutral-500: oklch(0.554 0.04 257.417);
+   --neutral-600: oklch(0.446 0.038 257.281);
+   --neutral-700: oklch(0.330 0.028 260.0);
+   --neutral-800: oklch(0.220 0.024 260.0);
+   --neutral-860: oklch(0.195 0.022 260.0);
+   --neutral-880: oklch(0.165 0.020 260.0);
+   --neutral-900: oklch(0.130 0.020 260.0);
+   --neutral-950: oklch(0.085 0.015 260.0);
+   --neutral-1000: oklch(0 0 0);
 
-  /* --- Status --- */
-  --red-400: oklch(0.704 0.191 22.216);
-  --red-500: oklch(0.637 0.237 25.331);
-  --red-600: oklch(0.577 0.245 27.325);
-  --rose-400: oklch(0.704 0.191 15.0);
-  --rose-500: oklch(0.637 0.237 15.0);
-  --emerald-400: oklch(0.765 0.177 163.223);
-  --emerald-500: oklch(0.696 0.17 162.48);
-  --emerald-600: oklch(0.596 0.145 163.225);
-  --amber-400: oklch(0.828 0.189 84.429);
-  --amber-500: oklch(0.769 0.188 70.08);
+   /* --- Status --- */
+   --red-400: oklch(0.704 0.191 22.216);
+   --red-500: oklch(0.637 0.237 25.331);
+   --red-600: oklch(0.577 0.245 27.325);
+   --rose-400: oklch(0.704 0.191 15.0);
+   --rose-500: oklch(0.637 0.237 15.0);
+   --emerald-400: oklch(0.765 0.177 163.223);
+   --emerald-500: oklch(0.696 0.17 162.48);
+   --emerald-600: oklch(0.596 0.145 163.225);
+   --amber-400: oklch(0.828 0.189 84.429);
+   --amber-500: oklch(0.769 0.188 70.08);
 
-  /* --- Radius scale --- */
-  --radius-base: 0.625rem; /* 10px — slightly softer than legacy 8px */
+   /* --- Radius scale --- */
+   --radius-base: 0.625rem;
+   /* 10px — slightly softer than legacy 8px */
 
-  /* ---- Nested radius spacing -------------------------------- */
-  /* Default inner padding for nested-radius calc.
+   /* ---- Nested radius spacing -------------------------------- */
+   /* Default inner padding for nested-radius calc.
      R_child = R_parent - padding (per the geometric nesting rule). */
-  --radius-nest-gap: 0.75rem;  /* 12px - typical card padding */
+   --radius-nest-gap: 0.75rem;
+   /* 12px - typical card padding */
 
-  /* --- Typography: raw size + paired line-height scale ---
+   /* --- Typography: raw size + paired line-height scale ---
      Distinct names from the Tailwind `--text-*` namespace they bridge into
      (see theme.css) to avoid self-referential `var()` cycles. */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
+   --font-size-xs: 0.75rem;
+   --font-size-sm: 0.875rem;
+   --font-size-base: 1rem;
+   --font-size-lg: 1.125rem;
+   --font-size-xl: 1.25rem;
+   --font-size-2xl: 1.5rem;
+   --font-size-3xl: 1.875rem;
+   --font-size-4xl: 2.25rem;
 
-  --line-height-xs: 1rem;
-  --line-height-sm: 1.25rem;
-  --line-height-base: 1.5rem;
-  --line-height-lg: 1.75rem;
-  --line-height-xl: 1.75rem;
-  --line-height-2xl: 2rem;
-  --line-height-3xl: 2.25rem;
-  --line-height-4xl: 2.5rem;
+   --line-height-xs: 1rem;
+   --line-height-sm: 1.25rem;
+   --line-height-base: 1.5rem;
+   --line-height-lg: 1.75rem;
+   --line-height-xl: 1.75rem;
+   --line-height-2xl: 2rem;
+   --line-height-3xl: 2.25rem;
+   --line-height-4xl: 2.5rem;
 
-  --weight-normal: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
+   --weight-normal: 400;
+   --weight-medium: 500;
+   --weight-semibold: 600;
+   --weight-bold: 700;
 
-  /* Tighten large display text; dense OS chrome stays optically neutral. */
-  --letter-spacing-tight: -0.015em;
-  --letter-spacing-normal: 0em;
-  --letter-spacing-wide: 0.025em;
+   /* Tighten large display text; dense OS chrome stays optically neutral. */
+   --letter-spacing-tight: -0.015em;
+   --letter-spacing-normal: 0em;
+   --letter-spacing-wide: 0.025em;
 
-  /* ---- Dark-mode typographic compensation ------------------- */
-  /* Halation causes bright text on dark bg to appear heavier.
+   /* ---- Dark-mode typographic compensation ------------------- */
+   /* Halation causes bright text on dark bg to appear heavier.
      These offsets reduce weight + widen spacing to compensate.   */
-  --font-weight-body-dark:     350;    /* reduces 400 by 50    */
-  --font-weight-heading-dark:  550;    /* reduces 600 by 50    */
-  --tracking-body-dark:        0.01em; /* widens body slightly */
-  --leading-compensation-dark: 0.075;  /* extra line-height    */
+   --font-weight-body-dark: 350;
+   /* reduces 400 by 50    */
+   --font-weight-heading-dark: 550;
+   /* reduces 600 by 50    */
+   --tracking-body-dark: 0.01em;
+   /* widens body slightly */
+   --leading-compensation-dark: 0.075;
+   /* extra line-height    */
 
-  /* --- Glass blur (kept in the GPU-friendly 8–15px range) --- */
-  --blur-glass-sm: 10px;
-  --blur-glass: 16px;
-  --blur-glass-lg: 24px;
+   /* --- Glass blur (kept in the GPU-friendly 8–15px range) --- */
+   --blur-glass-sm: 10px;
+   --blur-glass: 16px;
+   --blur-glass-lg: 24px;
 
-  /* --- Elevation shadows (tuned for floating glass layers) --- */
-  --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
-  --shadow-2: 0 4px 12px -2px oklch(0 0 0 / 0.12), 0 2px 4px -2px oklch(0 0 0 / 0.08);
-  /* Neutral, layered elevation for floating glass — soft modern depth instead
+   /* --- Elevation shadows (tuned for floating glass layers) --- */
+   --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+   --shadow-2: 0 4px 12px -2px oklch(0 0 0 / 0.12), 0 2px 4px -2px oklch(0 0 0 / 0.08);
+   /* Neutral, layered elevation for floating glass — soft modern depth instead
      of a tinted halo. Multiple stacked steps read as ambient + key light. */
-  --shadow-glass: 0 1px 2px -1px oklch(0 0 0 / 0.06),
-    0 6px 12px -4px oklch(0 0 0 / 0.1), 0 18px 40px -12px oklch(0 0 0 / 0.16);
-  --shadow-glass-glow-soft: 0 1px 1px -0.5px oklch(0 0 0 / 0.04),
-    0 6px 14px -6px oklch(0 0 0 / 0.1), 0 18px 36px -14px oklch(0 0 0 / 0.16);
-  /* Active windows: deeper layered shadow. Outline added dynamically in theme.css. */
-  --shadow-glass-glow-base: 0 2px 4px -1px oklch(0 0 0 / 0.06),
-    0 12px 28px -8px oklch(0 0 0 / 0.18), 0 28px 56px -18px oklch(0 0 0 / 0.22);
+   --shadow-glass: 0 1px 2px -1px oklch(0 0 0 / 0.06),
+      0 6px 12px -4px oklch(0 0 0 / 0.1), 0 18px 40px -12px oklch(0 0 0 / 0.16);
+   --shadow-glass-glow-soft: 0 1px 1px -0.5px oklch(0 0 0 / 0.04),
+      0 6px 14px -6px oklch(0 0 0 / 0.1), 0 18px 36px -14px oklch(0 0 0 / 0.16);
+   /* Active windows: deeper layered shadow. Outline added dynamically in theme.css. */
+   --shadow-glass-glow-base: 0 2px 4px -1px oklch(0 0 0 / 0.06),
+      0 12px 28px -8px oklch(0 0 0 / 0.18), 0 28px 56px -18px oklch(0 0 0 / 0.22);
 
-  /* --- Z-index: single owned OS layering scale (see design-system.md).
+   /* --- Z-index: single owned OS layering scale (see design-system.md).
      EVERY cross-component layer — shell chrome AND floating primitives —
      reads these tokens. Never hand-pick a raw Tailwind `z-40`: a chrome layer
      on the 0–50 scale will be leap-frogged by a token-based floating layer
      (a `Window` at 110 painting over a `z-40` topbar is exactly that bug). --- */
-  --z-desktop: -1;        /* fixed OS wallpaper, painted behind app content */
-  --z-base: 0;
-  --z-window: 100;        /* OS window (inactive) */
-  --z-window-active: 110; /* focused OS window */
-  --z-sidebar: 700;       /* persistent shell rail */
-  --z-dock: 800;          /* floating dock */
-  --z-topbar: 850;        /* top app bar (above windows + rail) */
-  --z-overlay: 900;       /* scrim behind modals / sheets / popovers */
-  --z-modal: 1000;        /* dialog / sheet panel */
-  --z-command: 1100;      /* command palette */
-  --z-toast: 1200;        /* toasts — always frontmost */
+   --z-desktop: -1;
+   /* fixed OS wallpaper, painted behind app content */
+   --z-base: 0;
+   --z-window: 100;
+   /* OS window (inactive) */
+   --z-window-active: 110;
+   /* focused OS window */
+   --z-sidebar: 700;
+   /* persistent shell rail */
+   --z-dock: 800;
+   /* floating dock */
+   --z-topbar: 850;
+   /* top app bar (above windows + rail) */
+   --z-overlay: 900;
+   /* scrim behind modals / sheets / popovers */
+   --z-modal: 1000;
+   /* dialog / sheet panel */
+   --z-command: 1100;
+   /* command palette */
+   --z-toast: 1200;
+   /* toasts — always frontmost */
 
-  /* --- Motion --- */
-  --duration-fast: 120ms;
-  --duration-base: 200ms;
-  --duration-slow: 320ms;
-  --duration-slower: 480ms;  /* page / view-transition (~500ms) */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); /* overshoot pop — modal/success/shake */
-  /* Tactile press depress for interactive surfaces (CSS micro-feedback, gated
+   /* --- Motion --- */
+   --duration-fast: 120ms;
+   --duration-base: 200ms;
+   --duration-slow: 320ms;
+   --duration-slower: 480ms;
+   /* page / view-transition (~500ms) */
+   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+   /* overshoot pop — modal/success/shake */
+   /* Tactile press depress for interactive surfaces (CSS micro-feedback, gated
      behind `motion-safe`). Unitless = uniform scale. */
-  --press-scale: 0.97;
-  --stagger-base: 50ms;      /* token hoá cadence stagger (report: 50ms) */
+   --press-scale: 0.97;
+   --stagger-base: 50ms;
+   /* token hoá cadence stagger (report: 50ms) */
 
-  /* ---- Scroll-driven animation ------------------------------ */
-  /* Progressive enhancement - gated behind @supports.
+   /* ---- Scroll-driven animation ------------------------------ */
+   /* Progressive enhancement - gated behind @supports.
      CSS scroll-driven animations run off the main thread.       */
-  --scroll-fade-range:    100px;   /* distance over which fade triggers */
-  --scroll-parallax-rate: 0.3;     /* parallax displacement factor     */
+   --scroll-fade-range: 100px;
+   /* distance over which fade triggers */
+   --scroll-parallax-rate: 0.3;
+   /* parallax displacement factor     */
 }
