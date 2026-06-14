@@ -158,11 +158,14 @@
   --duration-fast: 120ms;
   --duration-base: 200ms;
   --duration-slow: 320ms;
+  --duration-slower: 480ms;  /* page / view-transition (~500ms) */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); /* overshoot pop — modal/success/shake */
   /* Tactile press depress for interactive surfaces (CSS micro-feedback, gated
      behind `motion-safe`). Unitless = uniform scale. */
   --press-scale: 0.97;
+  --stagger-base: 50ms;      /* token hoá cadence stagger (report: 50ms) */
 
   /* ---- Scroll-driven animation ------------------------------ */
   /* Progressive enhancement - gated behind @supports.

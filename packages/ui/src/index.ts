@@ -1,6 +1,6 @@
 export { cn } from "./lib/cn";
 export { withViewTransition } from "./lib/view-transition";
-export { duration, easing, motionTokens, pressScale, recipes, transition } from "./lib/motion";
+export { duration, easing, motionTokens, pressScale, recipes, staggerBase, transition } from "./lib/motion";
 // Centralise motion presence orchestration so apps don't add their own `motion`
 // dependency (single version, clean package boundary).
 export { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -12,7 +12,7 @@ export {
   AvatarGroupCount,
   AvatarImage,
 } from "./components/avatar";
-export { BentoGrid, BentoGridItem } from "./components/bento-grid";
+export { BentoGrid, BentoGridItem, type BentoTier } from "./components/bento-grid";
 export { Button, buttonVariants } from "./components/button";
 export {
   Card,
@@ -24,6 +24,7 @@ export {
   CardTitle,
   cardVariants,
 } from "./components/card";
+export { CardSpotlight } from "./components/card-spotlight";
 export { Checkbox } from "./components/checkbox";
 export { CommandPalette, type CommandItem } from "./components/command-palette";
 export {

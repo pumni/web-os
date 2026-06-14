@@ -25,6 +25,8 @@ import {
   AvatarBadge,
   AvatarGroup,
   AvatarGroupCount,
+  BentoGrid,
+  BentoGridItem,
   Button,
   Card,
   CardHeader,
@@ -33,6 +35,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
+  CardSpotlight,
   Checkbox,
   CommandPalette,
   type CommandItem,
@@ -1213,6 +1216,199 @@ export function DesignSystemShowcase() {
 
       {/* COMMAND PALETTE PORTAL */}
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} items={commandItems} />
+
+      {/* 9. BENTO GRID — 12-col visual contract for Playwright snapshots */}
+      <ShowcaseSection
+        title="Bento Grid (12-col)"
+        description="Mathematical 12-column grid with tier-based spans (hero/feature/metric/accent/full). Visual contract: Playwright snapshots this section."
+      >
+        <BentoGrid id="bento-showcase">
+          {/* HERO tier: col-span-6 row-span-2 (desktop), col-span-6 (tablet) */}
+          <BentoGridItem
+            tier="hero"
+            ariaLabel="142k active users this month"
+            icon={<UserIcon className="size-4" />}
+            title="142k"
+            description="Active users this month — hero KPI tile"
+            minHeight={220}
+          >
+            <div className="flex-1 flex items-end">
+              <div className="w-full h-16 flex items-end gap-1">
+                {[40, 55, 38, 72, 60, 85, 78].map((h, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 rounded-sm bg-primary/20"
+                    style={{ height: `${h}%` }}
+                  />
+                ))}
+              </div>
+            </div>
+          </BentoGridItem>
+
+          {/* FEATURE tier: col-span-4 row-span-2 (desktop), col-span-6 (tablet) */}
+          <BentoGridItem
+            tier="feature"
+            icon={<SettingsIcon className="size-4" />}
+            title="System Health"
+            description="Feature tile — chart / sparkline / donut"
+            minHeight={220}
+          >
+            <div className="flex-1 flex items-center justify-center">
+              <div className="relative size-20">
+                <svg viewBox="0 0 36 36" className="size-full -rotate-90">
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted" />
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="72 28" className="text-primary" />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center text-sm font-bold">72%</span>
+              </div>
+            </div>
+          </BentoGridItem>
+
+          {/* METRIC tier: col-span-3 (desktop), col-span-3 (tablet) */}
+          <BentoGridItem
+            tier="metric"
+            ariaLabel="98.7% uptime SLA"
+            icon={<CheckCircle2Icon className="size-4" />}
+            title="98.7%"
+            description="Uptime SLA"
+          />
+
+          {/* METRIC tile: another KPI */}
+          <BentoGridItem
+            tier="metric"
+            ariaLabel="3.4ms average API response time"
+            icon={<BellIcon className="size-4" />}
+            title="3.4ms"
+            description="Avg. API response"
+          />
+
+          {/* METRIC tile: another KPI */}
+          <BentoGridItem
+            tier="metric"
+            ariaLabel="24 active sessions"
+            icon={<MoonIcon className="size-4" />}
+            title="24"
+            description="Active sessions"
+          />
+
+          {/* METRIC tile: another KPI */}
+          <BentoGridItem
+            tier="metric"
+            ariaLabel="1.2GB memory used"
+            icon={<SunIcon className="size-4" />}
+            title="1.2GB"
+            description="Memory used"
+          />
+
+          {/* ACCENT tier: col-span-2 (desktop), col-span-2 (tablet) */}
+          <BentoGridItem
+            tier="accent"
+            icon={<PlusIcon className="size-4" />}
+            title="Quick Add"
+            description="CTA tile"
+          />
+
+          <BentoGridItem
+            tier="accent"
+            icon={<ExternalLinkIcon className="size-4" />}
+            title="Export"
+            description="Accent shortcut"
+          />
+
+          {/* FULL tier: col-span-12 (desktop), col-span-6 (tablet) */}
+          <BentoGridItem
+            tier="full"
+            title="Activity Feed"
+            description="Full-width tile — activity feed, data tables, high-density content"
+          >
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-8 rounded-md" />
+              ))}
+            </div>
+          </BentoGridItem>
+        </BentoGrid>
+      </ShowcaseSection>
+
+      {/* 10. CARD STATES & SPOTLIGHT */}
+      <ShowcaseSection
+        title="Card States & Spotlight"
+        description="State machine (idle/loading/error/success) and pointer-tracked spotlight variant."
+      >
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Idle — default */}
+          <Card state="idle" className="p-5">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle className="text-sm">Idle State</CardTitle>
+              <CardDescription>Default — no feedback</CardDescription>
+            </CardHeader>
+            <CardContent className="px-0 text-xs text-muted-foreground">
+              Passive surface, no animation.
+            </CardContent>
+          </Card>
+
+          {/* Loading */}
+          <Card state="loading" className="p-5">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle className="text-sm">Loading State</CardTitle>
+              <CardDescription>Breathing pulse + aria-busy</CardDescription>
+            </CardHeader>
+            <CardContent className="px-0 space-y-2">
+              <Skeleton className="h-3 w-4/5" />
+              <Skeleton className="h-3 w-3/5" />
+            </CardContent>
+          </Card>
+
+          {/* Error */}
+          <Card state="error" className="p-5">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle className="text-sm text-destructive">Error State</CardTitle>
+              <CardDescription>Shake + destructive border</CardDescription>
+            </CardHeader>
+            <CardContent className="px-0 text-xs text-muted-foreground">
+              Lateral shake runs once. Border tint: destructive/20.
+            </CardContent>
+          </Card>
+
+          {/* Success */}
+          <Card state="success" className="p-5">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle className="text-sm text-success">Success State</CardTitle>
+              <CardDescription>Spring border + success tint</CardDescription>
+            </CardHeader>
+            <CardContent className="px-0 text-xs text-muted-foreground">
+              Border tint: success/20 with --ease-spring transition.
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Spotlight */}
+        <div className="mt-6 grid gap-6 sm:grid-cols-2">
+          <CardSpotlight interactive className="p-6">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle>Spotlight Variant</CardTitle>
+              <CardDescription>Hover to see the pointer-tracked radial highlight.</CardDescription>
+            </CardHeader>
+            <CardContent className="px-0 text-sm text-muted-foreground">
+              The highlight uses <code>color-mix(oklch, --primary 12%)</code> — a semantic
+              token expression, not a raw color. Reduced-motion hides it entirely.
+            </CardContent>
+          </CardSpotlight>
+
+          <CardSpotlight interactive className="p-6">
+            <CardHeader className="px-0 pt-0">
+              <CardTitle>Spotlight + Content</CardTitle>
+              <CardDescription>Highlight passes through clicks (pointer-events: none).</CardDescription>
+            </CardHeader>
+            <CardContent className="px-0 space-y-3">
+              <Button size="sm">Action Button</Button>
+              <p className="text-xs text-muted-foreground">
+                Interactive content works normally inside a spotlight card.
+              </p>
+            </CardContent>
+          </CardSpotlight>
+        </div>
+      </ShowcaseSection>
     </div>
   );
 }

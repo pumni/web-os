@@ -178,6 +178,49 @@
 }
 
 /*
+ * Card spotlight utility — pointer-tracked radial highlight.
+ * Consumer: CardSpotlight client wrapper injects --spot-x / --spot-y via
+ * onPointerMove. The gradient uses color-mix with the semantic --primary token
+ * (valid: not a raw color, see design-system.md status-tint rules).
+ *
+ * Only applied when variant="spotlight" is used on Card (adds class `card-spotlight`).
+ * Requires `overflow-hidden` + `rounded-[inherit]` on the highlight layer.
+ */
+@utility card-spotlight {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      200px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      color-mix(in oklch, var(--primary) 12%, transparent),
+      transparent 70%
+    );
+    transition: opacity var(--duration-base) var(--ease-out);
+  }
+
+  /* Show highlight on hover — gated via group-hover (applied by Card interactive). */
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Reduced-motion: hide the spotlight highlight entirely. */
+@media (prefers-reduced-motion: reduce) {
+  .card-spotlight::before {
+    display: none;
+  }
+}
+
+/* Forced-colors: gradient is naturally ignored — no extra handling needed. */
+
+/*
  * Accessibility — reduced motion.
  * Global safety net: neutralise animations/transitions for users who ask
  * for less motion (purposeful motion is the default, calm is the fallback).

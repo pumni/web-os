@@ -27,16 +27,15 @@ export default async function DashboardPage() {
       </div>
 
       <BentoGrid>
-        {/* Card 1: Welcome & Info (2x1) */}
+        {/* Card 1: Welcome & Info — hero (6 cols desktop, 6 cols tablet) */}
         <BentoGridItem
-          colSpan="md:col-span-2"
-          rowSpan="row-span-1"
+          tier="hero"
           icon={<Sparkles className="size-5" />}
           title="Welcome to Pumni OS"
           description="This desktop runs on Pumni's token-first design system: OKLCH color roles, shared @pumni/ui primitives, and accessible surfaces."
           interactive={false}
         >
-          <div className="mt-2 flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <Button asChild size="sm">
               <a
                 href="https://github.com/pumni/Sky-Player"
@@ -55,36 +54,34 @@ export default async function DashboardPage() {
           </div>
         </BentoGridItem>
 
-        {/* Card 2: System Time (1x1) */}
-        <BentoGridItem colSpan="col-span-1" rowSpan="row-span-1" interactive={true}>
+        {/* Card 2: System Time — metric (3 cols desktop, 3 cols tablet) */}
+        <BentoGridItem tier="metric" interactive={true}>
           <DashboardClockCard />
         </BentoGridItem>
 
-        {/* Card 3: Sky Player Controller (2x2) */}
+        {/* Card 3: Sky Player Controller — feature (4 cols / row-span-2) */}
         <BentoGridItem
-          colSpan="md:col-span-2"
-          rowSpan="md:row-span-2"
+          tier="feature"
           className="p-0 border-0 bg-transparent shadow-none"
           interactive={false}
         >
           <PreviewWindow className="max-w-none w-full" />
         </BentoGridItem>
 
-        {/* Card 4: Accent personalizer (1x1) */}
-        <BentoGridItem colSpan="col-span-1" rowSpan="row-span-1" interactive={true}>
+        {/* Card 4: Accent personalizer — metric (3 cols desktop) */}
+        <BentoGridItem tier="metric" interactive={true}>
           <DashboardAccentCard />
         </BentoGridItem>
 
-        {/* Card 5: Profile quick summary (1x1) */}
+        {/* Card 5: Profile quick summary — metric (3 cols) */}
         <BentoGridItem
-          colSpan="col-span-1"
-          rowSpan="row-span-1"
+          tier="metric"
           icon={<UserIcon className="size-5" />}
           title="User Profile"
           description={user.email}
           interactive={true}
         >
-          <div className="mt-2 flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2.5">
               <Avatar className="size-9 ring-1 ring-border">
                 <AvatarImage src={user.user_metadata?.avatar_url ?? undefined} />
@@ -105,16 +102,15 @@ export default async function DashboardPage() {
           </div>
         </BentoGridItem>
 
-        {/* Card 6: Watch Together Quick Access (1x1) */}
+        {/* Card 6: Watch Together — full (12 cols desktop, spans wide) */}
         <BentoGridItem
-          colSpan="md:col-span-3"
-          rowSpan="row-span-1"
+          tier="full"
           icon={<Tv className="size-5" />}
           title="Watch Together"
           description="Watch synchronized video loops together with friends in real-time."
           interactive={true}
         >
-          <div className="mt-auto pt-2 flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4">
             <span className="text-[10px] font-medium text-muted-foreground">
               Multiplayer lobby
             </span>

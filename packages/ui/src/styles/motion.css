@@ -1,0 +1,45 @@
+/*
+ * Pumni OS — Component motion keyframes
+ * ----------------------------------------
+ * Keyframes for state-driven card animations (breathe, shake).
+ * All durations and easings reference CSS tokens from `tokens.css`.
+ *
+ * These are automatically neutralised by the global reduced-motion safety
+ * net in `glass.css` (animation-duration: 0.01ms !important), but each
+ * usage site also gates with `motion-safe:` for clarity of intent.
+ */
+
+/* ---- Card loading state: gentle opacity pulse ---- */
+@keyframes breathe {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+/* ---- Card error state: lateral shake ---- */
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-4px); }
+  30%  { transform: translateX(4px); }
+  45%  { transform: translateX(-3px); }
+  60%  { transform: translateX(3px); }
+  75%  { transform: translateX(-1px); }
+  90%  { transform: translateX(1px); }
+  100% { transform: translateX(0); }
+}
+
+/* ---- Utilities referenced by card.tsx data-state selectors ---- */
+
+/*
+ * Animate only when reduced-motion is not requested (motion-safe: Tailwind
+ * utility applies this rule at authoring time; here we add the @media guard
+ * as an explicit belt-and-suspenders for any cascade that escapes the utility).
+ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-slot="card"][data-state="loading"] {
+    animation: breathe var(--duration-slower) var(--ease-in-out) infinite;
+  }
+
+  [data-slot="card"][data-state="error"] {
+    animation: shake var(--duration-base) var(--ease-spring) 1;
+  }
+}

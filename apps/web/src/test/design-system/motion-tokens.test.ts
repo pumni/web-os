@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import { duration, easing, pressScale } from "@pumni/ui";
+import { duration, easing, pressScale, staggerBase } from "@pumni/ui";
 
 /**
  * Motion bridge guard. `lib/motion.ts` is a hand-kept mirror of the `--duration-*`
@@ -42,15 +42,22 @@ describe("motion token bridge stays in sync with tokens.css", () => {
     expect(duration.fast).toBeCloseTo(readDurationSeconds("--duration-fast"), 5);
     expect(duration.base).toBeCloseTo(readDurationSeconds("--duration-base"), 5);
     expect(duration.slow).toBeCloseTo(readDurationSeconds("--duration-slow"), 5);
+    expect(duration.slower).toBeCloseTo(readDurationSeconds("--duration-slower"), 5);
   });
 
   it("easings mirror the brand cubic-bezier curves", () => {
     // fluid ⇄ --ease-out (emphasized decelerate), snappy ⇄ --ease-in-out (symmetric).
     expect([...easing.fluid]).toEqual(readCubicBezier("--ease-out"));
     expect([...easing.snappy]).toEqual(readCubicBezier("--ease-in-out"));
+    // spring ⇄ --ease-spring (overshoot pop — modal/success/shake).
+    expect([...easing.spring]).toEqual(readCubicBezier("--ease-spring"));
   });
 
   it("press scale mirrors --press-scale (CSS micro-feedback ⇄ JS press recipes)", () => {
     expect(pressScale).toBeCloseTo(readUnitless("--press-scale"), 5);
+  });
+
+  it("staggerBase mirrors --stagger-base (50ms → 0.05s)", () => {
+    expect(staggerBase).toBeCloseTo(readDurationSeconds("--stagger-base"), 5);
   });
 });

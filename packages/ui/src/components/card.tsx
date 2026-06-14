@@ -9,13 +9,34 @@ import { cn } from "../lib/cn";
  * fill, hairline border, owned `shadow-card` depth. `inset` is the recessed
  * nested well (muted fill, no shadow). `glass` is opt-in for cards that literally
  * float over other content (it carries the translucent glass treatment + a11y
- * fallbacks); most content should stay solid.
+ * fallbacks); most content should stay solid. `spotlight` is opt-in: a
+ * pointer-tracked radial highlight appears on hover (needs the `CardSpotlight`
+ * wrapper which is the client component that injects `--spot-x`/`--spot-y`).
  *
  * `interactive` opts a clickable card into CSS micro-feedback (hover lift +
  * press depress, both `motion-safe`-gated). Leave it off for passive surfaces —
  * a static card must not depress. This is the CSS counterpart to the JS
  * `recipes.hoverLift`; reach for the recipe only when the card is already a
  * `motion.*` element (e.g. inside a stagger).
+ *
+ * ### Card states
+ *
+ * The `state` prop drives data-driven surface feedback without layout shifts:
+ *
+ * - `"idle"` (default) — no change.
+ * - `"loading"` — subtle opacity breathing pulse (`motion-safe:animate-breathe`
+ *   via `motion.css` keyframe). Sets `aria-busy="true"` automatically.
+ * - `"error"` — lateral shake animation (`motion-safe:animate-shake`),
+ *   destructive border tint (`border-destructive/20`). Runs once and stops.
+ *   **Consumer responsibility:** pair with an `aria-live="polite"` region
+ *   outside the Card that announces the error message — the shake is visual
+ *   only.
+ * - `"success"` — success border tint (`border-success/20`) with a spring
+ *   ring fade. **Consumer responsibility:** pair with an `aria-live="polite"`
+ *   region that announces the success confirmation.
+ *
+ * All motion gates behind `prefers-reduced-motion` via the global CSS safety
+ * net (`glass.css`) plus the `motion-safe:` Tailwind utility on each class.
  */
 const cardVariants = cva("flex flex-col gap-6 py-6 text-card-foreground", {
   variants: {
@@ -27,6 +48,10 @@ const cardVariants = cva("flex flex-col gap-6 py-6 text-card-foreground", {
       // Opt-in: floating translucent glass. Use ONLY when the card literally
       // floats over other content. Most content should NOT use this.
       glass: "glass-panel",
+      // Opt-in: pointer-tracked spotlight highlight on hover.
+      // Renders the same opaque base as `solid` + adds a ::before radial
+      // gradient that follows the cursor (requires CardSpotlight client wrapper).
+      spotlight: "border bg-card shadow-card card-spotlight group",
     },
     interactive: {
       true: "cursor-pointer transition-[transform,box-shadow,border-color] duration-[var(--duration-base)] ease-snappy hover:shadow-interactive-hover hover:border-primary/30 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)",
@@ -42,11 +67,31 @@ const cardVariants = cva("flex flex-col gap-6 py-6 text-card-foreground", {
       "2xl": "rounded-2xl [--parent-radius:var(--radius-2xl)]",
       "3xl": "rounded-3xl [--parent-radius:var(--radius-3xl)]",
     },
+    state: {
+      /** No feedback — default passive surface. */
+      idle: "",
+      /**
+       * Loading: opacity breathing pulse, gated behind motion-safe.
+       * `aria-busy="true"` is set automatically on the element.
+       */
+      loading: "motion-safe:animate-[breathe_var(--duration-slower)_var(--ease-in-out)_infinite]",
+      /**
+       * Error: lateral shake (runs once), destructive border tint.
+       * Status-tint pattern: /20 border is valid per design-system.md.
+       */
+      error: "border-destructive/20 motion-safe:animate-[shake_var(--duration-base)_var(--ease-spring)_1]",
+      /**
+       * Success: success border tint with spring transition.
+       * Status-tint pattern: /20 border is valid per design-system.md.
+       */
+      success: "border-success/20 transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-spring)]",
+    },
   },
   defaultVariants: {
     variant: "solid",
     interactive: false,
     radius: "xl",
+    state: "idle",
   },
 });
 
@@ -55,16 +100,23 @@ function Card({
   variant,
   interactive,
   radius,
+  state,
   asChild = false,
   ...props
 }: React.ComponentProps<"div"> &
   VariantProps<typeof cardVariants> & { asChild?: boolean }) {
   const Comp = asChild ? Slot.Root : "div";
+
+  // aria-busy should be true when in loading state
+  const ariaBusy = state === "loading" ? true : undefined;
+
   return (
     <Comp
       data-slot="card"
       data-variant={variant ?? "solid"}
-      className={cn(cardVariants({ variant, interactive, radius }), className)}
+      data-state={state ?? "idle"}
+      aria-busy={ariaBusy}
+      className={cn(cardVariants({ variant, interactive, radius, state }), className)}
       {...props}
     />
   );

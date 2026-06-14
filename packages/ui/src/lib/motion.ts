@@ -15,6 +15,7 @@ export const duration = {
   fast: 0.12,
   base: 0.2,
   slow: 0.32,
+  slower: 0.48, /* page / view-transition (~500ms) */
 } as const;
 
 /**
@@ -31,6 +32,8 @@ export const easing = {
   fluid: [0.16, 1, 0.3, 1] as [number, number, number, number],
   /** Symmetric — moves / reorders. Mirrors `--ease-in-out`. */
   snappy: [0.65, 0, 0.35, 1] as [number, number, number, number],
+  /** Overshoot pop — modal/success/shake. Mirrors `--ease-spring`. */
+  spring: [0.175, 0.885, 0.32, 1.275] as [number, number, number, number],
 } as const;
 
 /** Ready-made `transition` props for motion components. */
@@ -48,9 +51,15 @@ export const transition = {
  * `<motion.button {...recipes.pressScale}>`. They describe the FULL-energy path
  * only: motion's JS animations are not silenced by the CSS reduced-motion media
  * query, so a component that uses a recipe MUST still call `useReducedMotion()`
- * and skip/neutralise it when reduced (see `Window`). Stagger cadence (`0.04`s)
- * is an interaction rhythm, not a duration token, so it stays inline.
+ * and skip/neutralise it when reduced (see `Window`). Stagger cadence is
+ * token-hoá via `staggerBase` (mirrors `--stagger-base` in tokens.css).
  */
+/**
+ * Stagger cadence in seconds — mirrors `--stagger-base` (50ms = 0.05s) in
+ * tokens.css. Kept in sync by `motion-tokens.test.ts`.
+ */
+export const staggerBase = 0.05;
+
 export const recipes = {
   /** Card / tile hover — subtle rise + tap press. Snappy (a move, not an entrance). */
   hoverLift: {
@@ -69,7 +78,7 @@ export const recipes = {
     animate: "visible",
     variants: {
       hidden: {},
-      visible: { transition: { staggerChildren: 0.04, delayChildren: 0.02 } },
+      visible: { transition: { staggerChildren: staggerBase, delayChildren: 0.02 } },
     },
   },
   /** Child of `staggerContainer` — fade + rise into place. */
@@ -88,4 +97,4 @@ export const recipes = {
   },
 } as const;
 
-export const motionTokens = { duration, easing, pressScale, transition, recipes } as const;
+export const motionTokens = { duration, easing, pressScale, transition, recipes, staggerBase } as const;
