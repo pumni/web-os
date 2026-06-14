@@ -232,10 +232,17 @@ primitives and the app-shell chrome read it. The order, low → high:
 | `z-sidebar` | `700` | Persistent shell rail |
 | `z-dock` | `800` | Floating dock |
 | `z-topbar` | `850` | Top app bar |
-| `z-overlay` | `900` | Scrim behind modals/sheets/popovers |
+| `z-overlay` | `900` | **Scrim only** — behind modals/sheets (never use for content) |
 | `z-modal` | `1000` | Dialog / sheet panel |
+| `z-popover` | `1050` | Popover / DropdownMenu / ContextMenu / Select content — floats **above** modal |
 | `z-command` | `1100` | Command palette |
+| `z-tooltip` | `1150` | Tooltip — above all interactive overlays, below toast |
 | `z-toast` | `1200` | Toasts (always frontmost) |
+
+
+**Critical rule — scrim vs. content:**
+
+`--z-overlay` (900) is **scrim-only** (the backdrop dimming layer behind Dialog/Sheet/Command). Floating *content* — Popover, DropdownMenu, ContextMenu, Select — must use `--z-popover` (1050) so they render **above** modal panels (1000). Tooltip uses `--z-tooltip` (1150). Never assign popover/tooltip content to `--z-overlay`; that causes menus to be hidden behind dialogs.
 
 **Rules:**
 
@@ -255,6 +262,28 @@ primitives and the app-shell chrome read it. The order, low → high:
   a decorative blob behind a card). Those don't escape their component, so they
   use plain Tailwind `z-10` / `-z-10` locally. The token scale is only for
   layers that compete *across* components.
+
+## State-layer tokens (hover/press dimming)
+
+`tokens.css` defines three intensity tokens that unify hover and press feedback across controls:
+
+| Token | Value | Meaning |
+| --- | --- | --- |
+| `--state-hover` | `8%` | Overlay strength on hover |
+| `--state-pressed` | `12%` | Overlay strength on press/active |
+| `--state-selected` | `10%` | Overlay strength on selected/active items |
+
+Apply via `color-mix` on `currentColor` or the relevant fill:
+
+```css
+@utility state-hover {
+  &:hover {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
+  }
+}
+```
+
+**Important distinction from banned surface opacity:** These tokens produce a *transient state overlay* on an interactive fill — they are **not** `bg-card/NN` or `bg-background/NN` (surface opacity, which is banned on solid surfaces). The hard rule in the anti-slop table (`bg-card/40 → Inset well`) targets persistent translucent surfaces; state overlays on interactive controls are the correct modern pattern (Material-3 / WCAG 2.2). This distinction is explicitly allowed and documented here to prevent false positives from linters or reviewers.
 
 ## Personalization (accent + glass)
 

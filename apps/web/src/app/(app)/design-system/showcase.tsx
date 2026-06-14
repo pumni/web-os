@@ -1165,7 +1165,6 @@ export function DesignSystemShowcase() {
         </div>
       </section>
 
-      {/* OVERLAY DIALOG PORTAL */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="overflow-hidden p-0 sm:max-w-xl">
           <DialogHeader className="border-b px-6 pt-6 pb-4">
@@ -1177,10 +1176,32 @@ export function DesignSystemShowcase() {
               Provides modal containment, focus trapping, and backdrop overlay rendering.
             </DialogDescription>
           </DialogHeader>
-          <div className="px-6 py-5 space-y-3 text-sm text-muted-foreground">
+          <div className="px-6 py-5 space-y-4 text-sm text-muted-foreground">
             <p>
               This dialog overlay uses a translucent panel with built-in close action hooks.
             </p>
+            {/* Z-index regression scenario (§1 of layering-interaction-2026-upgrade):
+                Select content must render at --z-popover (1050) — above this modal at
+                --z-modal (1000). If z-index is wrong, the dropdown is hidden behind the dialog. */}
+            <div className="space-y-1.5">
+              <Label htmlFor="dialog-priority-select" className="text-xs font-medium text-foreground">
+                Priority (z-index layering demo)
+              </Label>
+              <Select>
+                <SelectTrigger id="dialog-priority-select" className="w-full">
+                  <SelectValue placeholder="Select priority…" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="critical">Critical</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-[11px] text-muted-foreground">
+                Dropdown must appear above this dialog panel (z-popover 1050 &gt; z-modal 1000).
+              </p>
+            </div>
             <Skeleton className="h-4 w-4/5" />
           </div>
           <DialogFooter className="border-t bg-card/40 px-6 py-4">
@@ -1193,6 +1214,7 @@ export function DesignSystemShowcase() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
 
       {/* OVERLAY SHEET PORTAL */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>

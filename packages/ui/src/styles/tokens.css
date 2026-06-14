@@ -166,11 +166,15 @@
    --z-topbar: 850;
    /* top app bar (above windows + rail) */
    --z-overlay: 900;
-   /* scrim behind modals / sheets / popovers */
+   /* scrim behind modals / sheets / popovers (SCRIM ONLY — never content) */
    --z-modal: 1000;
    /* dialog / sheet panel */
+   --z-popover: 1050;
+   /* NEW: popover / menu / select / context-menu content — floats ABOVE modal */
    --z-command: 1100;
    /* command palette */
+   --z-tooltip: 1150;
+   /* NEW: tooltip — above command palette, below toast */
    --z-toast: 1200;
    /* toasts — always frontmost */
 
@@ -202,4 +206,16 @@
    /* distance over which fade triggers */
    --scroll-parallax-rate: 0.3;
    /* parallax displacement factor     */
+
+   /* ---- State-layer intensity tokens (Material-3 pattern) ---- */
+   /* Tokenise hover/press dimming — applied as a color-mix overlay on
+     currentColor/fill, NOT surface opacity (which is banned on surfaces).
+     This is a "state overlay", not bg-card/NN — the distinction is
+     documented in design-system.md §State-layer tokens.          */
+   --state-hover: 8%;
+   /* lớp phủ hover */
+   --state-pressed: 12%;
+   /* lớp phủ pressed */
+   --state-selected: 10%;
+   /* lớp phủ selected/active */
 }

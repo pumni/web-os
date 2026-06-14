@@ -61,4 +61,42 @@ test.describe("design system visual regression", () => {
     await expect(root).toBeVisible();
     await expect(root).toHaveScreenshot("showcase-glass-strong.png", { animations: "disabled" });
   });
+
+  /**
+   * Z-index regression: Select inside Dialog (§1 of layering-interaction-2026-upgrade).
+   *
+   * Bug: SelectContent was z-overlay (900) — below modal at z-modal (1000).
+   * Fix: SelectContent is now z-popover (1050) — above the dialog panel.
+   *
+   * This test opens the dialog, clicks the Select trigger, and asserts the
+   * dropdown options are visible. If the z-index regresses to 900, Radix still
+   * mounts the listbox but it is painted behind the dialog panel and
+   * `toBeVisible()` fails because it checks CSS visibility / opacity / pointer-events
+   * (Radix uses visibility:hidden on closed state, so this assertion is meaningful).
+   */
+  test("z-index: select dropdown is visible inside a dialog (§1 regression lock)", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "dark" });
+    await page.goto("/design-system-preview");
+
+    // Open the dialog that contains the z-layering demo Select
+    await page.getByRole("button", { name: "Trigger Dialog" }).click();
+    await expect(page.getByRole("dialog", { name: "Overlay Dialog Surface" })).toBeVisible();
+
+    // Open the Select inside the dialog — the listbox must render ABOVE the modal panel
+    await page.getByRole("combobox", { name: /priority/i }).click();
+
+    // The option list must be visible; if z-popover < z-modal this fails
+    const option = page.getByRole("option", { name: "High" });
+    await expect(option).toBeVisible();
+
+    // Verify it also has z-index above the modal (computed style check)
+    const selectContent = page.locator("[data-slot='select-content']");
+    await expect(selectContent).toBeVisible();
+    const zIndex = await selectContent.evaluate((el) =>
+      window.getComputedStyle(el).zIndex
+    );
+    // z-popover = 1050, which is > z-modal = 1000
+    expect(Number(zIndex)).toBeGreaterThan(1000);
+  });
 });
+

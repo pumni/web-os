@@ -226,6 +226,35 @@
   border-color: var(--ring);
 }
 
+/*
+ * State-layer utilities (Material-3 / §3 of layering-interaction-2026-upgrade plan).
+ * These produce a transient colour overlay on an interactive fill, NOT a
+ * persistent surface opacity (bg-card/NN is banned; this is not that).
+ * Consumes the `--state-*` intensity tokens from tokens.css.
+ *
+ * Usage: add `state-hover` / `state-pressed` / `state-selected` to interactive
+ * elements that need a unified hover/press/selected dimming layer.
+ */
+@utility state-hover {
+  &:hover {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
+  }
+}
+
+@utility state-pressed {
+  &:active {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-pressed), transparent);
+  }
+}
+
+@utility state-selected {
+  background-color: color-mix(in oklch, var(--foreground) var(--state-selected), transparent);
+}
+
+/* Forced-colors: color-mix overlays are system-color context — safe, no override needed.
+   Reduced-motion: state layers are colour-only (no transform/animation) — no extra handling. */
+
+
 @utility overlay-scrim {
   background-color: var(--overlay);
   -webkit-backdrop-filter: blur(4px);
