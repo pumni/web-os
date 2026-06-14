@@ -123,5 +123,7 @@ describe("z-index layering scale — semantic ordering", () => {
     expect(tokenCss).toContain("--control-height-comfortable");
     expect(tokenCss).toContain("--control-height-compact");
     expect(tokenCss).toContain("[data-density=\"compact\"]");
+    expect(tokenCss).toContain("--switch-width");
+    expect(tokenCss).toContain("--switch-thumb-size");
   });
 });

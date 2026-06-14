@@ -81,9 +81,11 @@
    /* ---- Nested radius spacing -------------------------------- */
    /* Default inner padding for nested-radius calc.
      R_child = R_parent - padding (per the geometric nesting rule). */
-   --radius-nest-gap: 0.75rem;
-   /* 12px - typical card padding */
-   --switch-height: 1.15rem;
+    --radius-nest-gap: 0.75rem;
+    /* 12px - typical card padding */
+    --switch-height: 1.15rem;
+    --switch-width: 2rem;
+    --switch-thumb-size: 0.875rem;
 
    /* --- Typography: raw size + paired line-height scale ---
      Distinct names from the Tailwind `--text-*` namespace they bridge into
@@ -128,10 +130,11 @@
    --leading-compensation-dark: 0.075;
    /* extra line-height    */
 
-   /* --- Glass blur (kept in the GPU-friendly 8–15px range) --- */
-   --blur-glass-sm: 10px;
-   --blur-glass: 16px;
-   --blur-glass-lg: 24px;
+    /* --- Glass blur (kept in the GPU-friendly 8–15px range) --- */
+    --blur-glass-sm: 10px;
+    --blur-glass: 16px;
+    --blur-glass-lg: 24px;
+    --blur-scrim: 4px;
 
    /* --- Elevation shadows (tuned for floating glass layers) --- */
    --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
@@ -233,4 +236,7 @@
 [data-density="compact"] {
   --control-height: var(--control-height-compact);
   --control-py: var(--control-py-compact);
+  --switch-height: 1rem;
+  --switch-width: 1.75rem;
+  --switch-thumb-size: 0.75rem;
 }

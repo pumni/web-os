@@ -303,3 +303,45 @@
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
+
+@utility type-display {
+  font-size: var(--text-4xl);
+  line-height: var(--text-4xl--line-height);
+  font-weight: var(--font-weight-heading);
+  letter-spacing: var(--tracking-tight);
+}
+
+@utility type-title {
+  font-size: var(--text-2xl);
+  line-height: var(--text-2xl--line-height);
+  font-weight: var(--font-weight-heading);
+  letter-spacing: var(--tracking-tight);
+}
+
+@utility type-heading {
+  font-size: var(--text-lg);
+  line-height: var(--text-lg--line-height);
+  font-weight: var(--font-weight-heading);
+  letter-spacing: var(--tracking-tight);
+}
+
+@utility type-body {
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+  font-weight: var(--font-weight-body);
+  letter-spacing: var(--tracking-body);
+}
+
+@utility type-caption {
+  font-size: var(--text-xs);
+  line-height: var(--text-xs--line-height);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: var(--tracking-wide);
+}
+
+@utility type-label {
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-normal);
+}

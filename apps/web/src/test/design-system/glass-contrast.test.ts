@@ -503,3 +503,80 @@ describe("Status tint readability", () => {
     },
   );
 });
+
+describe("Field contrast readable", () => {
+  it.each(["light", "dark"] as const)(
+    "keeps text contrast at APCA Lc 60 over field background in %s mode",
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const fieldBg = oklchToSrgb(resolveColor("--field", tokenMap));
+      const foreground = oklchToSrgb(resolveColor("--foreground", tokenMap));
+      const mutedForeground = oklchToSrgb(resolveColor("--muted-foreground", tokenMap));
+
+      expect(
+        apcaContrast(foreground, fieldBg),
+        `${mode} foreground on field contrast (APCA)`,
+      ).toBeGreaterThanOrEqual(60);
+
+      expect(
+        apcaContrast(mutedForeground, fieldBg),
+        `${mode} placeholder/muted on field contrast (APCA)`,
+      ).toBeGreaterThanOrEqual(45);
+    },
+  );
+});
+
+describe("Popover dark elevation contrast", () => {
+  it("keeps popover foreground contrast at APCA Lc 60 in dark mode", () => {
+    const tokenMap = buildTokenMap("dark");
+    const popoverBg = oklchToSrgb(resolveColor("--popover", tokenMap));
+    const popoverFg = oklchToSrgb(resolveColor("--popover-foreground", tokenMap));
+
+    expect(
+      apcaContrast(popoverFg, popoverBg),
+      "dark popover foreground contrast (APCA)",
+    ).toBeGreaterThanOrEqual(60);
+  });
+});
+
+describe("State-selected contrast", () => {
+  it.each(["light", "dark"] as const)(
+    "keeps foreground text contrast above Lc 60 on state-selected overlay in %s mode",
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const baseBg = resolveColor("--background", tokenMap);
+      const text = oklchToSrgb(resolveColor("--foreground", tokenMap));
+
+      const fgToken = resolveColor("--foreground", tokenMap);
+      const stateSelectedPct = Number(tokenMap.get("--state-selected")?.replace("%", "") ?? "10") / 100;
+      
+      const mixedBgColor = mixOklch(fgToken, baseBg, stateSelectedPct);
+      const mixedBg = oklchToSrgb(mixedBgColor);
+
+      expect(
+        apcaContrast(text, mixedBg),
+        `${mode} text on state-selected background contrast (APCA)`,
+      ).toBeGreaterThanOrEqual(60);
+    },
+  );
+});
+
+describe("Chart color CVD distinctness", () => {
+  it.each(["light", "dark"] as const)(
+    "ensures chart color series have distinct lightness delta in %s mode",
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const chart1 = resolveColor("--chart-1", tokenMap).l;
+      const chart2 = resolveColor("--chart-2", tokenMap).l;
+      const chart3 = resolveColor("--chart-3", tokenMap).l;
+      const chart4 = resolveColor("--chart-4", tokenMap).l;
+      const chart5 = resolveColor("--chart-5", tokenMap).l;
+
+      const lightnesses = [chart1, chart2, chart3, chart4, chart5];
+      for (let i = 0; i < lightnesses.length - 1; i++) {
+        const delta = Math.abs(lightnesses[i] - lightnesses[i+1]);
+        expect(delta).toBeGreaterThanOrEqual(0.02);
+      }
+    },
+  );
+});

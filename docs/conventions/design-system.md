@@ -59,9 +59,9 @@ Apps consume semantic utilities (`bg-primary`, `text-muted-foreground`,
 | `primary` (+ `-foreground`) | Brand actions (Indigo) |
 | `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
-| `border` / `input` / `ring` | Hairlines, fields, focus ring |
+| `border` / `input` / `field` / `ring` | Hairlines, fields, input backdrops (`bg-field`), focus ring |
 | `glass-bg` / `glass-border` / `glass-edge` / `glass-highlight` / `glass-scrim` / `glass-blur` | Translucent glass surfaces (`glass-edge` = luminous rim) |
-| `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) — never raw `bg-black/40` |
+| `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) — never raw `bg-black/40` — using `--blur-scrim` |
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
 | `window-control-*` | Window traffic-light controls (`-icon` = dark glyph on the dots) |
@@ -126,6 +126,13 @@ Type scale and motion are **owned tokens**, not borrowed Tailwind defaults.
   size + line-height (raw values in `tokens.css`, bridged in `theme.css`).
   Weights: `font-normal/medium/semibold/bold`; tracking: `tracking-tight`
   (large display text), `tracking-normal`, `tracking-wide`.
+  **Semantic Type Roles:** Instead of combining text/font classes ad-hoc, use:
+  - `type-display`: Display / large title text (4xl, semibold, tight letter-spacing)
+  - `type-title`: Page title text (2xl, semibold, tight letter-spacing)
+  - `type-heading`: Card/section title text (lg, semibold, tight letter-spacing)
+  - `type-body`: Standard body paragraphs (base, normal weight, normal/compensated letter-spacing)
+  - `type-caption`: Secondary captions / tiny text (xs, normal weight, wide letter-spacing)
+  - `type-label`: Standard label / description text (sm, medium weight, normal letter-spacing)
 - **Easing** — `ease-fluid` (emphasized decelerate, for entrances) and
   `ease-snappy` (symmetric, for moves/reorders) are the brand curves. Prefer
   them over raw `ease-out`.
@@ -277,11 +284,26 @@ Apply via `color-mix` on `currentColor` or the relevant fill:
 
 ```css
 @utility state-hover {
-  &:hover {
+  &:hover,
+  &:focus,
+  &[data-highlighted],
+  &[data-active=true] {
     background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
   }
 }
 ```
+
+State-layer utilities are wired to neutral controls (menu items in dropdowns/context-menus, Select items, ghost/secondary Buttons, TabsTriggers, and Command Palette items) to provide consistent focus/highlight/hover overlays without shifting layout or changing text contrast.
+
+### RTL Logical-First Directional Properties
+
+To ensure future-proof multi-directional layouts (LTR/RTL), write all direction-sensitive layouts using CSS logical properties and Tailwind logical utilities:
+- Use `ps-*` / `pe-*` instead of `pl-*` / `pr-*`
+- Use `ms-*` / `me-*` instead of `ml-*` / `mr-*`
+- Use `start-*` / `end-*` instead of `left-*` / `right-*`
+- Use `rounded-s-*` / `rounded-e-*` instead of `rounded-l-*` / `rounded-r-*`
+
+This applies to all new components or refactored layouts.
 
 **Important distinction from banned surface opacity:** These tokens produce a *transient state overlay* on an interactive fill — they are **not** `bg-card/NN` or `bg-background/NN` (surface opacity, which is banned on solid surfaces). The hard rule in the anti-slop table (`bg-card/40 → Inset well`) targets persistent translucent surfaces; state overlays on interactive controls are the correct modern pattern (Material-3 / WCAG 2.2). This distinction is explicitly allowed and documented here to prevent false positives from linters or reviewers.
 

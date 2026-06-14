@@ -182,12 +182,12 @@ export function BentoGridItem({
                   </div>
                 )}
                 {title && (
-                  <h3 className="font-bold text-lg leading-tight tracking-tight text-foreground">
+                  <h3 className="type-heading text-foreground">
                     {title}
                   </h3>
                 )}
                 {description && (
-                  <p className="text-sm text-muted-foreground leading-normal font-normal">
+                  <p className="type-label text-muted-foreground">
                     {description}
                   </p>
                 )}

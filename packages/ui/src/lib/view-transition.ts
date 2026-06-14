@@ -21,8 +21,12 @@ export function withViewTransition(callback: () => void): void {
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches
   ) {
     const transition = document.startViewTransition(callback);
-    transition.ready.catch(() => {});
-    transition.finished.catch(() => {});
+    transition.ready.catch((error) => {
+      console.info("View transition ready promise rejected:", error);
+    });
+    transition.finished.catch((error) => {
+      console.info("View transition finished promise rejected:", error);
+    });
   } else {
     callback();
   }

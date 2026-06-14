@@ -222,7 +222,7 @@
   outline: none;
 }
 .focus-ring:focus-visible {
-  box-shadow: 0 0 0 var(--ring-width) color-mix(in oklch, var(--ring) 50%, transparent);
+  box-shadow: 0 0 0 var(--ring-offset) var(--background), 0 0 0 calc(var(--ring-offset) + var(--ring-width)) color-mix(in oklch, var(--ring) 50%, transparent);
   border-color: var(--ring);
 }
 
@@ -236,19 +236,27 @@
  * elements that need a unified hover/press/selected dimming layer.
  */
 @utility state-hover {
-  &:hover {
+  &:hover,
+  &:focus,
+  &[data-highlighted],
+  &[data-active=true] {
     background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
   }
 }
 
 @utility state-pressed {
-  &:active {
+  &:active,
+  &[data-state=open] {
     background-color: color-mix(in oklch, var(--foreground) var(--state-pressed), transparent);
   }
 }
 
 @utility state-selected {
-  background-color: color-mix(in oklch, var(--foreground) var(--state-selected), transparent);
+  &,
+  &[data-state=active],
+  &[data-state=selected] {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-selected), transparent);
+  }
 }
 
 /* Forced-colors: color-mix overlays are system-color context — safe, no override needed.
@@ -257,8 +265,8 @@
 
 @utility overlay-scrim {
   background-color: var(--overlay);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(var(--blur-scrim));
+  backdrop-filter: blur(var(--blur-scrim));
 }
 
 @media (prefers-reduced-transparency: reduce) {

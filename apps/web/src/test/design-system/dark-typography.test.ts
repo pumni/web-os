@@ -44,4 +44,13 @@ describe('dark-mode typographic compensation tokens', () => {
     expect(themeCss).toMatch(/:root\s*\{[^}]*--font-weight-body:/s);
     expect(themeCss).toMatch(/\.dark\s*\{[^}]*--font-weight-body:/s);
   });
+
+  it('defines typography roles (@utility type-*) in theme.css', () => {
+    expect(themeCss).toContain('@utility type-display');
+    expect(themeCss).toContain('@utility type-title');
+    expect(themeCss).toContain('@utility type-heading');
+    expect(themeCss).toContain('@utility type-body');
+    expect(themeCss).toContain('@utility type-caption');
+    expect(themeCss).toContain('@utility type-label');
+  });
 });
