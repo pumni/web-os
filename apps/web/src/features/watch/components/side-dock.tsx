@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent, GlassSurface, Button, Avatar, AvatarFallback, AvatarImage } from "@pumni/ui";
+import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, AvatarFallback, AvatarImage } from "@pumni/ui";
 import { Crown, Users, ListVideo, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { ParticipantRail } from "./participant-rail";
@@ -55,10 +55,10 @@ export function SideDock({
   };
 
   return (
-    <GlassSurface className="glass-panel h-full flex flex-col rounded-xl overflow-hidden select-none">
+    <Card variant="solid" className="h-full flex flex-col rounded-xl overflow-hidden select-none p-0">
       <div className="p-4 flex flex-col gap-4 flex-1 h-full min-h-0">
         <Tabs defaultValue="playlist" className="w-full flex-1 flex flex-col h-full min-h-0">
-          <TabsList className="grid grid-cols-3 h-9 p-1 bg-background/30 border border-border/20 rounded-lg shrink-0">
+          <TabsList className="grid grid-cols-3 h-9 p-1 bg-muted border border-border rounded-lg shrink-0">
             <TabsTrigger value="playlist" className="text-xs flex items-center justify-center gap-1 h-full">
               <ListVideo className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Danh sách</span>
@@ -69,7 +69,7 @@ export function SideDock({
             </TabsTrigger>
             <TabsTrigger value="participants" className="text-xs flex items-center justify-center gap-1.5 h-full">
               <Users className="size-3.5 shrink-0" />
-              <span className="inline-flex items-center justify-center size-4 rounded-full bg-muted/60 text-[10px] font-semibold leading-none">
+              <span className="inline-flex items-center justify-center size-4 rounded-full bg-muted text-[10px] font-semibold leading-none">
                 {participants.length}
               </span>
             </TabsTrigger>
@@ -121,10 +121,10 @@ export function SideDock({
                   return (
                     <div
                       key={p.userId}
-                      className="flex items-center justify-between p-2 rounded-lg border border-border/10 bg-background/25 text-xs"
+                      className="flex items-center justify-between p-2 rounded-lg border border-border bg-muted text-xs"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <Avatar className="size-7 border border-border/25 shrink-0">
+                        <Avatar className="size-7 border border-border shrink-0">
                           {profile?.avatar_url && (
                             <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
                           )}
@@ -152,7 +152,7 @@ export function SideDock({
                           size="sm"
                           disabled={isPending}
                           onClick={() => handleTransferHost(p.userId)}
-                          className="h-7 text-xs px-2 text-primary motion-safe:hover:bg-primary/10 hover:text-primary border border-primary/15"
+                          className="h-7 text-xs px-2 text-primary motion-safe:hover:bg-primary/10 hover:text-primary border border-primary/20"
                         >
                           <Crown className="size-3 mr-1" />
                           Host
@@ -166,6 +166,6 @@ export function SideDock({
           </TabsContent>
         </Tabs>
       </div>
-    </GlassSurface>
+    </Card>
   );
 }

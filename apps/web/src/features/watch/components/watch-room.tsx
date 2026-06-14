@@ -271,7 +271,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   return (
     <div className="w-full flex-1 flex flex-col gap-3 p-4 min-h-0 select-none">
       {/* Top Header Bar */}
-      <GlassSurface className="glass-bar flex items-center justify-between w-full select-none shrink-0 px-3 py-2 rounded-xl border border-glass-border">
+      <GlassSurface variant="bar" className="flex items-center justify-between w-full select-none shrink-0 px-3 py-2 rounded-xl">
         {/* Left: Back + Title + Status */}
         <div className="flex items-center gap-2">
           <Button
@@ -306,7 +306,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             type="button"
             onClick={handleCopyCode}
             aria-label="Sao chép mã phòng"
-            className="hidden sm:flex items-center gap-1 h-7 px-2.5 rounded-md border border-border/30 bg-muted/30 motion-safe:hover:bg-muted/60 transition-colors duration-[var(--duration-fast)] cursor-pointer"
+            className="hidden sm:flex items-center gap-1 h-7 px-2.5 rounded-md border border-border bg-muted motion-safe:hover:bg-muted/80 transition-colors duration-[var(--duration-fast)] cursor-pointer"
           >
             <Hash className="size-3 text-muted-foreground/70" />
             <span className="font-mono text-xs font-bold tracking-widest text-foreground">{currentRoom.code}</span>
@@ -381,8 +381,8 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
       {/* Mobile Drawer (Sheet) */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 bg-card border-l border-border/20 flex flex-col h-full">
-          <SheetHeader className="p-4 border-b border-border/20 shrink-0">
+        <SheetContent side="right" className="w-full sm:max-w-md p-0 border-l border-border flex flex-col h-full">
+          <SheetHeader className="p-4 border-b border-border shrink-0">
             <SheetTitle className="text-sm font-semibold">Bảng điều khiển</SheetTitle>
           </SheetHeader>
           <div className="flex-1 overflow-hidden min-h-0 p-2">
@@ -422,7 +422,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
                   onValueChange={(val) => setNewSourceType(val as "youtube" | "url")}
                   className="w-full"
                 >
-                  <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted/50">
+                  <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted">
                     <TabsTrigger value="youtube" className="text-xs h-7">YouTube</TabsTrigger>
                     <TabsTrigger value="url" className="text-xs h-7">Direct URL (MP4/HLS)</TabsTrigger>
                   </TabsList>

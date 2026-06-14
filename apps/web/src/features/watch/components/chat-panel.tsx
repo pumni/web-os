@@ -78,7 +78,7 @@ export function ChatPanel({
               >
                 {/* Avatar — only for others */}
                 {!isMe && (
-                  <Avatar className="size-6 border border-border/30 shrink-0 mb-0.5">
+                  <Avatar className="size-6 border border-border shrink-0 mb-0.5">
                     {profile?.avatar_url && (
                       <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
                     )}
@@ -115,7 +115,7 @@ export function ChatPanel({
 
       {/* Reaction Bar */}
       {onReact && (
-        <div className="flex items-center gap-0.5 px-0.5 py-1 border-t border-border/15 shrink-0 select-none">
+        <div className="flex items-center gap-0.5 px-0.5 py-1 border-t border-border shrink-0 select-none">
           {["❤️", "😂", "😮", "👍", "🎉"].map((emoji) => (
             <Button
               key={emoji}
@@ -132,7 +132,7 @@ export function ChatPanel({
       )}
 
       {/* Input Section */}
-      <form onSubmit={handleSubmit} className="flex gap-1.5 shrink-0 pt-1.5 border-t border-border/15">
+      <form onSubmit={handleSubmit} className="flex gap-1.5 shrink-0 pt-1.5 border-t border-border">
         <Input
           placeholder="Nhắn tin..."
           aria-label="Nhập tin nhắn"

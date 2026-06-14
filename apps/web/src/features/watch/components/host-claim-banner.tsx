@@ -12,7 +12,7 @@ interface HostClaimBannerProps {
 export function HostClaimBanner({ roomId }: HostClaimBannerProps) {
   const claim = useClaimHost(roomId);
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-warning/30 bg-warning/8 px-4 py-2.5 text-xs text-warning select-none backdrop-blur-sm">
+    <div className="flex items-center justify-between gap-3 rounded-xl border border-warning/20 bg-warning/10 px-4 py-2.5 text-xs text-warning select-none">
       <div className="flex items-center gap-2">
         <AlertTriangle className="size-3.5 shrink-0" />
         <span className="font-medium">Phòng hiện không có chủ điều khiển.</span>
@@ -27,7 +27,7 @@ export function HostClaimBanner({ roomId }: HostClaimBannerProps) {
             onError: (err) => toast.error(err.message || "Nhận quyền thất bại."),
           })
         }
-        className="h-7 border border-warning/30 px-3 text-xs font-semibold text-warning motion-safe:hover:bg-warning/15 shrink-0"
+        className="h-7 border border-warning/20 px-3 text-xs font-semibold text-warning motion-safe:hover:bg-warning/15 shrink-0"
       >
         <Crown className="mr-1.5 size-3" />
         Nhận quyền

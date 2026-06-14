@@ -19,8 +19,8 @@ type AuthShellProps = {
 };
 
 /**
- * Shared auth screen: a token-driven auth surface floating over a token-driven Indigo
- * brand glow. Theme-aware (respects light/dark) instead of hardcoding colors.
+ * Shared auth screen: a token-driven auth surface floating over a token-driven brand
+ * glow. Theme-aware (respects light/dark) instead of hardcoding colors.
  */
 export function AuthShell({ subtitle, title, description, footer, children }: AuthShellProps) {
   return (

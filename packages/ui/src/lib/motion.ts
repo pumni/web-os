@@ -17,6 +17,14 @@ export const duration = {
   slow: 0.32,
 } as const;
 
+/**
+ * Tactile press depress — the unitless scale shared by CSS micro-feedback
+ * (`--press-scale` in tokens.css, used via `active:scale-(--press-scale)`) and
+ * the JS press recipes below, so a button/card depresses to the same depth
+ * whether it is CSS- or motion-driven. Kept in sync by `motion-tokens.test.ts`.
+ */
+export const pressScale = 0.97;
+
 /** cubic-bezier control points, typed as motion's BezierDefinition tuple. */
 export const easing = {
   /** Emphasized decelerate — entrances. Mirrors `--ease-out`. */
@@ -47,12 +55,12 @@ export const recipes = {
   /** Card / tile hover — subtle rise + tap press. Snappy (a move, not an entrance). */
   hoverLift: {
     whileHover: { y: -2, scale: 1.01 },
-    whileTap: { scale: 0.99 },
+    whileTap: { scale: pressScale },
     transition: transition.snappy,
   },
-  /** Button / icon press feedback — tactile depress on tap. */
+  /** Button / icon press feedback — tactile depress on tap (mirrors CSS `--press-scale`). */
   pressScale: {
-    whileTap: { scale: 0.96 },
+    whileTap: { scale: pressScale },
     transition: transition.snappy,
   },
   /** List/grid entrance — parent orchestrates children. Pair with `staggerItem`. */
@@ -80,4 +88,4 @@ export const recipes = {
   },
 } as const;
 
-export const motionTokens = { duration, easing, transition, recipes } as const;
+export const motionTokens = { duration, easing, pressScale, transition, recipes } as const;

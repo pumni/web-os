@@ -29,6 +29,9 @@ falls back to generic Tailwind. Each is enforced or explained in full below.
 | Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
 | Glass on hero / page backgrounds | Glass only on floating layers; opaque shell | `backdrop-filter` is GPU-heavy |
 | Eyeballing contrast on glass/accents | Trust the gated tokens; verify 4.5:1 / 3:1 | `glass-contrast` test owns the cascade |
+| `backdrop-blur-md` | Glass utility / `GlassSurface` | Reduced-transparency and performance fallbacks |
+| `bg-card/40`, `border-border/20` | Solid surface tokens (opaque, `border-border`) | Surfaces are opaque in the unified system |
+| `shadow-md`, `shadow-lg` (Tailwind built-in) on content | `shadow-card` / `shadow-raised` (owned elevation) | One elevation ladder; floating depth comes from the `glass-*` utilities |
 
 This isn't taste-by-vibe: colour, radius, and contrast are enforced by ESLint +
 tests, so "on-brand" is a gate, not a guideline.
@@ -52,7 +55,7 @@ Apps consume semantic utilities (`bg-primary`, `text-muted-foreground`,
 | Token | Role |
 | --- | --- |
 | `background` / `foreground` | Page surface + default text |
-| `card` / `popover` (+ `-foreground`) | Raised surfaces (`Card` defaults to translucent surface; `variant="solid"` for dense content) |
+| `card` / `popover` (+ `-foreground`) | Card defaults to a solid raised surface; `variant="glass"` is opt-in for genuinely floating cards; `variant="inset"` is the recessed nested well. |
 | `primary` (+ `-foreground`) | Brand actions (Indigo) |
 | `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
@@ -69,12 +72,33 @@ and runtime utilities must consume semantic or component-scoped tokens instead.
 
 ## Surface Utilities and Overlay Roles
 
-Translucent glass layers are reserved for **floating layers and cards**: topbar, dock, window titlebar, dialog, sheet, popover, command palette, toast, and the default `Card` surface. Large background areas and the flat shell stay opaque. Use `Card`'s `variant="solid"` when content is dense or contrast-critical.
+Translucent glass layers are reserved for **floating layers**: Dialog, Sheet, Popover, DropdownMenu, ContextMenu, Command palette, Toast, Topbar, Dock, Sidebar rail, OS `Window`/titlebar, and small floating pills/overlays (e.g. reaction bar). Large background areas and the flat shell stay opaque.
 
 - Apply the role-based utility that matches the layer: `.glass-bar` (topbars/docks/sidebar rails), `.glass-panel` (dialogs, sheets, popovers, command palettes), `.glass-window` (OS windows), or `.glass-titlebar` (window titlebars). The `GlassSurface` component wraps these roles behind a `variant` prop.
 - **Never** put glass on large background areas or stack many glass layers — `backdrop-filter` is GPU-intensive. Keep blur in **8–16px** (`--glass-blur`).
 - The translucent fill (`--glass-bg`) is the **contrast scrim**: verify text and icons meet **4.5:1** (text) / **3:1** (UI) against both light and dark background states.
 - Fallbacks are built in: `prefers-reduced-transparency` → opaque surface, no blur; `prefers-reduced-motion` → animations/transitions neutralized.
+
+### Surface vocabulary (closed set)
+
+Every surface must use one of these roles.
+
+| Role | How to build it | Use for |
+| --- | --- | --- |
+| **Floating glass** | `GlassSurface variant="panel\|bar\|window\|titlebar"` (or the `glass-*` utility on a Radix overlay) | Only the floating layers listed above. Carries the a11y fallbacks. |
+| **Solid card** (raised content) | `<Card>` (new default `variant="solid"`) → `border bg-card shadow-sm rounded-xl` | Primary content surfaces: dashboard/settings cards, side panels, info cards. |
+| **Inset well** (recessed nested) | `<Card variant="inset">` → `border border-border bg-muted rounded-xl` (no shadow); for non-Card `<div>` wells use `bg-muted border border-border` | Nested wells inside a card: stat tiles, list rows, scroll wells. Replaces every `bg-card/40 border-border/20`, `bg-muted/20 border`, `bg-background/25`. |
+| **Control fill** | `bg-muted` (rest) + `motion-safe:hover:bg-muted/80` (hover only) | Small inline controls: `TabsList`, chips, code pills. Hover may keep ONE opacity step (`/80`); rest state is opaque. |
+| **Status tint** | `bg-{destructive\|warning\|success\|primary}/10 border-{…}/20 text-{…}` | Inline status chips/banners. Standardized to **/10 fill + /20 border**, nothing else. |
+
+**Hard rules:**
+
+1. **No raw `backdrop-blur-*`** in component TSX. Blur must come from the `glass-*` utilities or `GlassSurface`.
+2. **No surface-token opacity:** no `bg-card/NN`, `bg-background/NN`, `bg-popover/NN`. Surfaces are opaque (except hover-only `bg-muted/80`).
+3. **One border:** `border-border`. Delete every `border-border/NN` except for status indicators.
+4. **No raw elevation shadows** (`shadow-lg`, `shadow-xl`, `shadow-2xl`). Content uses `shadow-sm`; floating depth comes from the `glass-*` utilities (`--shadow-glass*`).
+5. **Radius via named utilities only** (`rounded-md/lg/xl`, `rounded-full`). No `rounded-[Npx]`.
+6. **No new color tokens.** Reuse existing semantic tokens.
 
 ## Typography & motion utilities
 
@@ -100,7 +124,9 @@ Type scale and motion are **owned tokens**, not borrowed Tailwind defaults.
 - **Micro-feedback is CSS, not JS.** Simple hover/press on a control is a CSS
   transform gated by `motion-safe:`, not a motion dep. `Button` has a built-in
   press depress; `Card` opts in via the `interactive` prop (hover lift + press).
-  Both ride the `--press-scale` token. Reach for JS only when you need
+  Both ride the `--press-scale` token; the JS bridge mirrors it as `pressScale`
+  (from `@pumni/ui`), kept in sync by `motion-tokens.test.ts`, so CSS- and
+  JS-driven presses depress to the same depth. Reach for JS only when you need
   orchestration (stagger, presence) or the element is already a `motion.*`.
 - **Interaction recipes (JS)** — named house gestures composed from the tokens
   above, exported from `@pumni/ui` as `recipes` (and on `motionTokens.recipes`).
@@ -217,9 +243,16 @@ The showcase doubles as a visual contract. `apps/web/e2e/design-system-visual.sp
 
 1. Add the raw value to the relevant scale in `tokens.css` (OKLCH).
 2. Add/point a semantic alias in `theme.css` under **both** `:root` and `.dark`.
+   A **semantic token must reference a primitive**, never duplicate its raw
+   value. For a translucent token (glass fills, tinted rings), express it as
+   `color-mix(in oklch, var(--primitive) N%, transparent)` so it tracks the
+   ramp — do not paste a raw `oklch(… / α)` literal (that is the "magic literal"
+   drift the contrast test now resolves). Pure-black functional scrims
+   (`--overlay`, shadow alphas) stay as raw black/alpha — black is the immutable
+   anchor, not a tunable primitive.
 3. If it should be a Tailwind utility, expose it in the `@theme inline` block
-   (`--color-x: var(--x)`). Keep the `inline` keyword so light/dark switch at
-   runtime.
+   (`--color-x: var(--x)`, `--shadow-x: var(--shadow-n)`, …). Keep the `inline`
+   keyword so light/dark switch at runtime.
 
 ## Adding a component
 

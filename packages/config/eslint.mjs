@@ -100,3 +100,48 @@ export const pumniNoRawColor = [
     },
   },
 ];
+
+const AD_HOC_SURFACE_PATTERNS = [
+  // Raw blur — blur must come from the glass-* utilities (a11y fallbacks live there).
+  "\\bbackdrop-blur(?:-(?:none|sm|md|lg|xl|2xl|3xl)|-\\[[^\\]]+\\])?\\b",
+  // Opacity on surface tokens — surfaces are opaque in the unified system.
+  "\\bbg-(?:card|background|popover)\\/\\d",
+  // Raw elevation shadows — content uses shadow-sm; floating depth is the glass utility.
+  "\\bshadow-(?:lg|xl|2xl)\\b",
+];
+
+const AD_HOC_SURFACE_MESSAGE =
+  "Surface system is closed: no raw backdrop-blur (use GlassSurface/glass-* for floating layers), no bg-{card,background,popover}/NN opacity (surfaces are opaque — use Card solid/inset or bg-muted), no raw shadow-lg/xl/2xl (content=shadow-sm, floating=glass utility). See docs/conventions/design-system.md §Surface vocabulary.";
+
+export const restrictedAdHocSurface = [
+  "error",
+  ...AD_HOC_SURFACE_PATTERNS.flatMap((pattern) => [
+    { selector: `Literal[value=/${pattern}/]`, message: AD_HOC_SURFACE_MESSAGE },
+    { selector: `TemplateElement[value.raw=/${pattern}/]`, message: AD_HOC_SURFACE_MESSAGE },
+  ]),
+];
+
+export const pumniNoAdHocSurface = [
+  {
+    name: "pumni/no-ad-hoc-surface",
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: [
+      "src/test/**",
+      "**/*.test.{ts,tsx}",
+      // TODO: Migrate these out-of-scope surfaces in follow-up passes (Section 7 of plan)
+      "**/layout.tsx",
+      "**/sky-player/**",
+      "**/profile-form.tsx",
+      "**/app-shell/**",
+      "**/showcase.tsx",
+      // Core UI package components that house overlay scrim blurs or OS window body transparency.
+      "**/dialog.tsx",
+      "**/sheet.tsx",
+      "**/command-palette.tsx",
+      "**/window.tsx",
+    ],
+    rules: {
+      "no-restricted-syntax": restrictedAdHocSurface,
+    },
+  },
+];

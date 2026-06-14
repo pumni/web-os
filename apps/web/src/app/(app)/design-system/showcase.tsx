@@ -861,7 +861,7 @@ export function DesignSystemShowcase() {
               </div>
               <p className="text-xs text-muted-foreground">
                 Applies <code>data-accent</code> attribute to scope color mixes. Accent is currently:{" "}
-                <span className="font-mono font-semibold capitalize text-foreground">{accent || "indigo (default)"}</span>.
+                <span className="font-mono font-semibold capitalize text-foreground">{accent || "cyan (default)"}</span>.
               </p>
             </CardContent>
           </Card>

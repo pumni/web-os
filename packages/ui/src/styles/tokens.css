@@ -16,11 +16,30 @@
   --indigo-500: oklch(0.585 0.15 277.117);
   --indigo-600: oklch(0.511 0.16 276.966);
   --indigo-700: oklch(0.457 0.15 277.023);
-  --indigo-800: oklch(0.398 0.195 277.366);
-  --indigo-900: oklch(0.359 0.144 278.697);
-  --indigo-950: oklch(0.257 0.09 281.288);
+  /* Dark-end chroma tapers monotonically after the 600 peak (was a 0.195 spike
+     at 800 from hand-tuning over multiple style rounds — see plan). */
+  --indigo-800: oklch(0.398 0.135 277.366);
+  --indigo-900: oklch(0.359 0.11 278.697);
+  --indigo-950: oklch(0.257 0.075 281.288);
 
-  /* --- Brand accent: Violet --- */
+  /* --- Brand: Cyan-teal (primary, ~200°) ---
+     The brand hue. Lightness on the primary stops (500/600) is pulled darker
+     than the indigo equivalents because cyan carries far more luminance — the
+     primary takes WHITE foreground AND is used as `text-primary`/`text-ring`, so
+     it must stay dark enough for AA (gated by glass-contrast.test.ts). */
+  --cyan-50: oklch(0.971 0.02 200);
+  --cyan-100: oklch(0.935 0.04 200);
+  --cyan-200: oklch(0.879 0.068 200);
+  --cyan-300: oklch(0.795 0.1 200.5);
+  --cyan-400: oklch(0.7 0.115 201);
+  --cyan-500: oklch(0.555 0.115 202);
+  --cyan-600: oklch(0.495 0.105 203);
+  --cyan-700: oklch(0.44 0.092 204);
+  --cyan-800: oklch(0.385 0.078 205);
+  --cyan-900: oklch(0.335 0.063 206);
+  --cyan-950: oklch(0.24 0.044 207);
+
+  /* --- Brand accent: Violet (kept as a selectable accent) --- */
   --violet-300: oklch(0.811 0.111 293.571);
   --violet-400: oklch(0.702 0.12 293.541);
   --violet-500: oklch(0.606 0.15 292.717);
@@ -102,7 +121,7 @@
   /* Active windows: deeper layered shadow + a whisper-thin brand-tinted ring. */
   --shadow-glass-glow: 0 2px 4px -1px oklch(0 0 0 / 0.06),
     0 12px 28px -8px oklch(0 0 0 / 0.18), 0 28px 56px -18px oklch(0 0 0 / 0.22),
-    0 0 0 1px oklch(0.585 0.15 277.117 / 0.04);
+    0 0 0 1px color-mix(in oklch, var(--indigo-500) 4%, transparent);
 
   /* --- Z-index: single owned OS layering scale (see design-system.md).
      EVERY cross-component layer — shell chrome AND floating primitives —

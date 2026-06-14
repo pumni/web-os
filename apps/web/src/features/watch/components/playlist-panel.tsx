@@ -232,7 +232,7 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
       {/* Add Item Form */}
       <form
         onSubmit={handleAddItem}
-        className="flex flex-col gap-2 p-3 rounded-xl border border-border/20 bg-card/50 shrink-0"
+        className="flex flex-col gap-2 p-3 rounded-xl border border-border bg-muted shrink-0"
       >
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-foreground">Thêm video</span>
@@ -240,7 +240,7 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
             value={sourceType}
             onValueChange={(val) => setSourceType(val as "youtube" | "url")}
           >
-            <TabsList className="h-6 p-0.5 bg-muted/50 border border-border/20 gap-0.5">
+            <TabsList className="h-6 p-0.5 bg-muted border border-border gap-0.5">
               <TabsTrigger value="youtube" className="text-xs h-5 px-2 py-0">YT</TabsTrigger>
               <TabsTrigger value="url" className="text-xs h-5 px-2 py-0">URL</TabsTrigger>
             </TabsList>
@@ -355,8 +355,8 @@ function SortableItem({
         "group flex items-center gap-2 px-2 py-1.5 rounded-lg border text-xs transition-all duration-[var(--duration-fast)] ease-snappy",
         isCurrent
           ? "border-primary/40 bg-primary/10 text-primary"
-          : "border-border/15 bg-card/40 text-foreground motion-safe:hover:bg-card/80 motion-safe:hover:border-border/30",
-        isDragging && "opacity-60 shadow-lg scale-[1.02] border-primary/30"
+          : "border-border bg-muted text-foreground motion-safe:hover:bg-muted/80",
+        isDragging && "opacity-60 shadow-sm scale-[1.02] border-primary/30"
       )}
     >
       {/* Index / Playing indicator */}
@@ -394,7 +394,7 @@ function SortableItem({
             "inline-flex w-fit items-center px-1 py-px rounded text-[10px] font-medium leading-none",
             isYoutube
               ? "bg-destructive/10 text-destructive/80"
-              : "bg-muted/60 text-muted-foreground"
+              : "bg-muted text-muted-foreground"
           )}
         >
           {isYoutube ? "YouTube" : "URL"}

@@ -84,7 +84,7 @@ export function WatchLobby() {
         {/* Glow icon with pulse ring */}
         <div className="relative flex items-center justify-center">
           <div className="absolute size-16 rounded-full bg-primary/20 motion-safe:animate-pulse" />
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 border border-primary/30 text-primary shadow-lg shadow-primary/20">
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 border border-primary/30 text-primary shadow-sm shadow-primary/20">
             <Clapperboard className="size-7" />
           </div>
         </div>
@@ -130,7 +130,7 @@ export function WatchLobby() {
                     onValueChange={(val) => setSourceType(val as "youtube" | "url")}
                     className="w-full"
                   >
-                    <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted/50">
+                    <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted">
                       <TabsTrigger value="youtube" className="text-xs h-7">YouTube</TabsTrigger>
                       <TabsTrigger value="url" className="text-xs h-7">Direct URL (MP4/HLS)</TabsTrigger>
                     </TabsList>

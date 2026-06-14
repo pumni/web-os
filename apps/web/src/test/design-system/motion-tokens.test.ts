@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import { duration, easing } from "@pumni/ui";
+import { duration, easing, pressScale } from "@pumni/ui";
 
 /**
  * Motion bridge guard. `lib/motion.ts` is a hand-kept mirror of the `--duration-*`
@@ -19,6 +19,12 @@ function readDurationSeconds(name: string): number {
   const match = tokenCss.match(new RegExp(`${name}:\\s*(\\d+)ms`));
   if (!match?.[1]) throw new Error(`Missing duration token: ${name}`);
   return Number(match[1]) / 1000;
+}
+
+function readUnitless(name: string): number {
+  const match = tokenCss.match(new RegExp(`${name}:\\s*([\\d.]+)`));
+  if (!match?.[1]) throw new Error(`Missing token: ${name}`);
+  return Number(match[1]);
 }
 
 function readCubicBezier(name: string): [number, number, number, number] {
@@ -42,5 +48,9 @@ describe("motion token bridge stays in sync with tokens.css", () => {
     // fluid ⇄ --ease-out (emphasized decelerate), snappy ⇄ --ease-in-out (symmetric).
     expect([...easing.fluid]).toEqual(readCubicBezier("--ease-out"));
     expect([...easing.snappy]).toEqual(readCubicBezier("--ease-in-out"));
+  });
+
+  it("press scale mirrors --press-scale (CSS micro-feedback ⇄ JS press recipes)", () => {
+    expect(pressScale).toBeCloseTo(readUnitless("--press-scale"), 5);
   });
 });

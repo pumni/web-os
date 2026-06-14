@@ -8,18 +8,28 @@
  * Light/dark accents use compound `.dark[data-accent]` selectors because the
  * provider sets `data-accent` on the SAME root node next-themes flags `.dark`.
  * These overrides match the lightness band of the verified brand/status pairs
- * (indigo primary, red destructive) so the white `--primary-foreground` keeps
+ * (cyan primary, red destructive) so the white `--primary-foreground` keeps
  * its contrast. Personalization.css is imported AFTER theme.css; accent rules
  * tie on specificity with `:root`/`.dark` and win on source order.
  */
 
 /*
- * The default indigo accent sets NO root attribute (the provider removes it), so
- * `:root`/`.dark` already carry the indigo `--primary`. These explicit
- * `[data-accent="indigo"]` rules let a SCOPED element (e.g. the appearance accent
- * swatch) opt back into indigo regardless of the live root accent. They mirror the
- * indigo `--primary`/`--ring` from theme.css.
+ * The default cyan accent sets NO root attribute (the provider removes it), so
+ * `:root`/`.dark` already carry the cyan `--primary`. These explicit
+ * `[data-accent="…"]` rules let a SCOPED element (e.g. the appearance accent
+ * swatch) opt into a specific accent regardless of the live root accent. They
+ * mirror the per-accent `--primary`/`--ring` from theme.css. Indigo is kept as a
+ * selectable accent (the previous brand hue).
  */
+[data-accent="cyan"] {
+  --primary: var(--cyan-600);
+  --ring: var(--cyan-500);
+}
+.dark[data-accent="cyan"] {
+  --primary: var(--cyan-500);
+  --ring: var(--cyan-400);
+}
+
 [data-accent="indigo"] {
   --primary: var(--indigo-600);
   --ring: var(--indigo-500);

@@ -13,8 +13,8 @@ function Consumer() {
       <button type="button" onClick={() => setAccent("violet")}>
         violet
       </button>
-      <button type="button" onClick={() => setAccent("indigo")}>
-        indigo
+      <button type="button" onClick={() => setAccent("cyan")}>
+        cyan
       </button>
       <button type="button" onClick={() => setGlass("strong")}>
         strong
@@ -30,14 +30,14 @@ afterEach(() => {
 });
 
 describe("PersonalizationProvider", () => {
-  it("defaults to indigo + default glass and writes no root attributes", () => {
+  it("defaults to cyan + default glass and writes no root attributes", () => {
     render(
       <PersonalizationProvider>
         <Consumer />
       </PersonalizationProvider>,
     );
 
-    expect(screen.getByTestId("accent")).toHaveTextContent("indigo");
+    expect(screen.getByTestId("accent")).toHaveTextContent("cyan");
     expect(screen.getByTestId("glass")).toHaveTextContent("default");
     expect(document.documentElement.hasAttribute("data-accent")).toBe(false);
     expect(document.documentElement.hasAttribute("data-glass")).toBe(false);
@@ -58,7 +58,7 @@ describe("PersonalizationProvider", () => {
     expect(document.documentElement.getAttribute("data-glass")).toBe("strong");
 
     // Returning to the default accent clears the attribute (base theme applies).
-    fireEvent.click(screen.getByRole("button", { name: "indigo" }));
+    fireEvent.click(screen.getByRole("button", { name: "cyan" }));
     expect(document.documentElement.hasAttribute("data-accent")).toBe(false);
   });
 

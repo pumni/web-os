@@ -2,10 +2,12 @@
 
 import * as React from "react";
 
-export type Accent = "indigo" | "violet" | "rose";
+export type Accent = "cyan" | "indigo" | "violet" | "rose";
 export type GlassLevel = "soft" | "default" | "strong";
 
-export const ACCENTS: readonly Accent[] = ["indigo", "violet", "rose"];
+// `cyan` is the brand default (no root attribute); `indigo` is kept as the
+// previous brand hue, now a selectable accent.
+export const ACCENTS: readonly Accent[] = ["cyan", "indigo", "violet", "rose"];
 export const GLASS_LEVELS: readonly GlassLevel[] = ["soft", "default", "strong"];
 
 type PersonalizationContextValue = {
@@ -20,9 +22,9 @@ const PersonalizationContext = React.createContext<PersonalizationContextValue |
 export const ACCENT_KEY = "pumni-accent";
 export const GLASS_KEY = "pumni-glass";
 
-// Accent/glass values that set a root attribute (the defaults — indigo / default —
+// Accent/glass values that set a root attribute (the defaults — cyan / default —
 // are represented by the ABSENCE of the attribute, matching the provider effects).
-const ATTR_ACCENTS = ACCENTS.filter((accent) => accent !== "indigo");
+const ATTR_ACCENTS = ACCENTS.filter((accent) => accent !== "cyan");
 const ATTR_GLASS = GLASS_LEVELS.filter((level) => level !== "default");
 
 /*
@@ -60,7 +62,7 @@ function readStored<T extends string>(key: string, allowed: readonly T[], fallba
 
 function PersonalizationProvider({
   children,
-  defaultAccent = "indigo",
+  defaultAccent = "cyan",
   defaultGlass = "default",
 }: {
   children: React.ReactNode;
@@ -79,7 +81,7 @@ function PersonalizationProvider({
   // Reflect onto the root element — the same node next-themes flags `.dark`.
   React.useEffect(() => {
     const root = document.documentElement;
-    if (accent === "indigo") root.removeAttribute("data-accent");
+    if (accent === "cyan") root.removeAttribute("data-accent");
     else root.setAttribute("data-accent", accent);
   }, [accent]);
 

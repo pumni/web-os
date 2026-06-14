@@ -1,12 +1,15 @@
 import * as React from "react";
+import { Slot } from "radix-ui";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "../lib/cn";
 
 /**
- * Card surface. `glass` (default) is the standard translucent glass treatment —
- * translucent frosted fill, hairline edge, layered depth. `solid` keeps the
- * opaque raised surface for dense, contrast-critical content.
+ * Card surface. `solid` (default) is the crisp raised content surface — opaque
+ * fill, hairline border, owned `shadow-card` depth. `inset` is the recessed
+ * nested well (muted fill, no shadow). `glass` is opt-in for cards that literally
+ * float over other content (it carries the translucent glass treatment + a11y
+ * fallbacks); most content should stay solid.
  *
  * `interactive` opts a clickable card into CSS micro-feedback (hover lift +
  * press depress, both `motion-safe`-gated). Leave it off for passive surfaces —
@@ -17,8 +20,13 @@ import { cn } from "../lib/cn";
 const cardVariants = cva("flex flex-col gap-6 rounded-xl py-6 text-card-foreground", {
   variants: {
     variant: {
+      // Raised, crisp content surface — the default. Owned elevation utility.
+      solid: "border bg-card shadow-card",
+      // Recessed nested well (no shadow, lower contrast fill).
+      inset: "border border-border bg-muted",
+      // Opt-in: floating translucent glass. Use ONLY when the card literally
+      // floats over other content. Most content should NOT use this.
       glass: "glass-panel",
-      solid: "border bg-card shadow-sm",
     },
     interactive: {
       true: "cursor-pointer transition-[transform,box-shadow] duration-[var(--duration-base)] ease-snappy motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)",
@@ -26,7 +34,7 @@ const cardVariants = cva("flex flex-col gap-6 rounded-xl py-6 text-card-foregrou
     },
   },
   defaultVariants: {
-    variant: "glass",
+    variant: "solid",
     interactive: false,
   },
 });
@@ -35,12 +43,15 @@ function Card({
   className,
   variant,
   interactive,
+  asChild = false,
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof cardVariants>) {
+}: React.ComponentProps<"div"> &
+  VariantProps<typeof cardVariants> & { asChild?: boolean }) {
+  const Comp = asChild ? Slot.Root : "div";
   return (
-    <div
+    <Comp
       data-slot="card"
-      data-variant={variant ?? "glass"}
+      data-variant={variant ?? "solid"}
       className={cn(cardVariants({ variant, interactive }), className)}
       {...props}
     />

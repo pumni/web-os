@@ -40,7 +40,7 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
                   "size-9 border ring-2 ring-background/50 motion-safe:hover:scale-110 transition-transform duration-[var(--duration-fast)] ease-snappy",
                   p.isHost
                     ? "border-primary/40 ring-primary/20"
-                    : "border-border/40"
+                    : "border-border"
                 )}
               >
                 {profile?.avatar_url && (

@@ -66,7 +66,7 @@ export function SyncPlayer({
          absolute black (no semantic token covers it) and pumniNoRawColor
          correctly flags Tailwind `bg-black` in className. */
       style={{ backgroundColor: "#000" }}
-      className="relative w-full aspect-video overflow-hidden rounded-xl border border-border/20 shadow-2xl"
+      className="relative w-full aspect-video overflow-hidden rounded-xl border border-border shadow-sm"
     >
       <MediaPlayer
         ref={playerRef}

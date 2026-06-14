@@ -118,12 +118,13 @@ export function RoomControls({
       />
 
       <GlassSurface 
+        variant="bar"
         onMouseEnter={controlsBind.onMouseEnter}
         onMouseLeave={controlsBind.onMouseLeave}
         onFocus={controlsBind.onFocus}
         onBlur={controlsBind.onBlur}
         className={cn(
-          "glass-bar absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 border border-glass-border rounded-xl shadow-lg transition-all duration-[var(--duration-base)] ease-fluid",
+          "absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 border border-glass-border transition-all duration-[var(--duration-base)] ease-fluid",
           visible ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
         )}
       >
@@ -132,14 +133,14 @@ export function RoomControls({
           <div
             role="status"
             aria-live="polite"
-            className="flex items-center justify-between w-full px-3 py-1.5 rounded-md border border-warning/25 bg-warning/8 text-warning text-xs select-none"
+            className="flex items-center justify-between w-full px-3 py-1.5 rounded-md border border-warning/20 bg-warning/10 text-warning text-xs select-none"
           >
             <span className="leading-snug">Bạn đang xem lệch tiến trình của phòng.</span>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={resync} 
-              className="h-6 text-xs px-2.5 font-semibold motion-safe:hover:bg-warning/10 text-warning border border-warning/25 shrink-0 ml-2"
+              className="h-6 text-xs px-2.5 font-semibold motion-safe:hover:bg-warning/10 text-warning border border-warning/20 shrink-0 ml-2"
             >
               Đồng bộ lại
             </Button>

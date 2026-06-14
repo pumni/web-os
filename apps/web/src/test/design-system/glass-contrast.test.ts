@@ -22,7 +22,7 @@ const personalizationCss = readFileSync(
   "utf8",
 );
 
-const ACCENTS = ["indigo", "violet", "rose"] as const;
+const ACCENTS = ["cyan", "indigo", "violet", "rose"] as const;
 type Accent = (typeof ACCENTS)[number];
 
 const desktopBlobTokens = [
@@ -66,26 +66,6 @@ function buildTokenMap(mode: "light" | "dark") {
   return tokenMap;
 }
 
-function resolveToken(name: string, tokenMap: Map<string, string>, seen = new Set<string>()): string {
-  if (seen.has(name)) {
-    throw new Error(`Circular token reference: ${[...seen, name].join(" -> ")}`);
-  }
-
-  const value = tokenMap.get(name);
-
-  if (!value) {
-    throw new Error(`Missing token: ${name}`);
-  }
-
-  const varMatch = value.match(/^var\((?<name>--[\w-]+)\)$/);
-
-  if (varMatch?.groups?.name) {
-    return resolveToken(varMatch.groups.name, tokenMap, new Set([...seen, name]));
-  }
-
-  return value;
-}
-
 function parseOklch(value: string): Color {
   const oklchPattern = new RegExp(
     "^" +
@@ -107,7 +87,9 @@ function parseOklch(value: string): Color {
 }
 
 function tokenColor(name: string, tokenMap: Map<string, string>) {
-  return parseOklch(resolveToken(name, tokenMap));
+  // Full resolver: handles var() chains, OKLCH literals, and color-mix
+  // (incl. `… , transparent`), so glass tokens defined as color-mix resolve too.
+  return resolveColor(name, tokenMap);
 }
 
 function oklchToSrgb(color: Color): Rgb {
@@ -212,10 +194,10 @@ describe("Glass contrast tokens", () => {
 
 /* ------------------------------------------------------------------ *
  * Accent personalization contrast
- * Gates the claim in personalization.css that every accent (indigo / violet /
+ * Gates the claim in personalization.css that every accent (cyan / indigo / violet /
  * rose) keeps the white `--primary-foreground` readable on `--primary`, and that
  * the color-mix-derived accent surface keeps `--accent-foreground` readable on
- * `--accent`. Mirrors the real cascade: indigo = no attribute (hand-tuned theme.css
+ * `--accent`. Mirrors the real cascade: cyan = no attribute (hand-tuned theme.css
  * values), violet/rose = `[data-accent]` overrides + derived surface.
  * ------------------------------------------------------------------ */
 
@@ -241,9 +223,9 @@ function readBlock(css: string, selector: string): Map<string, string> {
 
 function buildAccentTokenMap(mode: "light" | "dark", accent: Accent) {
   const map = buildTokenMap(mode);
-  // indigo is the default: the provider sets no attribute, so the hand-tuned
+  // cyan is the default: the provider sets no attribute, so the hand-tuned
   // theme.css accent values apply unchanged — no personalization layer.
-  if (accent === "indigo") return map;
+  if (accent === "cyan") return map;
 
   for (const [name, value] of readBlock(personalizationCss, `[data-accent="${accent}"]`)) {
     map.set(name, value);
@@ -268,21 +250,49 @@ function buildAccentTokenMap(mode: "light" | "dark", accent: Accent) {
 }
 
 function mixOklch(a: Color, b: Color, weightA: number): Color {
-  // Shortest-arc hue interpolation (matches CSS color-mix `in oklch`).
-  let deltaHue = b.h - a.h;
-  if (deltaHue > 180) deltaHue -= 360;
-  if (deltaHue < -180) deltaHue += 360;
+  const weightB = 1 - weightA;
+  const alpha = a.alpha * weightA + b.alpha * weightB;
 
-  return {
-    l: a.l * weightA + b.l * (1 - weightA),
-    c: a.c * weightA + b.c * (1 - weightA),
-    h: (a.h + (1 - weightA) * deltaHue + 360) % 360,
-    alpha: a.alpha * weightA + b.alpha * (1 - weightA),
-  };
+  // Hue is interpolated (shortest arc) but NEVER alpha-premultiplied. An
+  // achromatic term (C ≈ 0 — e.g. `transparent`, black, white) has a powerless
+  // hue, so the chromatic term's hue carries through unchanged (CSS Color 4).
+  const aAchromatic = a.c < 1e-4;
+  const bAchromatic = b.c < 1e-4;
+  let h: number;
+  if (aAchromatic && bAchromatic) {
+    h = 0;
+  } else if (aAchromatic) {
+    h = b.h;
+  } else if (bAchromatic) {
+    h = a.h;
+  } else {
+    let deltaHue = b.h - a.h;
+    if (deltaHue > 180) deltaHue -= 360;
+    if (deltaHue < -180) deltaHue += 360;
+    h = (a.h + weightB * deltaHue + 360) % 360;
+  }
+
+  if (alpha === 0) return { l: 0, c: 0, h, alpha: 0 };
+
+  // L and C mix premultiplied by alpha, then un-premultiply by the result alpha.
+  // For opaque inputs (alpha = 1) this reduces to a plain weighted average, so
+  // the existing opaque accent mixes are unchanged; premultiplication only
+  // matters when a term is translucent (e.g. `…, transparent`) — there it makes
+  // `color-mix(<neutral> N%, transparent)` resolve to exactly `<neutral>` at
+  // alpha N%, matching CSS color-mix.
+  const l = (a.l * a.alpha * weightA + b.l * b.alpha * weightB) / alpha;
+  const c = (a.c * a.alpha * weightA + b.c * b.alpha * weightB) / alpha;
+  return { l, c, h, alpha };
 }
 
 function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: Set<string>): Color {
   const trimmed = value.trim();
+
+  // `transparent` = fully clear black; an achromatic, zero-alpha term used by the
+  // glass tokens (`color-mix(in oklch, <neutral> N%, transparent)`).
+  if (trimmed === "transparent") {
+    return { l: 0, c: 0, h: 0, alpha: 0 };
+  }
 
   const varMatch = trimmed.match(/^var\((?<name>--[\w-]+)\)$/);
   if (varMatch?.groups?.name) {
