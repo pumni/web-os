@@ -12,6 +12,7 @@ export {
   AvatarGroupCount,
   AvatarImage,
 } from "./components/avatar";
+export { BentoGrid, BentoGridItem } from "./components/bento-grid";
 export { Button, buttonVariants } from "./components/button";
 export {
   Card,

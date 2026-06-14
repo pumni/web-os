@@ -232,15 +232,16 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
       {/* Add Item Form */}
       <form
         onSubmit={handleAddItem}
-        className="flex flex-col gap-2 p-3 rounded-xl border border-border bg-muted shrink-0"
+        className="flex flex-col gap-2 p-3 rounded-lg border border-border bg-muted shrink-0"
       >
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-foreground">Thêm video</span>
           <Tabs
             value={sourceType}
             onValueChange={(val) => setSourceType(val as "youtube" | "url")}
+            disableTransition
           >
-            <TabsList className="h-6 p-0.5 bg-muted border border-border gap-0.5">
+            <TabsList className="h-6 p-0.5 bg-muted border border-border rounded-md gap-0.5">
               <TabsTrigger value="youtube" className="text-xs h-5 px-2 py-0">YT</TabsTrigger>
               <TabsTrigger value="url" className="text-xs h-5 px-2 py-0">URL</TabsTrigger>
             </TabsList>
@@ -352,7 +353,7 @@ function SortableItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group flex items-center gap-2 px-2 py-1.5 rounded-lg border text-xs transition-all duration-[var(--duration-fast)] ease-snappy",
+        "group flex items-center gap-2 px-2 py-1.5 rounded-md border text-xs transition-all duration-[var(--duration-fast)] ease-snappy",
         isCurrent
           ? "border-primary/40 bg-primary/10 text-primary"
           : "border-border bg-muted text-foreground motion-safe:hover:bg-muted/80",

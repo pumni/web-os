@@ -20,7 +20,9 @@ export function withViewTransition(callback: () => void): void {
     "startViewTransition" in document &&
     !window.matchMedia("(prefers-reduced-motion: reduce)").matches
   ) {
-    document.startViewTransition(callback);
+    const transition = document.startViewTransition(callback);
+    transition.ready.catch(() => {});
+    transition.finished.catch(() => {});
   } else {
     callback();
   }

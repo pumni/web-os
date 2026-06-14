@@ -35,17 +35,18 @@
 }
 
 .glass-window[data-active="false"] {
-  background: var(--popover);
+  background-color: color-mix(in oklch, var(--glass-bg) 80%, var(--popover));
   border-color: var(--border);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.0);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.0);
   box-shadow: var(--shadow-glass-glow-soft), inset 0 1px 1px -0.5px var(--glass-highlight);
 }
 
 .glass-window[data-active="false"] .glass-titlebar {
-  background: color-mix(in oklch, var(--popover) 92%, var(--muted));
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  background-color: color-mix(in oklch, var(--glass-bg) 75%, var(--muted));
+  border-color: var(--border);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.0);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.0);
 }
 
 /* Bar variant for topbars / docks: glass look, hairline edge only. */
@@ -53,7 +54,7 @@
   background-color: var(--glass-bg);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  border-color: var(--glass-border);
+  border: 1px solid var(--glass-border);
   box-shadow: inset 0 1px 0 0 var(--glass-highlight);
 }
 
@@ -61,7 +62,7 @@
   background-color: color-mix(in oklch, var(--glass-bg) 82%, var(--popover));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  border-color: var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
   box-shadow: inset 0 1px 0 0 var(--glass-highlight);
 }
 

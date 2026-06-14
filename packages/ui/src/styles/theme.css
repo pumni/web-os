@@ -10,25 +10,25 @@
   --background: var(--neutral-50);
   --foreground: var(--neutral-950);
 
-  --card: var(--neutral-0);
+  --card: color-mix(in oklch, var(--primary) 2%, var(--neutral-0));
   --card-foreground: var(--neutral-950);
-  --popover: var(--neutral-0);
+  --popover: color-mix(in oklch, var(--primary) 2%, var(--neutral-0));
   --popover-foreground: var(--neutral-950);
 
   --primary: var(--cyan-600);
   --primary-foreground: var(--neutral-50);
-  --secondary: var(--neutral-100);
+  --secondary: color-mix(in oklch, var(--primary) 4%, var(--neutral-100));
   --secondary-foreground: var(--neutral-900);
-  --muted: var(--neutral-100);
+  --muted: color-mix(in oklch, var(--primary) 3%, var(--neutral-100));
   --muted-foreground: var(--neutral-500);
   --accent: var(--cyan-50);
   --accent-foreground: var(--cyan-700);
 
-  --destructive: var(--red-600);
+  --destructive: color-mix(in oklch, var(--primary) 2%, var(--red-600));
   --destructive-foreground: var(--neutral-50);
-  --success: var(--emerald-600);
+  --success: color-mix(in oklch, var(--primary) 2%, var(--emerald-600));
   --success-foreground: var(--neutral-50);
-  --warning: var(--amber-500);
+  --warning: color-mix(in oklch, var(--primary) 2%, var(--amber-500));
   --warning-foreground: var(--neutral-950);
 
   /* Chart (data visualization) */
@@ -38,8 +38,8 @@
   --chart-4: var(--amber-500);
   --chart-5: var(--rose-500);
 
-  --border: var(--neutral-200);
-  --input: var(--neutral-200);
+  --border: color-mix(in oklch, var(--primary) 6%, var(--neutral-200));
+  --input: color-mix(in oklch, var(--primary) 4%, var(--neutral-200));
   --ring: var(--cyan-500);
 
   --radius: var(--radius-base);
@@ -52,11 +52,11 @@
   /* Glass surfaces (translucent fill doubles as the contrast scrim).
      Expressed as <neutral primitive> at an alpha via color-mix so the glass
      follows the neutral ramp instead of hardcoding raw oklch literals. */
-  --glass-bg: color-mix(in oklch, var(--neutral-0) 52%, transparent);
-  --glass-border: color-mix(in oklch, var(--neutral-950) 62%, transparent);
-  --glass-highlight: color-mix(in oklch, var(--neutral-0) 65%, transparent);
+  --glass-bg: color-mix(in oklch, var(--neutral-0) 51%, transparent);
+  --glass-border: color-mix(in oklch, var(--primary) 6%, color-mix(in oklch, var(--neutral-950) 50%, transparent));
+  --glass-highlight: color-mix(in oklch, var(--primary) 5%, color-mix(in oklch, var(--neutral-0) 58%, transparent));
   /* Luminous glass rim — translucent white hairline that catches the light */
-  --glass-edge: color-mix(in oklch, var(--neutral-0) 60%, transparent);
+  --glass-edge: color-mix(in oklch, var(--primary) 6%, color-mix(in oklch, var(--neutral-0) 52%, transparent));
   --glass-scrim: color-mix(in oklch, var(--neutral-50) 55%, transparent);
   --glass-blur: var(--blur-glass);
 
@@ -80,31 +80,39 @@
 
   /* Modal / sheet scrim */
   --overlay: oklch(0 0 0 / 0.4);
+
+  /* Active window shadow with dynamic accent border */
+  --shadow-glass-glow: var(--shadow-glass-glow-base),
+    0 0 0 1px color-mix(in oklch, var(--primary) 6%, transparent);
+
+  /* Interactive card hover shadow with dynamic accent ambient glow */
+  --shadow-interactive-hover: 0 4px 12px -2px color-mix(in oklch, var(--primary) 12%, oklch(0 0 0 / 0.08)),
+    0 2px 4px -2px color-mix(in oklch, var(--primary) 8%, oklch(0 0 0 / 0.04));
 }
 
 .dark {
   --background: var(--neutral-950);
   --foreground: var(--neutral-50);
 
-  --card: var(--neutral-900);
+  --card: color-mix(in oklch, var(--primary) 3%, var(--neutral-900));
   --card-foreground: var(--neutral-50);
-  --popover: var(--neutral-900);
+  --popover: color-mix(in oklch, var(--primary) 3%, var(--neutral-900));
   --popover-foreground: var(--neutral-50);
 
   --primary: var(--cyan-500);
   --primary-foreground: var(--neutral-50);
-  --secondary: var(--neutral-800);
+  --secondary: color-mix(in oklch, var(--primary) 6%, var(--neutral-800));
   --secondary-foreground: var(--neutral-50);
-  --muted: var(--neutral-800);
+  --muted: color-mix(in oklch, var(--primary) 5%, var(--neutral-800));
   --muted-foreground: var(--neutral-300);
   --accent: var(--cyan-950);
   --accent-foreground: var(--cyan-100);
 
-  --destructive: var(--red-500);
+  --destructive: color-mix(in oklch, var(--primary) 3%, var(--red-500));
   --destructive-foreground: var(--neutral-50);
-  --success: var(--emerald-500);
+  --success: color-mix(in oklch, var(--primary) 3%, var(--emerald-500));
   --success-foreground: var(--neutral-950);
-  --warning: var(--amber-400);
+  --warning: color-mix(in oklch, var(--primary) 3%, var(--amber-400));
   --warning-foreground: var(--neutral-950);
 
   /* Chart */
@@ -114,8 +122,8 @@
   --chart-4: var(--amber-400);
   --chart-5: var(--rose-400);
 
-  --border: var(--neutral-800);
-  --input: var(--neutral-800);
+  --border: color-mix(in oklch, var(--primary) 8%, var(--neutral-800));
+  --input: color-mix(in oklch, var(--primary) 6%, var(--neutral-800));
   --ring: var(--cyan-400);
 
   /* Typographic compensation - counter halation */
@@ -124,10 +132,10 @@
   --tracking-body:       var(--tracking-body-dark);        /* 0.01em */
 
   /* Dark glass: darker translucent fill + brighter hairline border */
-  --glass-bg: color-mix(in oklch, var(--neutral-900) 45%, transparent);
-  --glass-border: color-mix(in oklch, var(--neutral-0) 40%, transparent);
-  --glass-highlight: color-mix(in oklch, var(--neutral-0) 30%, transparent);
-  --glass-edge: color-mix(in oklch, var(--neutral-0) 24%, transparent);
+  --glass-bg: color-mix(in oklch, var(--neutral-900) 36%, transparent);
+  --glass-border: color-mix(in oklch, var(--primary) 5%, color-mix(in oklch, var(--neutral-0) 42%, transparent));
+  --glass-highlight: color-mix(in oklch, var(--primary) 5%, color-mix(in oklch, var(--neutral-0) 28%, transparent));
+  --glass-edge: color-mix(in oklch, var(--primary) 5%, color-mix(in oklch, var(--neutral-0) 24%, transparent));
   --glass-scrim: color-mix(in oklch, var(--neutral-950) 50%, transparent);
   --glass-blur: var(--blur-glass);
 
@@ -149,6 +157,14 @@
 
   /* Deeper scrim reads better over a dark backdrop. */
   --overlay: oklch(0 0 0 / 0.6);
+
+  /* Active window shadow with dynamic accent border */
+  --shadow-glass-glow: var(--shadow-glass-glow-base),
+    0 0 0 1px color-mix(in oklch, var(--primary) 10%, transparent);
+
+  /* Interactive card hover shadow with dynamic accent ambient glow */
+  --shadow-interactive-hover: 0 4px 14px -1px color-mix(in oklch, var(--primary) 18%, oklch(0 0 0 / 0.2)),
+    0 2px 5px -2px color-mix(in oklch, var(--primary) 12%, oklch(0 0 0 / 0.1));
 }
 
 /*
@@ -251,6 +267,7 @@
      blur is intentionally NOT exposed as a standalone utility. */
   --shadow-card: var(--shadow-1);
   --shadow-raised: var(--shadow-2);
+  --shadow-interactive-hover: var(--shadow-interactive-hover);
 
   /* Z-index — the OS layering scale as named utilities (z-window, z-topbar,
      z-sidebar, …). Chrome and floating layers consume these instead of raw

@@ -102,14 +102,14 @@ export function WatchLobby() {
       </div>
 
       <Tabs defaultValue="create" className="w-full">
-        <TabsList className="grid grid-cols-2 w-full mb-4">
-          <TabsTrigger value="create">Tạo Phòng Mới</TabsTrigger>
-          <TabsTrigger value="join">Tham Gia Phòng</TabsTrigger>
+        <TabsList className="grid grid-cols-2 w-full h-9 p-1 bg-muted border border-border rounded-lg mb-4">
+          <TabsTrigger value="create" className="text-xs h-full">Tạo Phòng Mới</TabsTrigger>
+          <TabsTrigger value="join" className="text-xs h-full">Tham Gia Phòng</TabsTrigger>
         </TabsList>
 
         {/* Create Room Tab */}
         <TabsContent value="create">
-          <Card>
+          <Card variant="glass">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <span className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
@@ -128,9 +128,10 @@ export function WatchLobby() {
                   <Tabs
                     value={sourceType}
                     onValueChange={(val) => setSourceType(val as "youtube" | "url")}
+                    disableTransition
                     className="w-full"
                   >
-                    <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted">
+                    <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
                       <TabsTrigger value="youtube" className="text-xs h-7">YouTube</TabsTrigger>
                       <TabsTrigger value="url" className="text-xs h-7">Direct URL (MP4/HLS)</TabsTrigger>
                     </TabsList>
@@ -170,7 +171,7 @@ export function WatchLobby() {
 
         {/* Join Room Tab */}
         <TabsContent value="join">
-          <Card>
+          <Card variant="glass">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <span className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">

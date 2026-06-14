@@ -17,7 +17,7 @@ import { cn } from "../lib/cn";
  * `recipes.hoverLift`; reach for the recipe only when the card is already a
  * `motion.*` element (e.g. inside a stagger).
  */
-const cardVariants = cva("flex flex-col gap-6 rounded-xl py-6 text-card-foreground", {
+const cardVariants = cva("flex flex-col gap-6 py-6 text-card-foreground", {
   variants: {
     variant: {
       // Raised, crisp content surface — the default. Owned elevation utility.
@@ -29,13 +29,24 @@ const cardVariants = cva("flex flex-col gap-6 rounded-xl py-6 text-card-foregrou
       glass: "glass-panel",
     },
     interactive: {
-      true: "cursor-pointer transition-[transform,box-shadow] duration-[var(--duration-base)] ease-snappy motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)",
+      true: "cursor-pointer transition-[transform,box-shadow,border-color] duration-[var(--duration-base)] ease-snappy hover:shadow-interactive-hover hover:border-primary/30 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)",
       false: "",
+    },
+    radius: {
+      none: "rounded-none [--parent-radius:0px]",
+      xs: "rounded-xs [--parent-radius:var(--radius-xs)]",
+      sm: "rounded-sm [--parent-radius:var(--radius-sm)]",
+      md: "rounded-md [--parent-radius:var(--radius-md)]",
+      lg: "rounded-lg [--parent-radius:var(--radius-lg)]",
+      xl: "rounded-xl [--parent-radius:var(--radius-xl)]",
+      "2xl": "rounded-2xl [--parent-radius:var(--radius-2xl)]",
+      "3xl": "rounded-3xl [--parent-radius:var(--radius-3xl)]",
     },
   },
   defaultVariants: {
     variant: "solid",
     interactive: false,
+    radius: "xl",
   },
 });
 
@@ -43,6 +54,7 @@ function Card({
   className,
   variant,
   interactive,
+  radius,
   asChild = false,
   ...props
 }: React.ComponentProps<"div"> &
@@ -52,7 +64,7 @@ function Card({
     <Comp
       data-slot="card"
       data-variant={variant ?? "solid"}
-      className={cn(cardVariants({ variant, interactive }), className)}
+      className={cn(cardVariants({ variant, interactive, radius }), className)}
       {...props}
     />
   );

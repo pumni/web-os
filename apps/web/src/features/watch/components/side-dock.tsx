@@ -55,7 +55,7 @@ export function SideDock({
   };
 
   return (
-    <Card variant="solid" className="h-full flex flex-col rounded-xl overflow-hidden select-none p-0">
+    <Card variant="glass" className="h-full flex flex-col overflow-hidden select-none p-0">
       <div className="p-4 flex flex-col gap-4 flex-1 h-full min-h-0">
         <Tabs defaultValue="playlist" className="w-full flex-1 flex flex-col h-full min-h-0">
           <TabsList className="grid grid-cols-3 h-9 p-1 bg-muted border border-border rounded-lg shrink-0">
@@ -121,7 +121,7 @@ export function SideDock({
                   return (
                     <div
                       key={p.userId}
-                      className="flex items-center justify-between p-2 rounded-lg border border-border bg-muted text-xs"
+                      className="flex items-center justify-between p-2 rounded-md border border-border bg-muted text-xs"
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <Avatar className="size-7 border border-border shrink-0">

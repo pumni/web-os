@@ -50,4 +50,15 @@ describe("Card", () => {
     const card = screen.getByTestId("card");
     expect(card).toHaveAttribute("data-variant", "glass");
   });
+
+  it("renders with custom radius variant and sets parent-radius variable", () => {
+    render(
+      <Card radius="lg" data-testid="card">
+        Card Content
+      </Card>
+    );
+    const card = screen.getByTestId("card");
+    expect(card.className).toContain("rounded-lg");
+    expect(card.className).toContain("[--parent-radius:var(--radius-lg)]");
+  });
 });

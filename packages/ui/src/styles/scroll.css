@@ -51,3 +51,16 @@
   from { transform: translateY(calc(var(--scroll-parallax-rate) * -50px)); }
   to   { transform: translateY(calc(var(--scroll-parallax-rate) * 50px)); }
 }
+
+/* ✦ Standard Scrollbar Styling aligned with active Accent Theme ✦ */
+@layer base {
+  * {
+    scrollbar-color: color-mix(in oklch, var(--primary) 15%, var(--neutral-300)) transparent;
+    scrollbar-width: thin;
+  }
+
+  .dark * {
+    scrollbar-color: color-mix(in oklch, var(--primary) 18%, var(--neutral-700)) transparent;
+  }
+}
+

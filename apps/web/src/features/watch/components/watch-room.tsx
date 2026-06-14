@@ -420,9 +420,10 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
                 <Tabs
                   value={newSourceType}
                   onValueChange={(val) => setNewSourceType(val as "youtube" | "url")}
+                  disableTransition
                   className="w-full"
                 >
-                  <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted">
+                  <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
                     <TabsTrigger value="youtube" className="text-xs h-7">YouTube</TabsTrigger>
                     <TabsTrigger value="url" className="text-xs h-7">Direct URL (MP4/HLS)</TabsTrigger>
                   </TabsList>

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Play, Pause, RefreshCw, Volume2, VolumeX } from "lucide-react";
 
-import { Window, Button, motion, useReducedMotion } from "@pumni/ui";
+import { Window, Button, motion, useReducedMotion, cn } from "@pumni/ui";
 
 // Define note activation patterns for 8 beats in a loop
 const BEAT_PATTERNS: Record<number, number[]> = {
@@ -24,7 +24,7 @@ const NOTE_FREQS = [
   698.46, 783.99, 880.00, 987.77, 1046.50, // Row 3: F5, G5, A5, B5, C6
 ];
 
-export function PreviewWindow() {
+export function PreviewWindow({ className }: { className?: string }) {
   const [beat, setBeat] = React.useState(0);
   const [isPlaying, setIsPlaying] = React.useState(true);
   const [isMuted, setIsMuted] = React.useState(true);
@@ -95,7 +95,7 @@ export function PreviewWindow() {
   return (
     <Window
       title="Sky Player - Playback Preview"
-      className="w-full max-w-md shadow-2xl transition-all duration-[var(--duration-base)] hover:[box-shadow:var(--shadow-glass-glow)]"
+      className={cn("w-full max-w-md shadow-2xl transition-all duration-[var(--duration-base)] hover:[box-shadow:var(--shadow-glass-glow)]", className)}
       onClose={() => setIsPlaying(false)}
       onMinimize={() => setIsPlaying(false)}
       onMaximize={() => setIsPlaying(true)}

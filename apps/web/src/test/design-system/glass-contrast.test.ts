@@ -249,6 +249,26 @@ function mixOklch(a: Color, b: Color, weightA: number): Color {
   return { l, c, h, alpha };
 }
 
+function splitTopLevelCommas(str: string): string[] {
+  const parts: string[] = [];
+  let current = "";
+  let depth = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+    if (char === "(") depth++;
+    else if (char === ")") depth--;
+
+    if (char === "," && depth === 0) {
+      parts.push(current);
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  parts.push(current);
+  return parts;
+}
+
 function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: Set<string>): Color {
   const trimmed = value.trim();
 
@@ -267,7 +287,7 @@ function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: S
 
   const mixMatch = trimmed.match(/^color-mix\(in oklch,\s*(?<inner>.+)\)$/);
   if (mixMatch?.groups?.inner) {
-    const parts = mixMatch.groups.inner.split(",").map((part) => part.trim());
+    const parts = splitTopLevelCommas(mixMatch.groups.inner).map((part) => part.trim());
     const aPart = parts[0] ?? "";
     const bPart = parts[1] ?? "";
     const aWeighted = aPart.match(/^(?<expr>.+?)\s+(?<pct>[\d.]+)%$/);

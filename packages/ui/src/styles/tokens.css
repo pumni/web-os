@@ -45,19 +45,19 @@
   --violet-500: oklch(0.606 0.15 292.717);
   --violet-600: oklch(0.541 0.15 293.009);
 
-  /* --- Neutrals: Slate --- */
+  /* --- Neutrals: Obsidian Slate --- */
   --neutral-0: oklch(1 0 0);
-  --neutral-50: oklch(0.984 0.003 247.858);
+  --neutral-50: oklch(0.985 0.003 247.858);
   --neutral-100: oklch(0.968 0.007 247.896);
   --neutral-200: oklch(0.929 0.013 255.508);
   --neutral-300: oklch(0.869 0.022 252.894);
-  --neutral-400: oklch(0.704 0.04 256.788);
-  --neutral-500: oklch(0.554 0.046 257.417);
-  --neutral-600: oklch(0.446 0.043 257.281);
-  --neutral-700: oklch(0.372 0.044 257.287);
-  --neutral-800: oklch(0.279 0.041 260.031);
-  --neutral-900: oklch(0.208 0.042 265.755);
-  --neutral-950: oklch(0.129 0.042 264.695);
+  --neutral-400: oklch(0.704 0.035 256.788);
+  --neutral-500: oklch(0.554 0.04 257.417);
+  --neutral-600: oklch(0.446 0.038 257.281);
+  --neutral-700: oklch(0.330 0.028 260.0);
+  --neutral-800: oklch(0.220 0.024 260.0);
+  --neutral-900: oklch(0.130 0.020 260.0);
+  --neutral-950: oklch(0.085 0.015 260.0);
   --neutral-1000: oklch(0 0 0);
 
   /* --- Status --- */
@@ -120,9 +120,9 @@
   --leading-compensation-dark: 0.075;  /* extra line-height    */
 
   /* --- Glass blur (kept in the GPU-friendly 8–15px range) --- */
-  --blur-glass-sm: 8px;
-  --blur-glass: 12px;
-  --blur-glass-lg: 16px;
+  --blur-glass-sm: 10px;
+  --blur-glass: 16px;
+  --blur-glass-lg: 24px;
 
   /* --- Elevation shadows (tuned for floating glass layers) --- */
   --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
@@ -133,10 +133,9 @@
     0 6px 12px -4px oklch(0 0 0 / 0.1), 0 18px 40px -12px oklch(0 0 0 / 0.16);
   --shadow-glass-glow-soft: 0 1px 1px -0.5px oklch(0 0 0 / 0.04),
     0 6px 14px -6px oklch(0 0 0 / 0.1), 0 18px 36px -14px oklch(0 0 0 / 0.16);
-  /* Active windows: deeper layered shadow + a whisper-thin brand-tinted ring. */
-  --shadow-glass-glow: 0 2px 4px -1px oklch(0 0 0 / 0.06),
-    0 12px 28px -8px oklch(0 0 0 / 0.18), 0 28px 56px -18px oklch(0 0 0 / 0.22),
-    0 0 0 1px color-mix(in oklch, var(--indigo-500) 4%, transparent);
+  /* Active windows: deeper layered shadow. Outline added dynamically in theme.css. */
+  --shadow-glass-glow-base: 0 2px 4px -1px oklch(0 0 0 / 0.06),
+    0 12px 28px -8px oklch(0 0 0 / 0.18), 0 28px 56px -18px oklch(0 0 0 / 0.22);
 
   /* --- Z-index: single owned OS layering scale (see design-system.md).
      EVERY cross-component layer — shell chrome AND floating primitives —
