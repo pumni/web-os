@@ -1,13 +1,15 @@
 "use client";
 
 import React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card, CardContent, Button, Avatar, AvatarFallback, AvatarImage } from "@pumni/ui";
-import { Crown, Users, ListVideo } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent, GlassSurface, Button, Avatar, AvatarFallback, AvatarImage } from "@pumni/ui";
+import { Crown, Users, ListVideo, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { ParticipantRail } from "./participant-rail";
 import { PlaylistPanel } from "./playlist-panel";
+import { ChatPanel } from "./chat-panel";
+import { type ReactionOverlayRef } from "./reaction-overlay";
 import { useTransferHost } from "../hooks/use-room-queue";
-import type { Participant, QueueItem, QueueBroadcastEvent } from "../types";
+import type { Participant, QueueItem, QueueBroadcastEvent, ChatMessage } from "../types";
 
 interface SideDockProps {
   roomId: string;
@@ -18,6 +20,10 @@ interface SideDockProps {
   currentQueueItemId: string | null;
   profiles?: Record<string, { username: string | null; avatar_url: string | null }>;
   broadcastQueueEvent: (e: QueueBroadcastEvent) => void;
+  messages: ChatMessage[];
+  sendChat: (text: string) => boolean;
+  onReact?: (emoji: string) => void;
+  reactionOverlayRef?: React.RefObject<ReactionOverlayRef | null>;
 }
 
 export function SideDock({
@@ -29,6 +35,10 @@ export function SideDock({
   currentQueueItemId,
   profiles = {},
   broadcastQueueEvent,
+  messages,
+  sendChat,
+  onReact,
+  reactionOverlayRef,
 }: SideDockProps) {
   const transferHostMutation = useTransferHost(roomId);
   const isPending = transferHostMutation.isPending;
@@ -45,17 +55,23 @@ export function SideDock({
   };
 
   return (
-    <Card className="border border-border/20 bg-background/40 backdrop-blur-xl h-full flex flex-col rounded-xl overflow-hidden shadow-xl select-none">
-      <CardContent className="p-4 flex flex-col gap-4 flex-1 h-full">
-        <Tabs defaultValue="playlist" className="w-full flex-1 flex flex-col h-full">
-          <TabsList className="grid grid-cols-2 h-9 p-1 bg-background/60 border border-border/20 rounded-lg">
-            <TabsTrigger value="playlist" className="text-xs flex items-center justify-center gap-1.5 h-full">
-              <ListVideo className="size-3.5" />
-              Danh sách chờ
+    <GlassSurface className="glass-panel h-full flex flex-col rounded-xl overflow-hidden select-none">
+      <div className="p-4 flex flex-col gap-4 flex-1 h-full min-h-0">
+        <Tabs defaultValue="playlist" className="w-full flex-1 flex flex-col h-full min-h-0">
+          <TabsList className="grid grid-cols-3 h-9 p-1 bg-background/30 border border-border/20 rounded-lg shrink-0">
+            <TabsTrigger value="playlist" className="text-xs flex items-center justify-center gap-1 h-full">
+              <ListVideo className="size-3.5 shrink-0" />
+              <span className="hidden sm:inline">Danh sách</span>
+            </TabsTrigger>
+            <TabsTrigger value="chat" className="text-xs flex items-center justify-center gap-1.5 h-full">
+              <MessageSquare className="size-3.5 shrink-0" />
+              Chat
             </TabsTrigger>
             <TabsTrigger value="participants" className="text-xs flex items-center justify-center gap-1.5 h-full">
-              <Users className="size-3.5" />
-              Người xem ({participants.length})
+              <Users className="size-3.5 shrink-0" />
+              <span className="inline-flex items-center justify-center size-4 rounded-full bg-muted/60 text-[10px] font-semibold leading-none">
+                {participants.length}
+              </span>
             </TabsTrigger>
           </TabsList>
 
@@ -70,14 +86,26 @@ export function SideDock({
             />
           </TabsContent>
 
+          {/* Chat Tab */}
+          <TabsContent value="chat" className="flex-1 mt-3 focus-visible:outline-none flex flex-col min-h-0">
+            <ChatPanel
+              messages={messages}
+              sendChat={sendChat}
+              profiles={profiles}
+              userId={userId}
+              onReact={onReact}
+              reactionOverlayRef={reactionOverlayRef}
+            />
+          </TabsContent>
+
           {/* Participants Tab */}
-          <TabsContent value="participants" className="flex-1 mt-3 flex flex-col gap-4 focus-visible:outline-none">
+          <TabsContent value="participants" className="flex-1 mt-3 flex flex-col gap-4 focus-visible:outline-none overflow-hidden min-h-0">
             {/* Visual avatar rail */}
             <ParticipantRail participants={participants} profiles={profiles} />
 
             {/* List with action buttons */}
-            <div className="flex flex-col gap-2 flex-1 overflow-y-auto max-h-[300px]">
-              <span className="text-[11px] font-semibold text-muted-foreground">
+            <div className="flex flex-col gap-2 flex-1 overflow-y-auto min-h-0">
+              <span className="text-xs font-semibold text-muted-foreground shrink-0">
                 Quản lý thành viên
               </span>
               
@@ -124,10 +152,10 @@ export function SideDock({
                           size="sm"
                           disabled={isPending}
                           onClick={() => handleTransferHost(p.userId)}
-                          className="h-7 text-[10px] px-2 text-primary hover:bg-primary/10 hover:text-primary border border-primary/10"
+                          className="h-7 text-xs px-2 text-primary motion-safe:hover:bg-primary/10 hover:text-primary border border-primary/15"
                         >
                           <Crown className="size-3 mr-1" />
-                          Chuyển Host
+                          Host
                         </Button>
                       )}
                     </div>
@@ -137,7 +165,7 @@ export function SideDock({
             </div>
           </TabsContent>
         </Tabs>
-      </CardContent>
-    </Card>
+      </div>
+    </GlassSurface>
   );
 }

@@ -39,3 +39,9 @@ export const transferHostSchema = z.object({
 export type AddQueueItemInput = z.infer<typeof addQueueItemSchema>;
 export type ReorderQueueInput = z.infer<typeof reorderQueueSchema>;
 export type TransferHostInput = z.infer<typeof transferHostSchema>;
+
+export const chatMessageSchema = z.object({
+  text: z.string().trim().min(1).max(500),
+});
+export type ChatMessageInput = z.infer<typeof chatMessageSchema>;
+

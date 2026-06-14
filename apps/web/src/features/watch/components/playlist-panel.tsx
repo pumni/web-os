@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button, Input, Tabs, TabsList, TabsTrigger, cn } from "@pumni/ui";
-import { Plus, Trash2, ChevronUp, ChevronDown, Play, Music } from "lucide-react";
+import { Plus, Trash2, ChevronUp, ChevronDown, Play, Music, GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import {
   useAddQueueItem,
@@ -11,6 +11,24 @@ import {
   useAdvanceQueue,
 } from "../hooks/use-room-queue";
 import type { QueueItem, QueueBroadcastEvent } from "../types";
+
+// dnd-kit imports
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface PlaylistPanelProps {
   roomId: string;
@@ -149,140 +167,278 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
     });
   };
 
+  // dnd-kit sensors setup
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Tránh kích hoạt nhầm khi click vào các nút hoặc input
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over) return;                 // ⚠️ BẮT BUỘC — thả ngoài list → over null
+    if (active.id === over.id) return;
+
+    const without = items.filter((i) => i.id !== active.id);
+    const newIndex = without.findIndex((i) => i.id === over.id);
+    if (newIndex < 0) return;
+
+    // before = item đứng trước vị trí thả; after = item tại vị trí thả (trong mảng đã loại active)
+    const before = newIndex - 1 >= 0 ? without[newIndex - 1] : null;
+    const after = without[newIndex] ?? null;
+
+    reorderMutation.mutate(
+      {
+        itemId: String(active.id),
+        beforeId: before?.id ?? null,
+        afterId: after?.id ?? null,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Đã sắp xếp lại hàng chờ");
+          broadcastQueueEvent({ action: "reorder", title: undefined });
+        },
+        onError: (err) => {
+          toast.error(err.message || "Sắp xếp thất bại.");
+        },
+      }
+    );
+  };
+
   return (
     <div className="flex flex-col gap-4 h-full min-h-[300px]">
       {/* Host Controls */}
       {isHost && (
-        <div className="flex justify-between items-center border-b border-border/20 pb-3 select-none">
+        <div className="flex justify-between items-center pb-2 select-none shrink-0">
           <span className="text-xs font-semibold text-muted-foreground">Điều khiển</span>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             variant="ghost"
             onClick={handleAdvance}
             disabled={items.length === 0 || isPending}
-            className="text-xs hover:bg-primary/10 text-primary border border-primary/20"
+            className="h-7 text-xs gap-1.5 text-primary border border-primary/20 motion-safe:hover:bg-primary/10"
           >
-            <Play className="size-3 mr-1.5 fill-current" />
+            <Play className="size-3 fill-current" />
             Phát tiếp theo
           </Button>
         </div>
       )}
 
       {/* Add Item Form */}
-      <form onSubmit={handleAddItem} className="flex flex-col gap-2 p-3 rounded-lg border border-border/10 bg-background/30">
-        <span className="text-[11px] font-semibold text-muted-foreground select-none">Thêm Video</span>
-        
-        <Tabs 
-          value={sourceType} 
-          onValueChange={(val) => setSourceType(val as "youtube" | "url")}
-          className="w-full"
-        >
-          <TabsList className="grid grid-cols-2 h-7 p-0.5 bg-background/50 border border-border/20">
-            <TabsTrigger value="youtube" className="text-[10px] py-0.5 h-full">YouTube</TabsTrigger>
-            <TabsTrigger value="url" className="text-[10px] py-0.5 h-full">URL Video</TabsTrigger>
-          </TabsList>
-        </Tabs>
-
-        <div className="flex flex-col gap-1">
-          <Input
-            placeholder={sourceType === "youtube" ? "Link hoặc ID video YouTube" : "Link direct MP4, HLS (.m3u8)"}
-            value={sourceRef}
-            onChange={(e) => setSourceRef(e.target.value)}
-            disabled={isPending}
-            className="h-8 text-xs bg-background/20"
-          />
+      <form
+        onSubmit={handleAddItem}
+        className="flex flex-col gap-2 p-3 rounded-xl border border-border/20 bg-card/50 shrink-0"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-foreground">Thêm video</span>
+          <Tabs
+            value={sourceType}
+            onValueChange={(val) => setSourceType(val as "youtube" | "url")}
+          >
+            <TabsList className="h-6 p-0.5 bg-muted/50 border border-border/20 gap-0.5">
+              <TabsTrigger value="youtube" className="text-xs h-5 px-2 py-0">YT</TabsTrigger>
+              <TabsTrigger value="url" className="text-xs h-5 px-2 py-0">URL</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <Input
-            placeholder="Tiêu đề gợi nhớ (Tùy chọn)"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            disabled={isPending}
-            className="h-8 text-xs bg-background/20"
-          />
-        </div>
-
-        <Button type="submit" disabled={isPending} size="sm" className="h-8 text-xs mt-1 w-full">
-          <Plus className="size-3 mr-1.5" />
+        <Input
+          placeholder={sourceType === "youtube" ? "Link hoặc ID YouTube" : "Link video MP4 / HLS"}
+          value={sourceRef}
+          onChange={(e) => setSourceRef(e.target.value)}
+          disabled={isPending}
+          className="h-8 text-xs"
+        />
+        <Input
+          placeholder="Tiêu đề gợi nhớ (tùy chọn)"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          disabled={isPending}
+          className="h-8 text-xs"
+        />
+        <Button type="submit" disabled={isPending} size="sm" className="h-8 text-xs w-full">
+          <Plus className="size-3.5 mr-1.5" />
           Thêm vào hàng chờ
         </Button>
       </form>
 
       {/* Items List */}
-      <div className="flex flex-col gap-2 flex-1 overflow-y-auto max-h-[350px] pr-1">
-        <span className="text-[11px] font-semibold text-muted-foreground select-none">
-          Danh sách chờ ({items.length})
-        </span>
+      <div className="flex flex-col gap-1.5 flex-1 overflow-y-auto min-h-0 pr-0.5">
+        <div className="flex items-center justify-between shrink-0">
+          <span className="text-xs font-semibold text-muted-foreground">
+            Hàng chờ
+          </span>
+          <span className="text-xs text-muted-foreground/60 tabular-nums">{items.length} video</span>
+        </div>
 
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground/50 select-none">
+          <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground/40 select-none flex-1">
             <Music className="size-8 stroke-[1.5] mb-2" />
-            <span className="text-xs">Chưa có video nào trong hàng chờ</span>
+            <span className="text-xs">Hàng chờ trống</span>
           </div>
         ) : (
-          <div className="flex flex-col gap-1.5">
-            {items.map((item, idx) => {
-              const isCurrent = item.id === currentQueueItemId;
-              return (
-                <div
-                  key={item.id}
-                  className={cn(
-                    "flex items-center justify-between p-2 rounded-lg border text-xs transition-all",
-                    isCurrent 
-                      ? "border-primary/30 bg-primary/5 text-primary font-medium" 
-                      : "border-border/10 bg-background/20 text-foreground"
-                  )}
-                >
-                  <div className="flex flex-col gap-0.5 min-w-0 flex-1 mr-2 select-none">
-                    <span className="truncate pr-1 font-medium">
-                      {item.title || item.source_ref}
-                    </span>
-                    <span className="text-[9px] text-muted-foreground capitalize">
-                      {item.source_type}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    {/* Reorder Buttons */}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleMoveUp(idx)}
-                      disabled={idx === 0 || isPending}
-                      className="size-6 h-6 p-0 hover:bg-background/40"
-                      aria-label="Di chuyển lên"
-                    >
-                      <ChevronUp className="size-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleMoveDown(idx)}
-                      disabled={idx === items.length - 1 || isPending}
-                      className="size-6 h-6 p-0 hover:bg-background/40"
-                      aria-label="Di chuyển xuống"
-                    >
-                      <ChevronDown className="size-3.5" />
-                    </Button>
-
-                    {/* Delete Button */}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleRemoveItem(item.id)}
-                      disabled={isPending}
-                      className="size-6 h-6 p-0 hover:bg-destructive/10 text-destructive/80 hover:text-destructive"
-                      aria-label="Xóa"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+              <div className="flex flex-col gap-1">
+                {items.map((item, idx) => (
+                  <SortableItem
+                    key={item.id}
+                    item={item}
+                    idx={idx}
+                    itemsCount={items.length}
+                    currentQueueItemId={currentQueueItemId}
+                    isPending={isPending}
+                    handleMoveUp={handleMoveUp}
+                    handleMoveDown={handleMoveDown}
+                    handleRemoveItem={handleRemoveItem}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
+      </div>
+    </div>
+  );
+}
+
+interface SortableItemProps {
+  item: QueueItem;
+  idx: number;
+  itemsCount: number;
+  currentQueueItemId: string | null;
+  isPending: boolean;
+  handleMoveUp: (idx: number) => void;
+  handleMoveDown: (idx: number) => void;
+  handleRemoveItem: (id: string) => void;
+}
+
+
+function SortableItem({
+  item,
+  idx,
+  itemsCount,
+  currentQueueItemId,
+  isPending,
+  handleMoveUp,
+  handleMoveDown,
+  handleRemoveItem,
+}: SortableItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
+  const isCurrent = item.id === currentQueueItemId;
+  const isYoutube = item.source_type === "youtube";
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "group flex items-center gap-2 px-2 py-1.5 rounded-lg border text-xs transition-all duration-[var(--duration-fast)] ease-snappy",
+        isCurrent
+          ? "border-primary/40 bg-primary/10 text-primary"
+          : "border-border/15 bg-card/40 text-foreground motion-safe:hover:bg-card/80 motion-safe:hover:border-border/30",
+        isDragging && "opacity-60 shadow-lg scale-[1.02] border-primary/30"
+      )}
+    >
+      {/* Index / Playing indicator */}
+      <div className="size-5 flex items-center justify-center shrink-0">
+        {isCurrent ? (
+          <span className="relative flex size-2.5">
+            <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60" />
+            <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
+          </span>
+        ) : (
+          <span className="text-muted-foreground/40 font-mono tabular-nums leading-none text-[10px]">
+            {idx + 1}
+          </span>
+        )}
+      </div>
+
+      {/* Grip Drag Handle */}
+      <button
+        type="button"
+        className="size-5 flex items-center justify-center cursor-grab text-muted-foreground/30 motion-safe:hover:text-muted-foreground active:cursor-grabbing shrink-0 transition-colors"
+        aria-label="Kéo để sắp xếp"
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="size-3" />
+      </button>
+
+      {/* Title + source type */}
+      <div className="flex flex-col gap-0.5 min-w-0 flex-1 select-none">
+        <span className={cn("truncate font-medium text-left leading-tight", isCurrent ? "text-primary" : "text-foreground")}>
+          {item.title || item.source_ref}
+        </span>
+        <span
+          className={cn(
+            "inline-flex w-fit items-center px-1 py-px rounded text-[10px] font-medium leading-none",
+            isYoutube
+              ? "bg-destructive/10 text-destructive/80"
+              : "bg-muted/60 text-muted-foreground"
+          )}
+        >
+          {isYoutube ? "YouTube" : "URL"}
+        </span>
+      </div>
+
+      {/* Action buttons — visible only on hover (or always on current) */}
+      <div className={cn(
+        "flex items-center gap-0.5 transition-opacity duration-[var(--duration-fast)]",
+        "opacity-0 group-hover:opacity-100",
+        isCurrent && "opacity-100"
+      )}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleMoveUp(idx)}
+          disabled={idx === 0 || isPending}
+          className="size-5 p-0 motion-safe:hover:bg-muted/60"
+          aria-label="Di chuyển lên"
+        >
+          <ChevronUp className="size-3" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleMoveDown(idx)}
+          disabled={idx === itemsCount - 1 || isPending}
+          className="size-5 p-0 motion-safe:hover:bg-muted/60"
+          aria-label="Di chuyển xuống"
+        >
+          <ChevronDown className="size-3" />
+        </Button>
+
+        {/* Delete Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleRemoveItem(item.id)}
+          disabled={isPending}
+          className="size-5 p-0 motion-safe:hover:bg-destructive/10 text-muted-foreground/50 motion-safe:hover:text-destructive"
+          aria-label="Xóa"
+        >
+          <Trash2 className="size-3" />
+        </Button>
       </div>
     </div>
   );

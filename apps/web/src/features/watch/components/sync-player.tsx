@@ -62,8 +62,11 @@ export function SyncPlayer({
   return (
     <div
       ref={stageRef}
+      /* bg-black is intentionally an inline style here — video stage requires
+         absolute black (no semantic token covers it) and pumniNoRawColor
+         correctly flags Tailwind `bg-black` in className. */
+      style={{ backgroundColor: "#000" }}
       className="relative w-full aspect-video overflow-hidden rounded-xl border border-border/20 shadow-2xl"
-      style={{ backgroundColor: "black" }}
     >
       <MediaPlayer
         ref={playerRef}

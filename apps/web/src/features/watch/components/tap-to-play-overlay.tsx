@@ -9,14 +9,16 @@ interface TapToPlayOverlayProps {
 
 export function TapToPlayOverlay({ onResume }: TapToPlayOverlayProps) {
   return (
-    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-3 bg-overlay/70 backdrop-blur-sm select-none">
-      <p className="text-sm font-medium" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-        Trình duyệt đã chặn tự động phát.
-      </p>
-      <Button onClick={onResume} size="lg" className="gap-2">
-        <Play className="size-5 fill-current" />
-        Bấm để xem cùng phòng
-      </Button>
+    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-overlay/80 backdrop-blur-sm select-none">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <p className="text-sm font-medium text-foreground/90">
+          Trình duyệt đã chặn tự động phát.
+        </p>
+        <Button onClick={onResume} size="lg" className="gap-2 shadow-lg shadow-primary/30">
+          <Play className="size-5 fill-current" />
+          Bấm để xem cùng phòng
+        </Button>
+      </div>
     </div>
   );
 }

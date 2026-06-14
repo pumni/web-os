@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage, motion, useReducedMotion, recipes } from "@pumni/ui";
+import { Avatar, AvatarFallback, AvatarImage, motion, useReducedMotion, recipes, cn } from "@pumni/ui";
+import { Crown } from "lucide-react";
 import type { Participant } from "../types";
 
 interface ParticipantRailProps {
@@ -26,7 +27,7 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
           const displayName = profile?.username ?? `User: ${p.userId.slice(0, 8)}`;
           const initials = profile?.username 
             ? profile.username.slice(0, 2) 
-            : (p.isHost ? "Host" : p.userId.slice(0, 2));
+            : (p.isHost ? "Ho" : p.userId.slice(0, 2));
 
           return (
             <motion.div
@@ -34,21 +35,28 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
               {...(shouldReduceMotion ? {} : recipes.staggerItem)}
               className="relative group"
             >
-              <Avatar className="size-9 border border-border/40 ring-2 ring-background/50 hover:scale-105 transition-transform">
+              <Avatar
+                className={cn(
+                  "size-9 border ring-2 ring-background/50 motion-safe:hover:scale-110 transition-transform duration-[var(--duration-fast)] ease-snappy",
+                  p.isHost
+                    ? "border-primary/40 ring-primary/20"
+                    : "border-border/40"
+                )}
+              >
                 {profile?.avatar_url && (
                   <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
                 )}
-                <AvatarFallback className="text-xs font-medium uppercase select-none">
+                <AvatarFallback className="text-xs font-semibold uppercase select-none">
                   {initials}
                 </AvatarFallback>
               </Avatar>
               {p.isHost && (
-                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground shadow">
-                  ★
+                <span className="absolute -bottom-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm shadow-primary/30">
+                  <Crown className="size-2.5 fill-current" />
                 </span>
               )}
               {/* Tooltip on hover */}
-              <div className="pointer-events-none absolute bottom-11 left-1/2 -translate-x-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity bg-popover text-popover-foreground text-[10px] px-2 py-1 rounded border border-border shadow-md whitespace-nowrap">
+              <div className="pointer-events-none absolute bottom-11 left-1/2 -translate-x-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-[var(--duration-fast)] bg-popover text-popover-foreground text-xs px-2 py-1 rounded-md border border-border shadow-md whitespace-nowrap">
                 {p.isHost ? `Chủ phòng (${displayName})` : displayName}
               </div>
             </motion.div>

@@ -20,10 +20,11 @@ import {
   Sheet,
   SheetContent,
   SheetHeader,
-  SheetTitle
+  SheetTitle,
+  GlassSurface,
 } from "@pumni/ui";
 import { toast } from "sonner";
-import { Copy, ArrowLeft, ListVideo } from "lucide-react";
+import { ArrowLeft, ListVideo, Link2, Hash } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useServerClock } from "../hooks/use-server-clock";
@@ -37,11 +38,16 @@ import { setRoomSource, leaveRoom } from "../actions";
 import { useRoomQuery } from "../hooks/use-room-query";
 import { useQueueQuery, useAdvanceQueue } from "../hooks/use-room-queue";
 import { watchKeys } from "../query-keys";
-import type { Room, PlaybackAnchor, QueueItem } from "../types";
+import type { Room, PlaybackAnchor, QueueItem, ChatMessage, ReactionEvent } from "../types";
 import { TapToPlayOverlay } from "./tap-to-play-overlay";
 import { HostClaimBanner } from "./host-claim-banner";
 import { useHostHeartbeat } from "../hooks/use-host-heartbeat";
 import { useMemberProfiles } from "../hooks/use-room-members";
+
+// Phase 6 imports
+import { useRoomChat } from "../hooks/use-room-chat";
+import { useHostAutopromote } from "../hooks/use-host-autopromote";
+import { type ReactionOverlayRef } from "./reaction-overlay";
 
 interface WatchRoomProps {
   room: Room;
@@ -115,16 +121,48 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   useHostHeartbeat(currentRoom.id, isHost);
 
-  // We use a ref to sever the circular hook dependency
+  // We use refs to sever the circular hook dependency
   const onAnchorRef = useRef<(anchor: PlaybackAnchor) => void>(() => {});
+  const onChatRef = useRef<(m: ChatMessage) => void>(() => {});
+  const onReactionRef = useRef<(r: ReactionEvent) => void>(() => {});
+  const reactionOverlayRef = useRef<ReactionOverlayRef>(null);
 
-  // 4. Realtime channel (Broadcast anchor + Presence + postgres_changes).
-  const { participants, broadcastAnchor, broadcastQueueEvent, channelStatus } = useRoomChannel(
+  // 4. Realtime channel (Broadcast anchor + Presence + postgres_changes + Chat + Reactions).
+  const { 
+    participants, 
+    broadcastAnchor, 
+    broadcastQueueEvent, 
+    channelStatus,
+    broadcastChat,
+    broadcastReaction
+  } = useRoomChannel(
     currentRoom,
     userId,
     isHost,
-    (anchor) => onAnchorRef.current(anchor)
+    (anchor) => onAnchorRef.current(anchor),
+    (m) => onChatRef.current(m),
+    (r) => onReactionRef.current(r)
   );
+
+  // 4.5 Chat & Reactions & Host Auto-promote
+  const { messages, receiveChat, sendChat, sendReaction } = useRoomChat(
+    userId,
+    broadcastChat,
+    broadcastReaction,
+    (r) => reactionOverlayRef.current?.pushReaction(r)
+  );
+
+  useEffect(() => {
+    onChatRef.current = receiveChat;
+  }, [receiveChat]);
+
+  useEffect(() => {
+    onReactionRef.current = (r) => {
+      reactionOverlayRef.current?.pushReaction(r);
+    };
+  }, []);
+
+  useHostAutopromote(currentRoom.id, userId, isHost, participants);
 
   // 5. Sync Controller (Soft-lock + Resync)
   const {
@@ -224,54 +262,64 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   if (!clockReady) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3 select-none text-foreground/75">
-        <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <div className="size-8 motion-safe:animate-spin rounded-full border-2 border-primary border-t-transparent" />
         <span className="text-sm font-medium">Đang đồng bộ thời gian với máy chủ...</span>
       </div>
     );
   }
 
   return (
-    <div className="w-full flex-1 flex flex-col gap-4 p-4 min-h-0 select-none">
+    <div className="w-full flex-1 flex flex-col gap-3 p-4 min-h-0 select-none">
       {/* Top Header Bar */}
-      <div className="flex items-center justify-between w-full select-none shrink-0">
-        <div className="flex items-center gap-3">
+      <GlassSurface className="glass-bar flex items-center justify-between w-full select-none shrink-0 px-3 py-2 rounded-xl border border-glass-border">
+        {/* Left: Back + Title + Status */}
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={handleLeave}
-            aria-label="Back to Lobby"
+            aria-label="Rời phòng"
+            className="size-8 shrink-0"
           >
-            <ArrowLeft className="size-5 text-foreground" />
+            <ArrowLeft className="size-4" />
           </Button>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <h1 className="text-sm font-semibold tracking-tight text-foreground">
-                Phòng xem chung
-              </h1>
-              <SyncIndicator status={syncStatus} />
-              {channelStatus !== "connected" && (
-                <span
-                  role="status"
-                  aria-live="polite"
-                  className="inline-flex items-center rounded-sm bg-destructive/10 border border-destructive/20 px-2 py-0.5 text-[10px] font-medium text-destructive animate-pulse"
-                >
-                  Mất kết nối...
-                </span>
-              )}
-            </div>
-            <span className="text-[10px] text-muted-foreground">
-              Mã phòng: <span className="font-mono font-bold text-foreground">{currentRoom.code}</span>
-            </span>
+
+          <div className="flex items-center gap-2 min-w-0">
+            <h2 className="text-sm font-semibold tracking-tight truncate">Phòng xem chung</h2>
+            <SyncIndicator status={syncStatus} />
+            {channelStatus !== "connected" && (
+              <span
+                role="status"
+                aria-live="polite"
+                className="hidden sm:inline-flex items-center rounded-sm bg-destructive/10 border border-destructive/20 px-2 py-0.5 text-xs font-medium text-destructive motion-safe:animate-pulse"
+              >
+                Mất kết nối
+              </span>
+            )}
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={handleCopyCode} className="text-xs">
-            Mã phòng
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleCopyLink} className="text-xs">
-            <Copy className="size-3.5 mr-1" />
-            Sao chép link
+        {/* Right: Room code chip + actions */}
+        <div className="flex items-center gap-1 shrink-0">
+          {/* Room code — click to copy */}
+          <button
+            type="button"
+            onClick={handleCopyCode}
+            aria-label="Sao chép mã phòng"
+            className="hidden sm:flex items-center gap-1 h-7 px-2.5 rounded-md border border-border/30 bg-muted/30 motion-safe:hover:bg-muted/60 transition-colors duration-[var(--duration-fast)] cursor-pointer"
+          >
+            <Hash className="size-3 text-muted-foreground/70" />
+            <span className="font-mono text-xs font-bold tracking-widest text-foreground">{currentRoom.code}</span>
+          </button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleCopyLink}
+            aria-label="Sao chép link phòng"
+            className="size-8"
+          >
+            <Link2 className="size-4" />
           </Button>
 
           {/* Mobile Sheet Trigger */}
@@ -279,13 +327,13 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             variant="ghost"
             size="icon"
             onClick={() => setIsSheetOpen(true)}
-            className="lg:hidden flex"
+            className="lg:hidden size-8"
             aria-label="Hàng chờ và Người xem"
           >
-            <ListVideo className="size-5" />
+            <ListVideo className="size-4" />
           </Button>
         </div>
-      </div>
+      </GlassSurface>
 
       {showClaim && !isHost && <HostClaimBanner roomId={currentRoom.id} />}
 
@@ -323,17 +371,21 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             currentQueueItemId={currentRoom.current_queue_item_id}
             profiles={profiles}
             broadcastQueueEvent={broadcastQueueEvent}
+            messages={messages}
+            sendChat={sendChat}
+            onReact={sendReaction}
+            reactionOverlayRef={reactionOverlayRef}
           />
         </div>
       </div>
 
       {/* Mobile Drawer (Sheet) */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 bg-background/95 border-l border-border/20 flex flex-col h-full">
+        <SheetContent side="right" className="w-full sm:max-w-md p-0 bg-card border-l border-border/20 flex flex-col h-full">
           <SheetHeader className="p-4 border-b border-border/20 shrink-0">
             <SheetTitle className="text-sm font-semibold">Bảng điều khiển</SheetTitle>
           </SheetHeader>
-          <div className="flex-1 overflow-hidden min-h-0">
+          <div className="flex-1 overflow-hidden min-h-0 p-2">
             <SideDock
               roomId={currentRoom.id}
               userId={userId}
@@ -343,6 +395,10 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               currentQueueItemId={currentRoom.current_queue_item_id}
               profiles={profiles}
               broadcastQueueEvent={broadcastQueueEvent}
+              messages={messages}
+              sendChat={sendChat}
+              onReact={sendReaction}
+              reactionOverlayRef={reactionOverlayRef}
             />
           </div>
         </SheetContent>

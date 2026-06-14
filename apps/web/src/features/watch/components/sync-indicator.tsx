@@ -12,14 +12,17 @@ export function SyncIndicator({ status }: SyncIndicatorProps) {
     host: {
       label: "Host",
       className: "bg-primary/10 text-primary border-primary/20",
+      dotClass: "",
     },
     "in-sync": {
       label: "Đồng bộ",
       className: "bg-success/10 text-success border-success/20",
+      dotClass: "",
     },
     "catching-up": {
       label: "Cân bằng...",
       className: "bg-warning/10 text-warning border-warning/20",
+      dotClass: "motion-safe:animate-ping",
     },
   };
 
@@ -30,11 +33,20 @@ export function SyncIndicator({ status }: SyncIndicatorProps) {
       role="status"
       aria-live="polite"
       className={cn(
-        "inline-flex items-center rounded-sm px-2 py-0.5 text-[10px] font-medium border select-none transition-colors",
+        "inline-flex items-center gap-1.5 rounded-sm px-2 py-0.5 text-xs font-medium border select-none transition-colors",
         config.className
       )}
     >
-      <span className="mr-1.5 h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "currentColor" }} />
+      <span className="relative flex size-1.5">
+        <span
+          className={cn(
+            "absolute inline-flex h-full w-full rounded-full opacity-75",
+            config.dotClass,
+            "bg-current"
+          )}
+        />
+        <span className="relative inline-flex size-1.5 rounded-full bg-current" />
+      </span>
       {config.label}
     </span>
   );

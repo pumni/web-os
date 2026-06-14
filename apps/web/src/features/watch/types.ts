@@ -25,3 +25,18 @@ export interface QueueBroadcastEvent {
   title?: string | null;
 }
 
+export interface ChatMessage {
+  id: string;          // crypto.randomUUID() phía client gửi
+  userId: string;
+  text: string;
+  sentAt: number;      // Date.now() của người gửi
+}
+
+export interface ReactionEvent {
+  id: string;
+  userId: string;
+  emoji: string;       // 1 trong tập cho phép
+  sentAt: number;
+}
+
+

@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
-import type { PlaybackAnchor, Participant, Room, QueueBroadcastEvent } from "../types";
+import type { PlaybackAnchor, Participant, Room, QueueBroadcastEvent, ChatMessage, ReactionEvent } from "../types";
 import { watchKeys } from "../query-keys";
 import { getStructuralSignature } from "../sync-math";
 
@@ -13,7 +13,9 @@ export function useRoomChannel(
   room: Room,
   userId: string,
   isHost: boolean,
-  onAnchor: (anchor: PlaybackAnchor) => void
+  onAnchor: (anchor: PlaybackAnchor) => void,
+  onChat?: (m: ChatMessage) => void,
+  onReaction?: (r: ReactionEvent) => void
 ) {
   const queryClient = useQueryClient();
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -42,6 +44,15 @@ export function useRoomChannel(
   const onAnchorLatestRef = useRef(onAnchor);
   useEffect(() => {
     onAnchorLatestRef.current = onAnchor;
+  });
+
+  const onChatLatestRef = useRef(onChat);
+  const onReactionLatestRef = useRef(onReaction);
+  useEffect(() => {
+    onChatLatestRef.current = onChat;
+  });
+  useEffect(() => {
+    onReactionLatestRef.current = onReaction;
   });
 
   useEffect(() => {
@@ -107,6 +118,14 @@ export function useRoomChannel(
         }
       }
     );
+
+    activeChannel.on("broadcast", { event: "chat" }, (p: { payload: ChatMessage }) => {
+      if (p.payload) onChatLatestRef.current?.(p.payload);
+    });
+
+    activeChannel.on("broadcast", { event: "reaction" }, (p: { payload: ReactionEvent }) => {
+      if (p.payload) onReactionLatestRef.current?.(p.payload);
+    });
 
     // 4. Listen to presence events
     activeChannel.on("presence", { event: "sync" }, () => {
@@ -187,10 +206,32 @@ export function useRoomChannel(
     }
   };
 
+  const broadcastChat = (m: ChatMessage) => {
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: "broadcast",
+        event: "chat",
+        payload: m,
+      });
+    }
+  };
+
+  const broadcastReaction = (r: ReactionEvent) => {
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: "broadcast",
+        event: "reaction",
+        payload: r,
+      });
+    }
+  };
+
   return {
     participants,
     broadcastAnchor,
     broadcastQueueEvent,
     channelStatus,
+    broadcastChat,
+    broadcastReaction,
   };
 }

@@ -10,7 +10,7 @@ import {
   VolumeX,
   Maximize,
   Minimize,
-  Gauge,
+  Clapperboard,
 } from "lucide-react";
 import {
   Select,
@@ -108,13 +108,13 @@ export function RoomControls({
   return (
     <>
       <div 
-        style={{
-          background: "linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0) 100%)"
-        }}
         className={cn(
-          "absolute inset-x-0 bottom-0 h-48 pointer-events-none z-10 transition-opacity duration-300",
+          "absolute inset-x-0 bottom-0 h-48 pointer-events-none z-10 transition-opacity duration-[var(--duration-base)] ease-fluid",
           visible ? "opacity-100" : "opacity-0"
-        )} 
+        )}
+        style={{
+          background: "linear-gradient(to top, var(--color-overlay) 0%, color-mix(in oklch, var(--color-overlay) 45%, transparent) 55%, transparent 100%)"
+        }}
       />
 
       <GlassSurface 
@@ -123,7 +123,7 @@ export function RoomControls({
         onFocus={controlsBind.onFocus}
         onBlur={controlsBind.onBlur}
         className={cn(
-          "glass-bar absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 border border-glass-border rounded-xl shadow-lg transition-all duration-300",
+          "glass-bar absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 border border-glass-border rounded-xl shadow-lg transition-all duration-[var(--duration-base)] ease-fluid",
           visible ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
         )}
       >
@@ -132,14 +132,14 @@ export function RoomControls({
           <div
             role="status"
             aria-live="polite"
-            className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg border border-warning/20 bg-warning/5 text-warning text-xs select-none"
+            className="flex items-center justify-between w-full px-3 py-1.5 rounded-md border border-warning/25 bg-warning/8 text-warning text-xs select-none"
           >
-            <span>Bạn đang xem lệch tiến trình phát của phòng. Sẽ tự đồng bộ khi host thao tác.</span>
+            <span className="leading-snug">Bạn đang xem lệch tiến trình của phòng.</span>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={resync} 
-              className="h-6 text-[10px] px-2.5 font-semibold hover:bg-warning/10 text-warning border border-warning/20"
+              className="h-6 text-xs px-2.5 font-semibold motion-safe:hover:bg-warning/10 text-warning border border-warning/25 shrink-0 ml-2"
             >
               Đồng bộ lại
             </Button>
@@ -148,7 +148,7 @@ export function RoomControls({
 
         {/* Timeline progress slider */}
         <div className="flex items-center gap-3 w-full">
-          <span className="text-xs font-mono text-foreground/80 select-none">
+          <span className="text-xs font-mono text-foreground/90 select-none tabular-nums min-w-[36px] text-right">
             {formatTime(currentTime)}
           </span>
           <Slider
@@ -158,10 +158,10 @@ export function RoomControls({
             step={0.1}
             onValueChange={handleSeek}
             onValueCommit={handleSeekCommit}
-            className="flex-1"
+            className="flex-1 [&_[data-slot=track]]:bg-foreground/20 [&_[data-slot=range]]:bg-foreground [&_[data-slot=thumb]]:bg-foreground [&_[data-slot=thumb]]:border-foreground/30"
             aria-label="Seek progress"
           />
-          <span className="text-xs font-mono text-foreground/80 select-none">
+          <span className="text-xs font-mono text-foreground/60 select-none tabular-nums min-w-[36px]">
             {formatTime(duration)}
           </span>
         </div>
@@ -204,51 +204,54 @@ export function RoomControls({
               max={1}
               step={0.05}
               onValueChange={handleVolumeChange}
-              className="w-20"
+              className="w-20 [&_[data-slot=track]]:bg-foreground/20 [&_[data-slot=range]]:bg-foreground [&_[data-slot=thumb]]:bg-foreground [&_[data-slot=thumb]]:border-foreground/30"
               aria-label="Volume level"
             />
 
             {!isHost && isFollowingHost && (
-              <span className="text-[10px] text-muted-foreground/80 ml-2 select-none">
-                Đang đồng bộ với Host
+              <span className="text-xs text-foreground/50 ml-2 select-none">
+                • Đồng bộ
               </span>
             )}
             {!isHost && !isFollowingHost && (
-              <span className="text-[10px] text-warning/80 ml-2 select-none font-medium">
-                Đã ngắt đồng bộ — sẽ tự đồng bộ khi host thao tác
+              <span className="text-xs text-warning/90 ml-2 select-none font-medium">
+                • Lệch sync
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {/* Source Change Button (Host only) */}
             {isHost && onSourceChange && (
-              <Button variant="ghost" size="sm" onClick={onSourceChange} className="text-xs">
-                Đổi nguồn phát
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onSourceChange}
+                aria-label="Đổi nguồn phát"
+                className="size-8 text-foreground/80 motion-safe:hover:text-foreground"
+              >
+                <Clapperboard className="size-4" />
               </Button>
             )}
 
-            {/* Playback Rate / Speed Selector */}
-            <div className="flex items-center gap-1">
-              <Gauge className="size-3.5 text-muted-foreground" />
-              <Select
-                value={playbackRate.toString()}
-                onValueChange={handleSpeedChange}
-                disabled={!isHost}
-              >
-                <SelectTrigger className="h-7 w-20 text-[11px] px-2">
-                  <SelectValue placeholder="Tốc độ" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0.5">0.5x</SelectItem>
-                  <SelectItem value="0.75">0.75x</SelectItem>
-                  <SelectItem value="1">1.0x (Chuẩn)</SelectItem>
-                  <SelectItem value="1.25">1.25x</SelectItem>
-                  <SelectItem value="1.5">1.5x</SelectItem>
-                  <SelectItem value="2">2.0x</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Playback Rate / Speed Selector — host only authoritative */}
+            <Select
+              value={playbackRate.toString()}
+              onValueChange={handleSpeedChange}
+              disabled={!isHost}
+            >
+              <SelectTrigger className="h-7 w-14 text-xs px-1.5 bg-transparent border-foreground/20 text-foreground focus:ring-foreground/30">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0.5">0.5×</SelectItem>
+                <SelectItem value="0.75">0.75×</SelectItem>
+                <SelectItem value="1">1×</SelectItem>
+                <SelectItem value="1.25">1.25×</SelectItem>
+                <SelectItem value="1.5">1.5×</SelectItem>
+                <SelectItem value="2">2×</SelectItem>
+              </SelectContent>
+            </Select>
 
             {/* Fullscreen */}
             <Button
@@ -256,11 +259,12 @@ export function RoomControls({
               size="icon"
               onClick={handleFullscreenToggle}
               aria-label={fullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
+              className="size-8 text-foreground/80 motion-safe:hover:text-foreground"
             >
               {fullscreen ? (
-                <Minimize className="size-4 text-foreground" />
+                <Minimize className="size-4" />
               ) : (
-                <Maximize className="size-4 text-foreground" />
+                <Maximize className="size-4" />
               )}
             </Button>
           </div>
