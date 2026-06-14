@@ -25,8 +25,8 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
         {participants.map((p) => {
           const profile = profiles[p.userId];
           const displayName = profile?.username ?? `User: ${p.userId.slice(0, 8)}`;
-          const initials = profile?.username 
-            ? profile.username.slice(0, 2) 
+          const initials = profile?.username
+            ? profile.username.slice(0, 2)
             : (p.isHost ? "Ho" : p.userId.slice(0, 2));
 
           return (
@@ -37,7 +37,7 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
             >
               <Avatar
                 className={cn(
-                  "size-9 border ring-2 ring-background/50 motion-safe:hover:scale-110 transition-transform duration-[var(--duration-fast)] ease-snappy",
+                  "size-9 border ring-2 ring-background motion-safe:hover:scale-110 transition-transform duration-[var(--duration-fast)] ease-snappy",
                   p.isHost
                     ? "border-primary/40 ring-primary/20"
                     : "border-border"

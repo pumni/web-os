@@ -354,9 +354,9 @@ function SortableItem({
       className={cn(
         "group flex items-center gap-2 px-2 py-1.5 rounded-md border text-xs transition-all duration-[var(--duration-fast)] ease-snappy",
         isCurrent
-          ? "border-primary/40 bg-primary/10 text-primary"
+          ? "border-primary/20 bg-primary/10 text-primary"
           : "border-border bg-muted text-foreground motion-safe:hover:bg-muted/80",
-        isDragging && "opacity-60 shadow-sm scale-[1.02] border-primary/30"
+        isDragging && "opacity-60 shadow-sm scale-[1.02] border-primary/20"
       )}
     >
       {/* Index / Playing indicator */}

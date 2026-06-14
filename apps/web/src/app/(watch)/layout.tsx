@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getCurrentUser } from "@pumni/auth";
 import { redirect } from "next/navigation";
+import { DesktopBackground } from "@/components/app-shell/desktop-background";
 
 
 export default function WatchLayout({
@@ -9,7 +10,7 @@ export default function WatchLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Suspense fallback={<div className="min-h-dvh" style={{ backgroundColor: "black" }} />}>
+    <Suspense fallback={<div className="min-h-dvh bg-background" />}>
       <AuthenticatedWatchShell>{children}</AuthenticatedWatchShell>
     </Suspense>
   );
@@ -30,11 +31,11 @@ async function AuthenticatedWatchShell({
   }
 
   return (
-    <div
-      className="min-h-dvh flex flex-col p-0 md:p-4"
-      style={{ backgroundColor: "black" }}
-    >
-      {children}
+    <div className="relative min-h-dvh flex flex-col p-0 md:p-4 bg-background">
+      <DesktopBackground />
+      <div className="relative z-base flex-1 flex flex-col min-h-0">
+        {children}
+      </div>
     </div>
   );
 }

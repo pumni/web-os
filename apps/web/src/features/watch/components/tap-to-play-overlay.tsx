@@ -9,7 +9,7 @@ interface TapToPlayOverlayProps {
 
 export function TapToPlayOverlay({ onResume }: TapToPlayOverlayProps) {
   return (
-    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-overlay/80 select-none">
+    <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 overlay-scrim select-none">
       <div className="flex flex-col items-center gap-3 text-center">
         <p className="text-sm font-medium text-foreground/90">
           Trình duyệt đã chặn tự động phát.
