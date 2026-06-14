@@ -37,7 +37,7 @@
 
   --radius: var(--radius-base);
 
-  /* Liquid Glass surfaces (translucent fill doubles as the contrast scrim) */
+  /* Glass surfaces (translucent fill doubles as the contrast scrim) */
   --glass-bg: oklch(1 0 0 / 0.5);
   --glass-border: oklch(0.129 0.042 264.695 / 0.62);
   --glass-highlight: oklch(1 0 0 / 0.65);

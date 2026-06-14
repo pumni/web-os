@@ -1,20 +1,17 @@
 ---
-description: Pumni OS design system — OKLCH 3-tier tokens, Liquid Glass surfaces, and how to add tokens/components.
+description: Pumni OS design system — OKLCH 3-tier tokens, surface intensity variants, and how to add tokens/components.
 when-to-load: When styling UI, adding design tokens, building components, or working with @pumni/ui.
 ---
 
 # Pumni OS Design System
 
-Visual language for Pumni Web OS: **Liquid Glass** surfaces over a flat, calm
-shell, an **Indigo/Violet** brand, and an **OKLCH** token system. Accessibility
-(WCAG 2.2) and `backdrop-filter` performance are treated as infrastructure, not
-afterthoughts.
+Pumni Web OS uses a token-first surface system built from OKLCH primitives, semantic roles, motion tokens, and shared `@pumni/ui` primitives. Accessibility (WCAG 2.2) and `backdrop-filter` performance are treated as infrastructure, not afterthoughts.
 
 Token source of truth lives in `@pumni/ui`:
 
 - `packages/ui/src/styles/tokens.css` — Tier 1 primitives
 - `packages/ui/src/styles/theme.css` — Tier 2 semantic + `@theme inline`
-- `packages/ui/src/styles/glass.css` — Liquid Glass utilities + a11y fallbacks
+- `packages/ui/src/styles/glass.css` — surface utilities and transparency fallbacks
 
 These are imported once in `apps/web/src/app/globals.css`.
 
@@ -55,12 +52,12 @@ Apps consume semantic utilities (`bg-primary`, `text-muted-foreground`,
 | Token | Role |
 | --- | --- |
 | `background` / `foreground` | Page surface + default text |
-| `card` / `popover` (+ `-foreground`) | Raised surfaces (`Card` defaults to glass; `variant="solid"` for dense content) |
+| `card` / `popover` (+ `-foreground`) | Raised surfaces (`Card` defaults to translucent surface; `variant="solid"` for dense content) |
 | `primary` (+ `-foreground`) | Brand actions (Indigo) |
 | `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
 | `border` / `input` / `ring` | Hairlines, fields, focus ring |
-| `glass-bg` / `glass-border` / `glass-edge` / `glass-highlight` / `glass-scrim` / `glass-blur` | Liquid Glass surfaces (`glass-edge` = luminous rim) |
+| `glass-bg` / `glass-border` / `glass-edge` / `glass-highlight` / `glass-scrim` / `glass-blur` | Translucent glass surfaces (`glass-edge` = luminous rim) |
 | `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) — never raw `bg-black/40` |
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
@@ -70,25 +67,14 @@ Primitive color variables (`--indigo-*`, `--violet-*`, `--neutral-*`, status
 scales, and raw `oklch(...)`) are restricted to token/theme files. Components
 and runtime utilities must consume semantic or component-scoped tokens instead.
 
-## Liquid Glass — use with intent
+## Surface Utilities and Overlay Roles
 
-Glass is for **floating layers and cards**: topbar, dock, window titlebar,
-dialog, sheet, popover, command palette, toast, and the default `Card` surface.
-Large background areas and the flat shell stay opaque. Use `Card`'s
-`variant="solid"` when content is dense or contrast-critical.
+Translucent glass layers are reserved for **floating layers and cards**: topbar, dock, window titlebar, dialog, sheet, popover, command palette, toast, and the default `Card` surface. Large background areas and the flat shell stay opaque. Use `Card`'s `variant="solid"` when content is dense or contrast-critical.
 
-- Apply the role-based utility that matches the layer: `.glass-bar`
-  (topbars/docks/sidebar rails), `.glass-panel` (dialogs, sheets, popovers,
-  command palettes), `.glass-window` (OS windows), or `.glass-titlebar` (window
-  titlebars). The `GlassSurface` component wraps these roles behind a `variant`
-  prop.
-- **Never** put glass on large background areas or stack many glass layers —
-  `backdrop-filter` is GPU-intensive. Keep blur in **8–16px** (`--glass-blur`).
-- The translucent fill (`--glass-bg`) is the **contrast scrim**: verify text and
-  icons meet **4.5:1** (text) / **3:1** (UI) against both light and dark
-  background states.
-- Fallbacks are built in: `prefers-reduced-transparency` → opaque surface, no
-  blur; `prefers-reduced-motion` → animations/transitions neutralised.
+- Apply the role-based utility that matches the layer: `.glass-bar` (topbars/docks/sidebar rails), `.glass-panel` (dialogs, sheets, popovers, command palettes), `.glass-window` (OS windows), or `.glass-titlebar` (window titlebars). The `GlassSurface` component wraps these roles behind a `variant` prop.
+- **Never** put glass on large background areas or stack many glass layers — `backdrop-filter` is GPU-intensive. Keep blur in **8–16px** (`--glass-blur`).
+- The translucent fill (`--glass-bg`) is the **contrast scrim**: verify text and icons meet **4.5:1** (text) / **3:1** (UI) against both light and dark background states.
+- Fallbacks are built in: `prefers-reduced-transparency` → opaque surface, no blur; `prefers-reduced-motion` → animations/transitions neutralized.
 
 ## Typography & motion utilities
 
@@ -133,10 +119,7 @@ Type scale and motion are **owned tokens**, not borrowed Tailwind defaults.
 
 ## Radius scale
 
-One knob drives the whole UI: `--radius-base` (`0.625rem`, deliberately softer
-than the legacy 8px for the Liquid Glass look). The `@theme inline` scale derives
-every step from it via `calc()`, so components consume **named utilities only** —
-never magic `rounded-[Npx]` values.
+One knob drives the whole UI: `--radius-base` (`0.625rem`, deliberately softer than the legacy 8px for a smoother, modern look). The `@theme inline` scale derives every step from it via `calc()`, so components consume **named utilities only** — never magic `rounded-[Npx]` values.
 
 | Utility | Value (at base 10px) | Typical use |
 | --- | --- | --- |
@@ -221,11 +204,7 @@ exactly like `.dark` does.
 
 ## Visual regression
 
-The showcase doubles as a visual contract. `apps/web/e2e/design-system-visual.spec.ts`
-snapshots the `showcase-root` element (light, dark, violet + rose accents, and
-strong glass) via Playwright. To keep it reachable without auth, the showcase is rendered at the
-public, production-gated route `app/design-system-preview` (outside the `(app)`
-group); set `ENABLE_DESIGN_PREVIEW=1` to expose it against a production build.
+The showcase doubles as a visual contract. `apps/web/e2e/design-system-visual.spec.ts` snapshots the `showcase-root` element (light, dark, violet + rose accents, and the strong surface intensity/personalization variant — note that the storage key remains `pumni-glass` for compatibility) via Playwright. To keep it reachable without auth, the showcase is rendered at the public, production-gated route `app/design-system-preview` (outside the `(app)` group); set `ENABLE_DESIGN_PREVIEW=1` to expose it against a production build.
 
 - Run: `cd apps/web && bunx playwright test design-system-visual`.
 - Baselines are **platform-specific** (Playwright suffixes the OS). Generate them

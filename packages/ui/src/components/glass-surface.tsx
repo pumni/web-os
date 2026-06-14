@@ -7,7 +7,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
 
 /**
- * Liquid Glass surface primitive. Use for floating layers only; the global
+ * Translucent glass surface primitive. Use for floating layers only; the global
  * glass utilities provide reduced-transparency and reduced-motion fallbacks.
  */
 const glassSurfaceVariants = cva("", {

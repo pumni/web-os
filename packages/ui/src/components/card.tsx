@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
 
 /**
- * Card surface. `glass` (default) is the modern Liquid Glass treatment —
+ * Card surface. `glass` (default) is the standard translucent glass treatment —
  * translucent frosted fill, hairline edge, layered depth. `solid` keeps the
  * opaque raised surface for dense, contrast-critical content.
  *

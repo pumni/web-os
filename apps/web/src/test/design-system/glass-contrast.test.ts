@@ -164,7 +164,7 @@ function contrastRatio(foreground: Rgb, background: Rgb) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-describe("Liquid Glass contrast tokens", () => {
+describe("Glass contrast tokens", () => {
   it.each(["light", "dark"] as const)(
     "keeps text contrast at WCAG AA over desktop blobs in %s mode",
     (mode) => {

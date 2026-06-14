@@ -6,7 +6,7 @@
    get purged and those components render unstyled. */
 @source "../../../../packages/ui/src";
 
-/* Pumni OS design system — 3-tier tokens + Liquid Glass (see docs/conventions/design-system.md) */
+/* Pumni OS design system — 3-tier tokens + shared surface utilities (see docs/conventions/design-system.md) */
 @import "@pumni/ui/styles/tokens.css";
 @import "@pumni/ui/styles/theme.css";
 @import "@pumni/ui/styles/personalization.css";

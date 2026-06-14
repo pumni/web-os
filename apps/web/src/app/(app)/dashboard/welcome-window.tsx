@@ -24,8 +24,8 @@ export function WelcomeWindow() {
       {!collapsed && (
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>
-            This desktop runs on the new <strong className="text-foreground">Liquid Glass</strong>{" "}
-            design system — OKLCH tokens, an Indigo brand, and frosted floating surfaces.
+            This desktop runs on Pumni&apos;s token-first design system: OKLCH color
+            roles, shared <code className="text-foreground">@pumni/ui</code> primitives, and accessible surfaces.
           </p>
           <p>
             Press{" "}

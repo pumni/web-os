@@ -123,7 +123,7 @@ export default function AppearanceSettingsPage() {
       <Card>
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <h2 className="text-base font-medium text-card-foreground">Glass intensity</h2>
+            <h2 className="text-base font-medium text-card-foreground">Surface intensity</h2>
             <p className="text-sm text-muted-foreground">
               Blur strength applied to floating glass surfaces.
             </p>

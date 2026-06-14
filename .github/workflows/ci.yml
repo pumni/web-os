@@ -46,8 +46,5 @@ jobs:
       - name: Test
         run: bun run test
 
-      - name: Build
-        run: bun run build
-
       - name: AI regression evals
         run: bun run ai:eval

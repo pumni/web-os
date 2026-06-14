@@ -12,7 +12,7 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Server / Client boundary                    | `docs/conventions/server-client-boundary.md`     |
 | Data fetching (Server Comp / Query / Zustand) | `docs/conventions/data-fetching.md`            |
 | Feature module layout                       | `docs/conventions/feature-module.md`             |
-| Design system (tokens, Liquid Glass, @pumni/ui) | `docs/conventions/design-system.md`          |
+| Design system (tokens, surfaces, motion, @pumni/ui) | `docs/conventions/design-system.md`          |
 | Supabase / RLS / keys                       | `docs/conventions/supabase-security.md`          |
 | Testing scope & commands                    | `docs/conventions/testing.md`                    |
 | Quality gates (verification commands)       | `docs/quality-gates.md`                          |

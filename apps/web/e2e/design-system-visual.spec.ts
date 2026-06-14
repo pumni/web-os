@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 /**
  * Visual-regression contract for the design system. Screenshots the showcase
- * surface so token / component / glass drift is caught before merge.
+ * surface so token / component / surface drift is caught before merge.
  *
  * Determinism: `reducedMotion: "reduce"` makes the motion `Window` and all CSS
  * transitions settle instantly (it drives our own reduced-motion paths), and we
@@ -51,8 +51,9 @@ test.describe("design system visual regression", () => {
     await expect(root).toHaveScreenshot("showcase-rose.png", { animations: "disabled" });
   });
 
-  test("dark + strong glass", async ({ page }) => {
+  test("dark + strong surface intensity", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "dark" });
+    // Current storage key remains `pumni-glass`; this test name uses product language.
     await page.addInitScript(() => window.localStorage.setItem("pumni-glass", "strong"));
     await page.goto("/design-system-preview");
 
