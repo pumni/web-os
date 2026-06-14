@@ -1,4 +1,5 @@
 export { cn } from "./lib/cn";
+export { withViewTransition } from "./lib/view-transition";
 export { duration, easing, motionTokens, pressScale, recipes, transition } from "./lib/motion";
 // Centralise motion presence orchestration so apps don't add their own `motion`
 // dependency (single version, clean package boundary).
@@ -135,3 +136,4 @@ export {
   TooltipTrigger,
 } from "./components/tooltip";
 export { Window } from "./components/window";
+export { apcaContrast, apcaLuminance } from "./lib/apca";

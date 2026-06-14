@@ -96,7 +96,7 @@
   --secondary: var(--neutral-800);
   --secondary-foreground: var(--neutral-50);
   --muted: var(--neutral-800);
-  --muted-foreground: var(--neutral-400);
+  --muted-foreground: var(--neutral-300);
   --accent: var(--cyan-950);
   --accent-foreground: var(--cyan-100);
 

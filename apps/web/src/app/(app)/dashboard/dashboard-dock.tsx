@@ -5,7 +5,7 @@ import type { ComponentType } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Palette, Settings, User, Music } from "lucide-react";
 
-import { Dock, DockItem } from "@pumni/ui";
+import { Dock, DockItem, withViewTransition } from "@pumni/ui";
 
 const dockItems: ReadonlyArray<{
   href: Route;
@@ -36,7 +36,7 @@ export function DashboardDock() {
               key={item.href}
               label={item.label}
               active={pathname === item.href}
-              onClick={() => router.push(item.href)}
+              onClick={() => withViewTransition(() => router.push(item.href))}
             >
               <Icon />
             </DockItem>

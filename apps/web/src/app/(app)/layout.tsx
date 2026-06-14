@@ -18,17 +18,25 @@ export const unstable_instant = {
 
 export default function ProtectedLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal?: React.ReactNode;
 }>) {
   return (
     <Suspense fallback={<ProtectedShellFallback />}>
-      <AuthenticatedAppShell>{children}</AuthenticatedAppShell>
+      <AuthenticatedAppShell modal={modal}>{children}</AuthenticatedAppShell>
     </Suspense>
   );
 }
 
-async function AuthenticatedAppShell({ children }: Readonly<{ children: React.ReactNode }>) {
+async function AuthenticatedAppShell({
+  children,
+  modal,
+}: Readonly<{
+  children: React.ReactNode;
+  modal?: React.ReactNode;
+}>) {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -44,13 +52,13 @@ async function AuthenticatedAppShell({ children }: Readonly<{ children: React.Re
         aud: "authenticated",
         created_at: new Date(0).toISOString(),
       };
-      return <AppShell user={dummyUser}>{children}</AppShell>;
+      return <AppShell user={dummyUser}>{children}{modal}</AppShell>;
     } else {
       redirect("/sign-in");
     }
   }
 
-  return <AppShell user={user}>{children}</AppShell>;
+  return <AppShell user={user}>{children}{modal}</AppShell>;
 }
 
 function ProtectedShellFallback() {
@@ -67,7 +75,7 @@ function ProtectedShellFallback() {
         </div>
       </aside>
       <div className="flex min-h-dvh flex-col lg:pl-64">
-        <header className="sticky top-0 z-topbar flex h-16 shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6 lg:px-8">
+        <header className="glass-bar sticky top-0 z-topbar flex h-16 shrink-0 items-center justify-between border-b px-4 sm:px-6 lg:px-8">
           <div className="h-5 w-32 rounded bg-muted lg:hidden" />
           <div className="h-8 w-8 rounded-full bg-muted" />
         </header>

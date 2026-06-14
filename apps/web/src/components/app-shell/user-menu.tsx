@@ -14,6 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  withViewTransition,
 } from "@pumni/ui";
 import { LogOut, User as UserIcon, Settings } from "lucide-react";
 import { toast } from "sonner";
@@ -79,11 +80,11 @@ export function UserMenu({ user }: UserMenuProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push("/settings/profile")}>
+        <DropdownMenuItem onClick={() => withViewTransition(() => router.push("/settings/profile"))}>
           <UserIcon className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push("/settings/account")}>
+        <DropdownMenuItem onClick={() => withViewTransition(() => router.push("/settings/account"))}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Account</span>
         </DropdownMenuItem>

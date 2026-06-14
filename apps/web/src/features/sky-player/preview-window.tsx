@@ -155,7 +155,7 @@ export function PreviewWindow() {
                 className={`aspect-square rounded-xl border transition-all duration-300 ${
                   isActive
                     ? "bg-gradient-to-br from-(--brand-gradient-from) to-(--brand-gradient-via) border-(--glass-highlight) shadow-[0_0_15px_var(--primary)] scale-105"
-                    : "border-border bg-muted/20 hover:bg-muted/40"
+                    : "border-border bg-muted hover:bg-muted/80"
                 }`}
                 aria-label={`Note ${index + 1}`}
               />
@@ -165,7 +165,7 @@ export function PreviewWindow() {
 
         {/* Playback progress bar */}
         <div className="space-y-2">
-          <div className="h-2 w-full overflow-hidden rounded-full bg-muted/40">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
               className="h-full bg-gradient-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) transition-all duration-[var(--duration-base)] ease-fluid"
               style={{ width: `${progressPercent}%` }}
@@ -179,15 +179,15 @@ export function PreviewWindow() {
 
         {/* Stats metrics */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg border border-border bg-card/40 p-3 text-center transition-colors hover:bg-card/80">
+          <div className="rounded-lg border border-border bg-muted p-3 text-center transition-colors hover:bg-muted/80">
             <span className="block text-sm font-bold text-foreground">3 Formats</span>
             <span className="text-[10px] text-muted-foreground">JSON/TXT/Sheet</span>
           </div>
-          <div className="rounded-lg border border-border bg-card/40 p-3 text-center transition-colors hover:bg-card/80">
+          <div className="rounded-lg border border-border bg-muted p-3 text-center transition-colors hover:bg-muted/80">
             <span className="block text-sm font-bold text-foreground">Windows</span>
             <span className="text-[10px] text-muted-foreground">PC Workflow</span>
           </div>
-          <div className="rounded-lg border border-border bg-card/40 p-3 text-center transition-colors hover:bg-card/80">
+          <div className="rounded-lg border border-border bg-muted p-3 text-center transition-colors hover:bg-muted/80">
             <span className="block text-sm font-bold text-foreground">Open</span>
             <span className="text-[10px] text-muted-foreground">GitHub Source</span>
           </div>

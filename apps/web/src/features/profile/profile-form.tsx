@@ -309,13 +309,13 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
                           <AvatarFallback className="text-xl font-semibold">{initial}</AvatarFallback>
                         </Avatar>
 
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-overlay/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-overlay opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                           <Camera className="h-5 w-5" style={{ color: "white" }} />
                           <span className="mt-1 text-[10px] font-medium" style={{ color: "white" }}>Change</span>
                         </div>
 
                         {isUploading && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-overlay/60 backdrop-blur-[1px]">
+                          <div className="absolute inset-0 flex items-center justify-center bg-overlay">
                             <Loader2 className="h-6 w-6 animate-spin" style={{ color: "white" }} />
                           </div>
                         )}
@@ -451,7 +451,7 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
             </div>
           </div>
 
-          <DialogFooter className="border-t border-border bg-card/40 px-6 py-4">
+          <DialogFooter className="border-t border-border bg-muted px-6 py-4">
             <Button
               type="button"
               variant="outline"

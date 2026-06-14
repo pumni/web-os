@@ -97,7 +97,7 @@ export function SkyPlayerIntro() {
           { title: "Open Source", desc: "Auditable and free source on GitHub." },
           { title: "Fast Setup", desc: "No installer needed. Extract and play." },
         ].map((item, index) => (
-          <Card key={index} interactive={true} className="bg-card/45 border-border/85">
+          <Card key={index} interactive={true} variant="solid">
             <CardHeader className="p-4">
               <CardTitle className="text-sm font-bold text-foreground">{item.title}</CardTitle>
               <CardDescription className="text-xs text-muted-foreground">{item.desc}</CardDescription>
@@ -192,7 +192,7 @@ export function SkyPlayerIntro() {
             "Launch Sky: Children of the Light PC client first.",
             "Run Sky Player, select your song, and start playback.",
           ].map((step, idx) => (
-            <Card key={idx} interactive={true} className="bg-card/30">
+            <Card key={idx} interactive={true} variant="inset">
               <CardContent className="flex items-center gap-4 p-4">
                 <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-(--brand-gradient-from) to-(--brand-gradient-via) text-xs font-bold text-primary-foreground">
                   {idx + 1}
@@ -280,8 +280,8 @@ export function SkyPlayerIntro() {
                   </span>
                   <span className="text-xs text-muted-foreground">{isOpen ? "Hide" : "Show"}</span>
                 </button>
-                {isOpen && (
-                  <CardContent className="border-t border-border bg-muted/10 p-4 text-xs text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200">
+                 {isOpen && (
+                  <CardContent className="border-t border-border bg-muted p-4 text-xs text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-top-1 duration-200">
                     {faq.answer}
                   </CardContent>
                 )}
@@ -293,7 +293,7 @@ export function SkyPlayerIntro() {
 
       {/* 8. Final CTA Section */}
       <motion.section {...(shouldReduce ? {} : recipes.staggerItem)}>
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card to-card/60 border border-border p-8 md:p-12">
+        <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-8 md:p-12">
           <div className="absolute right-0 top-0 -z-10 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
           <div className="space-y-6 max-w-2xl">
             <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">

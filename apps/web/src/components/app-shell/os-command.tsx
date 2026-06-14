@@ -5,7 +5,7 @@ import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { ComponentIcon, LayoutDashboard, Palette, SearchIcon, Settings, User, Music } from "lucide-react";
 
-import { CommandPalette, type CommandItem } from "@pumni/ui";
+import { CommandPalette, type CommandItem, withViewTransition } from "@pumni/ui";
 
 /**
  * Wires the command palette into the OS shell: a ⌘K / Ctrl+K hotkey plus a
@@ -32,42 +32,42 @@ export function OsCommand() {
         id: "dashboard",
         label: "Dashboard",
         icon: <LayoutDashboard />,
-        onSelect: () => router.push("/dashboard"),
+        onSelect: () => withViewTransition(() => router.push("/dashboard")),
       },
       {
         id: "sky-player",
         label: "Sky Player",
         keywords: "music song sheet play cotl instrument",
         icon: <Music />,
-        onSelect: () => router.push("/sky-player" as Route),
+        onSelect: () => withViewTransition(() => router.push("/sky-player" as Route)),
       },
       {
         id: "profile",
         label: "Profile",
         keywords: "settings account name",
         icon: <User />,
-        onSelect: () => router.push("/settings/profile"),
+        onSelect: () => withViewTransition(() => router.push("/settings/profile")),
       },
       {
         id: "account",
         label: "Account settings",
         keywords: "email password security",
         icon: <Settings />,
-        onSelect: () => router.push("/settings/account"),
+        onSelect: () => withViewTransition(() => router.push("/settings/account")),
       },
       {
         id: "appearance",
         label: "Appearance",
         keywords: "theme dark light mode",
         icon: <Palette />,
-        onSelect: () => router.push("/settings/appearance"),
+        onSelect: () => withViewTransition(() => router.push("/settings/appearance")),
       },
       {
         id: "design-system",
         label: "Design System",
         keywords: "tokens components qa visual",
         icon: <ComponentIcon />,
-        onSelect: () => router.push("/design-system" as Route),
+        onSelect: () => withViewTransition(() => router.push("/design-system" as Route)),
       },
     ],
     [router],
@@ -79,7 +79,7 @@ export function OsCommand() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open command palette"
-        className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-background/40 px-3 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-muted px-3 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <SearchIcon className="size-4" />
         <span className="hidden sm:inline">Search…</span>

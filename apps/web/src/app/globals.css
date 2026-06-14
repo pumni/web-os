@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* Tailwind v4 auto-detects sources only inside this app. `@pumni/ui` lives in a
    sibling workspace package, so its component class names (glass-panel, Card
@@ -14,8 +15,6 @@
 @import "@pumni/ui/styles/desktop.css";
 @import "@pumni/ui/styles/scroll.css";
 @import "@pumni/ui/styles/view-transitions.css";
-
-@plugin "tailwindcss-animate";
 
 /* Watch Together — Reaction overlay float animation
    Defined here to avoid dangerouslySetInnerHTML in the component. */
