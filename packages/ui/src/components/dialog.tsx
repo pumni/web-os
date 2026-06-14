@@ -33,7 +33,7 @@ function DialogOverlay({
       data-slot="dialog-overlay"
       style={{ zIndex: "var(--z-overlay)", ...style }}
       className={cn(
-        "fixed inset-0 bg-overlay backdrop-blur-sm data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0",
+        "fixed inset-0 overlay-scrim data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0",
         className,
       )}
       {...props}

@@ -40,6 +40,7 @@
 
   --border: color-mix(in oklch, var(--primary) 6%, var(--neutral-200));
   --input: color-mix(in oklch, var(--primary) 4%, var(--neutral-200));
+  --field: var(--background);
   --ring: var(--cyan-500);
 
   --radius: var(--radius-base);
@@ -126,6 +127,7 @@
 
   --border: color-mix(in oklch, var(--primary) 8%, var(--neutral-800));
   --input: color-mix(in oklch, var(--primary) 6%, var(--neutral-800));
+  --field: color-mix(in oklch, var(--primary) 4%, var(--neutral-900));
   --ring: var(--cyan-400);
 
   /* Typographic compensation - counter halation */
@@ -208,6 +210,7 @@
 
   --color-border: var(--border);
   --color-input: var(--input);
+  --color-field: var(--field);
   --color-ring: var(--ring);
 
   /* Glass tokens, also usable as Tailwind color utilities when needed */
@@ -274,6 +277,7 @@
      `glass-*` utilities (glass.css), which also carry the a11y fallbacks — so
      blur is intentionally NOT exposed as a standalone utility. */
   --shadow-card: var(--shadow-1);
+  --shadow-control: var(--shadow-control);
   --shadow-raised: var(--shadow-2);
   --shadow-interactive-hover: var(--shadow-interactive-hover);
 

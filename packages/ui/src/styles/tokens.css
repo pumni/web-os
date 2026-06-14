@@ -83,6 +83,7 @@
      R_child = R_parent - padding (per the geometric nesting rule). */
    --radius-nest-gap: 0.75rem;
    /* 12px - typical card padding */
+   --switch-height: 1.15rem;
 
    /* --- Typography: raw size + paired line-height scale ---
      Distinct names from the Tailwind `--text-*` namespace they bridge into
@@ -134,6 +135,7 @@
 
    /* --- Elevation shadows (tuned for floating glass layers) --- */
    --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+   --shadow-control: var(--shadow-1);
    --shadow-2: 0 4px 12px -2px oklch(0 0 0 / 0.12), 0 2px 4px -2px oklch(0 0 0 / 0.08);
    /* Neutral, layered elevation for floating glass — soft modern depth instead
      of a tinted halo. Multiple stacked steps read as ambient + key light. */
@@ -187,6 +189,11 @@
    --press-scale: 0.97;
    --stagger-base: 50ms;
    /* token hoá cadence stagger (report: 50ms) */
+
+   /* ---- Focus ring metric tokens ----------------------------- */
+   /* Single knob for all interactive control focus indicators.   */
+   --ring-width: 3px;
+   --ring-offset: 2px;
 
    /* ---- Scroll-driven animation ------------------------------ */
    /* Progressive enhancement - gated behind @supports.

@@ -97,7 +97,7 @@ function Window({
         </div>
         <div className="flex shrink-0 items-center gap-1">{toolbar}</div>
       </header>
-      <div data-slot="window-body" className="min-h-0 flex-1 overflow-auto bg-card/60 p-4">
+      <div data-slot="window-body" className="min-h-0 flex-1 overflow-auto bg-card p-4">
         {children}
       </div>
     </motion.section>

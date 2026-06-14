@@ -310,6 +310,15 @@ export function DesignSystemShowcase() {
                 <Button size="icon" aria-label="Icon option"><SettingsIcon className="size-4" /></Button>
                 <Button size="icon-sm" aria-label="Small icon option"><SettingsIcon className="size-3.5" /></Button>
               </div>
+              <Separator />
+              <div className="space-y-1.5">
+                <p className="text-xs font-semibold text-muted-foreground">Loading State (CLS-safe)</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button loading>Saving…</Button>
+                  <Button variant="outline" loading>Processing</Button>
+                  <Button variant="destructive" loading>Deleting</Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -358,12 +367,12 @@ export function DesignSystemShowcase() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="input-normal">Active Input</Label>
+                <Label htmlFor="input-normal">Active Input (outline)</Label>
                 <Input id="input-normal" defaultValue="Editable content" />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="input-placeholder">Placeholder Input</Label>
-                <Input id="input-placeholder" placeholder="Enter text here..." />
+                <Label htmlFor="input-filled">Filled Variant</Label>
+                <Input id="input-filled" variant="filled" placeholder="Filled input style…" />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="input-invalid" className="text-destructive">Invalid Input</Label>
@@ -729,6 +738,15 @@ export function DesignSystemShowcase() {
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-4/5" />
+              </div>
+              <Separator />
+              <p className="text-xs font-semibold text-muted-foreground">Shimmer Variant</p>
+              <div className="flex items-center gap-3">
+                <Skeleton variant="shimmer" className="size-10 rounded-full" />
+                <div className="space-y-2 grow">
+                  <Skeleton variant="shimmer" className="h-4 w-3/5" />
+                  <Skeleton variant="shimmer" className="h-3 w-4/5" />
+                </div>
               </div>
             </CardContent>
           </Card>

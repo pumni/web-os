@@ -85,7 +85,7 @@ export {
   useFormField,
 } from "./components/form";
 export { GlassSurface, glassSurfaceVariants } from "./components/glass-surface";
-export { Input } from "./components/input";
+export { Input, inputVariants } from "./components/input";
 export { Label } from "./components/label";
 export {
   ACCENTS,
@@ -126,7 +126,7 @@ export {
   SheetTitle,
   SheetTrigger,
 } from "./components/sheet";
-export { Skeleton } from "./components/skeleton";
+export { Skeleton, skeletonVariants } from "./components/skeleton";
 export { Toaster } from "./components/sonner";
 export { Switch } from "./components/switch";
 export { Slider } from "./components/slider";

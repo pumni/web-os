@@ -29,7 +29,7 @@ function Slider({
       </SliderPrimitive.Track>
       <SliderPrimitive.Thumb
         data-slot="slider-thumb"
-        className="block size-4 rounded-full border border-primary bg-background shadow-xs transition-transform outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:scale-110 active:scale-95 cursor-pointer"
+        className="block size-4 rounded-full border border-primary bg-background shadow-control transition-transform outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 motion-safe:hover:scale-110 motion-safe:active:scale-(--press-scale) cursor-pointer"
       />
     </SliderPrimitive.Root>
   );
