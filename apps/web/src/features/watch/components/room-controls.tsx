@@ -26,6 +26,7 @@ interface RoomControlsProps {
   onSourceChange?: () => void;
   isFollowingHost?: boolean;
   resync?: () => void;
+  stageRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 function formatTime(seconds: number): string {
@@ -44,7 +45,8 @@ export function RoomControls({
   isHost, 
   onSourceChange,
   isFollowingHost = true,
-  resync
+  resync,
+  stageRef
 }: RoomControlsProps) {
   const paused = useMediaState("paused");
   const muted = useMediaState("muted");
@@ -56,7 +58,7 @@ export function RoomControls({
   const remote = useMediaRemote();
 
   // Controls Visibility auto-hide hook
-  const { visible, controlsBind } = useControlsVisibility({ paused });
+  const { visible, controlsBind } = useControlsVisibility({ paused, stageRef });
 
   const handlePlayPause = () => {
     // Both host and follower can interact. Manual changes will soft-lock sync.
@@ -127,8 +129,12 @@ export function RoomControls({
       >
         {/* Soft-lock alert banner for follower */}
         {!isHost && !isFollowingHost && resync && (
-          <div className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg border border-warning/20 bg-warning/5 text-warning text-xs select-none">
-            <span>Bạn đang xem lệch tiến trình phát của phòng.</span>
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg border border-warning/20 bg-warning/5 text-warning text-xs select-none"
+          >
+            <span>Bạn đang xem lệch tiến trình phát của phòng. Sẽ tự đồng bộ khi host thao tác.</span>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -209,7 +215,7 @@ export function RoomControls({
             )}
             {!isHost && !isFollowingHost && (
               <span className="text-[10px] text-warning/80 ml-2 select-none font-medium">
-                Đã ngắt đồng bộ
+                Đã ngắt đồng bộ — sẽ tự đồng bộ khi host thao tác
               </span>
             )}
           </div>

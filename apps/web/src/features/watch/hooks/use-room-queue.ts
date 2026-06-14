@@ -189,6 +189,7 @@ export function useAdvanceQueue(roomId: string) {
       }
       return res;
     },
+
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });
       void queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });

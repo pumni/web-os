@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { ParticipantRail } from "./participant-rail";
 import { PlaylistPanel } from "./playlist-panel";
 import { useTransferHost } from "../hooks/use-room-queue";
-import type { Participant, QueueItem } from "../types";
+import type { Participant, QueueItem, QueueBroadcastEvent } from "../types";
 
 interface SideDockProps {
   roomId: string;
@@ -17,6 +17,7 @@ interface SideDockProps {
   queueItems: QueueItem[];
   currentQueueItemId: string | null;
   profiles?: Record<string, { username: string | null; avatar_url: string | null }>;
+  broadcastQueueEvent: (e: QueueBroadcastEvent) => void;
 }
 
 export function SideDock({
@@ -27,6 +28,7 @@ export function SideDock({
   queueItems,
   currentQueueItemId,
   profiles = {},
+  broadcastQueueEvent,
 }: SideDockProps) {
   const transferHostMutation = useTransferHost(roomId);
   const isPending = transferHostMutation.isPending;
@@ -64,6 +66,7 @@ export function SideDock({
               items={queueItems}
               currentQueueItemId={currentQueueItemId}
               isHost={isHost}
+              broadcastQueueEvent={broadcastQueueEvent}
             />
           </TabsContent>
 

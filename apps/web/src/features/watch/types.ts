@@ -19,3 +19,9 @@ export type Participant = {
 
 export type QueueItem = Database["public"]["Tables"]["watch_queue_items"]["Row"];
 export type Member = Database["public"]["Tables"]["room_members"]["Row"];
+
+export interface QueueBroadcastEvent {
+  action: "add" | "remove" | "reorder" | "advance";
+  title?: string | null;
+}
+

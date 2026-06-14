@@ -35,7 +35,7 @@ import { SyncIndicator } from "./sync-indicator";
 import { SideDock } from "./side-dock";
 import { setRoomSource, leaveRoom } from "../actions";
 import { useRoomQuery } from "../hooks/use-room-query";
-import { useQueueQuery } from "../hooks/use-room-queue";
+import { useQueueQuery, useAdvanceQueue } from "../hooks/use-room-queue";
 import { watchKeys } from "../query-keys";
 import type { Room, PlaybackAnchor, QueueItem } from "../types";
 import { TapToPlayOverlay } from "./tap-to-play-overlay";
@@ -53,6 +53,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const playerRef = useRef<MediaPlayerInstance>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
 
   // Mobile Side Dock Sheet state
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -102,13 +103,23 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   const isHost = currentRoom.host_id === userId;
 
+  const advanceQueueMutation = useAdvanceQueue(currentRoom.id);
+
+  const handleEnded = () => {
+    if (!isHost) return;
+    if (queueItems.length === 0) return;
+    advanceQueueMutation.mutate(undefined, {
+      onSuccess: () => broadcastQueueEvent({ action: "advance" }),
+    });
+  };
+
   useHostHeartbeat(currentRoom.id, isHost);
 
   // We use a ref to sever the circular hook dependency
   const onAnchorRef = useRef<(anchor: PlaybackAnchor) => void>(() => {});
 
   // 4. Realtime channel (Broadcast anchor + Presence + postgres_changes).
-  const { participants, broadcastAnchor, channelStatus } = useRoomChannel(
+  const { participants, broadcastAnchor, broadcastQueueEvent, channelStatus } = useRoomChannel(
     currentRoom,
     userId,
     isHost,
@@ -141,9 +152,18 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   const hostPresent = participants.some((p) => p.isHost);
   const [showClaim, setShowClaim] = useState(false);
+
+  const [prevHostOrActive, setPrevHostOrActive] = useState(isHost || hostPresent);
+  const currentHostOrActive = isHost || hostPresent;
+  if (currentHostOrActive !== prevHostOrActive) {
+    setPrevHostOrActive(currentHostOrActive);
+    if (currentHostOrActive) {
+      setShowClaim(false);
+    }
+  }
+
   useEffect(() => {
     if (isHost || hostPresent) {
-      setShowClaim(false);
       return;
     }
     const t = setTimeout(() => setShowClaim(true), 10_000);
@@ -277,6 +297,8 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             sourceType={currentRoom.source_type}
             sourceRef={currentRoom.source_ref}
             playerRef={playerRef}
+            onEnded={handleEnded}
+            stageRef={stageRef}
             {...playerHandlers}
           >
             <RoomControls
@@ -284,6 +306,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               onSourceChange={() => setIsSourceModalOpen(true)}
               isFollowingHost={isFollowingHost}
               resync={resync}
+              stageRef={stageRef}
             />
             {needsGesture && <TapToPlayOverlay onResume={resumeFromGesture} />}
           </SyncPlayer>
@@ -299,6 +322,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             queueItems={queueItems}
             currentQueueItemId={currentRoom.current_queue_item_id}
             profiles={profiles}
+            broadcastQueueEvent={broadcastQueueEvent}
           />
         </div>
       </div>
@@ -318,6 +342,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               queueItems={queueItems}
               currentQueueItemId={currentRoom.current_queue_item_id}
               profiles={profiles}
+              broadcastQueueEvent={broadcastQueueEvent}
             />
           </div>
         </SheetContent>

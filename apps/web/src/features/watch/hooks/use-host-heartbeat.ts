@@ -17,7 +17,7 @@ export function useHostHeartbeat(roomId: string, isHost: boolean) {
         .eq("id", roomId);
     };
     beat();
-    const interval = setInterval(beat, 15_000);
+    const interval = setInterval(beat, 20_000);
     return () => clearInterval(interval);
   }, [roomId, isHost]);
 }

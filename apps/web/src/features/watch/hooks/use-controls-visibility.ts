@@ -4,9 +4,10 @@ import { useState, useEffect, useRef } from "react";
 
 interface UseControlsVisibilityProps {
   paused: boolean;
+  stageRef?: React.RefObject<HTMLElement | null>;
 }
 
-export function useControlsVisibility({ paused }: UseControlsVisibilityProps) {
+export function useControlsVisibility({ paused, stageRef }: UseControlsVisibilityProps) {
   const [visible, setVisible] = useState(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
@@ -38,24 +39,30 @@ export function useControlsVisibility({ paused }: UseControlsVisibilityProps) {
     resetTimerRef.current = resetTimer;
   });
 
-  // Track window activities to reveal controls
+  // Track stage activities to reveal controls
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    const el = stageRef?.current;
+    if (!el) return;
 
-    const handleActivity = () => {
+    let lastMove = 0;
+    const handleMove = () => {
+      const now = Date.now();
+      if (now - lastMove < 100) return; // throttle ~10fps
+      lastMove = now;
       resetTimerRef.current();
     };
+    const handleActivity = () => resetTimerRef.current();
 
-    window.addEventListener("mousemove", handleActivity);
-    window.addEventListener("pointerdown", handleActivity);
-    window.addEventListener("keydown", handleActivity);
+    el.addEventListener("mousemove", handleMove);
+    el.addEventListener("pointerdown", handleActivity);
+    el.addEventListener("keydown", handleActivity);
 
     return () => {
-      window.removeEventListener("mousemove", handleActivity);
-      window.removeEventListener("pointerdown", handleActivity);
-      window.removeEventListener("keydown", handleActivity);
+      el.removeEventListener("mousemove", handleMove);
+      el.removeEventListener("pointerdown", handleActivity);
+      el.removeEventListener("keydown", handleActivity);
     };
-  }, []);
+  }, [stageRef]);
 
   // When paused or hover/focus state changes, update timer asynchronously (no synchronous setState calls)
   useEffect(() => {

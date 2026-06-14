@@ -17,10 +17,9 @@ export function useMemberProfiles(userIds: string[]) {
     staleTime: 60_000,
     queryFn: async () => {
       const supabase = createSupabaseBrowserClient();
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, username, avatar_url")
-        .in("id", sorted);
+      const { data, error } = await supabase.rpc("get_public_profiles", {
+        p_ids: sorted,
+      });
       if (error) throw error;
       const map: Record<string, MemberProfile> = {};
       for (const p of (data ?? []) as MemberProfile[]) {

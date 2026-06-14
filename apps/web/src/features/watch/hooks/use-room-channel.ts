@@ -3,8 +3,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { toast } from "sonner";
 import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
-import type { PlaybackAnchor, Participant, Room } from "../types";
+import type { PlaybackAnchor, Participant, Room, QueueBroadcastEvent } from "../types";
 import { watchKeys } from "../query-keys";
 import { getStructuralSignature } from "../sync-math";
 
@@ -20,10 +21,15 @@ export function useRoomChannel(
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   const isHostRef = useRef(isHost);
-  const joinedAtRef = useRef(Date.now());
+  const joinedAtRef = useRef(0);
+  const wasDisconnectedRef = useRef(false);
   useEffect(() => {
     isHostRef.current = isHost;
   }, [isHost]);
+
+  useEffect(() => {
+    joinedAtRef.current = Date.now();
+  }, []);
 
   const lastSigRef = useRef<string>(getStructuralSignature(room));
 
@@ -84,17 +90,21 @@ export function useRoomChannel(
       }
     );
 
-    // 3. Listen to postgres_changes for watch_queue_items
+    // 3. Listen to broadcast event for queue changes
     activeChannel.on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "watch_queue_items",
-        filter: `room_id=eq.${room.id}`,
-      },
-      () => {
+      "broadcast",
+      { event: "queue" },
+      (msg: { payload: QueueBroadcastEvent }) => {
         void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
+        const { action, title } = msg.payload ?? {};
+        const name = title || "Không tên";
+        if (action === "add") {
+          toast.info(`Video "${name}" đã được thêm vào hàng chờ`);
+        } else if (action === "remove") {
+          toast.info(`Video "${name}" đã bị xóa khỏi hàng chờ`);
+        } else if (action === "reorder") {
+          toast.info("Thứ tự hàng chờ vừa được cập nhật");
+        }
       }
     );
 
@@ -127,12 +137,18 @@ export function useRoomChannel(
     activeChannel.subscribe(async (status) => {
       if (status === "SUBSCRIBED") {
         setChannelStatus("connected");
+        if (wasDisconnectedRef.current) {
+          wasDisconnectedRef.current = false;
+          void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
+          void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
+        }
         await activeChannel.track({
           userId,
           isHost: isHostRef.current,
           joinedAt: joinedAtRef.current,
         });
       } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+        wasDisconnectedRef.current = true;
         setChannelStatus("disconnected");
       }
     });
@@ -161,9 +177,20 @@ export function useRoomChannel(
     }
   };
 
+  const broadcastQueueEvent = (event: QueueBroadcastEvent) => {
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: "broadcast",
+        event: "queue",
+        payload: event,
+      });
+    }
+  };
+
   return {
     participants,
     broadcastAnchor,
+    broadcastQueueEvent,
     channelStatus,
   };
 }

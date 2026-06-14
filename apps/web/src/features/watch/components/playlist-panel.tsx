@@ -10,16 +10,17 @@ import {
   useReorderQueue,
   useAdvanceQueue,
 } from "../hooks/use-room-queue";
-import type { QueueItem } from "../types";
+import type { QueueItem, QueueBroadcastEvent } from "../types";
 
 interface PlaylistPanelProps {
   roomId: string;
   items: QueueItem[];
   currentQueueItemId: string | null;
   isHost: boolean;
+  broadcastQueueEvent: (e: QueueBroadcastEvent) => void;
 }
 
-export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost }: PlaylistPanelProps) {
+export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broadcastQueueEvent }: PlaylistPanelProps) {
   // Add item form state
   const [sourceType, setSourceType] = useState<"youtube" | "url">("youtube");
   const [sourceRef, setSourceRef] = useState("");
@@ -44,17 +45,21 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost }: Pla
       return;
     }
 
+    const currentTitle = title.trim();
+    const currentSourceRef = sourceRef.trim();
+
     addMutation.mutate(
       {
         sourceType,
-        sourceRef: sourceRef.trim(),
-        title: title.trim() || undefined,
+        sourceRef: currentSourceRef,
+        title: currentTitle || undefined,
       },
       {
         onSuccess: () => {
           toast.success("Đã thêm vào hàng chờ!");
           setSourceRef("");
           setTitle("");
+          broadcastQueueEvent({ action: "add", title: currentTitle || currentSourceRef });
         },
         onError: (err) => {
           toast.error(err.message || "Thêm thất bại.");
@@ -64,9 +69,11 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost }: Pla
   };
 
   const handleRemoveItem = (itemId: string) => {
+    const removed = items.find((i) => i.id === itemId);
     removeMutation.mutate(itemId, {
       onSuccess: () => {
         toast.success("Đã xóa khỏi hàng chờ!");
+        broadcastQueueEvent({ action: "remove", title: removed?.title ?? removed?.source_ref });
       },
       onError: (err) => {
         toast.error(err.message || "Xóa thất bại.");
@@ -79,19 +86,22 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost }: Pla
     const targetItem = items[index];
     if (!targetItem) return;
 
-    // Moving up means putting it before items[index - 1]
-    const beforeItem = items[index - 1];
-    const afterItem = index - 2 >= 0 ? items[index - 2] : null;
-
-    if (!beforeItem) return;
+    // Đích lên trên 1 bậc: nằm giữa items[index-2] (trước) và items[index-1] (sau)
+    const beforeItem = index - 2 >= 0 ? items[index - 2] : null;
+    const afterItem = items[index - 1];
+    if (!afterItem) return;
 
     reorderMutation.mutate(
       {
         itemId: targetItem.id,
-        beforeId: beforeItem.id,
-        afterId: afterItem ? afterItem.id : null,
+        beforeId: beforeItem ? beforeItem.id : null,
+        afterId: afterItem.id,
       },
       {
+        onSuccess: () => {
+          toast.success("Đã sắp xếp lại hàng chờ");
+          broadcastQueueEvent({ action: "reorder", title: targetItem.title ?? targetItem.source_ref });
+        },
         onError: (err) => {
           toast.error(err.message || "Sắp xếp thất bại.");
         },
@@ -104,19 +114,22 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost }: Pla
     const targetItem = items[index];
     if (!targetItem) return;
 
-    // Moving down means putting it after items[index + 1]
-    const afterItem = items[index + 1];
-    const beforeItem = index + 2 < items.length ? items[index + 2] : null;
-
-    if (!afterItem) return;
+    // Đích xuống dưới 1 bậc: nằm giữa items[index+1] (trước) và items[index+2] (sau)
+    const beforeItem = items[index + 1];
+    const afterItem = index + 2 < items.length ? items[index + 2] : null;
+    if (!beforeItem) return;
 
     reorderMutation.mutate(
       {
         itemId: targetItem.id,
-        beforeId: beforeItem ? beforeItem.id : null,
-        afterId: afterItem.id,
+        beforeId: beforeItem.id,
+        afterId: afterItem ? afterItem.id : null,
       },
       {
+        onSuccess: () => {
+          toast.success("Đã sắp xếp lại hàng chờ");
+          broadcastQueueEvent({ action: "reorder", title: targetItem.title ?? targetItem.source_ref });
+        },
         onError: (err) => {
           toast.error(err.message || "Sắp xếp thất bại.");
         },
@@ -128,6 +141,7 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost }: Pla
     advanceMutation.mutate(undefined, {
       onSuccess: () => {
         toast.success("Đã chuyển sang video tiếp theo!");
+        broadcastQueueEvent({ action: "advance" });
       },
       onError: (err) => {
         toast.error(err.message || "Chuyển video thất bại.");

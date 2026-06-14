@@ -1,7 +1,12 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import type { MediaPlayerInstance } from "@vidstack/react";
+import type {
+  MediaPlayerInstance,
+  MediaPlayEvent,
+  MediaPauseEvent,
+  MediaSeekedEvent,
+} from "@vidstack/react";
 import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
 import type { PlaybackAnchor, Room } from "../types";
 import { calculateExpectedPosition } from "../sync-math";
@@ -21,6 +26,17 @@ export function useSyncController(
   const [isFollowingHost, setIsFollowingHost] = useState<boolean>(true);
   const isFollowingHostRef = useRef<boolean>(true);
 
+  const [prevIsHost, setPrevIsHost] = useState(isHost);
+  if (isHost !== prevIsHost) {
+    setPrevIsHost(isHost);
+    setIsFollowingHost(true);
+    setSyncStatus(isHost ? "host" : "in-sync");
+  }
+
+  useEffect(() => {
+    isFollowingHostRef.current = true;
+  }, [isHost]);
+
   const [needsGesture, setNeedsGesture] = useState(false);
   const needsGestureRef = useRef(false);
 
@@ -31,7 +47,7 @@ export function useSyncController(
     playbackRate: room.playback_rate,
   });
 
-  const suppressSeekedEventRef = useRef<boolean>(false);
+
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync anchorRef when room prop updates from server
@@ -50,25 +66,6 @@ export function useSyncController(
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
-
-  // Reset sync UI state when host role changes (e.g. transfer / claim).
-  useEffect(() => {
-    isFollowingHostRef.current = true;
-    setIsFollowingHost(true);
-    setSyncStatus(isHost ? "host" : "in-sync");
-  }, [isHost]);
-
-  // Flush the latest anchor immediately when the host leaves, bypassing the
-  // 2s debounce, so a late-joiner doesn't inherit a stale anchor.
-  useEffect(() => {
-    if (!isHost) return;
-    const flush = () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      persistAnchor(anchorRef.current);
-    };
-    window.addEventListener("pagehide", flush);
-    return () => window.removeEventListener("pagehide", flush);
-  }, [isHost]);
 
   // Persist playback state to database
   const persistAnchor = (anchor: PlaybackAnchor) => {
@@ -91,6 +88,23 @@ export function useSyncController(
         }
       });
   };
+
+  const persistAnchorRef = useRef(persistAnchor);
+  useEffect(() => {
+    persistAnchorRef.current = persistAnchor;
+  });
+
+  // Flush the latest anchor immediately when the host leaves, bypassing the
+  // 2s debounce, so a late-joiner doesn't inherit a stale anchor.
+  useEffect(() => {
+    if (!isHost) return;
+    const flush = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      persistAnchorRef.current(anchorRef.current);
+    };
+    window.addEventListener("pagehide", flush);
+    return () => window.removeEventListener("pagehide", flush);
+  }, [isHost]);
 
   // Debounced database updates to avoid overloading the DB
   const debouncedPersist = (anchor: PlaybackAnchor) => {
@@ -120,8 +134,23 @@ export function useSyncController(
   // Robust play: browsers block unmuted autoplay without a user gesture.
   // Fall back to muted autoplay (always allowed); if even that fails, surface
   // a tap-to-play overlay via needsGesture.
+  // Cửa sổ ức chế: bỏ qua event play/pause/seeked do CHÍNH reconcile/resync phát ra
+  // (programmatic). Cần thiết vì isOriginTrusted KHÔNG đáng tin trên provider YouTube
+  // (event tổng hợp từ iframe API) — trước đây gây ngắt đồng bộ nhầm khi host pause.
+  const programmaticUntilRef = useRef(0);
+  const PROGRAMMATIC_WINDOW_MS = 800; // YouTube bridge async; tinh chỉnh nếu cần
+  const markProgrammatic = () => {
+    programmaticUntilRef.current = Date.now() + PROGRAMMATIC_WINDOW_MS;
+  };
+  const isWithinProgrammaticWindow = () => Date.now() < programmaticUntilRef.current;
+
+  // Robust play: browsers block unmuted autoplay without a user gesture.
+  // Fall back to muted autoplay (always allowed); if even that fails, surface
+  // a tap-to-play overlay via needsGesture.
   const tryPlay = (player: MediaPlayerInstance) => {
+    markProgrammatic();
     player.play().catch(() => {
+      markProgrammatic();
       player.muted = true;
       player.play().catch(() => {
         needsGestureRef.current = true;
@@ -146,6 +175,7 @@ export function useSyncController(
     if (anchor.isPlaying && player.paused) {
       tryPlay(player);
     } else if (!anchor.isPlaying && !player.paused) {
+      markProgrammatic();
       player.pause().catch(() => {});
     }
 
@@ -172,7 +202,7 @@ export function useSyncController(
     } else {
       // Hard jump to the expected position
       if (Math.abs(player.currentTime - expected) > 0.01) {
-        suppressSeekedEventRef.current = true;
+        markProgrammatic();
         player.currentTime = expected;
       }
       player.playbackRate = anchor.playbackRate;
@@ -188,10 +218,6 @@ export function useSyncController(
   // Detect follower manual interaction
   const handleFollowerManualInteraction = () => {
     if (isHost) return;
-    if (suppressSeekedEventRef.current) {
-      suppressSeekedEventRef.current = false;
-      return;
-    }
     // Follower broke sync
     isFollowingHostRef.current = false;
     setIsFollowingHost(false);
@@ -209,7 +235,7 @@ export function useSyncController(
 
     const expected = calculateExpectedPosition(anchor, serverClock());
     if (Math.abs(player.currentTime - expected) > 0.01) {
-      suppressSeekedEventRef.current = true;
+      markProgrammatic();
       player.currentTime = expected;
     }
     player.playbackRate = anchor.playbackRate;
@@ -217,6 +243,7 @@ export function useSyncController(
     if (anchor.isPlaying && player.paused) {
       tryPlay(player);
     } else if (!anchor.isPlaying && !player.paused) {
+      markProgrammatic();
       player.pause().catch(() => {});
     }
   };
@@ -233,9 +260,15 @@ export function useSyncController(
   // Handle incoming broadcast updates
   const handleReceiveAnchor = (newAnchor: PlaybackAnchor) => {
     anchorRef.current = newAnchor;
-    if (!isHost && isFollowingHostRef.current) {
-      reconcile();
+    if (isHost) return;
+
+    // Mỗi anchor nhận được là MỘT lệnh transport có chủ đích của host (host không
+    // broadcast theo nhịp). → Tự gom follower về đồng bộ kể cả khi đang lệch.
+    if (!isFollowingHostRef.current) {
+      isFollowingHostRef.current = true;
+      setIsFollowingHost(true);
     }
+    reconcile();
   };
 
   // Periodically check sync for followers
@@ -249,19 +282,22 @@ export function useSyncController(
     return () => clearInterval(interval);
   }, [isHost]);
 
+  const isFollowerManualEvent = (e?: { isOriginTrusted?: boolean }) =>
+    !isWithinProgrammaticWindow() && e?.isOriginTrusted !== false;
+
   // Player event handlers
-  const handlePlay = () => {
+  const handlePlay = (e?: MediaPlayEvent) => {
     if (isHost) {
       emitAnchor();
-    } else {
+    } else if (isFollowerManualEvent(e)) {
       handleFollowerManualInteraction();
     }
   };
 
-  const handlePause = () => {
+  const handlePause = (e?: MediaPauseEvent) => {
     if (isHost) {
       emitAnchor();
-    } else {
+    } else if (isFollowerManualEvent(e)) {
       handleFollowerManualInteraction();
     }
   };
@@ -270,14 +306,10 @@ export function useSyncController(
     if (isHost) emitAnchor();
   };
 
-  const handleSeeked = () => {
-    if (suppressSeekedEventRef.current) {
-      suppressSeekedEventRef.current = false;
-      return;
-    }
+  const handleSeeked = (detail?: number, e?: MediaSeekedEvent) => {
     if (isHost) {
       emitAnchor();
-    } else {
+    } else if (isFollowerManualEvent(e)) {
       handleFollowerManualInteraction();
     }
   };

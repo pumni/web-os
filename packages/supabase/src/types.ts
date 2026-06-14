@@ -250,6 +250,16 @@ export type Database = {
         }
         Returns: undefined
       }
+      get_public_profiles: {
+        Args: {
+          p_ids: string[]
+        }
+        Returns: {
+          id: string
+          username: string | null
+          avatar_url: string | null
+        }[]
+      }
     }
     Enums: {
       watch_source_type: "youtube" | "url"

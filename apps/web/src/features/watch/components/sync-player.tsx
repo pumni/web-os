@@ -7,6 +7,11 @@ import {
   isHLSProvider,
   type MediaPlayerInstance,
   type MediaProviderAdapter,
+  type MediaPlayEvent,
+  type MediaPauseEvent,
+  type MediaSeekedEvent,
+  type MediaRateChangeEvent,
+  type MediaEndedEvent,
 } from "@vidstack/react";
 import "@vidstack/react/player/styles/base.css";
 
@@ -14,10 +19,12 @@ interface SyncPlayerProps {
   sourceType: "youtube" | "url";
   sourceRef: string;
   playerRef: React.RefObject<MediaPlayerInstance | null>;
-  onPlay?: () => void;
-  onPause?: () => void;
-  onSeeked?: () => void;
-  onRateChange?: () => void;
+  onPlay?: (e: MediaPlayEvent) => void;
+  onPause?: (e: MediaPauseEvent) => void;
+  onSeeked?: (detail: number, e: MediaSeekedEvent) => void;
+  onRateChange?: (detail: number, e: MediaRateChangeEvent) => void;
+  onEnded?: (e: MediaEndedEvent) => void;
+  stageRef?: React.RefObject<HTMLDivElement | null>;
   children?: React.ReactNode;
 }
 
@@ -29,6 +36,8 @@ export function SyncPlayer({
   onPause,
   onSeeked,
   onRateChange,
+  onEnded,
+  stageRef,
   children,
 }: SyncPlayerProps) {
   const onProviderChange = (provider: MediaProviderAdapter | null) => {
@@ -52,6 +61,7 @@ export function SyncPlayer({
 
   return (
     <div
+      ref={stageRef}
       className="relative w-full aspect-video overflow-hidden rounded-xl border border-border/20 shadow-2xl"
       style={{ backgroundColor: "black" }}
     >
@@ -68,6 +78,7 @@ export function SyncPlayer({
         onPause={onPause}
         onSeeked={onSeeked}
         onRateChange={onRateChange}
+        onEnded={onEnded}
         className="w-full h-full"
       >
         <MediaProvider className="w-full h-full" />
