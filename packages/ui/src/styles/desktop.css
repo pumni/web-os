@@ -17,6 +17,13 @@
   overflow: hidden;
   pointer-events: none;
   background-color: var(--background);
+}
+
+.os-desktop::before {
+  content: "";
+  position: absolute;
+  inset: -50px;
+  pointer-events: none;
   background-image:
     radial-gradient(
       58% 48% at 50% -8%,
@@ -31,7 +38,7 @@
 }
 
 /* Dark surfaces swallow colour, so let the glows read a touch stronger. */
-.dark .os-desktop {
+.dark .os-desktop::before {
   background-image:
     radial-gradient(
       58% 48% at 50% -8%,
@@ -43,6 +50,16 @@
       color-mix(in oklch, var(--desktop-blob-secondary) 13%, transparent),
       transparent 65%
     );
+}
+
+/* Wallpaper blobs get subtle parallax on scroll */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .os-desktop::before {
+      animation: scroll-parallax linear both;
+      animation-timeline: scroll(nearest block);
+    }
+  }
 }
 
 /*

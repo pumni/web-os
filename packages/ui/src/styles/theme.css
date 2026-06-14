@@ -31,16 +31,28 @@
   --warning: var(--amber-500);
   --warning-foreground: var(--neutral-950);
 
+  /* Chart (data visualization) */
+  --chart-1: var(--cyan-500);
+  --chart-2: var(--indigo-500);
+  --chart-3: var(--emerald-500);
+  --chart-4: var(--amber-500);
+  --chart-5: var(--rose-500);
+
   --border: var(--neutral-200);
   --input: var(--neutral-200);
   --ring: var(--cyan-500);
 
   --radius: var(--radius-base);
 
+  /* Typographic compensation (no-op in light) */
+  --font-weight-body:    var(--weight-normal);     /* 400 */
+  --font-weight-heading: var(--weight-semibold);    /* 600 */
+  --tracking-body:       var(--letter-spacing-normal);
+
   /* Glass surfaces (translucent fill doubles as the contrast scrim).
      Expressed as <neutral primitive> at an alpha via color-mix so the glass
      follows the neutral ramp instead of hardcoding raw oklch literals. */
-  --glass-bg: color-mix(in oklch, var(--neutral-0) 50%, transparent);
+  --glass-bg: color-mix(in oklch, var(--neutral-0) 52%, transparent);
   --glass-border: color-mix(in oklch, var(--neutral-950) 62%, transparent);
   --glass-highlight: color-mix(in oklch, var(--neutral-0) 65%, transparent);
   /* Luminous glass rim — translucent white hairline that catches the light */
@@ -95,9 +107,21 @@
   --warning: var(--amber-400);
   --warning-foreground: var(--neutral-950);
 
+  /* Chart */
+  --chart-1: var(--cyan-400);
+  --chart-2: var(--indigo-400);
+  --chart-3: var(--emerald-400);
+  --chart-4: var(--amber-400);
+  --chart-5: var(--rose-400);
+
   --border: var(--neutral-800);
   --input: var(--neutral-800);
   --ring: var(--cyan-400);
+
+  /* Typographic compensation - counter halation */
+  --font-weight-body:    var(--font-weight-body-dark);    /* 350 */
+  --font-weight-heading: var(--font-weight-heading-dark);  /* 550 */
+  --tracking-body:       var(--tracking-body-dark);        /* 0.01em */
 
   /* Dark glass: darker translucent fill + brighter hairline border */
   --glass-bg: color-mix(in oklch, var(--neutral-900) 45%, transparent);
@@ -153,6 +177,14 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+
+  /* Chart */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -169,6 +201,11 @@
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 16px);
+
+  /* Nested radius - R_child = R_parent - gap */
+  --radius-nested-xl: calc(var(--radius-xl) - var(--radius-nest-gap));  /* card child */
+  --radius-nested-lg: calc(var(--radius-lg) - var(--radius-nest-gap));  /* dialog child */
+  --radius-nested-2xl: calc(var(--radius-2xl) - var(--radius-nest-gap)); /* hero child */
 
   /* Type scale — owned size + paired line-height (text-xs … text-4xl). */
   --text-xs: var(--font-size-xs);
@@ -192,6 +229,10 @@
   --font-weight-medium: var(--weight-medium);
   --font-weight-semibold: var(--weight-semibold);
   --font-weight-bold: var(--weight-bold);
+
+  /* Dark-mode typographic compensation */
+  --font-weight-body:    var(--font-weight-body);
+  --font-weight-heading: var(--font-weight-heading);
 
   --tracking-tight: var(--letter-spacing-tight);
   --tracking-normal: var(--letter-spacing-normal);

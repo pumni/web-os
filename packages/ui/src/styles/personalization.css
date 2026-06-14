@@ -78,7 +78,7 @@
  * glass-contrast.test.ts). `.dark[data-accent]` (0,2,0) outranks `[data-accent]`.
  */
 .dark[data-accent] {
-  --accent-foreground: color-mix(in oklch, var(--primary) 45%, var(--foreground));
+  --accent-foreground: color-mix(in oklch, var(--primary) 35%, var(--foreground));
 }
 
 /* Glass intensity — bias the shared blur token without touching surfaces. */

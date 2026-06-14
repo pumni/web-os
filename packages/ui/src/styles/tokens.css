@@ -64,6 +64,8 @@
   --red-400: oklch(0.704 0.191 22.216);
   --red-500: oklch(0.637 0.237 25.331);
   --red-600: oklch(0.577 0.245 27.325);
+  --rose-400: oklch(0.704 0.191 15.0);
+  --rose-500: oklch(0.637 0.237 15.0);
   --emerald-400: oklch(0.765 0.177 163.223);
   --emerald-500: oklch(0.696 0.17 162.48);
   --emerald-600: oklch(0.596 0.145 163.225);
@@ -72,6 +74,11 @@
 
   /* --- Radius scale --- */
   --radius-base: 0.625rem; /* 10px — slightly softer than legacy 8px */
+
+  /* ---- Nested radius spacing -------------------------------- */
+  /* Default inner padding for nested-radius calc.
+     R_child = R_parent - padding (per the geometric nesting rule). */
+  --radius-nest-gap: 0.75rem;  /* 12px - typical card padding */
 
   /* --- Typography: raw size + paired line-height scale ---
      Distinct names from the Tailwind `--text-*` namespace they bridge into
@@ -103,6 +110,14 @@
   --letter-spacing-tight: -0.015em;
   --letter-spacing-normal: 0em;
   --letter-spacing-wide: 0.025em;
+
+  /* ---- Dark-mode typographic compensation ------------------- */
+  /* Halation causes bright text on dark bg to appear heavier.
+     These offsets reduce weight + widen spacing to compensate.   */
+  --font-weight-body-dark:     350;    /* reduces 400 by 50    */
+  --font-weight-heading-dark:  550;    /* reduces 600 by 50    */
+  --tracking-body-dark:        0.01em; /* widens body slightly */
+  --leading-compensation-dark: 0.075;  /* extra line-height    */
 
   /* --- Glass blur (kept in the GPU-friendly 8–15px range) --- */
   --blur-glass-sm: 8px;
@@ -149,4 +164,10 @@
   /* Tactile press depress for interactive surfaces (CSS micro-feedback, gated
      behind `motion-safe`). Unitless = uniform scale. */
   --press-scale: 0.97;
+
+  /* ---- Scroll-driven animation ------------------------------ */
+  /* Progressive enhancement - gated behind @supports.
+     CSS scroll-driven animations run off the main thread.       */
+  --scroll-fade-range:    100px;   /* distance over which fade triggers */
+  --scroll-parallax-rate: 0.3;     /* parallax displacement factor     */
 }

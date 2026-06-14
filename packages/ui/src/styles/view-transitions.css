@@ -1,0 +1,25 @@
+/* ============================================================
+   Pumni OS - View Transition styles
+   ============================================================
+   Progressive enhancement for page/component transitions.
+   Only activates if the browser supports View Transitions.
+   ============================================================ */
+
+@supports (view-transition-name: none) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Default cross-fade */
+    ::view-transition-old(root) {
+      animation: var(--duration-base) var(--ease-fluid) both fade-out;
+    }
+    ::view-transition-new(root) {
+      animation: var(--duration-base) var(--ease-fluid) both fade-in;
+    }
+
+    @keyframes fade-out {
+      to { opacity: 0; }
+    }
+    @keyframes fade-in {
+      from { opacity: 0; }
+    }
+  }
+}

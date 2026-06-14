@@ -12,6 +12,8 @@
 @import "@pumni/ui/styles/personalization.css";
 @import "@pumni/ui/styles/glass.css";
 @import "@pumni/ui/styles/desktop.css";
+@import "@pumni/ui/styles/scroll.css";
+@import "@pumni/ui/styles/view-transitions.css";
 
 @plugin "tailwindcss-animate";
 
@@ -54,5 +56,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-weight: var(--font-weight-body);
+    letter-spacing: var(--tracking-body);
   }
 }

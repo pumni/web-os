@@ -171,6 +171,11 @@
   color: transparent;
 }
 
+/* Nested radius utility for concentric rounding */
+@utility rounded-nested {
+  border-radius: calc(var(--parent-radius, var(--radius-xl)) - var(--radius-nest-gap));
+}
+
 /*
  * Accessibility — reduced motion.
  * Global safety net: neutralise animations/transitions for users who ask

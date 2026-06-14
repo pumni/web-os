@@ -65,6 +65,7 @@ Apps consume semantic utilities (`bg-primary`, `text-muted-foreground`,
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
 | `window-control-*` | Window traffic-light controls (`-icon` = dark glyph on the dots) |
+| `chart-1` ... `chart-5` | Data-visualization series colors (5 stops across brand hues) |
 
 Primitive color variables (`--indigo-*`, `--violet-*`, `--neutral-*`, status
 scales, and raw `oklch(...)`) are restricted to token/theme files. Components
@@ -90,6 +91,17 @@ Every surface must use one of these roles.
 | **Inset well** (recessed nested) | `<Card variant="inset">` → `border border-border bg-muted rounded-xl` (no shadow); for non-Card `<div>` wells use `bg-muted border border-border` | Nested wells inside a card: stat tiles, list rows, scroll wells. Replaces every `bg-card/40 border-border/20`, `bg-muted/20 border`, `bg-background/25`. |
 | **Control fill** | `bg-muted` (rest) + `motion-safe:hover:bg-muted/80` (hover only) | Small inline controls: `TabsList`, chips, code pills. Hover may keep ONE opacity step (`/80`); rest state is opaque. |
 | **Status tint** | `bg-{destructive\|warning\|success\|primary}/10 border-{…}/20 text-{…}` | Inline status chips/banners. Standardized to **/10 fill + /20 border**, nothing else. |
+
+### Contrast gating (dual-standard)
+
+All semantic color pairs are **dual-gated** by automated tests:
+
+| Standard | Algorithm | Threshold (text) | Threshold (UI) | Status |
+|---|---|---|---|---|
+| WCAG 2.2 | Relative luminance ratio | ≥ 4.5:1 | ≥ 3:1 | Current legal standard |
+| APCA | Perceptual contrast (Lc) | ≥ Lc 60 | ≥ Lc 25 | WCAG 3.0 draft, forward-looking |
+
+Both must pass. The APCA gate catches dark-mode pairs that WCAG 2.x over-scores due to its luminance formula bias. See [glass-contrast.test.ts](file:///D:/Dev/web-os/apps/web/src/test/design-system/glass-contrast.test.ts).
 
 **Hard rules:**
 
@@ -143,6 +155,31 @@ Type scale and motion are **owned tokens**, not borrowed Tailwind defaults.
   `CommandPalette`) keep their CSS enter/exit** — Radix already manages presence,
   and forcing motion there fights its mounting for little visual gain.
 
+### Dark-mode typographic compensation (halation)
+
+Bright text on dark backgrounds causes *halation* (a glowing effect that makes glyphs appear thicker and less legible). The system automatically applies typographic offsets in dark mode:
+- **Font weight**: Body text weight is reduced by 50 units (400 to 350 via `--font-weight-body`). Headings are reduced from 600 to 550 via `--font-weight-heading`.
+- **Letter spacing**: Body text tracking is increased slightly by `+0.01em` via `--tracking-body`.
+
+### Font loading strategy
+
+Our Geist and Geist_Mono variable fonts are optimized via `next/font/google` in [layout.tsx](file:///D:/Dev/web-os/apps/web/src/app/layout.tsx), using the `latin` and `vietnamese` subsets to support multilingual text efficiently.
+- **Future CJK/extended**: If adding multilingual support, use `unicode-range` splitting to lazy-load non-Latin glyphs.
+
+### Scroll-driven animations (progressive enhancement)
+
+CSS scroll-driven animations run off the main thread (no JS scroll listeners) and are gated behind `@supports (animation-timeline: view())` + `prefers-reduced-motion: no-preference`. Available utilities:
+
+| Utility | Effect | Use for |
+|---|---|---|
+| `scroll-fade-in` | Fade + slide up on viewport entry | Cards, sections |
+| `scroll-slide-up` | Slide up + scale on entry | Hero content |
+| `scroll-parallax` | Subtle Y-axis parallax | Background blobs, decorative |
+
+### View Transitions
+
+`withViewTransition()` from `@/lib/view-transition` wraps navigation in the View Transitions API when available. Falls back to immediate navigation. Reduced-motion is respected.
+
 ## Radius scale
 
 One knob drives the whole UI: `--radius-base` (`0.625rem`, deliberately softer than the legacy 8px for a smoother, modern look). The `@theme inline` scale derives every step from it via `calc()`, so components consume **named utilities only** — never magic `rounded-[Npx]` values.
@@ -155,6 +192,19 @@ One knob drives the whole UI: `--radius-base` (`0.625rem`, deliberately softer t
 | `rounded-lg` | `--radius` = 10px | Dialogs |
 | `rounded-xl` | `calc(--radius + 4px)` = 14px | Cards, windows, sheets, command palette |
 | `rounded-2xl` / `rounded-3xl` | +8px / +16px | Large hero surfaces |
+
+### Nested radius convention
+
+When a rounded child sits inside a rounded parent, their curves must stay concentric to look visually balanced. The mathematical rule is `R_child = R_parent - padding`, but in practice our fixed scale handles most cases:
+
+| Parent radius | Inner padding | Child radius | Why |
+|---|---|---|---|
+| `rounded-xl` (14px) | 16px (p-4) | `rounded-lg` (10px) | Padding > radius – use next step down |
+| `rounded-xl` (14px) | 12px (p-3) | `rounded-md` (8px) | 14 - 12 = 2px, snap up to `rounded-md` |
+| `rounded-2xl` (18px) | 16px (p-4) | `rounded-xs` (4px) | 18 - 16 = 2px, snap to `rounded-xs` |
+| `rounded-2xl` (18px) | 24px (p-6) | `rounded-lg` (10px) | Padding > radius – next step down |
+
+Use `rounded-[inherit]` when a child must match its parent exactly (e.g. a full-bleed inner section). The scale above covers the common nesting depths. Use the `@utility rounded-nested` class to auto-calculate concentric rounding when nesting inside standard `rounded-xl` panels.
 
 This is the shadcn-on-v4 pattern (not Tailwind's fixed native scale) so the base
 stays a single personalizable knob. `rounded-[inherit]` is allowed where a child

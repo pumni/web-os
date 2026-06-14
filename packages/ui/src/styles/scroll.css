@@ -1,0 +1,53 @@
+/* ============================================================
+   Pumni OS - Scroll-driven animation utilities
+   ============================================================
+   Progressive enhancement: only activates when the browser
+   supports scroll-driven animations. Falls back to static.
+   Gated behind prefers-reduced-motion.
+   ============================================================ */
+
+/* ✦ Scroll-triggered fade-in ✦ */
+@utility scroll-fade-in {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: scroll-fade-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+@utility scroll-slide-up {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: scroll-slide-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+@utility scroll-parallax {
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: scroll-parallax linear both;
+      animation-timeline: scroll(nearest);
+    }
+  }
+}
+
+/* ✦ Keyframes ✦ */
+@keyframes scroll-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scroll-slide-up {
+  from { opacity: 0; transform: translateY(40px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes scroll-parallax {
+  from { transform: translateY(calc(var(--scroll-parallax-rate) * -50px)); }
+  to   { transform: translateY(calc(var(--scroll-parallax-rate) * 50px)); }
+}
