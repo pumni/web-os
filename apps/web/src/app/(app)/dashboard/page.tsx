@@ -58,7 +58,7 @@ export default async function DashboardPage() {
           className="p-0 border-0 bg-transparent shadow-none"
           interactive={false}
         >
-          <PreviewWindow className="max-w-none w-full" />
+          <PreviewWindow className="max-w-none w-full" showLearnMore />
         </BentoGridItem>
 
         {/* Card 4: Accent personalizer — metric (3 cols desktop) */}

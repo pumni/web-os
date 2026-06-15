@@ -4,7 +4,7 @@ import { SkyPlayerIntro } from '@/features/sky-player/sky-player-intro';
 export const metadata: Metadata = {
   title: 'Sky Player - Automatic PC Music Sheet Player',
   description:
-    'Download Sky Player, an open-source PC music sheet player for Sky: Children of the Light.',
+    'Sky Player is a Textual TUI music sheet player for Sky: Children of the Light on Windows. Fuzzy song search, keyboard shortcuts, Sky Music compatibility, and open-source releases.',
 };
 
 export default function SkyPlayerPage() {
