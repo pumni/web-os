@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
+import { useQuery } from '@tanstack/react-query';
+import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 
 export interface MemberProfile {
   id: string;
@@ -12,12 +12,12 @@ export interface MemberProfile {
 export function useMemberProfiles(userIds: string[]) {
   const sorted = [...new Set(userIds)].sort();
   return useQuery({
-    queryKey: ["watch", "profiles", sorted],
+    queryKey: ['watch', 'profiles', sorted],
     enabled: sorted.length > 0,
     staleTime: 60_000,
     queryFn: async () => {
       const supabase = createSupabaseBrowserClient();
-      const { data, error } = await supabase.rpc("get_public_profiles", {
+      const { data, error } = await supabase.rpc('get_public_profiles', {
         p_ids: sorted,
       });
       if (error) throw error;

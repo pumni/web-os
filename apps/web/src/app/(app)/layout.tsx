@@ -1,15 +1,15 @@
-import { Suspense } from "react";
-import type { User } from "@supabase/supabase-js";
-import { getCurrentUser } from "@pumni/auth";
-import { redirect } from "next/navigation";
-import { AppShell } from "@/components/app-shell/app-shell";
+import { Suspense } from 'react';
+import type { User } from '@supabase/supabase-js';
+import { getCurrentUser } from '@pumni/auth';
+import { redirect } from 'next/navigation';
+import { AppShell } from '@/components/app-shell/app-shell';
 
 export const unstable_instant = {
-  prefetch: "static",
+  prefetch: 'static',
   samples: [
     {
-      params: { itemId: "00000000000000000000000000000000" },
-      cookies: [{ name: "pumni-sidebar", value: null }],
+      params: { itemId: '00000000000000000000000000000000' },
+      cookies: [{ name: 'pumni-sidebar', value: null }],
     },
   ],
 };
@@ -30,21 +30,21 @@ async function AuthenticatedAppShell({ children }: Readonly<{ children: React.Re
   const user = await getCurrentUser();
 
   if (!user) {
-    const isBuild = process.env.NEXT_PHASE?.includes("build");
+    const isBuild = process.env.NEXT_PHASE?.includes('build');
     if (isBuild) {
       // Static prerender during `next build` runs without a session; supply a
       // typed placeholder so the shell can render its skeleton.
       const dummyUser: User = {
-        id: "00000000-0000-0000-0000-000000000000",
-        email: "guest@pumni.os",
+        id: '00000000-0000-0000-0000-000000000000',
+        email: 'guest@pumni.os',
         app_metadata: {},
         user_metadata: { avatar_url: null },
-        aud: "authenticated",
+        aud: 'authenticated',
         created_at: new Date(0).toISOString(),
       };
       return <AppShell user={dummyUser}>{children}</AppShell>;
     } else {
-      redirect("/sign-in");
+      redirect('/sign-in');
     }
   }
 

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
 export function useClock() {
   const [timestamp, setTimestamp] = React.useState<number | null>(null);

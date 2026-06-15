@@ -1,20 +1,13 @@
-import { requireUser } from "@pumni/auth";
-import Link from "next/link";
-import { UserIcon, Tv, Sparkles } from "lucide-react";
+import { requireUser } from '@pumni/auth';
+import Link from 'next/link';
+import { UserIcon, Tv, Sparkles } from 'lucide-react';
 
-import {
-  BentoGrid,
-  BentoGridItem,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Button,
-} from "@pumni/ui";
+import { BentoGrid, BentoGridItem, Avatar, AvatarFallback, AvatarImage, Button } from '@pumni/ui';
 
-import { DashboardClockCard } from "./dashboard-clock-card";
-import { DashboardAccentCard } from "./dashboard-accent-card";
-import { PreviewWindow } from "@/features/sky-player/preview-window";
-import { DashboardDock } from "./dashboard-dock";
+import { DashboardClockCard } from './dashboard-clock-card';
+import { DashboardAccentCard } from './dashboard-accent-card';
+import { PreviewWindow } from '@/features/sky-player/preview-window';
+import { DashboardDock } from './dashboard-dock';
 
 export default async function DashboardPage() {
   const user = await requireUser();
@@ -86,7 +79,7 @@ export default async function DashboardPage() {
               <Avatar className="size-9 ring-1 ring-border">
                 <AvatarImage src={user.user_metadata?.avatar_url ?? undefined} />
                 <AvatarFallback className="font-semibold text-xs">
-                  {user.email?.slice(0, 2).toUpperCase() || "US"}
+                  {user.email?.slice(0, 2).toUpperCase() || 'US'}
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-0.5">
@@ -111,9 +104,7 @@ export default async function DashboardPage() {
           interactive={true}
         >
           <div className="flex items-center justify-between gap-4">
-            <span className="text-[10px] font-medium text-muted-foreground">
-              Multiplayer lobby
-            </span>
+            <span className="text-[10px] font-medium text-muted-foreground">Multiplayer lobby</span>
             <Button asChild size="sm" variant="outline" className="h-8 rounded-lg">
               <Link href="/watch">Join Room</Link>
             </Button>

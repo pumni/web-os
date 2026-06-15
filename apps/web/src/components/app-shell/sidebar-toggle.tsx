@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Menu } from "lucide-react";
-import { Button } from "@pumni/ui";
-import { useAppUiStore } from "@/stores/app-ui-store";
+import { Menu } from 'lucide-react';
+import { Button } from '@pumni/ui';
+import { useAppUiStore } from '@/stores/app-ui-store';
 
 /** Topbar hamburger that opens the mobile drawer on small screens. */
 export function SidebarToggle() {

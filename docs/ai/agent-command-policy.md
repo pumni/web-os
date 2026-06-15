@@ -59,13 +59,13 @@ security mandates, enforced config, architecture docs, or explicit user instruct
 
 This repo uses Bun + Turborepo. Run the narrowest relevant gate first:
 
-| Change scope            | Command                                              |
-| ----------------------- | ---------------------------------------------------- |
-| AI context / docs       | `bun run ai:check`                                   |
-| Architecture / security | `bun run ai:eval`                                    |
-| TypeScript only         | `bun run typecheck`                                  |
+| Change scope            | Command                                               |
+| ----------------------- | ----------------------------------------------------- |
+| AI context / docs       | `bun run ai:check`                                    |
+| Architecture / security | `bun run ai:eval`                                     |
+| TypeScript only         | `bun run typecheck`                                   |
 | Broader code change     | `bun run lint` + `bun run typecheck` + `bun run test` |
-| Full confidence pass    | `bun run lint`, `typecheck`, `test`, `build`         |
+| Full confidence pass    | `bun run lint`, `typecheck`, `test`, `build`          |
 
 End-to-end tests are separate and may need a running app / local Supabase:
 `cd apps/web; bunx playwright test`.

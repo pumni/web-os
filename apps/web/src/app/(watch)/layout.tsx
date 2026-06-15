@@ -1,8 +1,7 @@
-import { Suspense } from "react";
-import { getCurrentUser } from "@pumni/auth";
-import { redirect } from "next/navigation";
-import { DesktopBackground } from "@/components/app-shell/desktop-background";
-
+import { Suspense } from 'react';
+import { getCurrentUser } from '@pumni/auth';
+import { redirect } from 'next/navigation';
+import { DesktopBackground } from '@/components/app-shell/desktop-background';
 
 export default function WatchLayout({
   children,
@@ -24,18 +23,16 @@ async function AuthenticatedWatchShell({
   const user = await getCurrentUser();
 
   if (!user) {
-    const isBuild = process.env.NEXT_PHASE?.includes("build");
+    const isBuild = process.env.NEXT_PHASE?.includes('build');
     if (!isBuild) {
-      redirect("/sign-in");
+      redirect('/sign-in');
     }
   }
 
   return (
     <div className="relative min-h-dvh flex flex-col p-0 md:p-4 bg-background">
       <DesktopBackground />
-      <div className="relative z-base flex-1 flex flex-col min-h-0">
-        {children}
-      </div>
+      <div className="relative z-base flex-1 flex flex-col min-h-0">{children}</div>
     </div>
   );
 }

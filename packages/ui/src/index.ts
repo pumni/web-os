@@ -1,9 +1,17 @@
-export { cn } from "./lib/cn";
-export { withViewTransition } from "./lib/view-transition";
-export { duration, easing, motionTokens, pressScale, recipes, staggerBase, transition } from "./lib/motion";
+export { cn } from './lib/cn';
+export { withViewTransition } from './lib/view-transition';
+export {
+  duration,
+  easing,
+  motionTokens,
+  pressScale,
+  recipes,
+  staggerBase,
+  transition,
+} from './lib/motion';
 // Centralise motion presence orchestration so apps don't add their own `motion`
 // dependency (single version, clean package boundary).
-export { AnimatePresence, motion, useReducedMotion } from "motion/react";
+export { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 export {
   Avatar,
   AvatarBadge,
@@ -11,10 +19,10 @@ export {
   AvatarGroup,
   AvatarGroupCount,
   AvatarImage,
-} from "./components/avatar";
-export { BentoGrid, BentoGridItem, type BentoTier } from "./components/bento-grid";
-export { Button, buttonVariants } from "./components/button";
-export { SubmitButton } from "./components/submit-button";
+} from './components/avatar';
+export { BentoGrid, BentoGridItem, type BentoTier } from './components/bento-grid';
+export { Button, buttonVariants } from './components/button';
+export { SubmitButton } from './components/submit-button';
 export {
   Card,
   CardAction,
@@ -24,10 +32,10 @@ export {
   CardHeader,
   CardTitle,
   cardVariants,
-} from "./components/card";
-export { CardSpotlight } from "./components/card-spotlight";
-export { Checkbox } from "./components/checkbox";
-export { CommandPalette, type CommandItem } from "./components/command-palette";
+} from './components/card';
+export { CardSpotlight } from './components/card-spotlight';
+export { Checkbox } from './components/checkbox';
+export { CommandPalette, type CommandItem } from './components/command-palette';
 export {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -44,7 +52,7 @@ export {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-} from "./components/context-menu";
+} from './components/context-menu';
 export {
   Dialog,
   DialogClose,
@@ -56,8 +64,8 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-} from "./components/dialog";
-export { Dock, DockItem } from "./components/dock";
+} from './components/dialog';
+export { Dock, DockItem } from './components/dock';
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -74,7 +82,7 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "./components/dropdown-menu";
+} from './components/dropdown-menu';
 export {
   Form,
   FormControl,
@@ -84,10 +92,10 @@ export {
   FormLabel,
   FormMessage,
   useFormField,
-} from "./components/form";
-export { GlassSurface, glassSurfaceVariants } from "./components/glass-surface";
-export { Input, inputVariants } from "./components/input";
-export { Label } from "./components/label";
+} from './components/form';
+export { GlassSurface, glassSurfaceVariants } from './components/glass-surface';
+export { Input, inputVariants } from './components/input';
+export { Label } from './components/label';
 export {
   ACCENTS,
   type Accent,
@@ -96,14 +104,9 @@ export {
   PersonalizationProvider,
   PersonalizationScript,
   usePersonalization,
-} from "./components/personalization-provider";
-export {
-  Popover,
-  PopoverAnchor,
-  PopoverContent,
-  PopoverTrigger,
-} from "./components/popover";
-export { ScrollArea, ScrollBar } from "./components/scroll-area";
+} from './components/personalization-provider';
+export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from './components/popover';
+export { ScrollArea, ScrollBar } from './components/scroll-area';
 export {
   Select,
   SelectContent,
@@ -115,8 +118,8 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-} from "./components/select";
-export { Separator } from "./components/separator";
+} from './components/select';
+export { Separator } from './components/separator';
 export {
   Sheet,
   SheetClose,
@@ -126,17 +129,12 @@ export {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "./components/sheet";
-export { Skeleton, skeletonVariants } from "./components/skeleton";
-export { Toaster } from "./components/sonner";
-export { Switch } from "./components/switch";
-export { Slider } from "./components/slider";
-export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs";
-export {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./components/tooltip";
-export { Window } from "./components/window";
-export { apcaContrast, apcaLuminance } from "./lib/apca";
+} from './components/sheet';
+export { Skeleton, skeletonVariants } from './components/skeleton';
+export { Toaster } from './components/sonner';
+export { Switch } from './components/switch';
+export { Slider } from './components/slider';
+export { Tabs, TabsContent, TabsList, TabsTrigger } from './components/tabs';
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './components/tooltip';
+export { Window } from './components/window';
+export { apcaContrast, apcaLuminance } from './lib/apca';

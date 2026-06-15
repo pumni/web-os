@@ -1,6 +1,6 @@
-import tseslint from "typescript-eslint";
+import tseslint from 'typescript-eslint';
 
-import { pumniNoRawColor, pumniNoAdHocSurface, pumniUiBoundary } from "@pumni/config/eslint";
+import { pumniNoRawColor, pumniNoAdHocSurface, pumniUiBoundary } from '@pumni/config/eslint';
 
 /**
  * @pumni/ui lint config. Intentionally minimal: it enables TypeScript parsing
@@ -9,9 +9,9 @@ import { pumniNoRawColor, pumniNoAdHocSurface, pumniUiBoundary } from "@pumni/co
  * to relitigate the whole codebase.
  */
 export default tseslint.config(
-  { ignores: ["node_modules/**", ".turbo/**", "dist/**"] },
+  { ignores: ['node_modules/**', '.turbo/**', 'dist/**'] },
   {
-    files: ["src/**/*.{ts,tsx}"],
+    files: ['src/**/*.{ts,tsx}'],
     languageOptions: { parser: tseslint.parser },
   },
   ...pumniUiBoundary,

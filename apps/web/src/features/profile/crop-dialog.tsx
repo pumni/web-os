@@ -1,10 +1,18 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@pumni/ui";
-import { toast } from "sonner";
-import Cropper from "react-easy-crop";
-import { cropAvatar } from "./utils";
+import * as React from 'react';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@pumni/ui';
+import { toast } from 'sonner';
+import Cropper from 'react-easy-crop';
+import { cropAvatar } from './utils';
 
 type CropDialogProps = {
   open: boolean;
@@ -14,11 +22,20 @@ type CropDialogProps = {
   onConfirm: (blob: Blob) => void;
 };
 
-export function CropDialog({ open, onOpenChange, rawFile, rawFileUrl, onConfirm }: CropDialogProps) {
+export function CropDialog({
+  open,
+  onOpenChange,
+  rawFile,
+  rawFileUrl,
+  onConfirm,
+}: CropDialogProps) {
   const [crop, setCrop] = React.useState({ x: 0, y: 0 });
   const [zoom, setZoom] = React.useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = React.useState<{
-    x: number; y: number; width: number; height: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
   } | null>(null);
   const [isProcessing, setIsProcessing] = React.useState(false);
 
@@ -34,7 +51,7 @@ export function CropDialog({ open, onOpenChange, rawFile, rawFileUrl, onConfirm 
       onConfirm(croppedBlob);
       onOpenChange(false);
     } catch {
-      toast.error("Failed to crop image.");
+      toast.error('Failed to crop image.');
     } finally {
       setIsProcessing(false);
     }
@@ -53,7 +70,7 @@ export function CropDialog({ open, onOpenChange, rawFile, rawFileUrl, onConfirm 
         <div className="px-6 py-4">
           <div
             className="relative h-64 w-full overflow-hidden rounded-md border border-border"
-            style={{ backgroundColor: "#171717" }}
+            style={{ backgroundColor: '#171717' }}
           >
             {rawFileUrl && (
               <Cropper
@@ -91,7 +108,7 @@ export function CropDialog({ open, onOpenChange, rawFile, rawFileUrl, onConfirm 
             Cancel
           </Button>
           <Button type="button" onClick={handleConfirm} disabled={isProcessing}>
-            {isProcessing ? "Applying..." : "Apply"}
+            {isProcessing ? 'Applying...' : 'Apply'}
           </Button>
         </DialogFooter>
       </DialogContent>

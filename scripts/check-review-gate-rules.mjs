@@ -127,7 +127,9 @@ function collectCodeFiles() {
 
 function isClientFile(content) {
   // "use client" directive near the top of the module.
-  return /^﻿?\s*(?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*['"]use client['"]/.test(content.slice(0, 400));
+  return /^﻿?\s*(?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*['"]use client['"]/.test(
+    content.slice(0, 400),
+  );
 }
 
 // -- allowlist ----------------------------------------------------------------
@@ -142,7 +144,9 @@ function loadAllowlist() {
         throw new Error(`Allowlist entry for ${ruleId} is missing file.`);
       }
       if (!entry.reason || typeof entry.reason !== 'string' || entry.reason.trim().length < 12) {
-        throw new Error(`Allowlist entry for ${ruleId} in ${entry.file} must include a specific reason.`);
+        throw new Error(
+          `Allowlist entry for ${ruleId} in ${entry.file} must include a specific reason.`,
+        );
       }
     }
   }
@@ -182,9 +186,15 @@ function findBlockEnd(content, openIndex) {
       if (char === quote && previous !== '\\') quote = null;
       continue;
     }
-    if (char === '"' || char === "'" || char === '`') { quote = char; continue; }
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char;
+      continue;
+    }
     if (char === '{') depth++;
-    if (char === '}') { depth--; if (depth === 0) return i; }
+    if (char === '}') {
+      depth--;
+      if (depth === 0) return i;
+    }
   }
   return -1;
 }
@@ -197,14 +207,28 @@ function findMatchingParen(content, openIndex) {
     const char = content[i];
     const previous = content[i - 1];
     if (quote) {
-      if (quote === '`' && char === '$' && content[i + 1] === '{') { templateDepth++; i++; continue; }
-      if (templateDepth > 0) { if (char === '{') templateDepth++; if (char === '}') templateDepth--; continue; }
+      if (quote === '`' && char === '$' && content[i + 1] === '{') {
+        templateDepth++;
+        i++;
+        continue;
+      }
+      if (templateDepth > 0) {
+        if (char === '{') templateDepth++;
+        if (char === '}') templateDepth--;
+        continue;
+      }
       if (char === quote && previous !== '\\') quote = null;
       continue;
     }
-    if (char === '"' || char === "'" || char === '`') { quote = char; continue; }
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char;
+      continue;
+    }
     if (char === '(') depth++;
-    if (char === ')') { depth--; if (depth === 0) return i; }
+    if (char === ')') {
+      depth--;
+      if (depth === 0) return i;
+    }
   }
   return -1;
 }
@@ -219,7 +243,8 @@ function getCallArgument(content, callStart) {
 
 function collectFunctionBlocks(content) {
   const blocks = [];
-  const declarations = /export\s+async\s+function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*(?::[^{]+)?\{/g;
+  const declarations =
+    /export\s+async\s+function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*(?::[^{]+)?\{/g;
   const exportedAsyncConsts =
     /export\s+const\s+([A-Za-z_$][\w$]*)\s*=\s*async\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*(?::[^{]+)?=>\s*\{/g;
 
@@ -244,7 +269,10 @@ function collectFunctionBlocks(content) {
 
 function previousIdentifierObjectContainsUserId(content, identifier, beforeIndex) {
   const prefix = content.slice(Math.max(0, beforeIndex - 7000), beforeIndex);
-  const declarationRegex = new RegExp(`(?:const|let|var)\\s+${identifier}\\s*=\\s*([\\s\\S]{0,2500}?);`, 'g');
+  const declarationRegex = new RegExp(
+    `(?:const|let|var)\\s+${identifier}\\s*=\\s*([\\s\\S]{0,2500}?);`,
+    'g',
+  );
   let match;
   let lastMatch = null;
   while ((match = declarationRegex.exec(prefix)) !== null) lastMatch = match;
@@ -309,8 +337,12 @@ function hasRpcUserIdAuthCheck(functionText) {
   return (
     /auth\s*\.\s*uid\s*\(\s*\)\s*(?:=|<>|!=|is\s+distinct\s+from)\s*p_user_id/.test(compact) ||
     /p_user_id\s*(?:=|<>|!=|is\s+distinct\s+from)\s*auth\s*\.\s*uid\s*\(\s*\)/.test(compact) ||
-    /v_user_id\s*(?::=|=)\s*auth\s*\.\s*uid\s*\(\s*\)[\s\S]{0,500}v_user_id\s*(?:=|<>|!=|is\s+distinct\s+from)\s*p_user_id/.test(compact) ||
-    /v_user_id\s*(?::=|=)\s*auth\s*\.\s*uid\s*\(\s*\)[\s\S]{0,500}p_user_id\s*(?:=|<>|!=|is\s+distinct\s+from)\s*v_user_id/.test(compact)
+    /v_user_id\s*(?::=|=)\s*auth\s*\.\s*uid\s*\(\s*\)[\s\S]{0,500}v_user_id\s*(?:=|<>|!=|is\s+distinct\s+from)\s*p_user_id/.test(
+      compact,
+    ) ||
+    /v_user_id\s*(?::=|=)\s*auth\s*\.\s*uid\s*\(\s*\)[\s\S]{0,500}p_user_id\s*(?:=|<>|!=|is\s+distinct\s+from)\s*v_user_id/.test(
+      compact,
+    )
   );
 }
 
@@ -323,8 +355,15 @@ function analyzeSelectStar(files, findings) {
     const content = readText(file);
     let m;
     while ((m = re.exec(content)) !== null) {
-      addFinding(findings, RULES.SELECT_STAR, rel, content, m.index, m[0],
-        'Supabase select-all hides data-shape drift and weakens reviewability.');
+      addFinding(
+        findings,
+        RULES.SELECT_STAR,
+        rel,
+        content,
+        m.index,
+        m[0],
+        'Supabase select-all hides data-shape drift and weakens reviewability.',
+      );
     }
   }
 }
@@ -338,8 +377,15 @@ function analyzeServiceRoleClient(files, findings) {
     const rel = relPath(file);
     let m;
     while ((m = re.exec(content)) !== null) {
-      addFinding(findings, RULES.SERVICE_ROLE_CLIENT, rel, content, m.index, m[0],
-        'Client-bundle ("use client") code references a service-role / secret credential.');
+      addFinding(
+        findings,
+        RULES.SERVICE_ROLE_CLIENT,
+        rel,
+        content,
+        m.index,
+        m[0],
+        'Client-bundle ("use client") code references a service-role / secret credential.',
+      );
     }
   }
 }
@@ -359,8 +405,15 @@ function analyzeClientSecretEnv(files, findings) {
       while ((match = regex.exec(content)) !== null) {
         const envName = match[1];
         if (envName.startsWith('NEXT_PUBLIC_')) continue;
-        addFinding(findings, RULES.CLIENT_SECRET_ENV, rel, content, match.index, match[0],
-          `Client-bundle ("use client") code reads private environment variable ${envName}.`);
+        addFinding(
+          findings,
+          RULES.CLIENT_SECRET_ENV,
+          rel,
+          content,
+          match.index,
+          match[0],
+          `Client-bundle ("use client") code reads private environment variable ${envName}.`,
+        );
       }
     }
   }
@@ -381,8 +434,15 @@ function analyzeServerOnlyImportsInClient(files, findings) {
     while ((match = importPattern.exec(content)) !== null) {
       const specifier = match[1];
       if (!serverOnlySpecifier.test(specifier)) continue;
-      addFinding(findings, RULES.SERVER_ONLY_IN_CLIENT, rel, content, match.index, match[0],
-        `Client-bundle ("use client") code imports server-only module ${specifier}.`);
+      addFinding(
+        findings,
+        RULES.SERVER_ONLY_IN_CLIENT,
+        rel,
+        content,
+        match.index,
+        match[0],
+        `Client-bundle ("use client") code imports server-only module ${specifier}.`,
+      );
     }
   }
 }
@@ -407,9 +467,15 @@ function analyzeTrustedUserIdWrites(files, findings, sqlEvidence) {
       const argument = getCallArgument(content, callStart);
       if (!argument || !argumentContainsUserIdWrite(content, argument)) continue;
       if (hasRlsWithCheckEvidence(sqlEvidence, tableName)) continue;
-      addFinding(findings, RULES.TRUSTED_USER_ID_WRITE, rel, content, argument.start,
+      addFinding(
+        findings,
+        RULES.TRUSTED_USER_ID_WRITE,
+        rel,
+        content,
+        argument.start,
         `${writeMatch[0]} payload contains user_id for table ${tableName}`,
-        `Client writes user_id for ${tableName} without detected RLS WITH CHECK auth.uid() evidence.`);
+        `Client writes user_id for ${tableName} without detected RLS WITH CHECK auth.uid() evidence.`,
+      );
     }
   }
 }
@@ -417,7 +483,8 @@ function analyzeTrustedUserIdWrites(files, findings, sqlEvidence) {
 function analyzeSwallowedErrors(files, findings) {
   const catchRegex = /catch\s*\(([^)]*)\)\s*\{/g;
   const promiseCatchRegex = /\.catch\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)?\s*=>\s*\{/g;
-  const handledPattern = /\b(?:throw|return|console\.(?:error|warn|info|log)|logger\.|Sentry\.|captureException|setError|reportError)\b/;
+  const handledPattern =
+    /\b(?:throw|return|console\.(?:error|warn|info|log)|logger\.|Sentry\.|captureException|setError|reportError)\b/;
   for (const file of files) {
     const rel = relPath(file);
     if (!API_SERVICE_PATTERN.test(rel)) continue;
@@ -429,11 +496,20 @@ function analyzeSwallowedErrors(files, findings) {
         const closeIndex = findBlockEnd(content, openIndex);
         if (closeIndex < 0) continue;
         const body = content.slice(openIndex + 1, closeIndex);
-        const normalized = body.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '').trim();
+        const normalized = body
+          .replace(/\/\*[\s\S]*?\*\//g, '')
+          .replace(/\/\/.*$/gm, '')
+          .trim();
         if (normalized && handledPattern.test(normalized)) continue;
-        addFinding(findings, RULES.SWALLOWED_ERROR, rel, content, match.index,
+        addFinding(
+          findings,
+          RULES.SWALLOWED_ERROR,
+          rel,
+          content,
+          match.index,
           content.slice(match.index, Math.min(closeIndex + 1, match.index + 160)),
-          'Catch block in server I/O code does not visibly propagate, return, or log the error.');
+          'Catch block in server I/O code does not visibly propagate, return, or log the error.',
+        );
       }
     }
   }
@@ -446,9 +522,15 @@ function analyzeMissingAuthUidPolicies(sqlFiles, findings) {
     for (const policy of findSqlStatements(content, /create\s+policy\b/gi)) {
       if (!isUserOwnedPolicy(policy.text)) continue;
       if (hasAuthUid(policy.text)) continue;
-      addFinding(findings, RULES.MISSING_AUTH_UID_POLICY, rel, content, policy.start,
+      addFinding(
+        findings,
+        RULES.MISSING_AUTH_UID_POLICY,
+        rel,
+        content,
+        policy.start,
         policy.text.slice(0, 220),
-        'User-owned RLS policy does not contain an auth.uid() owner predicate.');
+        'User-owned RLS policy does not contain an auth.uid() owner predicate.',
+      );
     }
   }
 }
@@ -460,9 +542,15 @@ function analyzeRpcUserIdWithoutAuthCheck(sqlFiles, findings) {
     for (const fn of findSqlStatements(content, /create\s+(?:or\s+replace\s+)?function\b/gi)) {
       if (!/\bp_user_id\b/i.test(fn.text)) continue;
       if (hasRpcUserIdAuthCheck(fn.text)) continue;
-      addFinding(findings, RULES.RPC_USER_ID_WITHOUT_AUTH_CHECK, rel, content, fn.start,
+      addFinding(
+        findings,
+        RULES.RPC_USER_ID_WITHOUT_AUTH_CHECK,
+        rel,
+        content,
+        fn.start,
         fn.text.slice(0, 220),
-        'RPC accepts p_user_id without a detected auth.uid() comparison.');
+        'RPC accepts p_user_id without a detected auth.uid() comparison.',
+      );
     }
   }
 }
@@ -482,22 +570,42 @@ function analyzeMutationWithoutInvalidation(files, findings) {
       const openIndex = content.indexOf('{', match.index);
       if (openIndex < 0) continue;
       const closeIndex = findBlockEnd(content, openIndex);
-      const body = closeIndex >= 0 ? content.slice(openIndex, closeIndex + 1) : content.slice(openIndex, openIndex + 2000);
+      const body =
+        closeIndex >= 0
+          ? content.slice(openIndex, closeIndex + 1)
+          : content.slice(openIndex, openIndex + 2000);
       if (!/\bonSuccess\b|\bonSettled\b/.test(body)) {
-        if (!body.includes('supabase') && !body.includes('mutationFn') && !body.includes('action')) continue;
-        addFinding(findings, RULES.MUTATION_WITHOUT_INVALIDATION, rel, content, match.index,
+        if (!body.includes('supabase') && !body.includes('mutationFn') && !body.includes('action'))
+          continue;
+        addFinding(
+          findings,
+          RULES.MUTATION_WITHOUT_INVALIDATION,
+          rel,
+          content,
+          match.index,
           content.slice(match.index, match.index + 120),
-          'useMutation has no onSuccess/onSettled - cache may be stale after the mutation.');
+          'useMutation has no onSuccess/onSettled - cache may be stale after the mutation.',
+        );
         continue;
       }
-      const onSuccessMatch = body.match(/onSuccess\s*:\s*(?:async\s*)?\([^)]*\)\s*=>\s*\{([\s\S]{0,1000})/);
-      const onSettledMatch = body.match(/onSettled\s*:\s*(?:async\s*)?\([^)]*\)\s*=>\s*\{([\s\S]{0,1000})/);
+      const onSuccessMatch = body.match(
+        /onSuccess\s*:\s*(?:async\s*)?\([^)]*\)\s*=>\s*\{([\s\S]{0,1000})/,
+      );
+      const onSettledMatch = body.match(
+        /onSettled\s*:\s*(?:async\s*)?\([^)]*\)\s*=>\s*\{([\s\S]{0,1000})/,
+      );
       const cbBodies = [onSuccessMatch?.[1], onSettledMatch?.[1]].filter(Boolean).join('\n');
       if (cbBodies && !invalidationPresent.test(cbBodies)) {
         if (cbBodies.trim().length < 80) continue;
-        addFinding(findings, RULES.MUTATION_WITHOUT_INVALIDATION, rel, content, match.index,
+        addFinding(
+          findings,
+          RULES.MUTATION_WITHOUT_INVALIDATION,
+          rel,
+          content,
+          match.index,
           content.slice(match.index, match.index + 120),
-          'useMutation onSuccess/onSettled does not call invalidateQueries or setQueryData.');
+          'useMutation onSuccess/onSettled does not call invalidateQueries or setQueryData.',
+        );
       }
     }
   }
@@ -517,9 +625,15 @@ function analyzeQueryResultInZustand(files, findings) {
     effectWithDataSetter.lastIndex = 0;
     while ((match = effectWithDataSetter.exec(content)) !== null) {
       if (/const\s*\{[^}]*\bdata\b/.test(content)) {
-        addFinding(findings, RULES.QUERY_RESULT_IN_ZUSTAND, rel, content, match.index,
+        addFinding(
+          findings,
+          RULES.QUERY_RESULT_IN_ZUSTAND,
+          rel,
+          content,
+          match.index,
           match[0].slice(0, 120),
-          'TanStack Query data is mirrored into a setter - server state must stay in the Query cache.');
+          'TanStack Query data is mirrored into a setter - server state must stay in the Query cache.',
+        );
       }
     }
   }
@@ -534,14 +648,22 @@ function analyzeMissingLoadingState(files, findings) {
     if (!/\buseQuery\s*\(/.test(content)) continue;
     if (!/return\s*\(?\s*</.test(content)) continue;
     const handlesLoading =
-      /\bisLoading\b/.test(content) || /\bisPending\b/.test(content) ||
+      /\bisLoading\b/.test(content) ||
+      /\bisPending\b/.test(content) ||
       /\bSkeleton\b|\bSpinner\b|\bPlaceholder\b|\bLoading\b/.test(content) ||
       /isLoading\s*&&|\?\s*null\s*:/.test(content);
     if (handlesLoading) continue;
     const queryMatch = /\buseQuery\s*\(/.exec(content);
     if (queryMatch) {
-      addFinding(findings, RULES.MISSING_LOADING_STATE, rel, content, queryMatch.index, queryMatch[0],
-        'Component uses useQuery but does not handle isLoading/isPending.');
+      addFinding(
+        findings,
+        RULES.MISSING_LOADING_STATE,
+        rel,
+        content,
+        queryMatch.index,
+        queryMatch[0],
+        'Component uses useQuery but does not handle isLoading/isPending.',
+      );
     }
   }
 }
@@ -549,7 +671,8 @@ function analyzeMissingLoadingState(files, findings) {
 function analyzeRouteBusinessLogic(files, findings) {
   // Next.js App Router files: page/layout/route/loading/error/template under app/.
   // Server Components legitimately read data; flag mutations and ad-hoc network/timers only.
-  const ROUTE_FILE = /apps\/web\/src\/app\/.*\/(?:page|layout|route|template|loading|error|default)\.(?:t|j)sx?$/;
+  const ROUTE_FILE =
+    /apps\/web\/src\/app\/.*\/(?:page|layout|route|template|loading|error|default)\.(?:t|j)sx?$/;
   const PATTERNS = [
     { pattern: /\buseMutation\s*\(/g, label: 'useMutation() definition' },
     { pattern: /\bfetch\s*\(\s*['"`]https?:/g, label: 'hardcoded external fetch()' },
@@ -562,9 +685,15 @@ function analyzeRouteBusinessLogic(files, findings) {
     for (const { pattern, label } of PATTERNS) {
       let match;
       while ((match = pattern.exec(content)) !== null) {
-        addFinding(findings, RULES.ROUTE_BUSINESS_LOGIC, rel, content, match.index,
+        addFinding(
+          findings,
+          RULES.ROUTE_BUSINESS_LOGIC,
+          rel,
+          content,
+          match.index,
           content.slice(match.index, match.index + 60),
-          `Route file contains ${label} - move to a feature hook or service.`);
+          `Route file contains ${label} - move to a feature hook or service.`,
+        );
       }
     }
   }
@@ -572,7 +701,8 @@ function analyzeRouteBusinessLogic(files, findings) {
 
 function analyzeServerActionWrites(files, findings) {
   const ACTION_FILE = /^apps\/web\/src\/features\/[^/]+\/actions\.ts$/;
-  const writePattern = /\.from\(\s*['"`][^'"`]+['"`]\s*\)[\s\S]{0,1400}?\.(insert|update|upsert|delete)\s*\(/;
+  const writePattern =
+    /\.from\(\s*['"`][^'"`]+['"`]\s*\)[\s\S]{0,1400}?\.(insert|update|upsert|delete)\s*\(/;
   const hasAuthCheck = /\b(?:requireUser|getUser)\s*\(|\bauth\s*\.\s*getUser\s*\(/;
   const hasRevalidation = /\b(?:revalidatePath|revalidateTag|updateTag|redirect)\s*\(/;
 
@@ -580,7 +710,9 @@ function analyzeServerActionWrites(files, findings) {
     const rel = relPath(file);
     if (!ACTION_FILE.test(rel)) continue;
     const content = readText(file);
-    if (!/^﻿?\s*(?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*['"]use server['"]/.test(content.slice(0, 400))) {
+    if (
+      !/^﻿?\s*(?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*['"]use server['"]/.test(content.slice(0, 400))
+    ) {
       continue;
     }
 
@@ -591,15 +723,27 @@ function analyzeServerActionWrites(files, findings) {
       const writeIndex = block.bodyStart + writeMatch.index;
 
       if (!hasAuthCheck.test(block.text)) {
-        addFinding(findings, RULES.SERVER_ACTION_MISSING_AUTH, rel, content, writeIndex,
+        addFinding(
+          findings,
+          RULES.SERVER_ACTION_MISSING_AUTH,
+          rel,
+          content,
+          writeIndex,
           content.slice(writeIndex, writeIndex + 140),
-          `Server Action ${block.name} writes through Supabase without a detected user auth check.`);
+          `Server Action ${block.name} writes through Supabase without a detected user auth check.`,
+        );
       }
 
       if (!hasRevalidation.test(block.text)) {
-        addFinding(findings, RULES.SERVER_ACTION_MISSING_REVALIDATION, rel, content, writeIndex,
+        addFinding(
+          findings,
+          RULES.SERVER_ACTION_MISSING_REVALIDATION,
+          rel,
+          content,
+          writeIndex,
           content.slice(writeIndex, writeIndex + 140),
-          `Server Action ${block.name} writes through Supabase without cache revalidation or redirect.`);
+          `Server Action ${block.name} writes through Supabase without cache revalidation or redirect.`,
+        );
       }
     }
   }
@@ -717,7 +861,12 @@ function runSelfTest() {
 
   try {
     const findings = runAnalysis({
-      files: [resolveRel(serverFile), resolveRel(clientFile), resolveRel(stateFile), resolveRel(routeFile)],
+      files: [
+        resolveRel(serverFile),
+        resolveRel(clientFile),
+        resolveRel(stateFile),
+        resolveRel(routeFile),
+      ],
       sqlFiles: [resolveRel(sqlFile)],
       sqlEvidence: sqlFixture,
       allowlist: {},
@@ -732,7 +881,9 @@ function runSelfTest() {
       for (const f of findings) printFinding(f);
       process.exit(1);
     }
-    console.log(`Review gate static rule self-test passed (${expected.length}/${expected.length} expected rule types fired).`);
+    console.log(
+      `Review gate static rule self-test passed (${expected.length}/${expected.length} expected rule types fired).`,
+    );
     console.log(`Rule types fired: ${[...found].sort().join(', ')}`);
   } finally {
     fs.readFileSync = original;
@@ -759,8 +910,12 @@ const findings = runAnalysis({ files, sqlFiles, sqlEvidence, allowlist });
 
 if (findings.length > 0) {
   for (const f of findings) printFinding(f);
-  console.error(`Review gate static checks failed with ${findings.length} finding(s).${strict ? ' Strict mode enabled.' : ''}`);
+  console.error(
+    `Review gate static checks failed with ${findings.length} finding(s).${strict ? ' Strict mode enabled.' : ''}`,
+  );
   process.exit(1);
 }
 
-console.log(`Review gate static checks passed (${files.length} code file(s), ${sqlFiles.length} SQL file(s) scanned${strict ? ', strict mode' : ''}).`);
+console.log(
+  `Review gate static checks passed (${files.length} code file(s), ${sqlFiles.length} SQL file(s) scanned${strict ? ', strict mode' : ''}).`,
+);

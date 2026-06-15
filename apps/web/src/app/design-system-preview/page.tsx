@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation";
+import { notFound } from 'next/navigation';
 
-import { DesignSystemShowcase } from "@/app/(app)/design-system/showcase";
+import { DesignSystemShowcase } from '@/app/(app)/design-system/showcase';
 
 /**
  * Public, isolated render of the design-system showcase used purely as a stable
@@ -9,7 +9,7 @@ import { DesignSystemShowcase } from "@/app/(app)/design-system/showcase";
  * screenshot run explicitly opts in via `ENABLE_DESIGN_PREVIEW=1`.
  */
 export default function DesignSystemPreviewPage() {
-  if (process.env.NODE_ENV === "production" && process.env.ENABLE_DESIGN_PREVIEW !== "1") {
+  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_DESIGN_PREVIEW !== '1') {
     notFound();
   }
 

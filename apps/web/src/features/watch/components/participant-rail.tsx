@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   Avatar,
   AvatarFallback,
@@ -9,9 +9,9 @@ import {
   useReducedMotion,
   recipes,
   cn,
-} from "@pumni/ui";
-import { Crown } from "lucide-react";
-import type { Participant } from "../types";
+} from '@pumni/ui';
+import { Crown } from 'lucide-react';
+import type { Participant } from '../types';
 
 interface ParticipantRailProps {
   participants: Participant[];
@@ -36,7 +36,7 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
           const initials = profile?.username
             ? profile.username.slice(0, 2)
             : p.isHost
-              ? "Ho"
+              ? 'Ho'
               : p.userId.slice(0, 2);
 
           return (
@@ -47,8 +47,8 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
             >
               <Avatar
                 className={cn(
-                  "size-9 border ring-2 ring-background motion-safe:hover:scale-110 transition-transform duration-(--duration-fast) ease-snappy",
-                  p.isHost ? "border-primary/40 ring-primary/20" : "border-border",
+                  'size-9 border ring-2 ring-background motion-safe:hover:scale-110 transition-transform duration-(--duration-fast) ease-snappy',
+                  p.isHost ? 'border-primary/40 ring-primary/20' : 'border-border',
                 )}
               >
                 {profile?.avatar_url && (

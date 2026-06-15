@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from 'react';
 
 interface UseControlsVisibilityProps {
   paused: boolean;
@@ -10,7 +10,7 @@ interface UseControlsVisibilityProps {
 export function useControlsVisibility({ paused, stageRef }: UseControlsVisibilityProps) {
   const [visible, setVisible] = useState(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  
+
   // Track hover and focus as state instead of refs to comply with render safety rules
   const [isHovered, setIsHovered] = useState(false);
   const [hasFocus, setHasFocus] = useState(false);
@@ -24,8 +24,8 @@ export function useControlsVisibility({ paused, stageRef }: UseControlsVisibilit
 
     timeoutRef.current = setTimeout(() => {
       // Check for OS prefers-reduced-motion to avoid hiding
-      if (typeof window !== "undefined") {
-        const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      if (typeof window !== 'undefined') {
+        const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
         if (mediaQuery.matches) {
           return;
         }
@@ -53,14 +53,14 @@ export function useControlsVisibility({ paused, stageRef }: UseControlsVisibilit
     };
     const handleActivity = () => resetTimerRef.current();
 
-    el.addEventListener("mousemove", handleMove);
-    el.addEventListener("pointerdown", handleActivity);
-    el.addEventListener("keydown", handleActivity);
+    el.addEventListener('mousemove', handleMove);
+    el.addEventListener('pointerdown', handleActivity);
+    el.addEventListener('keydown', handleActivity);
 
     return () => {
-      el.removeEventListener("mousemove", handleMove);
-      el.removeEventListener("pointerdown", handleActivity);
-      el.removeEventListener("keydown", handleActivity);
+      el.removeEventListener('mousemove', handleMove);
+      el.removeEventListener('pointerdown', handleActivity);
+      el.removeEventListener('keydown', handleActivity);
     };
   }, [stageRef]);
 
@@ -71,8 +71,8 @@ export function useControlsVisibility({ paused, stageRef }: UseControlsVisibilit
     if (!paused && !isHovered && !hasFocus) {
       // Started playing and no hover/focus: start the hide timer
       timeoutRef.current = setTimeout(() => {
-        if (typeof window !== "undefined") {
-          const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+        if (typeof window !== 'undefined') {
+          const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
           if (mediaQuery.matches) return;
         }
         setVisible(false);
@@ -112,6 +112,6 @@ export function useControlsVisibility({ paused, stageRef }: UseControlsVisibilit
       onMouseLeave,
       onFocus,
       onBlur,
-    }
+    },
   };
 }

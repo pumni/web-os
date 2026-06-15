@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useActionState } from "react";
-import Link from "next/link";
-import { signUpAction, type AuthFormState } from "../auth-actions";
-import { AuthShell } from "../auth-shell";
-import { Input, Label, SubmitButton } from "@pumni/ui";
+import { useActionState } from 'react';
+import Link from 'next/link';
+import { signUpAction, type AuthFormState } from '../auth-actions';
+import { AuthShell } from '../auth-shell';
+import { Input, Label, SubmitButton } from '@pumni/ui';
 
 const initialState: AuthFormState = {};
 
@@ -85,9 +85,7 @@ export default function SignUpPage() {
           </p>
         ) : null}
 
-        <SubmitButton className="w-full">
-          {pending ? "Signing up..." : "Sign Up"}
-        </SubmitButton>
+        <SubmitButton className="w-full">{pending ? 'Signing up...' : 'Sign Up'}</SubmitButton>
       </form>
     </AuthShell>
   );

@@ -11,20 +11,41 @@
 
 /* ---- Card loading state: gentle opacity pulse ---- */
 @keyframes breathe {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 /* ---- Card error state: lateral shake ---- */
 @keyframes shake {
-  0%   { transform: translateX(0); }
-  15%  { transform: translateX(-4px); }
-  30%  { transform: translateX(4px); }
-  45%  { transform: translateX(-3px); }
-  60%  { transform: translateX(3px); }
-  75%  { transform: translateX(-1px); }
-  90%  { transform: translateX(1px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-4px);
+  }
+  30% {
+    transform: translateX(4px);
+  }
+  45% {
+    transform: translateX(-3px);
+  }
+  60% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-1px);
+  }
+  90% {
+    transform: translateX(1px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 /* ---- Utilities referenced by card.tsx data-state selectors ---- */
@@ -35,11 +56,11 @@
  * as an explicit belt-and-suspenders for any cascade that escapes the utility).
  */
 @media (prefers-reduced-motion: no-preference) {
-  [data-slot="card"][data-state="loading"] {
+  [data-slot='card'][data-state='loading'] {
     animation: breathe var(--duration-slower) var(--ease-in-out) infinite;
   }
 
-  [data-slot="card"][data-state="error"] {
+  [data-slot='card'][data-state='error'] {
     animation: shake var(--duration-base) var(--ease-spring) 1;
   }
 }

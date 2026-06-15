@@ -1,13 +1,13 @@
-import Link from "next/link";
-import { getCurrentUser } from "@pumni/auth";
-import { redirect } from "next/navigation";
-import { Button } from "@pumni/ui";
+import Link from 'next/link';
+import { getCurrentUser } from '@pumni/auth';
+import { redirect } from 'next/navigation';
+import { Button } from '@pumni/ui';
 
 export default async function LandingPage() {
   const user = await getCurrentUser();
 
   if (user) {
-    redirect("/dashboard");
+    redirect('/dashboard');
   }
 
   return (

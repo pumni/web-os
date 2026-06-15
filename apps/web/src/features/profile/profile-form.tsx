@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import dynamic from "next/dynamic";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { profileSchema, type ProfileInput } from "@pumni/validators";
-import { useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { updateProfile } from "./actions";
+import * as React from 'react';
+import dynamic from 'next/dynamic';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { profileSchema, type ProfileInput } from '@pumni/validators';
+import { useForm, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { updateProfile } from './actions';
 import {
   Avatar,
   AvatarFallback,
@@ -23,15 +23,15 @@ import {
   Input,
   SubmitButton,
   cn,
-} from "@pumni/ui";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@pumni/ui";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
-import { Camera, Loader2, Trash2 } from "lucide-react";
-import { extractStoragePath } from "./utils";
+} from '@pumni/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui';
+import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
+import { Camera, Loader2, Trash2 } from 'lucide-react';
+import { extractStoragePath } from './utils';
 
 // Lazy-load the crop dialog — react-easy-crop is Canvas-heavy and not needed
 // on initial page load (only when user clicks "Upload new picture").
-const CropDialog = dynamic(() => import("./crop-dialog").then((m) => ({ default: m.CropDialog })), {
+const CropDialog = dynamic(() => import('./crop-dialog').then((m) => ({ default: m.CropDialog })), {
   ssr: false,
   loading: () => null,
 });
@@ -76,17 +76,17 @@ function AvatarUpload({
   isUploading,
 }: AvatarUploadProps) {
   const [isDragging, setIsDragging] = React.useState(false);
-  const initial = fullName ? fullName[0]?.toUpperCase() : "U";
+  const initial = fullName ? fullName[0]?.toUpperCase() : 'U';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("File size must be less than 5MB.");
+      toast.error('File size must be less than 5MB.');
       return;
     }
-    if (!file.type.startsWith("image/")) {
-      toast.error("File must be an image.");
+    if (!file.type.startsWith('image/')) {
+      toast.error('File must be an image.');
       return;
     }
     onFileSelected(file);
@@ -107,11 +107,11 @@ function AvatarUpload({
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("File size must be less than 5MB.");
+      toast.error('File size must be less than 5MB.');
       return;
     }
-    if (!file.type.startsWith("image/")) {
-      toast.error("File must be an image.");
+    if (!file.type.startsWith('image/')) {
+      toast.error('File must be an image.');
       return;
     }
     onFileSelected(file);
@@ -123,8 +123,8 @@ function AvatarUpload({
       <div className="flex items-center gap-4">
         <div
           className={cn(
-            "group relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-border bg-muted transition-all duration-200 hover:opacity-90",
-            isDragging && "border-primary bg-primary/10 ring-2 ring-primary/20 scale-105",
+            'group relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-border bg-muted transition-all duration-200 hover:opacity-90',
+            isDragging && 'border-primary bg-primary/10 ring-2 ring-primary/20 scale-105',
           )}
           onClick={onChangeClick}
           onDragOver={handleDragOver}
@@ -134,22 +134,22 @@ function AvatarUpload({
           <Avatar className="h-full w-full select-none rounded-full">
             <AvatarImage
               src={previewUrl || undefined}
-              alt={fullName || "User"}
+              alt={fullName || 'User'}
               className="object-cover"
             />
             <AvatarFallback className="text-xl font-semibold">{initial}</AvatarFallback>
           </Avatar>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-overlay opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-            <Camera className="h-5 w-5" style={{ color: "white" }} />
-            <span className="mt-1 text-[10px] font-medium" style={{ color: "white" }}>
+            <Camera className="h-5 w-5" style={{ color: 'white' }} />
+            <span className="mt-1 text-[10px] font-medium" style={{ color: 'white' }}>
               Change
             </span>
           </div>
 
           {isUploading && (
             <div className="absolute inset-0 flex items-center justify-center bg-overlay">
-              <Loader2 className="h-6 w-6 animate-spin" style={{ color: "white" }} />
+              <Loader2 className="h-6 w-6 animate-spin" style={{ color: 'white' }} />
             </div>
           )}
         </div>
@@ -207,9 +207,9 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
   const form = useForm<ProfileInput>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      username: defaultValues.username || "",
-      fullName: defaultValues.fullName || "",
-      avatarUrl: defaultValues.avatarUrl || "",
+      username: defaultValues.username || '',
+      fullName: defaultValues.fullName || '',
+      avatarUrl: defaultValues.avatarUrl || '',
     },
   });
 
@@ -225,8 +225,8 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
   const rawFileUrlRef = React.useRef<string | null>(null);
 
   // ---- Reactive watch for avatar fallback letter ----
-  const watchedFullName = useWatch({ control: form.control, name: "fullName" });
-  const fullName = watchedFullName || defaultValues.fullName || "";
+  const watchedFullName = useWatch({ control: form.control, name: 'fullName' });
+  const fullName = watchedFullName || defaultValues.fullName || '';
 
   // ---- Raw file → object URL (created synchronously in the callback) ----
   const revokeRawFileUrl = React.useCallback(() => {
@@ -240,7 +240,7 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
   React.useEffect(() => {
     return () => {
       revokeRawFileUrl();
-      if (previewUrl?.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
+      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -248,7 +248,7 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
   // ---- Clear file input when crop dialog closes without a file ----
   React.useEffect(() => {
     if (!isCropOpen && !rawFile) {
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   }, [isCropOpen, rawFile]);
 
@@ -270,7 +270,7 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
       return { previousValues };
     },
     onSuccess: () => {
-      toast.success("Profile updated successfully!");
+      toast.success('Profile updated successfully!');
       router.refresh();
     },
     onError: (error, _variables, context) => {
@@ -278,27 +278,33 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
         form.reset(context.previousValues, { keepTouched: true });
         setPreviewUrl(context.previousValues.avatarUrl || null);
       }
-      toast.error(error.message || "Failed to update profile.");
+      toast.error(error.message || 'Failed to update profile.');
     },
   });
 
   // ---- Callbacks ----
-  const handleFileSelected = React.useCallback((file: File) => {
-    revokeRawFileUrl();
-    const url = URL.createObjectURL(file);
-    rawFileUrlRef.current = url;
-    setRawFileUrl(url);
-    setRawFile(file);
-    setIsCropOpen(true);
-  }, [revokeRawFileUrl]);
+  const handleFileSelected = React.useCallback(
+    (file: File) => {
+      revokeRawFileUrl();
+      const url = URL.createObjectURL(file);
+      rawFileUrlRef.current = url;
+      setRawFileUrl(url);
+      setRawFile(file);
+      setIsCropOpen(true);
+    },
+    [revokeRawFileUrl],
+  );
 
-  const handleCropConfirm = React.useCallback((blob: Blob) => {
-    setSelectedFileBlob(blob);
-    const tempUrl = URL.createObjectURL(blob);
-    setPreviewUrl(tempUrl);
-    form.setValue("avatarUrl", tempUrl);
-    setRawFile(null);
-  }, [form]);
+  const handleCropConfirm = React.useCallback(
+    (blob: Blob) => {
+      setSelectedFileBlob(blob);
+      const tempUrl = URL.createObjectURL(blob);
+      setPreviewUrl(tempUrl);
+      form.setValue('avatarUrl', tempUrl);
+      setRawFile(null);
+    },
+    [form],
+  );
 
   const handleAvatarClick = React.useCallback(() => {
     fileInputRef.current?.click();
@@ -307,8 +313,8 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
   const handleRemoveAvatar = React.useCallback(() => {
     setSelectedFileBlob(null);
     setPreviewUrl(null);
-    form.setValue("avatarUrl", "");
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    form.setValue('avatarUrl', '');
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }, [form]);
 
   // ---- Submit ----
@@ -326,15 +332,15 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
           const filePath = `${defaultValues.id}/${fileName}`;
 
           const { error: uploadError } = await supabase.storage
-            .from("avatars")
+            .from('avatars')
             .upload(filePath, selectedFileBlob, {
-              contentType: "image/webp",
+              contentType: 'image/webp',
               upsert: true,
             });
 
           if (uploadError) throw uploadError;
 
-          const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+          const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
           finalAvatarUrl = urlData.publicUrl;
 
           if (defaultValues.avatarUrl) {
@@ -351,12 +357,12 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
         });
 
         if (oldFilePathToDelete) {
-          await supabase.storage.from("avatars").remove([oldFilePathToDelete]);
+          await supabase.storage.from('avatars').remove([oldFilePathToDelete]);
         }
 
         setSelectedFileBlob(null);
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Failed to save profile.");
+        toast.error(error instanceof Error ? error.message : 'Failed to save profile.');
         setPreviewUrl(data.avatarUrl || null);
       } finally {
         setIsUploading(false);
@@ -409,7 +415,7 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
                         placeholder="username"
                         disabled={isPending}
                         {...field}
-                        value={field.value ?? ""}
+                        value={field.value ?? ''}
                       />
                     </FormControl>
                     <FormMessage />
@@ -429,7 +435,7 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
                         placeholder="Full Name"
                         disabled={isPending}
                         {...field}
-                        value={field.value ?? ""}
+                        value={field.value ?? ''}
                       />
                     </FormControl>
                     <FormMessage />
@@ -438,7 +444,7 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
               />
 
               <SubmitButton className="w-full sm:w-auto" disabled={isPending}>
-                {isPending ? "Saving..." : "Save Changes"}
+                {isPending ? 'Saving...' : 'Save Changes'}
               </SubmitButton>
             </form>
           </Form>

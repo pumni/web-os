@@ -1,8 +1,8 @@
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "../lib/cn";
-import { Card } from "./card";
-import { Skeleton } from "./skeleton";
+import * as React from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '../lib/cn';
+import { Card } from './card';
+import { Skeleton } from './skeleton';
 
 /**
  * BentoGrid — 12-column mathematical layout with tier-based tile sizing.
@@ -30,13 +30,13 @@ import { Skeleton } from "./skeleton";
 // ---------------------------------------------------------------------------
 
 /** Semantic tier that drives the 12-col span mapping. Override via `className`. */
-export type BentoTier = "hero" | "feature" | "metric" | "accent" | "full";
+export type BentoTier = 'hero' | 'feature' | 'metric' | 'accent' | 'full';
 
 // ---------------------------------------------------------------------------
 // BentoGrid (container)
 // ---------------------------------------------------------------------------
 
-interface BentoGridProps extends React.ComponentProps<"div"> {
+interface BentoGridProps extends React.ComponentProps<'div'> {
   children: React.ReactNode;
   /**
    * Number of columns on desktop. Defaults to 12.
@@ -50,8 +50,8 @@ export function BentoGrid({ className, children, columns = 12, ...props }: Bento
     <div
       className={cn(
         // Mobile: 1 col → Tablet: 6 col → Desktop: configurable (6 or 12)
-        "grid grid-cols-1 gap-4 sm:grid-cols-6 lg:gap-6",
-        columns === 12 ? "lg:grid-cols-12" : "lg:grid-cols-6",
+        'grid grid-cols-1 gap-4 sm:grid-cols-6 lg:gap-6',
+        columns === 12 ? 'lg:grid-cols-12' : 'lg:grid-cols-6',
         className,
       )}
       {...props}
@@ -76,22 +76,22 @@ export function BentoGrid({ className, children, columns = 12, ...props }: Bento
  * | accent  | col-span-2                  | col-span-2     | 1 col  |
  * | full    | col-span-12                 | col-span-6     | 1 col  |
  */
-const bentoTierVariants = cva("", {
+const bentoTierVariants = cva('', {
   variants: {
     tier: {
-      hero: "lg:col-span-6 lg:row-span-2 sm:col-span-6",
-      feature: "lg:col-span-4 lg:row-span-2 sm:col-span-6",
-      metric: "lg:col-span-3 sm:col-span-3",
-      accent: "lg:col-span-2 sm:col-span-2",
-      full: "lg:col-span-12 sm:col-span-6",
+      hero: 'lg:col-span-6 lg:row-span-2 sm:col-span-6',
+      feature: 'lg:col-span-4 lg:row-span-2 sm:col-span-6',
+      metric: 'lg:col-span-3 sm:col-span-3',
+      accent: 'lg:col-span-2 sm:col-span-2',
+      full: 'lg:col-span-12 sm:col-span-6',
     },
   },
   defaultVariants: {
-    tier: "metric",
+    tier: 'metric',
   },
 });
 
-interface BentoGridItemProps extends Omit<React.ComponentProps<typeof Card>, "title"> {
+interface BentoGridItemProps extends Omit<React.ComponentProps<typeof Card>, 'title'> {
   children?: React.ReactNode;
   /**
    * Optional media/visual header well — rendered as an inset muted surface
@@ -132,7 +132,7 @@ export function BentoGridItem({
   icon,
   title,
   description,
-  tier = "metric",
+  tier = 'metric',
   ariaLabel,
   loading = false,
   minHeight,
@@ -147,9 +147,9 @@ export function BentoGridItem({
         // Tile layout: container-query context so each tile measures its own width.
         // @container gives access to @min-[Nrem] variants
         // for content reflow inside the tile (independent of viewport).
-        "relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container",
+        'relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container',
         // All tiles share the same radius for visual Bento consistency.
-        "rounded-xl",
+        'rounded-xl',
         bentoTierVariants({ tier }),
         className,
       )}

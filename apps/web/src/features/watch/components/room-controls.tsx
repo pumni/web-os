@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useMediaState, useMediaRemote } from "@vidstack/react";
-import { Button, Slider, GlassSurface, cn } from "@pumni/ui";
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Clapperboard } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@pumni/ui";
-import { useControlsVisibility } from "../hooks/use-controls-visibility";
+import React from 'react';
+import { useMediaState, useMediaRemote } from '@vidstack/react';
+import { Button, Slider, GlassSurface, cn } from '@pumni/ui';
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Clapperboard } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@pumni/ui';
+import { useControlsVisibility } from '../hooks/use-controls-visibility';
 
 interface RoomControlsProps {
   isHost: boolean;
@@ -16,7 +16,7 @@ interface RoomControlsProps {
 }
 
 function formatTime(seconds: number): string {
-  if (isNaN(seconds) || seconds < 0) return "0:00";
+  if (isNaN(seconds) || seconds < 0) return '0:00';
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = Math.floor(seconds % 60);
@@ -34,13 +34,13 @@ export function RoomControls({
   resync,
   stageRef,
 }: RoomControlsProps) {
-  const paused = useMediaState("paused");
-  const muted = useMediaState("muted");
-  const volume = useMediaState("volume");
-  const fullscreen = useMediaState("fullscreen");
-  const currentTime = useMediaState("currentTime");
-  const duration = useMediaState("duration");
-  const playbackRate = useMediaState("playbackRate");
+  const paused = useMediaState('paused');
+  const muted = useMediaState('muted');
+  const volume = useMediaState('volume');
+  const fullscreen = useMediaState('fullscreen');
+  const currentTime = useMediaState('currentTime');
+  const duration = useMediaState('duration');
+  const playbackRate = useMediaState('playbackRate');
   const remote = useMediaRemote();
 
   // Controls Visibility auto-hide hook
@@ -95,12 +95,12 @@ export function RoomControls({
     <>
       <div
         className={cn(
-          "absolute inset-x-0 bottom-0 h-48 pointer-events-none z-10 transition-opacity duration-(--duration-base) ease-fluid",
-          visible ? "opacity-100" : "opacity-0",
+          'absolute inset-x-0 bottom-0 h-48 pointer-events-none z-10 transition-opacity duration-(--duration-base) ease-fluid',
+          visible ? 'opacity-100' : 'opacity-0',
         )}
         style={{
           background:
-            "linear-gradient(to top, var(--color-overlay) 0%, color-mix(in oklch, var(--color-overlay) 45%, transparent) 55%, transparent 100%)",
+            'linear-gradient(to top, var(--color-overlay) 0%, color-mix(in oklch, var(--color-overlay) 45%, transparent) 55%, transparent 100%)',
         }}
       />
 
@@ -111,8 +111,8 @@ export function RoomControls({
         onFocus={controlsBind.onFocus}
         onBlur={controlsBind.onBlur}
         className={cn(
-          "absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 border border-glass-border transition-all duration-(--duration-base) ease-fluid",
-          visible ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2",
+          'absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 border border-glass-border transition-all duration-(--duration-base) ease-fluid',
+          visible ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none translate-y-2',
         )}
       >
         {/* Soft-lock alert banner for follower */}
@@ -162,7 +162,7 @@ export function RoomControls({
               variant="ghost"
               size="icon"
               onClick={handlePlayPause}
-              aria-label={paused ? "Play" : "Pause"}
+              aria-label={paused ? 'Play' : 'Pause'}
             >
               {paused ? (
                 <Play className="size-4 fill-current text-foreground" />
@@ -176,7 +176,7 @@ export function RoomControls({
               variant="ghost"
               size="icon"
               onClick={handleMuteToggle}
-              aria-label={muted ? "Unmute" : "Mute"}
+              aria-label={muted ? 'Unmute' : 'Mute'}
             >
               {muted || volume === 0 ? (
                 <VolumeX className="size-4 text-foreground" />
@@ -244,7 +244,7 @@ export function RoomControls({
               variant="ghost"
               size="icon"
               onClick={handleFullscreenToggle}
-              aria-label={fullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
+              aria-label={fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'}
               className="size-8 text-foreground/80 motion-safe:hover:text-foreground"
             >
               {fullscreen ? <Minimize className="size-4" /> : <Maximize className="size-4" />}

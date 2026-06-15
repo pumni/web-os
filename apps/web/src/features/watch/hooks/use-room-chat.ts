@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { chatMessageSchema } from "@pumni/validators";
-import type { ChatMessage, ReactionEvent } from "../types";
+import { useState } from 'react';
+import { chatMessageSchema } from '@pumni/validators';
+import type { ChatMessage, ReactionEvent } from '../types';
 
 const MAX_MESSAGES = 100;
 

@@ -52,7 +52,10 @@ try {
 // -- Pattern definitions ------------------------------------------------------
 
 const notDocsOrExample = (f) =>
-  !f.startsWith('scripts/') && !f.startsWith('docs/') && !f.endsWith('.md') && !f.includes('.example');
+  !f.startsWith('scripts/') &&
+  !f.startsWith('docs/') &&
+  !f.endsWith('.md') &&
+  !f.includes('.example');
 
 const SECRET_PATTERNS = [
   {
@@ -104,7 +107,18 @@ const SECRET_PATTERNS = [
 ];
 
 const SCAN_EXTENSIONS = new Set([
-  '.ts', '.tsx', '.js', '.mjs', '.cjs', '.json', '.env', '.sh', '.md', '.yaml', '.yml', '.sql',
+  '.ts',
+  '.tsx',
+  '.js',
+  '.mjs',
+  '.cjs',
+  '.json',
+  '.env',
+  '.sh',
+  '.md',
+  '.yaml',
+  '.yml',
+  '.sql',
 ]);
 
 // -- .env file check ----------------------------------------------------------

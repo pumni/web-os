@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import {
   MediaPlayer,
   MediaProvider,
@@ -12,11 +12,11 @@ import {
   type MediaSeekedEvent,
   type MediaRateChangeEvent,
   type MediaEndedEvent,
-} from "@vidstack/react";
-import "@vidstack/react/player/styles/base.css";
+} from '@vidstack/react';
+import '@vidstack/react/player/styles/base.css';
 
 interface SyncPlayerProps {
-  sourceType: "youtube" | "url";
+  sourceType: 'youtube' | 'url';
   sourceRef: string;
   playerRef: React.RefObject<MediaPlayerInstance | null>;
   onPlay?: (e: MediaPlayEvent) => void;
@@ -42,7 +42,7 @@ export function SyncPlayer({
 }: SyncPlayerProps) {
   const onProviderChange = (provider: MediaProviderAdapter | null) => {
     if (isHLSProvider(provider)) {
-      provider.library = () => import("hls.js");
+      provider.library = () => import('hls.js');
     }
   };
 
@@ -50,13 +50,16 @@ export function SyncPlayer({
   // update, control visibility) does not hand Vidstack a fresh object identity
   // and tear down + reload the provider mid-flight.
   const source = useMemo(() => {
-    if (sourceType === "youtube") {
-      return { src: `https://www.youtube.com/watch?v=${sourceRef}`, type: "video/youtube" } as const;
+    if (sourceType === 'youtube') {
+      return {
+        src: `https://www.youtube.com/watch?v=${sourceRef}`,
+        type: 'video/youtube',
+      } as const;
     }
-    if (sourceRef.includes(".m3u8")) {
-      return { src: sourceRef, type: "application/x-mpegurl" } as const;
+    if (sourceRef.includes('.m3u8')) {
+      return { src: sourceRef, type: 'application/x-mpegurl' } as const;
     }
-    return { src: sourceRef, type: "video/mp4" } as const;
+    return { src: sourceRef, type: 'video/mp4' } as const;
   }, [sourceType, sourceRef]);
 
   return (
@@ -65,7 +68,7 @@ export function SyncPlayer({
       /* bg-black is intentionally an inline style here — video stage requires
          absolute black (no semantic token covers it) and pumniNoRawColor
          correctly flags Tailwind `bg-black` in className. */
-      style={{ backgroundColor: "#000" }}
+      style={{ backgroundColor: '#000' }}
       className="relative w-full aspect-video overflow-hidden rounded-xl border border-border shadow-sm"
     >
       <MediaPlayer
@@ -90,4 +93,3 @@ export function SyncPlayer({
     </div>
   );
 }
-

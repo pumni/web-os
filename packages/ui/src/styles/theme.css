@@ -56,10 +56,22 @@
      Expressed as <neutral primitive> at an alpha via color-mix so the glass
      follows the neutral ramp instead of hardcoding raw oklch literals. */
   --glass-bg: color-mix(in oklch, var(--neutral-0) 51%, transparent);
-  --glass-border: color-mix(in oklch, var(--primary) 6%, color-mix(in oklch, var(--neutral-950) 50%, transparent));
-  --glass-highlight: color-mix(in oklch, var(--primary) 5%, color-mix(in oklch, var(--neutral-0) 58%, transparent));
+  --glass-border: color-mix(
+    in oklch,
+    var(--primary) 6%,
+    color-mix(in oklch, var(--neutral-950) 50%, transparent)
+  );
+  --glass-highlight: color-mix(
+    in oklch,
+    var(--primary) 5%,
+    color-mix(in oklch, var(--neutral-0) 58%, transparent)
+  );
   /* Luminous glass rim — translucent white hairline that catches the light */
-  --glass-edge: color-mix(in oklch, var(--primary) 6%, color-mix(in oklch, var(--neutral-0) 52%, transparent));
+  --glass-edge: color-mix(
+    in oklch,
+    var(--primary) 6%,
+    color-mix(in oklch, var(--neutral-0) 52%, transparent)
+  );
   --glass-scrim: color-mix(in oklch, var(--neutral-50) 55%, transparent);
   --glass-blur: var(--blur-glass);
 
@@ -85,8 +97,8 @@
   --overlay: oklch(0 0 0 / 0.4);
 
   /* Active window shadow with dynamic accent border */
-  --shadow-glass-glow: var(--shadow-glass-glow-base),
-    0 0 0 1px color-mix(in oklch, var(--primary) 6%, transparent);
+  --shadow-glass-glow:
+    var(--shadow-glass-glow-base), 0 0 0 1px color-mix(in oklch, var(--primary) 6%, transparent);
 
   /* Shell chrome — unified glass edge + ambient depth.
      Same design language in both themes (glass rim + soft shadow), value
@@ -98,7 +110,8 @@
   --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.06);
 
   /* Interactive card hover shadow with dynamic accent ambient glow */
-  --shadow-interactive-hover: 0 4px 12px -2px color-mix(in oklch, var(--primary) 12%, oklch(0 0 0 / 0.08)),
+  --shadow-interactive-hover:
+    0 4px 12px -2px color-mix(in oklch, var(--primary) 12%, oklch(0 0 0 / 0.08)),
     0 2px 4px -2px color-mix(in oklch, var(--primary) 8%, oklch(0 0 0 / 0.04));
 }
 
@@ -149,9 +162,21 @@
 
   /* Dark glass: darker translucent fill + brighter hairline border */
   --glass-bg: color-mix(in oklch, var(--neutral-900) 36%, transparent);
-  --glass-border: color-mix(in oklch, var(--primary) 5%, color-mix(in oklch, var(--neutral-0) 42%, transparent));
-  --glass-highlight: color-mix(in oklch, var(--primary) 5%, color-mix(in oklch, var(--neutral-0) 28%, transparent));
-  --glass-edge: color-mix(in oklch, var(--primary) 5%, color-mix(in oklch, var(--neutral-0) 24%, transparent));
+  --glass-border: color-mix(
+    in oklch,
+    var(--primary) 5%,
+    color-mix(in oklch, var(--neutral-0) 42%, transparent)
+  );
+  --glass-highlight: color-mix(
+    in oklch,
+    var(--primary) 5%,
+    color-mix(in oklch, var(--neutral-0) 28%, transparent)
+  );
+  --glass-edge: color-mix(
+    in oklch,
+    var(--primary) 5%,
+    color-mix(in oklch, var(--neutral-0) 24%, transparent)
+  );
   --glass-scrim: color-mix(in oklch, var(--neutral-950) 50%, transparent);
   --glass-blur: var(--blur-glass);
 
@@ -175,8 +200,8 @@
   --overlay: oklch(0 0 0 / 0.6);
 
   /* Active window shadow with dynamic accent border */
-  --shadow-glass-glow: var(--shadow-glass-glow-base),
-    0 0 0 1px color-mix(in oklch, var(--primary) 10%, transparent);
+  --shadow-glass-glow:
+    var(--shadow-glass-glow-base), 0 0 0 1px color-mix(in oklch, var(--primary) 10%, transparent);
 
   /* Shell chrome — dark-adapted calibration (same glass rim + depth language).
      Dark surfaces swallow shadows but amplify bright edges, so the rim gets
@@ -187,7 +212,8 @@
   --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.18);
 
   /* Interactive card hover shadow with dynamic accent ambient glow */
-  --shadow-interactive-hover: 0 4px 14px -1px color-mix(in oklch, var(--primary) 18%, oklch(0 0 0 / 0.2)),
+  --shadow-interactive-hover:
+    0 4px 14px -1px color-mix(in oklch, var(--primary) 18%, oklch(0 0 0 / 0.2)),
     0 2px 5px -2px color-mix(in oklch, var(--primary) 12%, oklch(0 0 0 / 0.1));
 }
 

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useActionState } from "react";
-import { resetPasswordAction, type AuthFormState } from "../auth-actions";
-import { AuthShell } from "../auth-shell";
-import { Input, Label, SubmitButton } from "@pumni/ui";
+import { useActionState } from 'react';
+import { resetPasswordAction, type AuthFormState } from '../auth-actions';
+import { AuthShell } from '../auth-shell';
+import { Input, Label, SubmitButton } from '@pumni/ui';
 
 const initialState: AuthFormState = {};
 
@@ -38,7 +38,7 @@ export default function ResetPasswordPage() {
         ) : null}
 
         <SubmitButton className="w-full">
-          {pending ? "Updating..." : "Update Password"}
+          {pending ? 'Updating...' : 'Update Password'}
         </SubmitButton>
       </form>
     </AuthShell>

@@ -5,7 +5,7 @@ when-to-load: Before writing feature code, Supabase access, or state logic — a
 
 # Common Mistakes
 
-The static analyzer (`bun run ai:eval`) *catches* these; this doc helps you *avoid*
+The static analyzer (`bun run ai:eval`) _catches_ these; this doc helps you _avoid_
 them. Rule ids in parentheses map to `scripts/check-review-gate-rules.mjs`.
 
 ## 1. State ownership (`query-result-in-zustand`)
@@ -13,12 +13,16 @@ them. Rule ids in parentheses map to `scripts/check-review-gate-rules.mjs`.
 Server data belongs in the TanStack Query cache, not Zustand.
 
 ❌
+
 ```ts
 const { data } = useQuery({ queryKey: ['profile'], queryFn: getProfile });
-useEffect(() => { useProfileStore.getState().setProfile(data); }, [data]);
+useEffect(() => {
+  useProfileStore.getState().setProfile(data);
+}, [data]);
 ```
 
 ✅
+
 ```ts
 const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: getProfile });
 // Read `profile` directly. Zustand only holds client UI state (sidebar, modals).
@@ -41,11 +45,13 @@ Explicit columns survive schema drift and make reviews meaningful.
 
 ❌ `create policy "all" on notes for all using (true);`
 ✅
+
 ```sql
 alter table public.notes enable row level security;
 create policy "owner reads" on public.notes for select
   to authenticated using (user_id = (select auth.uid()));
 ```
+
 Follow `docs/conventions/supabase-security.md` — RLS + policies + grants in the
 same migration.
 
@@ -59,6 +65,7 @@ on an RLS `WITH CHECK (user_id = auth.uid())` policy.
 
 ❌ `useMutation({ mutationFn: updateProfile })` with no `onSuccess`/`onSettled`.
 ✅ Invalidate or set the precise query data on success:
+
 ```ts
 useMutation({
   mutationFn: updateProfile,

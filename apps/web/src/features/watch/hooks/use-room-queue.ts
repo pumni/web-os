@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
-import { watchKeys } from "../query-keys";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
+import { watchKeys } from '../query-keys';
 import {
   addQueueItem,
   removeQueueItem,
@@ -10,9 +10,9 @@ import {
   advanceQueue,
   transferHost,
   claimHost,
-} from "../actions";
-import type { QueueItem } from "../types";
-import { fractionalPosition } from "../sync-math";
+} from '../actions';
+import type { QueueItem } from '../types';
+import { fractionalPosition } from '../sync-math';
 
 export function useQueueQuery(roomId: string, initialData: QueueItem[]) {
   return useQuery({
@@ -20,11 +20,11 @@ export function useQueueQuery(roomId: string, initialData: QueueItem[]) {
     queryFn: async () => {
       const supabase = createSupabaseBrowserClient();
       const { data, error } = await supabase
-        .from("watch_queue_items")
-        .select("id, room_id, position, source_type, source_ref, title, added_by, created_at")
-        .eq("room_id", roomId)
-        .order("position", { ascending: true })
-        .order("created_at", { ascending: true });
+        .from('watch_queue_items')
+        .select('id, room_id, position, source_type, source_ref, title, added_by, created_at')
+        .eq('room_id', roomId)
+        .order('position', { ascending: true })
+        .order('created_at', { ascending: true });
 
       if (error) {
         throw error;
@@ -42,7 +42,7 @@ export function useAddQueueItem(roomId: string) {
 
   return useMutation({
     mutationFn: async (variables: {
-      sourceType: "youtube" | "url";
+      sourceType: 'youtube' | 'url';
       sourceRef: string;
       title?: string;
     }) => {
@@ -70,8 +70,8 @@ export function useAddQueueItem(roomId: string) {
         position,
         source_type: variables.sourceType,
         source_ref: variables.sourceRef,
-        title: variables.title || "Đang tải tiêu đề...",
-        added_by: "me",
+        title: variables.title || 'Đang tải tiêu đề...',
+        added_by: 'me',
         created_at: new Date().toISOString(),
       };
 

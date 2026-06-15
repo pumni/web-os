@@ -1,13 +1,20 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useRef } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import type { RealtimeChannel } from "@supabase/supabase-js";
-import { toast } from "sonner";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
-import type { PlaybackAnchor, Participant, Room, QueueBroadcastEvent, ChatMessage, ReactionEvent } from "../types";
-import { watchKeys } from "../query-keys";
-import { getStructuralSignature } from "../sync-math";
+import { useEffect, useState, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import type { RealtimeChannel } from '@supabase/supabase-js';
+import { toast } from 'sonner';
+import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
+import type {
+  PlaybackAnchor,
+  Participant,
+  Room,
+  QueueBroadcastEvent,
+  ChatMessage,
+  ReactionEvent,
+} from '../types';
+import { watchKeys } from '../query-keys';
+import { getStructuralSignature } from '../sync-math';
 
 export function useRoomChannel(
   room: Room,
@@ -15,11 +22,13 @@ export function useRoomChannel(
   isHost: boolean,
   onAnchor: (anchor: PlaybackAnchor) => void,
   onChat?: (m: ChatMessage) => void,
-  onReaction?: (r: ReactionEvent) => void
+  onReaction?: (r: ReactionEvent) => void,
 ) {
   const queryClient = useQueryClient();
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [channelStatus, setChannelStatus] = useState<"connecting" | "connected" | "disconnected">("connecting");
+  const [channelStatus, setChannelStatus] = useState<'connecting' | 'connected' | 'disconnected'>(
+    'connecting',
+  );
   const channelRef = useRef<RealtimeChannel | null>(null);
 
   const isHostRef = useRef(isHost);
@@ -57,7 +66,7 @@ export function useRoomChannel(
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
-    
+
     // Create channel
     const activeChannel = supabase.channel(`room:${room.id}`, {
       config: {
@@ -70,23 +79,19 @@ export function useRoomChannel(
     channelRef.current = activeChannel;
 
     // 1. Listen to broadcast event (low-latency playback sync)
-    activeChannel.on(
-      "broadcast",
-      { event: "playback" },
-      (payload: { payload: PlaybackAnchor }) => {
-        if (payload.payload) {
-          onAnchorLatestRef.current(payload.payload);
-        }
+    activeChannel.on('broadcast', { event: 'playback' }, (payload: { payload: PlaybackAnchor }) => {
+      if (payload.payload) {
+        onAnchorLatestRef.current(payload.payload);
       }
-    );
+    });
 
     // 2. Listen to postgres_changes for watch_rooms (structural signature change)
     activeChannel.on(
-      "postgres_changes",
+      'postgres_changes',
       {
-        event: "UPDATE",
-        schema: "public",
-        table: "watch_rooms",
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'watch_rooms',
         filter: `id=eq.${room.id}`,
       },
       (payload) => {
@@ -98,37 +103,33 @@ export function useRoomChannel(
             void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
           }
         }
-      }
+      },
     );
 
     // 3. Listen to broadcast event for queue changes
-    activeChannel.on(
-      "broadcast",
-      { event: "queue" },
-      (msg: { payload: QueueBroadcastEvent }) => {
-        void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
-        const { action, title } = msg.payload ?? {};
-        const name = title || "Không tên";
-        if (action === "add") {
-          toast.info(`Video "${name}" đã được thêm vào hàng chờ`);
-        } else if (action === "remove") {
-          toast.info(`Video "${name}" đã bị xóa khỏi hàng chờ`);
-        } else if (action === "reorder") {
-          toast.info("Thứ tự hàng chờ vừa được cập nhật");
-        }
+    activeChannel.on('broadcast', { event: 'queue' }, (msg: { payload: QueueBroadcastEvent }) => {
+      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
+      const { action, title } = msg.payload ?? {};
+      const name = title || 'Không tên';
+      if (action === 'add') {
+        toast.info(`Video "${name}" đã được thêm vào hàng chờ`);
+      } else if (action === 'remove') {
+        toast.info(`Video "${name}" đã bị xóa khỏi hàng chờ`);
+      } else if (action === 'reorder') {
+        toast.info('Thứ tự hàng chờ vừa được cập nhật');
       }
-    );
+    });
 
-    activeChannel.on("broadcast", { event: "chat" }, (p: { payload: ChatMessage }) => {
+    activeChannel.on('broadcast', { event: 'chat' }, (p: { payload: ChatMessage }) => {
       if (p.payload) onChatLatestRef.current?.(p.payload);
     });
 
-    activeChannel.on("broadcast", { event: "reaction" }, (p: { payload: ReactionEvent }) => {
+    activeChannel.on('broadcast', { event: 'reaction' }, (p: { payload: ReactionEvent }) => {
       if (p.payload) onReactionLatestRef.current?.(p.payload);
     });
 
     // 4. Listen to presence events
-    activeChannel.on("presence", { event: "sync" }, () => {
+    activeChannel.on('presence', { event: 'sync' }, () => {
       const state = activeChannel.presenceState();
       const list: Participant[] = [];
       Object.keys(state).forEach((key) => {
@@ -154,8 +155,8 @@ export function useRoomChannel(
 
     // Subscribe to channel
     activeChannel.subscribe(async (status) => {
-      if (status === "SUBSCRIBED") {
-        setChannelStatus("connected");
+      if (status === 'SUBSCRIBED') {
+        setChannelStatus('connected');
         if (wasDisconnectedRef.current) {
           wasDisconnectedRef.current = false;
           void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
@@ -166,9 +167,9 @@ export function useRoomChannel(
           isHost: isHostRef.current,
           joinedAt: joinedAtRef.current,
         });
-      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
         wasDisconnectedRef.current = true;
-        setChannelStatus("disconnected");
+        setChannelStatus('disconnected');
       }
     });
 
@@ -181,7 +182,7 @@ export function useRoomChannel(
   // Re-track presence when host role flips WITHOUT tearing down the channel.
   useEffect(() => {
     const ch = channelRef.current;
-    if (ch && ch.state === "joined") {
+    if (ch && ch.state === 'joined') {
       void ch.track({ userId, isHost, joinedAt: joinedAtRef.current });
     }
   }, [isHost, userId]);
@@ -189,8 +190,8 @@ export function useRoomChannel(
   const broadcastAnchor = (anchor: PlaybackAnchor) => {
     if (channelRef.current) {
       channelRef.current.send({
-        type: "broadcast",
-        event: "playback",
+        type: 'broadcast',
+        event: 'playback',
         payload: anchor,
       });
     }
@@ -199,8 +200,8 @@ export function useRoomChannel(
   const broadcastQueueEvent = (event: QueueBroadcastEvent) => {
     if (channelRef.current) {
       channelRef.current.send({
-        type: "broadcast",
-        event: "queue",
+        type: 'broadcast',
+        event: 'queue',
         payload: event,
       });
     }
@@ -209,8 +210,8 @@ export function useRoomChannel(
   const broadcastChat = (m: ChatMessage) => {
     if (channelRef.current) {
       channelRef.current.send({
-        type: "broadcast",
-        event: "chat",
+        type: 'broadcast',
+        event: 'chat',
         payload: m,
       });
     }
@@ -219,8 +220,8 @@ export function useRoomChannel(
   const broadcastReaction = (r: ReactionEvent) => {
     if (channelRef.current) {
       channelRef.current.send({
-        type: "broadcast",
-        event: "reaction",
+        type: 'broadcast',
+        event: 'reaction',
         payload: r,
       });
     }

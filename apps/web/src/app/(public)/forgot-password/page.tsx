@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useActionState } from "react";
-import Link from "next/link";
-import { forgotPasswordAction, type AuthFormState } from "../auth-actions";
-import { AuthShell } from "../auth-shell";
-import { Input, Label, SubmitButton } from "@pumni/ui";
+import { useActionState } from 'react';
+import Link from 'next/link';
+import { forgotPasswordAction, type AuthFormState } from '../auth-actions';
+import { AuthShell } from '../auth-shell';
+import { Input, Label, SubmitButton } from '@pumni/ui';
 
 const initialState: AuthFormState = {};
 
@@ -48,9 +48,7 @@ export default function ForgotPasswordPage() {
           </p>
         ) : null}
 
-        <SubmitButton className="w-full">
-          {pending ? "Sending..." : "Send Reset Link"}
-        </SubmitButton>
+        <SubmitButton className="w-full">{pending ? 'Sending...' : 'Send Reset Link'}</SubmitButton>
       </form>
     </AuthShell>
   );

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
-import { Window } from "@pumni/ui";
+import { Window } from '@pumni/ui';
 
 /**
  * Showcase of the OS `Window` primitive on the dashboard. The titlebar controls
@@ -24,13 +24,12 @@ export function WelcomeWindow() {
       {!collapsed && (
         <div className="space-y-2 text-sm text-muted-foreground">
           <p>
-            This desktop runs on Pumni&apos;s token-first design system: OKLCH color
-            roles, shared <code className="text-foreground">@pumni/ui</code> primitives, and accessible surfaces.
+            This desktop runs on Pumni&apos;s token-first design system: OKLCH color roles, shared{' '}
+            <code className="text-foreground">@pumni/ui</code> primitives, and accessible surfaces.
           </p>
           <p>
-            Press{" "}
-            <kbd className="rounded border border-border px-1.5 py-0.5 text-xs">⌘K</kbd> to open the
-            command palette, or use the dock below to jump between apps.
+            Press <kbd className="rounded border border-border px-1.5 py-0.5 text-xs">⌘K</kbd> to
+            open the command palette, or use the dock below to jump between apps.
           </p>
         </div>
       )}

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
+import { useEffect } from 'react';
+import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 
 // Host-only liveness heartbeat. Lets `claim_room_host` detect a dropped host.
 // Updates only `host_heartbeat_at` → structural signature unchanged → no
@@ -12,9 +12,9 @@ export function useHostHeartbeat(roomId: string, isHost: boolean) {
     const supabase = createSupabaseBrowserClient();
     const beat = () => {
       void supabase
-        .from("watch_rooms")
+        .from('watch_rooms')
         .update({ host_heartbeat_at: new Date().toISOString() })
-        .eq("id", roomId);
+        .eq('id', roomId);
     };
     beat();
     const interval = setInterval(beat, 20_000);

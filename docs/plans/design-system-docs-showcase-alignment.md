@@ -590,4 +590,3 @@ Usually do not edit in this plan:
   personalization/surface-intensity states.
 - Remaining old terminology is either removed or explicitly justified as current
   API/implementation naming.
-

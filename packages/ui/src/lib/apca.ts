@@ -45,17 +45,16 @@ export function apcaLuminance(r: number, g: number, b: number): number {
  * Perceptual scale: Lc 60 ≈ body text minimum, Lc 25 ≈ UI element minimum.
  * Range approximately −110 to +110.
  */
-export function apcaContrast(
-  fg: [number, number, number],
-  bg: [number, number, number],
-): number {
+export function apcaContrast(fg: [number, number, number], bg: [number, number, number]): number {
   let txtY = apcaLuminance(...fg);
   let bgY = apcaLuminance(...bg);
 
   // Input range clamp
   if (
-    Number.isNaN(txtY) || Number.isNaN(bgY) ||
-    Math.min(txtY, bgY) < 0 || Math.max(txtY, bgY) > 1.1
+    Number.isNaN(txtY) ||
+    Number.isNaN(bgY) ||
+    Math.min(txtY, bgY) < 0 ||
+    Math.max(txtY, bgY) > 1.1
   ) {
     return 0;
   }

@@ -1,17 +1,17 @@
-"use client";
- 
-import * as React from "react";
- 
-export type Accent = "cyan" | "indigo" | "violet" | "rose";
-export type GlassLevel = "soft" | "default" | "strong";
-export type Density = "comfortable" | "compact";
- 
+'use client';
+
+import * as React from 'react';
+
+export type Accent = 'cyan' | 'indigo' | 'violet' | 'rose';
+export type GlassLevel = 'soft' | 'default' | 'strong';
+export type Density = 'comfortable' | 'compact';
+
 // `cyan` is the brand default (no root attribute); `indigo` is kept as the
 // previous brand hue, now a selectable accent.
-export const ACCENTS: readonly Accent[] = ["cyan", "indigo", "violet", "rose"];
-export const GLASS_LEVELS: readonly GlassLevel[] = ["soft", "default", "strong"];
-export const DENSITIES: readonly Density[] = ["comfortable", "compact"];
- 
+export const ACCENTS: readonly Accent[] = ['cyan', 'indigo', 'violet', 'rose'];
+export const GLASS_LEVELS: readonly GlassLevel[] = ['soft', 'default', 'strong'];
+export const DENSITIES: readonly Density[] = ['comfortable', 'compact'];
+
 type PersonalizationContextValue = {
   accent: Accent;
   glass: GlassLevel;
@@ -20,18 +20,18 @@ type PersonalizationContextValue = {
   setGlass: (glass: GlassLevel) => void;
   setDensity: (density: Density) => void;
 };
- 
+
 const PersonalizationContext = React.createContext<PersonalizationContextValue | null>(null);
- 
-export const ACCENT_KEY = "pumni-accent";
-export const GLASS_KEY = "pumni-glass";
-export const DENSITY_KEY = "pumni-density";
- 
+
+export const ACCENT_KEY = 'pumni-accent';
+export const GLASS_KEY = 'pumni-glass';
+export const DENSITY_KEY = 'pumni-density';
+
 // Accent/glass values that set a root attribute (the defaults — cyan / default —
 // are represented by the ABSENCE of the attribute, matching the provider effects).
-const ATTR_ACCENTS = ACCENTS.filter((accent) => accent !== "cyan");
-const ATTR_GLASS = GLASS_LEVELS.filter((level) => level !== "default");
- 
+const ATTR_ACCENTS = ACCENTS.filter((accent) => accent !== 'cyan');
+const ATTR_GLASS = GLASS_LEVELS.filter((level) => level !== 'default');
+
 /*
  * Pre-paint personalization script.
  * next-themes injects its own blocking script for `.dark`, but accent/glass are
@@ -58,20 +58,22 @@ const PERSONALIZATION_SCRIPT =
  * carries `suppressHydrationWarning`). Pairs with `PersonalizationProvider`.
  */
 function PersonalizationScript() {
-  return <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: PERSONALIZATION_SCRIPT }} />;
+  return (
+    <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: PERSONALIZATION_SCRIPT }} />
+  );
 }
 
 function readStored<T extends string>(key: string, allowed: readonly T[], fallback: T): T {
-  if (typeof window === "undefined") return fallback;
+  if (typeof window === 'undefined') return fallback;
   const value = window.localStorage.getItem(key) as T | null;
   return value && allowed.includes(value) ? value : fallback;
 }
 
 function PersonalizationProvider({
   children,
-  defaultAccent = "cyan",
-  defaultGlass = "default",
-  defaultDensity = "comfortable",
+  defaultAccent = 'cyan',
+  defaultGlass = 'default',
+  defaultDensity = 'comfortable',
 }: {
   children: React.ReactNode;
   defaultAccent?: Accent;
@@ -81,48 +83,48 @@ function PersonalizationProvider({
   const [accent, setAccentState] = React.useState<Accent>(defaultAccent);
   const [glass, setGlassState] = React.useState<GlassLevel>(defaultGlass);
   const [density, setDensityState] = React.useState<Density>(defaultDensity);
- 
+
   // Hydrate from storage after mount so SSR and the first client render match.
   React.useEffect(() => {
     setAccentState(readStored(ACCENT_KEY, ACCENTS, defaultAccent));
     setGlassState(readStored(GLASS_KEY, GLASS_LEVELS, defaultGlass));
     setDensityState(readStored(DENSITY_KEY, DENSITIES, defaultDensity));
   }, [defaultAccent, defaultGlass, defaultDensity]);
- 
+
   // Reflect onto the root element — the same node next-themes flags `.dark`.
   React.useEffect(() => {
     const root = document.documentElement;
-    if (accent === "cyan") root.removeAttribute("data-accent");
-    else root.setAttribute("data-accent", accent);
+    if (accent === 'cyan') root.removeAttribute('data-accent');
+    else root.setAttribute('data-accent', accent);
   }, [accent]);
- 
+
   React.useEffect(() => {
     const root = document.documentElement;
-    if (glass === "default") root.removeAttribute("data-glass");
-    else root.setAttribute("data-glass", glass);
+    if (glass === 'default') root.removeAttribute('data-glass');
+    else root.setAttribute('data-glass', glass);
   }, [glass]);
 
   React.useEffect(() => {
     const root = document.documentElement;
-    if (density === "comfortable") root.removeAttribute("data-density");
-    else root.setAttribute("data-density", density);
+    if (density === 'comfortable') root.removeAttribute('data-density');
+    else root.setAttribute('data-density', density);
   }, [density]);
- 
+
   const setAccent = React.useCallback((next: Accent) => {
     setAccentState(next);
-    if (typeof window !== "undefined") window.localStorage.setItem(ACCENT_KEY, next);
+    if (typeof window !== 'undefined') window.localStorage.setItem(ACCENT_KEY, next);
   }, []);
- 
+
   const setGlass = React.useCallback((next: GlassLevel) => {
     setGlassState(next);
-    if (typeof window !== "undefined") window.localStorage.setItem(GLASS_KEY, next);
+    if (typeof window !== 'undefined') window.localStorage.setItem(GLASS_KEY, next);
   }, []);
 
   const setDensity = React.useCallback((next: Density) => {
     setDensityState(next);
-    if (typeof window !== "undefined") window.localStorage.setItem(DENSITY_KEY, next);
+    if (typeof window !== 'undefined') window.localStorage.setItem(DENSITY_KEY, next);
   }, []);
- 
+
   const value = React.useMemo<PersonalizationContextValue>(
     () => ({ accent, glass, density, setAccent, setGlass, setDensity }),
     [accent, glass, density, setAccent, setGlass, setDensity],
@@ -136,7 +138,7 @@ function PersonalizationProvider({
 function usePersonalization() {
   const context = React.useContext(PersonalizationContext);
   if (!context) {
-    throw new Error("usePersonalization must be used within a PersonalizationProvider");
+    throw new Error('usePersonalization must be used within a PersonalizationProvider');
   }
   return context;
 }

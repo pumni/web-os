@@ -21,11 +21,11 @@
 
 Đồng bộ hàng chờ hiện cưỡi trên `postgres_changes` của `watch_queue_items` (`use-room-channel.ts`, listener #3). Đây là transport realtime **mong manh nhất** của Supabase, và đúng 3 điểm yếu của nó gây bug:
 
-| # | Vấn đề | Hệ quả |
-| :- | :- | :- |
-| 1 | **RLS đánh giá per-subscriber.** `watch_queue_select = is_room_member(room_id) AND auth.uid() is not null`. B chỉ `POST /api/watch/[roomId]/join` **sau mount** (`watch-room.tsx:72`). Nếu kênh subscribe / event bắn ra trước khi membership commit hoặc trước khi token realtime được set → Realtime coi B là non-member/anon. | **Drop sạch event** (race, lúc được lúc không). |
-| 2 | **DELETE/reorder cần `REPLICA IDENTITY FULL`.** Mặc định row OLD chỉ có PK → filter client `room_id=eq.X` không khớp, RLS theo `room_id` không đánh giá được. | **Event DELETE không tới B.** |
-| 3 | **Logic `localDeletedQueueItemIds`** (Set toàn cục) chỉ là vá để đoán self/other cho toast — không sửa được nguồn lỗi ở (1)(2). | Phức tạp thừa, vẫn lỗi. |
+| #   | Vấn đề                                                                                                                                                                                                                                                                                                                           | Hệ quả                                          |
+| :-- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------- |
+| 1   | **RLS đánh giá per-subscriber.** `watch_queue_select = is_room_member(room_id) AND auth.uid() is not null`. B chỉ `POST /api/watch/[roomId]/join` **sau mount** (`watch-room.tsx:72`). Nếu kênh subscribe / event bắn ra trước khi membership commit hoặc trước khi token realtime được set → Realtime coi B là non-member/anon. | **Drop sạch event** (race, lúc được lúc không). |
+| 2   | **DELETE/reorder cần `REPLICA IDENTITY FULL`.** Mặc định row OLD chỉ có PK → filter client `room_id=eq.X` không khớp, RLS theo `room_id` không đánh giá được.                                                                                                                                                                    | **Event DELETE không tới B.**                   |
+| 3   | **Logic `localDeletedQueueItemIds`** (Set toàn cục) chỉ là vá để đoán self/other cho toast — không sửa được nguồn lỗi ở (1)(2).                                                                                                                                                                                                  | Phức tạp thừa, vẫn lỗi.                         |
 
 → Code JS không "hỏng" (lệnh `invalidateQueries` vẫn chạy); **event realtime không tới được B**. Các migration 013/014 là băng dán cho một transport vốn fragile.
 
@@ -47,7 +47,7 @@
 ```ts
 // types.ts (feature watch)
 export interface QueueBroadcastEvent {
-  action: "add" | "remove" | "reorder" | "advance";
+  action: 'add' | 'remove' | 'reorder' | 'advance';
   title?: string | null; // tiêu đề video liên quan (nếu có) để toast giàu thông tin
 }
 ```
@@ -99,8 +99,8 @@ Thêm `QueueBroadcastEvent` (xem §2).
 const broadcastQueueEvent = (event: QueueBroadcastEvent) => {
   if (channelRef.current) {
     channelRef.current.send({
-      type: "broadcast",
-      event: "queue",
+      type: 'broadcast',
+      event: 'queue',
       payload: event,
     });
   }
@@ -110,24 +110,20 @@ const broadcastQueueEvent = (event: QueueBroadcastEvent) => {
 **(2) Thêm listener** trong `useEffect` đăng ký kênh (cạnh listener `playback`):
 
 ```ts
-activeChannel.on(
-  "broadcast",
-  { event: "queue" },
-  (msg: { payload: QueueBroadcastEvent }) => {
-    void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
-    const { action, title } = msg.payload ?? {};
-    const name = title || "Không tên";
-    if (action === "add") {
-      toast.info(`Video "${name}" đã được thêm vào hàng chờ`);
-    } else if (action === "remove") {
-      toast.info(`Video "${name}" đã bị xóa khỏi hàng chờ`);
-    } else if (action === "reorder") {
-      toast.info("Thứ tự hàng chờ vừa được cập nhật");
-    }
-    // "advance": room source đổi → postgres_changes watch_rooms đã lo invalidate room;
-    // chỉ cần đồng bộ lại danh sách (đã invalidate queue ở trên).
+activeChannel.on('broadcast', { event: 'queue' }, (msg: { payload: QueueBroadcastEvent }) => {
+  void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
+  const { action, title } = msg.payload ?? {};
+  const name = title || 'Không tên';
+  if (action === 'add') {
+    toast.info(`Video "${name}" đã được thêm vào hàng chờ`);
+  } else if (action === 'remove') {
+    toast.info(`Video "${name}" đã bị xóa khỏi hàng chờ`);
+  } else if (action === 'reorder') {
+    toast.info('Thứ tự hàng chờ vừa được cập nhật');
   }
-);
+  // "advance": room source đổi → postgres_changes watch_rooms đã lo invalidate room;
+  // chỉ cần đồng bộ lại danh sách (đã invalidate queue ở trên).
+});
 ```
 
 **(3) GỠ listener `postgres_changes` cho `watch_queue_items`** (toàn bộ khối #3 hiện tại) — broadcast thay thế. Gỡ luôn `import { localDeletedQueueItemIds } from "./use-room-queue";`.
@@ -168,7 +164,7 @@ const handleEnded = () => {
   if (!isHost) return;
   if (queueItems.length === 0) return;
   advanceQueueMutation.mutate(undefined, {
-    onSuccess: () => broadcastQueueEvent({ action: "advance" }),
+    onSuccess: () => broadcastQueueEvent({ action: 'advance' }),
   });
 };
 ```
@@ -226,18 +222,19 @@ onSuccess: () => {
 
 #### C1. Smoke 2 trình duyệt (A=host, B=follower, **khác tài khoản**)
 
-| Bước | Kỳ vọng A (người thao tác) | Kỳ vọng B (người nhận) |
-| :- | :- | :- |
-| A **thêm** video | toast "Đã thêm vào hàng chờ!" + item hiện ngay | toast "Video … đã được thêm…" + **item xuất hiện** |
-| A **xóa** video | toast "Đã xóa…" + item biến mất ngay | toast "Video … đã bị xóa…" + **item biến mất** |
-| A **đổi thứ tự** (▲/▼) | toast "Đã sắp xếp lại…" + thứ tự đổi, **giữ sau refetch** | toast "Thứ tự hàng chờ vừa được cập nhật" + **thứ tự đồng bộ** |
-| A **Phát tiếp theo** | toast + video chuyển | video chuyển + danh sách đồng bộ |
-| Video phát **hết** (host) | tự chuyển video kế | tự chuyển + đồng bộ |
-| B **offline 10s** rồi online | — | badge "Mất kết nối…" tắt; **danh sách + phòng tự đồng bộ lại** |
+| Bước                         | Kỳ vọng A (người thao tác)                                | Kỳ vọng B (người nhận)                                         |
+| :--------------------------- | :-------------------------------------------------------- | :------------------------------------------------------------- |
+| A **thêm** video             | toast "Đã thêm vào hàng chờ!" + item hiện ngay            | toast "Video … đã được thêm…" + **item xuất hiện**             |
+| A **xóa** video              | toast "Đã xóa…" + item biến mất ngay                      | toast "Video … đã bị xóa…" + **item biến mất**                 |
+| A **đổi thứ tự** (▲/▼)       | toast "Đã sắp xếp lại…" + thứ tự đổi, **giữ sau refetch** | toast "Thứ tự hàng chờ vừa được cập nhật" + **thứ tự đồng bộ** |
+| A **Phát tiếp theo**         | toast + video chuyển                                      | video chuyển + danh sách đồng bộ                               |
+| Video phát **hết** (host)    | tự chuyển video kế                                        | tự chuyển + đồng bộ                                            |
+| B **offline 10s** rồi online | —                                                         | badge "Mất kết nối…" tắt; **danh sách + phòng tự đồng bộ lại** |
 
 > Quan trọng: **không** còn double toast ở phía A; **không** mất đồng bộ ở phía B cho cả 4 action.
 
 #### C2. Gates
+
 `bun run typecheck` + `bun run lint` + `bun run test` + `bun run build` đều xanh.
 
 > **Cổng nghiệm thu cuối:** C1 đủ 6 dòng, C2 xanh.
@@ -245,6 +242,7 @@ onSuccess: () => {
 ---
 
 ## 5. Bất biến tuyệt đối (KHÔNG phá)
+
 - **Một** channel `room:{id}` cho mọi realtime (broadcast playback + broadcast queue + presence + postgres_changes watch_rooms).
 - `broadcast.self` giữ **mặc định (false)** — không bật, tránh nhiễu vòng anchor playback.
 - Anchor + heartbeat **chỉ host ghi** qua RLS `watch_rooms_update_host`.
@@ -256,16 +254,17 @@ onSuccess: () => {
 
 ## 6. Rủi ro & khắc phục
 
-| Rủi ro | Khắc phục |
-| :- | :- |
-| B miss broadcast do rớt mạng đúng lúc | Reconnect invalidate cả `queue` (A2.4) kéo lại trạng thái. |
-| A gửi broadcast trước khi channel `joined` | `broadcastQueueEvent` no-op nếu `channelRef.current` null; broadcast phát trong `onSuccess` (sau server OK) — lúc này channel hầu như đã joined. Refetch local của A vẫn đảm bảo A đúng; B sẽ tự đồng bộ ở reconnect/lần thao tác kế nếu lỡ. |
-| Còn sót listener `postgres_changes` queue → double toast | Phase A3 gỡ hẳn listener + mọi tham chiếu `localDeletedQueueItemIds`; grep xác nhận. |
-| Migration 013 (`replica identity full`) thừa ghi WAL | Không khẩn cấp — đã push, để nguyên. Tùy chọn dọn ở phase sau (queue không còn dùng postgres_changes). |
+| Rủi ro                                                   | Khắc phục                                                                                                                                                                                                                                    |
+| :------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B miss broadcast do rớt mạng đúng lúc                    | Reconnect invalidate cả `queue` (A2.4) kéo lại trạng thái.                                                                                                                                                                                   |
+| A gửi broadcast trước khi channel `joined`               | `broadcastQueueEvent` no-op nếu `channelRef.current` null; broadcast phát trong `onSuccess` (sau server OK) — lúc này channel hầu như đã joined. Refetch local của A vẫn đảm bảo A đúng; B sẽ tự đồng bộ ở reconnect/lần thao tác kế nếu lỡ. |
+| Còn sót listener `postgres_changes` queue → double toast | Phase A3 gỡ hẳn listener + mọi tham chiếu `localDeletedQueueItemIds`; grep xác nhận.                                                                                                                                                         |
+| Migration 013 (`replica identity full`) thừa ghi WAL     | Không khẩn cấp — đã push, để nguyên. Tùy chọn dọn ở phase sau (queue không còn dùng postgres_changes).                                                                                                                                       |
 
 ---
 
 ## 7. Checklist thực thi nhanh
+
 - [ ] A1 (type) + A2 (channel: phát/nghe/gỡ pg_changes/reconnect/return) + A3 (dọn Set) → cổng A
 - [ ] B1 (watch-room: lấy + auto-advance + truyền) + B2 (side-dock prop) + B3 (playlist-panel onSuccess + toast reorder) → cổng B
 - [ ] C1 (smoke 6 dòng) + C2 (gates) → cổng cuối

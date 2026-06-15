@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import {
   BellIcon,
   CheckCircle2Icon,
@@ -16,7 +16,7 @@ import {
   HelpCircleIcon,
   PlusIcon,
   TrashIcon,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   AnimatePresence,
   apcaContrast,
@@ -117,7 +117,7 @@ import {
   ACCENTS,
   GLASS_LEVELS,
   usePersonalization,
-} from "@pumni/ui";
+} from '@pumni/ui';
 
 type DemoFormValues = {
   workspaceName: string;
@@ -126,28 +126,28 @@ type DemoFormValues = {
 
 const commandItems: CommandItem[] = [
   {
-    id: "open-dashboard",
-    label: "Open dashboard",
-    keywords: "home overview",
+    id: 'open-dashboard',
+    label: 'Open dashboard',
+    keywords: 'home overview',
     icon: <CommandIcon />,
-    shortcut: "D",
-    onSelect: () => toast.info("Dashboard command selected."),
+    shortcut: 'D',
+    onSelect: () => toast.info('Dashboard command selected.'),
   },
   {
-    id: "invite-member",
-    label: "Invite member",
-    keywords: "team email",
+    id: 'invite-member',
+    label: 'Invite member',
+    keywords: 'team email',
     icon: <UserIcon />,
-    shortcut: "I",
-    onSelect: () => toast.success("Invite command selected."),
+    shortcut: 'I',
+    onSelect: () => toast.success('Invite command selected.'),
   },
   {
-    id: "system-settings",
-    label: "System settings",
-    keywords: "preferences controls",
+    id: 'system-settings',
+    label: 'System settings',
+    keywords: 'preferences controls',
     icon: <SettingsIcon />,
-    shortcut: "S",
-    onSelect: () => toast.info("Settings command selected."),
+    shortcut: 'S',
+    onSelect: () => toast.info('Settings command selected.'),
   },
 ];
 
@@ -160,22 +160,22 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 const SHOWCASE_SECTIONS = [
-  { id: "foundations", label: "Foundations" },
-  { id: "controls", label: "Controls" },
-  { id: "surfaces-layout", label: "Surfaces & Layout" },
-  { id: "overlays-menus", label: "Overlays & Menus" },
-  { id: "feedback", label: "Feedback" },
-  { id: "identity-personalization", label: "Identity & Personalization" },
-  { id: "motion", label: "Motion" },
-  { id: "bento-grid", label: "Bento Grid" },
-  { id: "card-states", label: "Card States & Spotlight" },
+  { id: 'foundations', label: 'Foundations' },
+  { id: 'controls', label: 'Controls' },
+  { id: 'surfaces-layout', label: 'Surfaces & Layout' },
+  { id: 'overlays-menus', label: 'Overlays & Menus' },
+  { id: 'feedback', label: 'Feedback' },
+  { id: 'identity-personalization', label: 'Identity & Personalization' },
+  { id: 'motion', label: 'Motion' },
+  { id: 'bento-grid', label: 'Bento Grid' },
+  { id: 'card-states', label: 'Card States & Spotlight' },
 ] as const;
 
 function useActiveSection() {
-  const [activeId, setActiveId] = React.useState<string>("foundations");
+  const [activeId, setActiveId] = React.useState<string>('foundations');
 
   React.useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
+    if (typeof IntersectionObserver === 'undefined') return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -185,7 +185,7 @@ function useActiveSection() {
           }
         }
       },
-      { rootMargin: "-20% 0px -70% 0px" },
+      { rootMargin: '-20% 0px -70% 0px' },
     );
 
     const elements = SHOWCASE_SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean);
@@ -209,22 +209,22 @@ export function DesignSystemShowcase() {
 
   const { accent, glass, density, setAccent, setGlass, setDensity } = usePersonalization();
 
-  const [previewTransparency, setPreviewTransparency] = React.useState<"standard" | "reduced">(
-    "standard",
+  const [previewTransparency, setPreviewTransparency] = React.useState<'standard' | 'reduced'>(
+    'standard',
   );
-  const [previewContrast, setPreviewContrast] = React.useState<"standard" | "more">("standard");
+  const [previewContrast, setPreviewContrast] = React.useState<'standard' | 'more'>('standard');
   const [dropdownCheckState, setDropdownCheckState] = React.useState({
     notifications: true,
     compact: false,
   });
-  const [dropdownRadio, setDropdownRadio] = React.useState("comfortable");
-  const [apcaFg, setApcaFg] = React.useState("#0a0a0a");
-  const [apcaBg, setApcaBg] = React.useState("#fafafa");
+  const [dropdownRadio, setDropdownRadio] = React.useState('comfortable');
+  const [apcaFg, setApcaFg] = React.useState('#0a0a0a');
+  const [apcaBg, setApcaBg] = React.useState('#fafafa');
 
   const form = useForm<DemoFormValues>({
     defaultValues: {
-      workspaceName: "Pumni OS Catalog",
-      adminEmail: "",
+      workspaceName: 'Pumni OS Catalog',
+      adminEmail: '',
     },
   });
 
@@ -240,13 +240,13 @@ export function DesignSystemShowcase() {
               href={`#${section.id}`}
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" });
+                document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' });
               }}
               className={cn(
-                "block rounded-md px-3 py-1.5 text-sm transition-colors",
+                'block rounded-md px-3 py-1.5 text-sm transition-colors',
                 activeSection === section.id
-                  ? "bg-accent text-accent-foreground font-medium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                  ? 'bg-accent text-accent-foreground font-medium'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
               )}
             >
               {section.label}
@@ -261,14 +261,14 @@ export function DesignSystemShowcase() {
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Design System</h1>
             <p className="max-w-2xl text-sm text-muted-foreground">
-              Token foundations, shared primitives, surfaces, motion, and personalization from{" "}
+              Token foundations, shared primitives, surfaces, motion, and personalization from{' '}
               <code className="text-foreground">@pumni/ui</code>.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
-              onClick={() => toast.success("Notification toast triggered.")}
+              onClick={() => toast.success('Notification toast triggered.')}
             >
               <BellIcon />
               Test Toast
@@ -451,18 +451,18 @@ export function DesignSystemShowcase() {
                   <Button
                     type="button"
                     size="sm"
-                    variant={previewTransparency === "standard" ? "secondary" : "ghost"}
-                    aria-pressed={previewTransparency === "standard"}
-                    onClick={() => setPreviewTransparency("standard")}
+                    variant={previewTransparency === 'standard' ? 'secondary' : 'ghost'}
+                    aria-pressed={previewTransparency === 'standard'}
+                    onClick={() => setPreviewTransparency('standard')}
                   >
                     Standard
                   </Button>
                   <Button
                     type="button"
                     size="sm"
-                    variant={previewTransparency === "reduced" ? "secondary" : "ghost"}
-                    aria-pressed={previewTransparency === "reduced"}
-                    onClick={() => setPreviewTransparency("reduced")}
+                    variant={previewTransparency === 'reduced' ? 'secondary' : 'ghost'}
+                    aria-pressed={previewTransparency === 'reduced'}
+                    onClick={() => setPreviewTransparency('reduced')}
                   >
                     Opaque Solid
                   </Button>
@@ -471,18 +471,18 @@ export function DesignSystemShowcase() {
                   <Button
                     type="button"
                     size="sm"
-                    variant={previewContrast === "standard" ? "secondary" : "ghost"}
-                    aria-pressed={previewContrast === "standard"}
-                    onClick={() => setPreviewContrast("standard")}
+                    variant={previewContrast === 'standard' ? 'secondary' : 'ghost'}
+                    aria-pressed={previewContrast === 'standard'}
+                    onClick={() => setPreviewContrast('standard')}
                   >
                     Normal Contrast
                   </Button>
                   <Button
                     type="button"
                     size="sm"
-                    variant={previewContrast === "more" ? "secondary" : "ghost"}
-                    aria-pressed={previewContrast === "more"}
-                    onClick={() => setPreviewContrast("more")}
+                    variant={previewContrast === 'more' ? 'secondary' : 'ghost'}
+                    aria-pressed={previewContrast === 'more'}
+                    onClick={() => setPreviewContrast('more')}
                   >
                     High Contrast
                   </Button>
@@ -536,13 +536,13 @@ export function DesignSystemShowcase() {
                       <span className="text-sm font-medium">APCA Gate Status</span>
                       <span
                         className={cn(
-                          "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                          previewContrast === "more"
-                            ? "bg-warning text-warning-foreground"
-                            : "bg-success/15 text-success",
+                          'rounded-full px-2 py-0.5 text-[10px] font-semibold',
+                          previewContrast === 'more'
+                            ? 'bg-warning text-warning-foreground'
+                            : 'bg-success/15 text-success',
                         )}
                       >
-                        {previewContrast === "more" ? "Contrast Boosted" : "Verified"}
+                        {previewContrast === 'more' ? 'Contrast Boosted' : 'Verified'}
                       </span>
                     </div>
                     <Input aria-label="Quick focus text" placeholder="Focus outline validation" />
@@ -558,7 +558,7 @@ export function DesignSystemShowcase() {
               <div className="space-y-2">
                 <h4 className="text-sm font-semibold text-foreground">APCA Contrast Utility</h4>
                 <p className="text-xs text-muted-foreground">
-                  <code>apcaContrast</code> and <code>apcaLuminance</code> from{" "}
+                  <code>apcaContrast</code> and <code>apcaLuminance</code> from{' '}
                   <code>@pumni/ui</code> compute perceptual contrast (Lc) using the APCA algorithm.
                   Drag the color pickers to see live values.
                 </p>
@@ -609,7 +609,7 @@ export function DesignSystemShowcase() {
                           const bgRgb = hexToRgb(apcaBg);
                           const val = apcaContrast(fgRgb, bgRgb);
                           const absVal = Math.abs(val);
-                          const polarity = val > 0 ? "BoW" : val < 0 ? "WoB" : "";
+                          const polarity = val > 0 ? 'BoW' : val < 0 ? 'WoB' : '';
                           return `Lc ${absVal.toFixed(1)} ${polarity}`.trim();
                         })()}
                       </span>
@@ -721,7 +721,7 @@ export function DesignSystemShowcase() {
                     <FormField
                       control={form.control}
                       name="workspaceName"
-                      rules={{ required: "Workspace name is required." }}
+                      rules={{ required: 'Workspace name is required.' }}
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Workspace Name</FormLabel>
@@ -744,7 +744,7 @@ export function DesignSystemShowcase() {
                     SubmitButton (Server Action ready)
                   </p>
                   <p className="text-[11px] text-muted-foreground">
-                    Reads <code>useFormStatus</code> for auto-pending state. Falls back to manual{" "}
+                    Reads <code>useFormStatus</code> for auto-pending state. Falls back to manual{' '}
                     <code>loading</code> prop.
                   </p>
                   <div className="flex gap-2">
@@ -1060,21 +1060,21 @@ export function DesignSystemShowcase() {
                 <Dock>
                   <DockItem
                     label="Light View"
-                    active={previewContrast === "standard"}
-                    onClick={() => setPreviewContrast("standard")}
+                    active={previewContrast === 'standard'}
+                    onClick={() => setPreviewContrast('standard')}
                   >
                     <SunIcon className="size-5" />
                   </DockItem>
                   <DockItem
                     label="Dark View"
-                    active={previewContrast === "more"}
-                    onClick={() => setPreviewContrast("more")}
+                    active={previewContrast === 'more'}
+                    onClick={() => setPreviewContrast('more')}
                   >
                     <MoonIcon className="size-5" />
                   </DockItem>
                   <DockItem
                     label="Settings Actions"
-                    onClick={() => toast.info("Dock settings tapped.")}
+                    onClick={() => toast.info('Dock settings tapped.')}
                   >
                     <SettingsIcon className="size-5" />
                   </DockItem>
@@ -1123,11 +1123,11 @@ export function DesignSystemShowcase() {
                   <DropdownMenuContent align="start" className="w-56">
                     <DropdownMenuLabel>Account Preferences</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => toast.info("Profile menu selected.")}>
+                    <DropdownMenuItem onClick={() => toast.info('Profile menu selected.')}>
                       <UserIcon />
                       User Settings
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => toast.info("Appearance settings opened.")}>
+                    <DropdownMenuItem onClick={() => toast.info('Appearance settings opened.')}>
                       <SettingsIcon />
                       Appearance
                     </DropdownMenuItem>
@@ -1157,7 +1157,7 @@ export function DesignSystemShowcase() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       variant="destructive"
-                      onClick={() => toast.error("Account delete clicked.")}
+                      onClick={() => toast.error('Account delete clicked.')}
                     >
                       <TrashIcon />
                       Delete Profile
@@ -1174,18 +1174,18 @@ export function DesignSystemShowcase() {
                   <ContextMenuContent className="w-48">
                     <ContextMenuLabel>Desktop Actions</ContextMenuLabel>
                     <ContextMenuSeparator />
-                    <ContextMenuItem onSelect={() => toast.info("Created folder.")}>
+                    <ContextMenuItem onSelect={() => toast.info('Created folder.')}>
                       <PlusIcon />
                       New Folder
                     </ContextMenuItem>
-                    <ContextMenuItem onSelect={() => toast.success("Refreshed workspace.")}>
+                    <ContextMenuItem onSelect={() => toast.success('Refreshed workspace.')}>
                       Refresh
                       <ContextMenuShortcut>⌘R</ContextMenuShortcut>
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem
                       variant="destructive"
-                      onSelect={() => toast.error("Cleaned workspace.")}
+                      onSelect={() => toast.error('Cleaned workspace.')}
                     >
                       <TrashIcon />
                       Clean Workspace
@@ -1276,21 +1276,21 @@ export function DesignSystemShowcase() {
                 <CardDescription>Global notifications spawned from app processes.</CardDescription>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-2">
-                <Button variant="outline" onClick={() => toast.info("Workspace sync initiated.")}>
+                <Button variant="outline" onClick={() => toast.info('Workspace sync initiated.')}>
                   Info
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => toast.success("Changes saved successfully.")}
+                  onClick={() => toast.success('Changes saved successfully.')}
                 >
                   Success
                 </Button>
-                <Button variant="outline" onClick={() => toast.warning("Low memory warning.")}>
+                <Button variant="outline" onClick={() => toast.warning('Low memory warning.')}>
                   Warning
                 </Button>
                 <Button
                   variant="destructive"
-                  onClick={() => toast.error("Database connection failed.")}
+                  onClick={() => toast.error('Database connection failed.')}
                 >
                   Error
                 </Button>
@@ -1409,17 +1409,17 @@ export function DesignSystemShowcase() {
                       aria-pressed={accent === value}
                       onClick={() => setAccent(value)}
                       className={cn(
-                        "size-8 rounded-full border-2 bg-primary capitalize transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer",
-                        accent === value ? "border-foreground scale-105" : "border-transparent",
+                        'size-8 rounded-full border-2 bg-primary capitalize transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer',
+                        accent === value ? 'border-foreground scale-105' : 'border-transparent',
                       )}
                     />
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Applies <code>data-accent</code> attribute to scope color mixes. Accent is
-                  currently:{" "}
+                  currently:{' '}
                   <span className="font-mono font-semibold capitalize text-foreground">
-                    {accent || "cyan (default)"}
+                    {accent || 'cyan (default)'}
                   </span>
                   .
                 </p>
@@ -1439,7 +1439,7 @@ export function DesignSystemShowcase() {
                       key={value}
                       type="button"
                       size="sm"
-                      variant={glass === value ? "secondary" : "ghost"}
+                      variant={glass === value ? 'secondary' : 'ghost'}
                       aria-pressed={glass === value}
                       onClick={() => setGlass(value)}
                       className="capitalize"
@@ -1449,9 +1449,9 @@ export function DesignSystemShowcase() {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Current intensity:{" "}
+                  Current intensity:{' '}
                   <span className="font-mono font-semibold capitalize text-foreground">
-                    {glass || "default"}
+                    {glass || 'default'}
                   </span>
                   . Applies <code>data-glass</code> parameter to override global variables.
                 </p>
@@ -1468,12 +1468,12 @@ export function DesignSystemShowcase() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="inline-flex rounded-md border bg-card p-1">
-                  {(["comfortable", "compact"] as const).map((value) => (
+                  {(['comfortable', 'compact'] as const).map((value) => (
                     <Button
                       key={value}
                       type="button"
                       size="sm"
-                      variant={density === value ? "secondary" : "ghost"}
+                      variant={density === value ? 'secondary' : 'ghost'}
                       aria-pressed={density === value}
                       onClick={() => setDensity(value)}
                       className="capitalize"
@@ -1483,9 +1483,9 @@ export function DesignSystemShowcase() {
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Current density:{" "}
+                  Current density:{' '}
                   <span className="font-mono font-semibold capitalize text-foreground">
-                    {density || "comfortable"}
+                    {density || 'comfortable'}
                   </span>
                   . Applies <code>data-density</code> parameter to override control height
                   (h-control: 36px ↔ 32px) and paddings.
@@ -1522,7 +1522,7 @@ export function DesignSystemShowcase() {
                 <motion.button
                   type="button"
                   {...(shouldReduceMotion ? {} : recipes.pressScale)}
-                  onClick={() => toast.info("pressScale gesture tapped.")}
+                  onClick={() => toast.info('pressScale gesture tapped.')}
                   className="w-full text-left rounded-xl bg-primary p-4 text-xs text-primary-foreground cursor-pointer"
                 >
                   <p className="font-semibold">pressScale Recipe</p>
@@ -1556,7 +1556,7 @@ export function DesignSystemShowcase() {
                   {...(shouldReduceMotion ? {} : recipes.staggerContainer)}
                   className="grid gap-2"
                 >
-                  {["Initial viewport mount", "Synchronized step 1", "Completed step 2"].map(
+                  {['Initial viewport mount', 'Synchronized step 1', 'Completed step 2'].map(
                     (word, i) => (
                       <motion.li
                         key={word}
@@ -1585,7 +1585,7 @@ export function DesignSystemShowcase() {
                   <CardContent className="pt-6">
                     <p className="font-semibold text-card-foreground">Interactive CSS Card</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Hover lift & active press down scaling driven by CSS using the{" "}
+                      Hover lift & active press down scaling driven by CSS using the{' '}
                       <code>--press-scale</code> token.
                     </p>
                   </CardContent>
@@ -1608,7 +1608,7 @@ export function DesignSystemShowcase() {
                     size="sm"
                     onClick={() => setMotionWindowOpen((open) => !open)}
                   >
-                    {motionWindowOpen ? "Unmount Window" : "Mount Window"}
+                    {motionWindowOpen ? 'Unmount Window' : 'Mount Window'}
                   </Button>
                 </div>
                 <CardDescription>Framer Motion AnimatePresence transition hooks.</CardDescription>
@@ -1640,7 +1640,7 @@ export function DesignSystemShowcase() {
                 <div className="flex items-center justify-between">
                   <CardTitle>fadeRise Recipe</CardTitle>
                   <Button variant="outline" size="xs" onClick={() => setFadeRiseVisible((v) => !v)}>
-                    {fadeRiseVisible ? "Hide" : "Show"}
+                    {fadeRiseVisible ? 'Hide' : 'Show'}
                   </Button>
                 </div>
                 <CardDescription>Content enter/exit for use with AnimatePresence.</CardDescription>
@@ -1676,13 +1676,13 @@ export function DesignSystemShowcase() {
                   variant="outline"
                   className="w-full"
                   onClick={() =>
-                    withViewTransition(() => toast.success("View transition callback executed."))
+                    withViewTransition(() => toast.success('View transition callback executed.'))
                   }
                 >
                   Trigger withViewTransition
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  <code>withViewTransition</code> wraps callbacks in{" "}
+                  <code>withViewTransition</code> wraps callbacks in{' '}
                   <code>document.startViewTransition()</code>. Falls back to immediate execution
                   when unsupported or reduced-motion is preferred.
                 </p>
@@ -1737,7 +1737,7 @@ export function DesignSystemShowcase() {
               </DialogClose>
               <Button
                 onClick={() => {
-                  toast.success("Action confirmed.");
+                  toast.success('Action confirmed.');
                   setDialogOpen(false);
                 }}
               >
@@ -1785,7 +1785,7 @@ export function DesignSystemShowcase() {
               <Button
                 className="w-full sm:w-auto"
                 onClick={() => {
-                  toast.success("Settings applied.");
+                  toast.success('Settings applied.');
                   setSheetOpen(false);
                 }}
               >
@@ -2046,7 +2046,7 @@ function Swatch({ label, className }: { label: string; className: string }) {
   return (
     <div
       className={cn(
-        "flex h-12 flex-col justify-between rounded-md p-2 text-[11px] leading-none font-medium",
+        'flex h-12 flex-col justify-between rounded-md p-2 text-[11px] leading-none font-medium',
         className,
       )}
     >
@@ -2059,7 +2059,7 @@ function Swatch({ label, className }: { label: string; className: string }) {
 function RadiusDemo({ label, className }: { label: string; className: string }) {
   return (
     <div className="flex flex-col items-center gap-1.5 p-2 rounded-md border bg-muted/20">
-      <div className={cn("size-12 border-2 border-primary bg-background shadow-xs", className)} />
+      <div className={cn('size-12 border-2 border-primary bg-background shadow-xs', className)} />
       <span className="text-[10px] font-mono text-muted-foreground text-center truncate w-full">
         {label}
       </span>

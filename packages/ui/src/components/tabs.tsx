@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Tabs as TabsPrimitive } from "radix-ui";
+import * as React from 'react';
+import { Tabs as TabsPrimitive } from 'radix-ui';
 
-import { cn } from "../lib/cn";
+import { cn } from '../lib/cn';
 
 function Tabs({
   className,
@@ -16,9 +16,9 @@ function Tabs({
   const handleValueChange = (value: string) => {
     if (
       !disableTransition &&
-      typeof document !== "undefined" &&
-      "startViewTransition" in document &&
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      typeof document !== 'undefined' &&
+      'startViewTransition' in document &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches
     ) {
       const transition = document.startViewTransition(() => {
         onValueChange?.(value);
@@ -40,7 +40,7 @@ function Tabs({
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
-      className={cn("flex flex-col gap-2", className)}
+      className={cn('flex flex-col gap-2', className)}
       {...rootProps}
     />
   );
@@ -51,7 +51,7 @@ function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimi
     <TabsPrimitive.List
       data-slot="tabs-list"
       className={cn(
-        "inline-flex h-control w-fit items-center justify-center rounded-lg bg-muted p-[3px] text-muted-foreground",
+        'inline-flex h-control w-fit items-center justify-center rounded-lg bg-muted p-[3px] text-muted-foreground',
         className,
       )}
       {...props}
@@ -76,7 +76,7 @@ function TabsContent({ className, ...props }: React.ComponentProps<typeof TabsPr
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn("flex-1 outline-none", className)}
+      className={cn('flex-1 outline-none', className)}
       {...props}
     />
   );

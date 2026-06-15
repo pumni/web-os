@@ -27,8 +27,14 @@ const REQUIRED_PACKAGE_SCRIPTS = manifest.requiredPackageScripts ?? [];
 const REQUIRED_AIIGNORE_PATTERNS = manifest.requiredAiIgnorePatterns ?? [];
 const FRONTMATTER_REQUIRED = manifest.frontmatterRequired ?? [];
 const INDEX_REQUIRED_REFERENCES = manifest.indexRequiredReferences ?? [];
-const SKILL_VALIDATION = manifest.skillValidation ?? { yamlRequiredFields: [], markdownRequiredSections: [] };
-const EVAL_VALIDATION = manifest.evalValidation ?? { yamlRequiredFields: [], markdownRequiredSections: [] };
+const SKILL_VALIDATION = manifest.skillValidation ?? {
+  yamlRequiredFields: [],
+  markdownRequiredSections: [],
+};
+const EVAL_VALIDATION = manifest.evalValidation ?? {
+  yamlRequiredFields: [],
+  markdownRequiredSections: [],
+};
 
 function relPath(filePath) {
   return path.relative(ROOT, filePath).replaceAll(path.sep, '/');
@@ -178,11 +184,7 @@ function normalizeMarkdownTarget(target) {
 }
 
 function isExternalOrAnchor(target) {
-  return (
-    target.startsWith('#') ||
-    /^[a-z][a-z0-9+.-]*:/i.test(target) ||
-    target.startsWith('@')
-  );
+  return target.startsWith('#') || /^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('@');
 }
 
 function checkMarkdownLinks() {
@@ -218,7 +220,8 @@ function checkMarkdownLinks() {
 function checkDocPathReferences() {
   // Catch dangling backtick-quoted repo doc paths in prose (renamed/deleted docs)
   // that the markdown-link checker misses. Globbed paths (containing '*') are skipped.
-  const pathRegex = /`((?:\.agents|\.claude|docs\/ai|docs\/adr|docs\/conventions|docs\/architecture)\/[^`]+\.md)`/g;
+  const pathRegex =
+    /`((?:\.agents|\.claude|docs\/ai|docs\/adr|docs\/conventions|docs\/architecture)\/[^`]+\.md)`/g;
   const checked = new Set();
 
   for (const relativePath of getMarkdownLinkFiles()) {
@@ -391,7 +394,8 @@ function checkStructuredMarkdown({ dir, kind, validation, isFileEntry }) {
 function collectEvalFiles() {
   const evalDir = resolveRel('.agents/evals');
   if (!fs.existsSync(evalDir)) return [];
-  return fs.readdirSync(evalDir)
+  return fs
+    .readdirSync(evalDir)
     .filter((fileName) => fileName.endsWith('.md'))
     .map((fileName) => `.agents/evals/${fileName}`)
     .sort();
@@ -410,7 +414,9 @@ function checkEvalRuleMapping() {
       reportError(`${relativePath} must declare automated-rule: <rule-id> or manual: true.`);
     }
     if (automatedRule && !ruleIds.has(automatedRule)) {
-      reportError(`${relativePath} automated-rule references unknown static rule: ${automatedRule}`);
+      reportError(
+        `${relativePath} automated-rule references unknown static rule: ${automatedRule}`,
+      );
     }
 
     const coveredRules = frontmatter['covered-rules'] ?? [];
@@ -478,7 +484,9 @@ function checkLlmsTxt() {
     const candidate = match[1];
     const relativePath = candidate.slice(1);
     if (!fs.existsSync(resolveRel(relativePath))) {
-      reportError(`llms.txt references a missing path: ${candidate} at line ${lineNumber(content, match.index)}`);
+      reportError(
+        `llms.txt references a missing path: ${candidate} at line ${lineNumber(content, match.index)}`,
+      );
     }
   }
 }
@@ -555,8 +563,18 @@ console.log('Running AI context validation...');
 
 checkRequiredFiles();
 checkFrontmatter();
-checkStructuredMarkdown({ dir: '.agents/skills', kind: 'Skill', validation: SKILL_VALIDATION, isFileEntry: false });
-checkStructuredMarkdown({ dir: '.agents/evals', kind: 'Eval', validation: EVAL_VALIDATION, isFileEntry: true });
+checkStructuredMarkdown({
+  dir: '.agents/skills',
+  kind: 'Skill',
+  validation: SKILL_VALIDATION,
+  isFileEntry: false,
+});
+checkStructuredMarkdown({
+  dir: '.agents/evals',
+  kind: 'Eval',
+  validation: EVAL_VALIDATION,
+  isFileEntry: true,
+});
 checkEvalRuleMapping();
 checkAiDocSizes();
 checkEntrypointSizes();

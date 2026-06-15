@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { SearchIcon } from "lucide-react";
-import { Dialog as DialogPrimitive } from "radix-ui";
+import * as React from 'react';
+import { SearchIcon } from 'lucide-react';
+import { Dialog as DialogPrimitive } from 'radix-ui';
 
 export type CommandItem = {
   id: string;
@@ -26,24 +26,22 @@ function CommandPalette({
   open,
   onOpenChange,
   items,
-  placeholder = "Type a command or search...",
-  emptyMessage = "No results found.",
+  placeholder = 'Type a command or search...',
+  emptyMessage = 'No results found.',
 }: CommandPaletteProps) {
-  const [query, setQuery] = React.useState("");
+  const [query, setQuery] = React.useState('');
   const [activeIndex, setActiveIndex] = React.useState(0);
   const listRef = React.useRef<HTMLDivElement>(null);
 
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return items;
-    return items.filter((item) =>
-      `${item.label} ${item.keywords ?? ""}`.toLowerCase().includes(q),
-    );
+    return items.filter((item) => `${item.label} ${item.keywords ?? ''}`.toLowerCase().includes(q));
   }, [items, query]);
 
   function handleOpenChange(next: boolean) {
     if (!next) {
-      setQuery("");
+      setQuery('');
       setActiveIndex(0);
     }
     onOpenChange(next);
@@ -52,7 +50,7 @@ function CommandPalette({
   React.useEffect(() => {
     listRef.current
       ?.querySelector<HTMLElement>(`[data-index="${activeIndex}"]`)
-      ?.scrollIntoView({ block: "nearest" });
+      ?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex]);
 
   function select(index: number) {
@@ -63,13 +61,13 @@ function CommandPalette({
   }
 
   function onKeyDown(event: React.KeyboardEvent) {
-    if (event.key === "ArrowDown") {
+    if (event.key === 'ArrowDown') {
       event.preventDefault();
       setActiveIndex((i) => (filtered.length ? (i + 1) % filtered.length : 0));
-    } else if (event.key === "ArrowUp") {
+    } else if (event.key === 'ArrowUp') {
       event.preventDefault();
       setActiveIndex((i) => (filtered.length ? (i - 1 + filtered.length) % filtered.length : 0));
-    } else if (event.key === "Enter") {
+    } else if (event.key === 'Enter') {
       event.preventDefault();
       select(activeIndex);
     }
@@ -80,13 +78,13 @@ function CommandPalette({
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay
           data-slot="command-overlay"
-          style={{ zIndex: "var(--z-overlay)" }}
+          style={{ zIndex: 'var(--z-overlay)' }}
           className="fixed inset-0 overlay-scrim data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
         />
         <DialogPrimitive.Content
           data-slot="command-palette"
           onKeyDown={onKeyDown}
-          style={{ zIndex: "var(--z-command)" }}
+          style={{ zIndex: 'var(--z-command)' }}
           className="glass-panel fixed top-[20%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] gap-0 overflow-hidden rounded-xl p-0 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-xl"
         >
           <DialogPrimitive.Title className="sr-only">Command palette</DialogPrimitive.Title>

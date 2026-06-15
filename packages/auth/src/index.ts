@@ -1,8 +1,8 @@
-import "server-only";
+import 'server-only';
 
-import { cache } from "react";
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@pumni/supabase/server";
+import { cache } from 'react';
+import { redirect } from 'next/navigation';
+import { createSupabaseServerClient } from '@pumni/supabase/server';
 
 export const getCurrentUser = cache(async () => {
   const supabase = await createSupabaseServerClient();
@@ -23,7 +23,7 @@ export const verifySession = cache(async () => {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/sign-in");
+    redirect('/sign-in');
   }
 
   return {

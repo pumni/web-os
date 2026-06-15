@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Button, GlassSurface } from "@pumni/ui";
+import React from 'react';
+import { Button, GlassSurface } from '@pumni/ui';
 
 interface ReactionBarProps {
   onReact: (emoji: string) => void;
 }
 
-const EMOJIS = ["❤️", "😂", "😮", "👍", "🎉"];
+const EMOJIS = ['❤️', '😂', '😮', '👍', '🎉'];
 
 export function ReactionBar({ onReact }: ReactionBarProps) {
   return (

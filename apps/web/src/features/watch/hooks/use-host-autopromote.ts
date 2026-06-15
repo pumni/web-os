@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import type { Participant } from "../types";
-import { useClaimHost } from "./use-room-queue";
+import { useEffect } from 'react';
+import type { Participant } from '../types';
+import { useClaimHost } from './use-room-queue';
 
 const RETRY_MS = 5_000; // DB cổng staleness 30s là nguồn chân lý; cứ thử tới khi qua
 
@@ -33,9 +33,9 @@ export function useHostAutopromote(
     // Khi claim thành công → host_id đổi → isHost=true → effect cleanup dừng interval.
     attempt();
     const interval = setInterval(attempt, RETRY_MS);
-    return () => { 
-      stopped = true; 
-      clearInterval(interval); 
+    return () => {
+      stopped = true;
+      clearInterval(interval);
     };
   }, [isHost, hostPresent, iAmCandidate, claim]);
 }

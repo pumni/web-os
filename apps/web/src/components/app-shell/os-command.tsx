@@ -1,11 +1,19 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import type { Route } from "next";
-import { useRouter } from "next/navigation";
-import { ComponentIcon, LayoutDashboard, Palette, SearchIcon, Settings, User, Music } from "lucide-react";
+import * as React from 'react';
+import type { Route } from 'next';
+import { useRouter } from 'next/navigation';
+import {
+  ComponentIcon,
+  LayoutDashboard,
+  Palette,
+  SearchIcon,
+  Settings,
+  User,
+  Music,
+} from 'lucide-react';
 
-import { CommandPalette, type CommandItem, withViewTransition } from "@pumni/ui";
+import { CommandPalette, type CommandItem, withViewTransition } from '@pumni/ui';
 
 /**
  * Wires the command palette into the OS shell: a ⌘K / Ctrl+K hotkey plus a
@@ -17,57 +25,57 @@ export function OsCommand() {
 
   React.useEffect(() => {
     function onKey(event: KeyboardEvent) {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         setOpen((prev) => !prev);
       }
     }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   const items = React.useMemo<CommandItem[]>(
     () => [
       {
-        id: "dashboard",
-        label: "Dashboard",
+        id: 'dashboard',
+        label: 'Dashboard',
         icon: <LayoutDashboard />,
-        onSelect: () => withViewTransition(() => router.push("/dashboard")),
+        onSelect: () => withViewTransition(() => router.push('/dashboard')),
       },
       {
-        id: "sky-player",
-        label: "Sky Player",
-        keywords: "music song sheet play cotl instrument",
+        id: 'sky-player',
+        label: 'Sky Player',
+        keywords: 'music song sheet play cotl instrument',
         icon: <Music />,
-        onSelect: () => withViewTransition(() => router.push("/sky-player" as Route)),
+        onSelect: () => withViewTransition(() => router.push('/sky-player' as Route)),
       },
       {
-        id: "profile",
-        label: "Profile",
-        keywords: "settings account name",
+        id: 'profile',
+        label: 'Profile',
+        keywords: 'settings account name',
         icon: <User />,
-        onSelect: () => withViewTransition(() => router.push("/settings/profile")),
+        onSelect: () => withViewTransition(() => router.push('/settings/profile')),
       },
       {
-        id: "account",
-        label: "Account settings",
-        keywords: "email password security",
+        id: 'account',
+        label: 'Account settings',
+        keywords: 'email password security',
         icon: <Settings />,
-        onSelect: () => withViewTransition(() => router.push("/settings/account")),
+        onSelect: () => withViewTransition(() => router.push('/settings/account')),
       },
       {
-        id: "appearance",
-        label: "Appearance",
-        keywords: "theme dark light mode",
+        id: 'appearance',
+        label: 'Appearance',
+        keywords: 'theme dark light mode',
         icon: <Palette />,
-        onSelect: () => withViewTransition(() => router.push("/settings/appearance")),
+        onSelect: () => withViewTransition(() => router.push('/settings/appearance')),
       },
       {
-        id: "design-system",
-        label: "Design System",
-        keywords: "tokens components qa visual",
+        id: 'design-system',
+        label: 'Design System',
+        keywords: 'tokens components qa visual',
         icon: <ComponentIcon />,
-        onSelect: () => withViewTransition(() => router.push("/design-system" as Route)),
+        onSelect: () => withViewTransition(() => router.push('/design-system' as Route)),
       },
     ],
     [router],

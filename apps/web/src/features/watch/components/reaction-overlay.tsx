@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState, forwardRef, useImperativeHandle } from "react";
-import type { ReactionEvent } from "../types";
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import type { ReactionEvent } from '../types';
 
 export interface ReactionOverlayRef {
   pushReaction: (reaction: ReactionEvent) => void;
@@ -25,7 +25,7 @@ export const ReactionOverlay = forwardRef<ReactionOverlayRef, ReactionOverlayPro
       const id = reaction.id;
       const emoji = reaction.emoji;
       const left = Math.random() * 80 + 10; // Random horizontal position between 10% and 90%
-      
+
       setEmojis((prev) => [...prev, { id, emoji, left }]);
 
       // Auto-remove after 2.5 seconds (matches animation duration)
@@ -36,7 +36,7 @@ export const ReactionOverlay = forwardRef<ReactionOverlayRef, ReactionOverlayPro
   }));
 
   return (
-    <div 
+    <div
       className="reaction-overlay pointer-events-none absolute inset-0 z-20 overflow-hidden select-none"
       aria-hidden="true"
     >
@@ -53,4 +53,4 @@ export const ReactionOverlay = forwardRef<ReactionOverlayRef, ReactionOverlayPro
   );
 });
 
-ReactionOverlay.displayName = "ReactionOverlay";
+ReactionOverlay.displayName = 'ReactionOverlay';

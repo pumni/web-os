@@ -28,21 +28,22 @@ raw `shadow-lg/2xl` that bypass the design system.
   intentionally less often.
 
 **Scope of THIS pass:** (1) build the foundation in `packages/ui` + tokens + doc
-+ ESLint gate, then (2) migrate **only the `watch` feature** as the reference
-implementation. All other features are out of scope here (Section 7).
+
+- ESLint gate, then (2) migrate **only the `watch` feature** as the reference
+  implementation. All other features are out of scope here (Section 7).
 
 ## 1. Target surface vocabulary (the closed set)
 
 After this work, **every** surface must be one of these. There is no other way to
 make a surface.
 
-| Role | How to build it | Use for |
-| --- | --- | --- |
-| **Floating glass** | `GlassSurface variant="panel\|bar\|window\|titlebar"` (or the `glass-*` utility on a Radix overlay) | Only the floating layers listed above. Carries the a11y fallbacks. |
-| **Solid card** (raised content) | `<Card>` (new default `variant="solid"`) → `border bg-card shadow-sm rounded-xl` | Primary content surfaces: dashboard/settings cards, side panels, info cards. |
+| Role                             | How to build it                                                                                                                                   | Use for                                                                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Floating glass**               | `GlassSurface variant="panel\|bar\|window\|titlebar"` (or the `glass-*` utility on a Radix overlay)                                               | Only the floating layers listed above. Carries the a11y fallbacks.                                                                                       |
+| **Solid card** (raised content)  | `<Card>` (new default `variant="solid"`) → `border bg-card shadow-sm rounded-xl`                                                                  | Primary content surfaces: dashboard/settings cards, side panels, info cards.                                                                             |
 | **Inset well** (recessed nested) | `<Card variant="inset">` → `border border-border bg-muted rounded-xl` (no shadow); for non-Card `<div>` wells use `bg-muted border border-border` | Nested wells inside a card: stat tiles, list rows, scroll wells. Replaces every `bg-card/40 border-border/20`, `bg-muted/20 border`, `bg-background/25`. |
-| **Control fill** | `bg-muted` (rest) + `motion-safe:hover:bg-muted/80` (hover only) | Small inline controls: `TabsList`, chips, code pills. Hover may keep ONE opacity step (`/80`); rest state is opaque. |
-| **Status tint** | `bg-{destructive\|warning\|success\|primary}/10 border-{…}/20 text-{…}` | Inline status chips/banners. Standardized to **/10 fill + /20 border**, nothing else. |
+| **Control fill**                 | `bg-muted` (rest) + `motion-safe:hover:bg-muted/80` (hover only)                                                                                  | Small inline controls: `TabsList`, chips, code pills. Hover may keep ONE opacity step (`/80`); rest state is opaque.                                     |
+| **Status tint**                  | `bg-{destructive\|warning\|success\|primary}/10 border-{…}/20 text-{…}`                                                                           | Inline status chips/banners. Standardized to **/10 fill + /20 border**, nothing else.                                                                    |
 
 **Hard rules:**
 
@@ -70,24 +71,24 @@ File: `packages/ui/src/components/card.tsx`. Current `cardVariants` has
 `variant: glass | solid` defaulting to **glass**. Change to:
 
 ```tsx
-const cardVariants = cva("flex flex-col gap-6 rounded-xl py-6 text-card-foreground", {
+const cardVariants = cva('flex flex-col gap-6 rounded-xl py-6 text-card-foreground', {
   variants: {
     variant: {
       // Raised, crisp content surface — the new default.
-      solid: "border bg-card shadow-sm",
+      solid: 'border bg-card shadow-sm',
       // Recessed nested well (no shadow, lower contrast fill).
-      inset: "border border-border bg-muted",
+      inset: 'border border-border bg-muted',
       // Opt-in: floating translucent glass. Use ONLY when the card literally
       // floats over other content. Most content should NOT use this.
-      glass: "glass-panel",
+      glass: 'glass-panel',
     },
     interactive: {
-      true: "cursor-pointer transition-[transform,box-shadow] duration-[var(--duration-base)] ease-snappy motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)",
-      false: "",
+      true: 'cursor-pointer transition-[transform,box-shadow] duration-(--duration-base) ease-snappy motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)',
+      false: '',
     },
   },
   defaultVariants: {
-    variant: "solid",      // ← was "glass"
+    variant: 'solid', // ← was "glass"
     interactive: false,
   },
 });
@@ -112,6 +113,7 @@ const cardVariants = cva("flex flex-col gap-6 rounded-xl py-6 text-card-foregrou
 Several call sites pass `className="glass-panel"` / `className="glass-bar"`
 instead of using the `variant` prop. `GlassSurface` already defaults
 `variant="panel"`, so:
+
 - `<GlassSurface className="glass-panel …">` double-applies `glass-panel` (benign
   but wrong).
 - `<GlassSurface className="glass-bar …">` applies **both** `glass-panel` (from
@@ -132,6 +134,7 @@ now.)
 ### 2.4 Documentation — `docs/conventions/design-system.md`
 
 Update to match reality:
+
 - In "Surface Utilities and Overlay Roles" and the `card`/`popover` token row:
   change "Card defaults to translucent glass" → **"Card defaults to a solid raised
   surface; `variant="glass"` is opt-in for genuinely floating cards;
@@ -151,18 +154,18 @@ Add next to `restrictedRawColor`:
 ```js
 const AD_HOC_SURFACE_PATTERNS = [
   // Raw blur — blur must come from the glass-* utilities (a11y fallbacks live there).
-  "\\bbackdrop-blur(?:-(?:none|sm|md|lg|xl|2xl|3xl)|-\\[[^\\]]+\\])?\\b",
+  '\\bbackdrop-blur(?:-(?:none|sm|md|lg|xl|2xl|3xl)|-\\[[^\\]]+\\])?\\b',
   // Opacity on surface tokens — surfaces are opaque in the unified system.
-  "\\bbg-(?:card|background|popover)/\\d",
+  '\\bbg-(?:card|background|popover)/\\d',
   // Raw elevation shadows — content uses shadow-sm; floating depth is the glass utility.
-  "\\bshadow-(?:lg|xl|2xl)\\b",
+  '\\bshadow-(?:lg|xl|2xl)\\b',
 ];
 
 const AD_HOC_SURFACE_MESSAGE =
-  "Surface system is closed: no raw backdrop-blur (use GlassSurface/glass-* for floating layers), no bg-{card,background,popover}/NN opacity (surfaces are opaque — use Card solid/inset or bg-muted), no raw shadow-lg/xl/2xl (content=shadow-sm, floating=glass utility). See docs/conventions/design-system.md §Surface vocabulary.";
+  'Surface system is closed: no raw backdrop-blur (use GlassSurface/glass-* for floating layers), no bg-{card,background,popover}/NN opacity (surfaces are opaque — use Card solid/inset or bg-muted), no raw shadow-lg/xl/2xl (content=shadow-sm, floating=glass utility). See docs/conventions/design-system.md §Surface vocabulary.';
 
 export const restrictedAdHocSurface = [
-  "error",
+  'error',
   ...AD_HOC_SURFACE_PATTERNS.flatMap((pattern) => [
     { selector: `Literal[value=/${pattern}/]`, message: AD_HOC_SURFACE_MESSAGE },
     { selector: `TemplateElement[value.raw=/${pattern}/]`, message: AD_HOC_SURFACE_MESSAGE },
@@ -171,10 +174,10 @@ export const restrictedAdHocSurface = [
 
 export const pumniNoAdHocSurface = [
   {
-    name: "pumni/no-ad-hoc-surface",
-    files: ["src/**/*.{ts,tsx}"],
-    ignores: ["src/test/**", "**/*.test.{ts,tsx}"],
-    rules: { "no-restricted-syntax": restrictedAdHocSurface },
+    name: 'pumni/no-ad-hoc-surface',
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/test/**', '**/*.test.{ts,tsx}'],
+    rules: { 'no-restricted-syntax': restrictedAdHocSurface },
   },
 ];
 ```
@@ -199,21 +202,21 @@ export const pumniNoAdHocSurface = [
 Apply mechanically, but **classify the surface first** (floating vs content vs
 well vs control vs status) — the right replacement depends on role.
 
-| Found (ad-hoc) | Role | Replace with |
-| --- | --- | --- |
-| `bg-card/30..80` on a hand-rolled `<div>` surface | content/well | `<Card variant="inset">` or `bg-muted border border-border` |
-| `<Card className="bg-card/45 border-border/85">` | content card | `<Card>` (solid default), drop the className overrides |
-| `bg-background/NN` + `backdrop-blur-*` on chrome (topbar/bar) | floating | `GlassSurface variant="bar"` (or `glass-bar` on the element) |
-| `bg-background/NN` on a nested well/row | well | `bg-muted` (+ `border-border`) |
-| `bg-muted/10..50` as a panel/well fill | well | `bg-muted` |
-| `bg-muted/50..60` as a `TabsList`/control fill | control | `bg-muted` |
-| `bg-muted/60` hover | control hover | `motion-safe:hover:bg-muted/80` (keep ONE step) |
-| `border-border/10..85` | any | `border-border` |
-| `backdrop-blur-*` on a floating pill/banner | floating | `GlassSurface variant="panel" radius="full"` (pill) |
-| `backdrop-blur-*` on content | content | **remove** (content is solid) |
-| `shadow-lg` / `shadow-2xl` on content | content | `shadow-sm` |
-| `bg-{destructive,warning,success}/8..N` + `border-{…}/N` | status | `bg-{…}/10 border-{…}/20 text-{…}` |
-| `rounded-[Npx]` | any | nearest named `rounded-*` |
+| Found (ad-hoc)                                                | Role          | Replace with                                                 |
+| ------------------------------------------------------------- | ------------- | ------------------------------------------------------------ |
+| `bg-card/30..80` on a hand-rolled `<div>` surface             | content/well  | `<Card variant="inset">` or `bg-muted border border-border`  |
+| `<Card className="bg-card/45 border-border/85">`              | content card  | `<Card>` (solid default), drop the className overrides       |
+| `bg-background/NN` + `backdrop-blur-*` on chrome (topbar/bar) | floating      | `GlassSurface variant="bar"` (or `glass-bar` on the element) |
+| `bg-background/NN` on a nested well/row                       | well          | `bg-muted` (+ `border-border`)                               |
+| `bg-muted/10..50` as a panel/well fill                        | well          | `bg-muted`                                                   |
+| `bg-muted/50..60` as a `TabsList`/control fill                | control       | `bg-muted`                                                   |
+| `bg-muted/60` hover                                           | control hover | `motion-safe:hover:bg-muted/80` (keep ONE step)              |
+| `border-border/10..85`                                        | any           | `border-border`                                              |
+| `backdrop-blur-*` on a floating pill/banner                   | floating      | `GlassSurface variant="panel" radius="full"` (pill)          |
+| `backdrop-blur-*` on content                                  | content       | **remove** (content is solid)                                |
+| `shadow-lg` / `shadow-2xl` on content                         | content       | `shadow-sm`                                                  |
+| `bg-{destructive,warning,success}/8..N` + `border-{…}/N`      | status        | `bg-{…}/10 border-{…}/20 text-{…}`                           |
+| `rounded-[Npx]`                                               | any           | nearest named `rounded-*`                                    |
 
 ## 4. Watch feature migration (file-by-file)
 
@@ -221,6 +224,7 @@ Reference implementation. Classify each surface, then apply Section 3. Exact
 sites (verify line numbers, they drift):
 
 ### `features/watch/components/watch-room.tsx`
+
 - **Header bar** (~L274): currently `<GlassSurface className="glass-bar … border border-glass-border">`. **Floating chrome → keep glass.** Change to
   `<GlassSurface variant="bar" className="… rounded-xl">` and drop the redundant
   `glass-bar` + `border border-glass-border` (glass-bar sets its own border).
@@ -235,15 +239,16 @@ sites (verify line numbers, they drift):
 - **`TabsList`** (~L425): `bg-muted/50` → `bg-muted`.
 
 ### `features/watch/components/side-dock.tsx`
+
 - **Root `SideDock`** (~L58): currently `<GlassSurface className="glass-panel …">`.
   This is a **content side panel** (a layout column + the body of the mobile
   Sheet), not floating chrome. **Convert to solid:** replace with
   `<Card variant="solid" className="h-full flex flex-col rounded-xl overflow-hidden select-none p-0">`
   (Card default solid; note Card has `py-6` — override padding to `p-0` since this
   panel manages its own inner padding). Remove the `GlassSurface` import if now
-  unused. *(Judgment call: if the user prefers the dock to read as floating
+  unused. _(Judgment call: if the user prefers the dock to read as floating
   chrome, keep `GlassSurface variant="panel"` instead. Default decision = solid,
-  per the chosen direction. Flag this one in your PR description.)*
+  per the chosen direction. Flag this one in your PR description.)_
 - **`TabsList`** (~L61): `bg-background/30 border border-border/20` → `bg-muted border-border`.
 - **Participant count badge** (~L72): `bg-muted/60` → `bg-muted`.
 - **Participant row** (~L124): `rounded-lg border border-border/10 bg-background/25`
@@ -254,6 +259,7 @@ sites (verify line numbers, they drift):
   the canonical step).
 
 ### `features/watch/components/playlist-panel.tsx`
+
 - Header (~L235): `rounded-xl border border-border/20 bg-card/50` → `<Card variant="inset">` or `rounded-xl border border-border bg-muted`.
 - `TabsList` (~L243): `bg-muted/50 border border-border/20` → `bg-muted border-border`.
 - List item (~L358): `border-border/15 bg-card/40 hover:bg-card/80 hover:border-border/30`
@@ -261,10 +267,12 @@ sites (verify line numbers, they drift):
 - Badge (~L397): `bg-muted/60` → `bg-muted`.
 
 ### `features/watch/components/chat-panel.tsx`
+
 - Avatar ring (~L81): `border border-border/30` → `border-border`.
 - Divider borders (~L118, ~L135): `border-t border-border/15` → `border-t border-border`.
 
 ### `features/watch/components/reaction-bar.tsx`
+
 - Pill (~L14): `rounded-full border border-border/10 bg-background/25 backdrop-blur-md shadow-lg`.
   This pill **floats over the video → glass is allowed.** Replace with
   `<GlassSurface variant="panel" radius="full" className="flex items-center gap-1.5 px-3 py-1.5 select-none w-fit">`
@@ -273,23 +281,28 @@ sites (verify line numbers, they drift):
   (or `hover:bg-accent` for a brand-tinted hover).
 
 ### `features/watch/components/sync-player.tsx`
+
 - Video frame (~L69): `rounded-xl border border-border/20 shadow-2xl` →
   `rounded-xl border border-border shadow-sm`. (Stage emphasis comes from size,
   not a raw mega-shadow. If more lift is wanted, that is a token discussion — do
   not reintroduce `shadow-2xl`.)
 
 ### `features/watch/components/host-claim-banner.tsx`
+
 - Banner (~L15): `rounded-xl border border-warning/30 bg-warning/8 backdrop-blur-sm`
   → solid status surface (no blur): `rounded-xl border border-warning/20 bg-warning/10 text-warning`.
 
 ### `features/watch/components/participant-rail.tsx`
+
 - (~L43): `border-border/40` → `border-border`.
 
 ### `features/watch/components/watch-lobby.tsx`
+
 - `TabsList` (~L133): `bg-muted/50` → `bg-muted`. Also re-check its `<Card>` usages
   now render solid (desired).
 
 ### `features/watch/components/room-controls.tsx`, `sync-indicator.tsx`, `tap-to-play-overlay.tsx`
+
 - `room-controls` / `sync-indicator` glass usages overlay the video player →
   **floating → keep glass**, but switch any `className="glass-*"` to the
   `variant` prop and clean any `/NN` borders.

@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from 'react';
 import type {
   MediaPlayerInstance,
   MediaPlayEvent,
   MediaPauseEvent,
   MediaSeekedEvent,
-} from "@vidstack/react";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
-import type { PlaybackAnchor, Room } from "../types";
-import { calculateExpectedPosition } from "../sync-math";
+} from '@vidstack/react';
+import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
+import type { PlaybackAnchor, Room } from '../types';
+import { calculateExpectedPosition } from '../sync-math';
 
 export function useSyncController(
   playerRef: React.RefObject<MediaPlayerInstance | null>,
   room: Room,
   isHost: boolean,
   serverClock: () => number,
-  broadcastAnchor: (anchor: PlaybackAnchor) => void
+  broadcastAnchor: (anchor: PlaybackAnchor) => void,
 ) {
-  const [syncStatus, setSyncStatus] = useState<"host" | "in-sync" | "catching-up">(
-    isHost ? "host" : "in-sync"
+  const [syncStatus, setSyncStatus] = useState<'host' | 'in-sync' | 'catching-up'>(
+    isHost ? 'host' : 'in-sync',
   );
-  
+
   // Follower sync lock states (client-side only)
   const [isFollowingHost, setIsFollowingHost] = useState<boolean>(true);
   const isFollowingHostRef = useRef<boolean>(true);
@@ -30,7 +30,7 @@ export function useSyncController(
   if (isHost !== prevIsHost) {
     setPrevIsHost(isHost);
     setIsFollowingHost(true);
-    setSyncStatus(isHost ? "host" : "in-sync");
+    setSyncStatus(isHost ? 'host' : 'in-sync');
   }
 
   useEffect(() => {
@@ -46,7 +46,6 @@ export function useSyncController(
     anchorServerTs: new Date(room.anchor_server_ts).getTime(),
     playbackRate: room.playback_rate,
   });
-
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -72,7 +71,7 @@ export function useSyncController(
     if (!isHost) return;
     const supabase = createSupabaseBrowserClient();
     supabase
-      .from("watch_rooms")
+      .from('watch_rooms')
       .update({
         is_playing: anchor.isPlaying,
         anchor_position: anchor.anchorPosition,
@@ -81,10 +80,10 @@ export function useSyncController(
         last_active_at: new Date().toISOString(), // Keep-alive heartbeat update on state change
         updated_at: new Date().toISOString(),
       })
-      .eq("id", room.id)
+      .eq('id', room.id)
       .then(({ error }) => {
         if (error) {
-          console.error("Failed to update watch room database anchor", error);
+          console.error('Failed to update watch room database anchor', error);
         }
       });
   };
@@ -102,8 +101,8 @@ export function useSyncController(
       if (timerRef.current) clearTimeout(timerRef.current);
       persistAnchorRef.current(anchorRef.current);
     };
-    window.addEventListener("pagehide", flush);
-    return () => window.removeEventListener("pagehide", flush);
+    window.addEventListener('pagehide', flush);
+    return () => window.removeEventListener('pagehide', flush);
   }, [isHost]);
 
   // Debounced database updates to avoid overloading the DB
@@ -184,7 +183,7 @@ export function useSyncController(
     const drift = expected - current;
     const absDrift = Math.abs(drift);
 
-    const isYouTube = room.source_type === "youtube";
+    const isYouTube = room.source_type === 'youtube';
     const DEADBAND = isYouTube ? 1.0 : 0.3;
     const HARD_SEEK = isYouTube ? 2.0 : 1.5;
     const NUDGE = isYouTube ? 0.07 : 0.05;
@@ -193,12 +192,12 @@ export function useSyncController(
       if (player.playbackRate !== anchor.playbackRate) {
         player.playbackRate = anchor.playbackRate;
       }
-      setSyncStatus("in-sync");
+      setSyncStatus('in-sync');
     } else if (absDrift < HARD_SEEK) {
       // Smoothly nudge the speed to catch up or wait
       const adjustedRate = anchor.playbackRate + Math.sign(drift) * NUDGE;
       player.playbackRate = Math.max(0.5, Math.min(2.0, adjustedRate));
-      setSyncStatus("catching-up");
+      setSyncStatus('catching-up');
     } else {
       // Hard jump to the expected position
       if (Math.abs(player.currentTime - expected) > 0.01) {
@@ -206,7 +205,7 @@ export function useSyncController(
         player.currentTime = expected;
       }
       player.playbackRate = anchor.playbackRate;
-      setSyncStatus("catching-up");
+      setSyncStatus('catching-up');
     }
   };
 
@@ -221,7 +220,7 @@ export function useSyncController(
     // Follower broke sync
     isFollowingHostRef.current = false;
     setIsFollowingHost(false);
-    setSyncStatus("catching-up");
+    setSyncStatus('catching-up');
   };
 
   // Command to catch up with host immediately

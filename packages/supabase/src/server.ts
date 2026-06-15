@@ -1,9 +1,9 @@
-import "server-only";
+import 'server-only';
 
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
-import { clientEnv } from "@pumni/env/client";
-import type { Database } from "./types";
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { clientEnv } from '@pumni/env/client';
+import type { Database } from './types';
 
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();

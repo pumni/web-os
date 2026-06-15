@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Button } from "@pumni/ui";
-import { Crown, AlertTriangle } from "lucide-react";
-import { toast } from "sonner";
-import { useClaimHost } from "../hooks/use-room-queue";
+import { Button } from '@pumni/ui';
+import { Crown, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
+import { useClaimHost } from '../hooks/use-room-queue';
 
 interface HostClaimBannerProps {
   roomId: string;
@@ -23,8 +23,8 @@ export function HostClaimBanner({ roomId }: HostClaimBannerProps) {
         disabled={claim.isPending}
         onClick={() =>
           claim.mutate(undefined, {
-            onSuccess: () => toast.success("Bạn đã trở thành chủ phòng!"),
-            onError: (err) => toast.error(err.message || "Nhận quyền thất bại."),
+            onSuccess: () => toast.success('Bạn đã trở thành chủ phòng!'),
+            onError: (err) => toast.error(err.message || 'Nhận quyền thất bại.'),
           })
         }
         className="h-7 border border-warning/20 px-3 text-xs font-semibold text-warning motion-safe:hover:bg-warning/15 shrink-0"

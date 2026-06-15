@@ -1,9 +1,9 @@
-"use server";
+'use server';
 
-import { updateTag } from "next/cache";
-import { requireUser } from "@pumni/auth";
-import { createSupabaseServerClient } from "@pumni/supabase/server";
-import { profileSchema, type ProfileInput } from "@pumni/validators";
+import { updateTag } from 'next/cache';
+import { requireUser } from '@pumni/auth';
+import { createSupabaseServerClient } from '@pumni/supabase/server';
+import { profileSchema, type ProfileInput } from '@pumni/validators';
 
 export type UpdateProfileResult = { ok: true } | { ok: false; message: string };
 
@@ -14,21 +14,21 @@ export async function updateProfile(input: ProfileInput): Promise<UpdateProfileR
   if (!parsed.success) {
     return {
       ok: false,
-      message: "Invalid profile data.",
+      message: 'Invalid profile data.',
     };
   }
 
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase
-    .from("profiles")
+    .from('profiles')
     .update({
       username: parsed.data.username || null,
       full_name: parsed.data.fullName || null,
       avatar_url: parsed.data.avatarUrl || null,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", user.id);
+    .eq('id', user.id);
 
   if (error) {
     return {
@@ -46,7 +46,7 @@ export async function updateProfile(input: ProfileInput): Promise<UpdateProfileR
   });
 
   if (authError) {
-    console.error("Failed to sync user metadata to auth:", authError.message);
+    console.error('Failed to sync user metadata to auth:', authError.message);
   }
 
   updateTag(`profile:${user.id}`);

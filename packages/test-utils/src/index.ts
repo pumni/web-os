@@ -7,6 +7,6 @@
  */
 
 /** Generate a stable-ish unique id for use in test fixtures. */
-export function createTestId(prefix = "test"): string {
+export function createTestId(prefix = 'test'): string {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
 }

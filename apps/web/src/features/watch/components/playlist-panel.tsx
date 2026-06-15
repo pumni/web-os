@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { Button, Input, Tabs, TabsList, TabsTrigger, cn } from "@pumni/ui";
-import { Plus, Trash2, ChevronUp, ChevronDown, Play, Music, GripVertical } from "lucide-react";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { Button, Input, Tabs, TabsList, TabsTrigger, cn } from '@pumni/ui';
+import { Plus, Trash2, ChevronUp, ChevronDown, Play, Music, GripVertical } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   useAddQueueItem,
   useRemoveQueueItem,
   useReorderQueue,
   useAdvanceQueue,
-} from "../hooks/use-room-queue";
-import type { QueueItem, QueueBroadcastEvent } from "../types";
+} from '../hooks/use-room-queue';
+import type { QueueItem, QueueBroadcastEvent } from '../types';
 
 // dnd-kit imports
 import {
@@ -21,14 +21,14 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface PlaylistPanelProps {
   roomId: string;
@@ -46,9 +46,9 @@ export function PlaylistPanel({
   broadcastQueueEvent,
 }: PlaylistPanelProps) {
   // Add item form state
-  const [sourceType, setSourceType] = useState<"youtube" | "url">("youtube");
-  const [sourceRef, setSourceRef] = useState("");
-  const [title, setTitle] = useState("");
+  const [sourceType, setSourceType] = useState<'youtube' | 'url'>('youtube');
+  const [sourceRef, setSourceRef] = useState('');
+  const [title, setTitle] = useState('');
 
   // Mutation hooks
   const addMutation = useAddQueueItem(roomId);
@@ -65,7 +65,7 @@ export function PlaylistPanel({
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
     if (!sourceRef.trim()) {
-      toast.error("Vui lòng nhập link hoặc ID video.");
+      toast.error('Vui lòng nhập link hoặc ID video.');
       return;
     }
 
@@ -80,13 +80,13 @@ export function PlaylistPanel({
       },
       {
         onSuccess: () => {
-          toast.success("Đã thêm vào hàng chờ!");
-          setSourceRef("");
-          setTitle("");
-          broadcastQueueEvent({ action: "add", title: currentTitle || currentSourceRef });
+          toast.success('Đã thêm vào hàng chờ!');
+          setSourceRef('');
+          setTitle('');
+          broadcastQueueEvent({ action: 'add', title: currentTitle || currentSourceRef });
         },
         onError: (err) => {
-          toast.error(err.message || "Thêm thất bại.");
+          toast.error(err.message || 'Thêm thất bại.');
         },
       },
     );
@@ -96,11 +96,11 @@ export function PlaylistPanel({
     const removed = items.find((i) => i.id === itemId);
     removeMutation.mutate(itemId, {
       onSuccess: () => {
-        toast.success("Đã xóa khỏi hàng chờ!");
-        broadcastQueueEvent({ action: "remove", title: removed?.title ?? removed?.source_ref });
+        toast.success('Đã xóa khỏi hàng chờ!');
+        broadcastQueueEvent({ action: 'remove', title: removed?.title ?? removed?.source_ref });
       },
       onError: (err) => {
-        toast.error(err.message || "Xóa thất bại.");
+        toast.error(err.message || 'Xóa thất bại.');
       },
     });
   };
@@ -123,14 +123,14 @@ export function PlaylistPanel({
       },
       {
         onSuccess: () => {
-          toast.success("Đã sắp xếp lại hàng chờ");
+          toast.success('Đã sắp xếp lại hàng chờ');
           broadcastQueueEvent({
-            action: "reorder",
+            action: 'reorder',
             title: targetItem.title ?? targetItem.source_ref,
           });
         },
         onError: (err) => {
-          toast.error(err.message || "Sắp xếp thất bại.");
+          toast.error(err.message || 'Sắp xếp thất bại.');
         },
       },
     );
@@ -154,14 +154,14 @@ export function PlaylistPanel({
       },
       {
         onSuccess: () => {
-          toast.success("Đã sắp xếp lại hàng chờ");
+          toast.success('Đã sắp xếp lại hàng chờ');
           broadcastQueueEvent({
-            action: "reorder",
+            action: 'reorder',
             title: targetItem.title ?? targetItem.source_ref,
           });
         },
         onError: (err) => {
-          toast.error(err.message || "Sắp xếp thất bại.");
+          toast.error(err.message || 'Sắp xếp thất bại.');
         },
       },
     );
@@ -170,11 +170,11 @@ export function PlaylistPanel({
   const handleAdvance = () => {
     advanceMutation.mutate(undefined, {
       onSuccess: () => {
-        toast.success("Đã chuyển sang video tiếp theo!");
-        broadcastQueueEvent({ action: "advance" });
+        toast.success('Đã chuyển sang video tiếp theo!');
+        broadcastQueueEvent({ action: 'advance' });
       },
       onError: (err) => {
-        toast.error(err.message || "Chuyển video thất bại.");
+        toast.error(err.message || 'Chuyển video thất bại.');
       },
     });
   };
@@ -212,11 +212,11 @@ export function PlaylistPanel({
       },
       {
         onSuccess: () => {
-          toast.success("Đã sắp xếp lại hàng chờ");
-          broadcastQueueEvent({ action: "reorder", title: undefined });
+          toast.success('Đã sắp xếp lại hàng chờ');
+          broadcastQueueEvent({ action: 'reorder', title: undefined });
         },
         onError: (err) => {
-          toast.error(err.message || "Sắp xếp thất bại.");
+          toast.error(err.message || 'Sắp xếp thất bại.');
         },
       },
     );
@@ -248,7 +248,7 @@ export function PlaylistPanel({
       >
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-foreground">Thêm video</span>
-          <Tabs value={sourceType} onValueChange={(val) => setSourceType(val as "youtube" | "url")}>
+          <Tabs value={sourceType} onValueChange={(val) => setSourceType(val as 'youtube' | 'url')}>
             <TabsList className="h-6 p-0.5 bg-muted border border-border rounded-md gap-0.5">
               <TabsTrigger value="youtube" className="text-xs h-5 px-2 py-0">
                 YT
@@ -261,7 +261,7 @@ export function PlaylistPanel({
         </div>
 
         <Input
-          placeholder={sourceType === "youtube" ? "Link hoặc ID YouTube" : "Link video MP4 / HLS"}
+          placeholder={sourceType === 'youtube' ? 'Link hoặc ID YouTube' : 'Link video MP4 / HLS'}
           value={sourceRef}
           onChange={(e) => setSourceRef(e.target.value)}
           disabled={isPending}
@@ -356,18 +356,18 @@ function SortableItem({
   };
 
   const isCurrent = item.id === currentQueueItemId;
-  const isYoutube = item.source_type === "youtube";
+  const isYoutube = item.source_type === 'youtube';
 
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group flex items-center gap-2 px-2 py-1.5 rounded-md border text-xs transition-all duration-(--duration-fast) ease-snappy",
+        'group flex items-center gap-2 px-2 py-1.5 rounded-md border text-xs transition-all duration-(--duration-fast) ease-snappy',
         isCurrent
-          ? "border-primary/20 bg-primary/10 text-primary"
-          : "border-border bg-muted text-foreground motion-safe:hover:bg-muted/80",
-        isDragging && "opacity-60 shadow-sm scale-[1.02] border-primary/20",
+          ? 'border-primary/20 bg-primary/10 text-primary'
+          : 'border-border bg-muted text-foreground motion-safe:hover:bg-muted/80',
+        isDragging && 'opacity-60 shadow-sm scale-[1.02] border-primary/20',
       )}
     >
       {/* Index / Playing indicator */}
@@ -399,28 +399,28 @@ function SortableItem({
       <div className="flex flex-col gap-0.5 min-w-0 flex-1 select-none">
         <span
           className={cn(
-            "truncate font-medium text-left leading-tight",
-            isCurrent ? "text-primary" : "text-foreground",
+            'truncate font-medium text-left leading-tight',
+            isCurrent ? 'text-primary' : 'text-foreground',
           )}
         >
           {item.title || item.source_ref}
         </span>
         <span
           className={cn(
-            "inline-flex w-fit items-center px-1 py-px rounded text-[10px] font-medium leading-none",
-            isYoutube ? "bg-destructive/10 text-destructive/80" : "bg-muted text-muted-foreground",
+            'inline-flex w-fit items-center px-1 py-px rounded text-[10px] font-medium leading-none',
+            isYoutube ? 'bg-destructive/10 text-destructive/80' : 'bg-muted text-muted-foreground',
           )}
         >
-          {isYoutube ? "YouTube" : "URL"}
+          {isYoutube ? 'YouTube' : 'URL'}
         </span>
       </div>
 
       {/* Action buttons — visible only on hover (or always on current) */}
       <div
         className={cn(
-          "flex items-center gap-0.5 transition-opacity duration-(--duration-fast)",
-          "opacity-0 group-hover:opacity-100",
-          isCurrent && "opacity-100",
+          'flex items-center gap-0.5 transition-opacity duration-(--duration-fast)',
+          'opacity-0 group-hover:opacity-100',
+          isCurrent && 'opacity-100',
         )}
       >
         <Button

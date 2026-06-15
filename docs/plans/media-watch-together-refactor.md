@@ -45,25 +45,25 @@
 
 **Tính năng Cinema hiện tại gồm:**
 
-| Loại | Đường dẫn |
-| --- | --- |
-| Feature module | `apps/web/src/features/media/` (queries, actions, types, index, `components/*`) |
-| Route thư viện | `apps/web/src/app/(app)/media/page.tsx` |
-| Route chi tiết | `apps/web/src/app/(app)/media/[itemId]/page.tsx` |
-| Route xem (immersive) | `apps/web/src/app/(watch)/media/[itemId]/watch/page.tsx` |
-| Layout immersive | `apps/web/src/app/(watch)/layout.tsx` |
-| Image proxy | `apps/web/src/app/api/media/image/[itemId]/route.ts` |
-| Package server | `packages/jellyfin/` (toàn bộ) |
-| Validators | `packages/validators/src/media.ts` (+ export trong `index.ts`) |
-| Env (server) | `packages/env/src/server-schema.ts`, `server.ts` (4 biến `JELLYFIN_*`) |
-| Env (client) | `packages/env/src/client-schema.ts`, `client.ts` (`NEXT_PUBLIC_JELLYFIN_URL`) |
-| Turbo env allowlist | `turbo.json` → `globalEnv` (5 biến jellyfin) |
-| Next image config | `apps/web/next.config.ts` → `images.localPatterns` (`/api/media/image/**`) |
-| Nav | `apps/web/src/components/app-shell/nav-items.ts` (mục `/media` "Cinema") |
-| DB | `supabase/migrations/005_media_preferences.sql` → bảng `media_watch_history`, `media_favorites` |
-| DB types | `packages/supabase/src/types.ts` (2 bảng trên — **file generated**) |
-| Deps | `apps/web/package.json` → `@pumni/jellyfin` (xoá), `@vidstack/react` (**GIỮ**) |
-| `.env` | `apps/web/.env.example`, `.env.local` → các biến `JELLYFIN_*` |
+| Loại                  | Đường dẫn                                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| Feature module        | `apps/web/src/features/media/` (queries, actions, types, index, `components/*`)                 |
+| Route thư viện        | `apps/web/src/app/(app)/media/page.tsx`                                                         |
+| Route chi tiết        | `apps/web/src/app/(app)/media/[itemId]/page.tsx`                                                |
+| Route xem (immersive) | `apps/web/src/app/(watch)/media/[itemId]/watch/page.tsx`                                        |
+| Layout immersive      | `apps/web/src/app/(watch)/layout.tsx`                                                           |
+| Image proxy           | `apps/web/src/app/api/media/image/[itemId]/route.ts`                                            |
+| Package server        | `packages/jellyfin/` (toàn bộ)                                                                  |
+| Validators            | `packages/validators/src/media.ts` (+ export trong `index.ts`)                                  |
+| Env (server)          | `packages/env/src/server-schema.ts`, `server.ts` (4 biến `JELLYFIN_*`)                          |
+| Env (client)          | `packages/env/src/client-schema.ts`, `client.ts` (`NEXT_PUBLIC_JELLYFIN_URL`)                   |
+| Turbo env allowlist   | `turbo.json` → `globalEnv` (5 biến jellyfin)                                                    |
+| Next image config     | `apps/web/next.config.ts` → `images.localPatterns` (`/api/media/image/**`)                      |
+| Nav                   | `apps/web/src/components/app-shell/nav-items.ts` (mục `/media` "Cinema")                        |
+| DB                    | `supabase/migrations/005_media_preferences.sql` → bảng `media_watch_history`, `media_favorites` |
+| DB types              | `packages/supabase/src/types.ts` (2 bảng trên — **file generated**)                             |
+| Deps                  | `apps/web/package.json` → `@pumni/jellyfin` (xoá), `@vidstack/react` (**GIỮ**)                  |
+| `.env`                | `apps/web/.env.example`, `.env.local` → các biến `JELLYFIN_*`                                   |
 
 **Hạ tầng tái dùng (GIỮ):**
 
@@ -237,7 +237,7 @@ grant select, insert, update, delete on table public.watch_rooms to service_role
 **Bật Realtime cho bảng** (Supabase): đảm bảo `watch_rooms` nằm trong publication
 `supabase_realtime` (Studio → Database → Replication, hoặc
 `alter publication supabase_realtime add table public.watch_rooms;` trong migration).
-*Lưu ý:* v1 dùng **broadcast** là chính (không bắt buộc postgres‑changes), nhưng bật
+_Lưu ý:_ v1 dùng **broadcast** là chính (không bắt buộc postgres‑changes), nhưng bật
 sẵn để late‑join refetch hoạt động mượt nếu cần.
 
 **Acceptance Phase 1:** typecheck xanh; `Database["public"]["Tables"]["watch_rooms"]` tồn tại.
@@ -249,9 +249,9 @@ sẵn để late‑join refetch hoạt động mượt nếu cần.
 ### 6.1 `packages/validators/src/watch.ts`
 
 ```ts
-import { z } from "zod";
+import { z } from 'zod';
 
-export const sourceTypeSchema = z.enum(["youtube", "url"]);
+export const sourceTypeSchema = z.enum(['youtube', 'url']);
 
 // YouTube: 11-char id. URL: http(s) only.
 export const createRoomSchema = z.object({
@@ -278,7 +278,7 @@ Thêm `export * from "./watch";` vào `packages/validators/src/index.ts`.
 
 ```ts
 // Server clock source for drift-free anchor math. No auth needed (no secrets).
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export function GET() {
   return Response.json({ now: Date.now() });
@@ -355,11 +355,11 @@ reconcile() {
 
 **Hằng số dung sai (theo loại nguồn — YouTube thô hơn):**
 
-| | `url` (video/HLS) | `youtube` |
-| --- | --- | --- |
-| `DEADBAND` | 0.3s | 1.0s |
-| `HARD_SEEK` | 1.5s | 2.0s |
-| `NUDGE` | 0.05 | 0.07 |
+|             | `url` (video/HLS) | `youtube` |
+| ----------- | ----------------- | --------- |
+| `DEADBAND`  | 0.3s              | 1.0s      |
+| `HARD_SEEK` | 1.5s              | 2.0s      |
+| `NUDGE`     | 0.05              | 0.07      |
 
 **Quy tắc chống vòng lặp:**
 
@@ -375,10 +375,12 @@ reconcile() {
 Tất cả `"use client"`. Dùng `createSupabaseBrowserClient()` từ `@pumni/supabase/browser`.
 
 ### 8.1 `use-server-clock.ts`
+
 - Hook trả `serverClock()` + `clockOffset`. Đo offset 1 lần khi mount (gọi `/api/time`),
   có thể đo 3 lần lấy trung vị để giảm nhiễu. Trả `ready: boolean`.
 
 ### 8.2 `use-room-channel.ts`
+
 - Tham số: `roomId`, `userId`, `isHost`, handler `onAnchor(anchor)`.
 - Tạo channel `room:{roomId}` qua supabase browser client.
 - **broadcast**: `.on('broadcast', { event: 'playback' }, ({ payload }) => onAnchor(payload))`.
@@ -388,6 +390,7 @@ Tất cả `"use client"`. Dùng `createSupabaseBrowserClient()` từ `@pumni/su
 - Throttle presence; không spam.
 
 ### 8.3 `use-sync-controller.ts`
+
 - Tham số: `player` (Vidstack instance/ref), `room`, `isHost`, `serverClock`, `broadcastAnchor`.
 - Giữ `anchorRef` (cập nhật từ broadcast `onAnchor` và, với host, từ chính event player).
 - Host: gắn listener Vidstack (`play`, `pause`, `seeked`, `rate-change`, `source-change`)
@@ -411,15 +414,18 @@ Tất cả `"use client"`. Dùng `createSupabaseBrowserClient()` từ `@pumni/su
 ## 9. PHASE 4 — Server reads + actions (`queries.ts`, `actions.ts`)
 
 ### 9.1 `queries.ts` (server)
+
 ```ts
-import { requireUser } from "@pumni/auth";
-import { createSupabaseServerClient } from "@pumni/supabase/server";
+import { requireUser } from '@pumni/auth';
+import { createSupabaseServerClient } from '@pumni/supabase/server';
 // getRoom(roomId): đọc 1 row watch_rooms cho initial render (Server Component).
 // KHÔNG "use cache" — dữ liệu phòng là live.
 ```
+
 - `getRoom(roomId)` → trả row (hoặc null). Auth bằng `requireUser()`.
 
 ### 9.2 `actions.ts` (`"use server"`)
+
 - `createRoom(input: CreateRoomInput)`:
   - `requireUser()`; `createRoomSchema.safeParse`.
   - **Sanitize**: nếu `youtube` → trích 11‑ký‑tự video id; nếu `url` → enforce `http(s)`.
@@ -443,6 +449,7 @@ import { createSupabaseServerClient } from "@pumni/supabase/server";
 > `pumniNoRawColor` sẽ chặn. Tham chiếu `docs/conventions/design-system.md`.
 
 ### 10.1 `sync-player.tsx` — wrapper Vidstack
+
 - Dùng `@vidstack/react`. Nguồn:
   - `youtube` → source `https://www.youtube.com/watch?v=<id>` (Vidstack có provider YouTube).
   - `url` → source URL trực tiếp (mp4/HLS qua hls.js bundled).
@@ -452,26 +459,31 @@ import { createSupabaseServerClient } from "@pumni/supabase/server";
 - Vidstack quản playback state — **KHÔNG** mirror vào Zustand (đúng convention cũ của media).
 
 ### 10.2 `room-controls.tsx` — thanh điều khiển host
+
 - Floating bar dùng **`.glass-bar`** (role topbar/dock) — đây là floating layer hợp lệ cho glass.
 - Nút play/pause/seek bằng `Button` từ `@pumni/ui` (có press depress sẵn).
 - Host thấy full control; follower thấy control **disabled** + nhãn "Host đang điều khiển".
 - Icon `lucide-react`. Màu trạng thái: `success`/`warning` semantic tokens.
 
 ### 10.3 `participant-rail.tsx` — presence
+
 - `Avatar` từ `@pumni/ui`. Badge "Host" cho host.
 - Entrance bằng motion recipe `staggerContainer` + `staggerItem` (gate `useReducedMotion()`).
 
 ### 10.4 `sync-indicator.tsx`
+
 - 3 trạng thái: `host` (primary), `in-sync` (success), `catching-up` (warning).
 - Chip nhỏ `rounded-sm`, text `text-xs`, token semantic.
 
 ### 10.5 `watch-lobby.tsx` — tạo/tham gia
+
 - `Card` (glass mặc định) chứa `Form` + `Input` + `Button`.
 - Hai hành động: "Tạo phòng" (chọn `sourceType` qua `Select`/`Tabs`, nhập `sourceRef`),
   "Tham gia" (nhập join code). Gọi Server Actions §9.
 - Loading: `Skeleton`. Lỗi: toast qua `Toaster`.
 
 ### 10.6 `watch-room.tsx` — orchestrator
+
 - `"use client"`. Nhận `room` (initial từ Server Component) + `userId`.
 - `isHost = room.host_id === userId`.
 - Ráp: `use-server-clock` → `use-room-channel` → `use-sync-controller` → render
@@ -479,6 +491,7 @@ import { createSupabaseServerClient } from "@pumni/supabase/server";
 - z‑index: player ở base; control bar floating dùng named z‑token nếu chồng layer khác.
 
 ### 10.7 Routes
+
 - `apps/web/src/app/(app)/watch/page.tsx` — Server Component, render `<WatchLobby/>` (có shell).
 - `apps/web/src/app/(watch)/watch/[roomId]/page.tsx` — immersive:
   - **Đọc `apps/web/src/app/(watch)/layout.tsx`** trước; tái dùng/điều chỉnh cho phòng
@@ -511,6 +524,7 @@ bun run build
 5. Lặp lại với nguồn `url` (mp4/HLS) → dung sai chặt hơn.
 
 **Test tự động tối thiểu (thuần, không cần mạng thật):**
+
 - Unit cho toán anchor `expected = f(anchor, serverClock)` và bậc drift (deadband/nudge/hard‑seek).
 - Unit cho sanitize URL/YouTube id trong actions.
 - Validator schema tests cho `createRoomSchema` / `setSourceSchema`.
@@ -542,15 +556,15 @@ bun run build
 
 ## 14. Thứ tự thực thi & cổng nghiệm thu
 
-| Phase | Nội dung | Cổng (phải xanh trước khi sang phase sau) |
-| --- | --- | --- |
-| 0 | Dọn Cinema | `typecheck` + `lint` + `build` + grep sạch jellyfin |
-| 1 | DB `watch_rooms` + drop legacy | types có `watch_rooms`; `typecheck` |
-| 2 | Validators + `/api/time` | `typecheck`; route trả `{now}` |
-| 3 | Realtime hooks | `typecheck`; không vỡ server/client boundary |
-| 4 | queries + actions | `typecheck`; input đều validate |
-| 5 | UI + routes | `lint` (màu) + `typecheck`; 2 route render |
-| 6 | Nghiệm thu | toàn bộ gate §11 xanh + smoke test 2 client |
+| Phase | Nội dung                       | Cổng (phải xanh trước khi sang phase sau)           |
+| ----- | ------------------------------ | --------------------------------------------------- |
+| 0     | Dọn Cinema                     | `typecheck` + `lint` + `build` + grep sạch jellyfin |
+| 1     | DB `watch_rooms` + drop legacy | types có `watch_rooms`; `typecheck`                 |
+| 2     | Validators + `/api/time`       | `typecheck`; route trả `{now}`                      |
+| 3     | Realtime hooks                 | `typecheck`; không vỡ server/client boundary        |
+| 4     | queries + actions              | `typecheck`; input đều validate                     |
+| 5     | UI + routes                    | `lint` (màu) + `typecheck`; 2 route render          |
+| 6     | Nghiệm thu                     | toàn bộ gate §11 xanh + smoke test 2 client         |
 
 > **Mỗi phase là một commit độc lập, build được.** Không gộp Phase 0 với phần sau —
 > dọn dẹp phải tự đứng vững để dễ revert nếu cần.

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Check, Palette } from "lucide-react";
-import { usePersonalization, type Accent } from "@pumni/ui";
+import * as React from 'react';
+import { Check, Palette } from 'lucide-react';
+import { usePersonalization, type Accent } from '@pumni/ui';
 
 const ACCENT_OPTIONS: { name: Accent; label: string }[] = [
-  { name: "cyan", label: "Cyan" },
-  { name: "indigo", label: "Indigo" },
-  { name: "violet", label: "Violet" },
-  { name: "rose", label: "Rose" },
+  { name: 'cyan', label: 'Cyan' },
+  { name: 'indigo', label: 'Indigo' },
+  { name: 'violet', label: 'Violet' },
+  { name: 'rose', label: 'Rose' },
 ];
 
 export function DashboardAccentCard() {

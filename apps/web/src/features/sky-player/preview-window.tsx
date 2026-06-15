@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Play, Pause, RefreshCw, Volume2, VolumeX } from "lucide-react";
+import * as React from 'react';
+import { Play, Pause, RefreshCw, Volume2, VolumeX } from 'lucide-react';
 
-import { Window, Button, motion, useReducedMotion, cn } from "@pumni/ui";
+import { Window, Button, motion, useReducedMotion, cn } from '@pumni/ui';
 
 // Define note activation patterns for 8 beats in a loop
 const BEAT_PATTERNS: Record<number, number[]> = {
@@ -45,7 +45,7 @@ export function PreviewWindow({ className }: { className?: string }) {
 
   // Helper function to synthesize sound chimes
   const playSound = React.useCallback((index: number, volumeFactor = 1) => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
     try {
       if (!audioContextRef.current) {
         const AudioContextClass =
@@ -55,14 +55,14 @@ export function PreviewWindow({ className }: { className?: string }) {
       }
 
       const ctx = audioContextRef.current;
-      if (ctx.state === "suspended") {
+      if (ctx.state === 'suspended') {
         ctx.resume();
       }
 
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      osc.type = "sine";
+      osc.type = 'sine';
       osc.frequency.setValueAtTime(
         NOTE_FREQS[index % NOTE_FREQS.length] ?? 261.63,
         ctx.currentTime,
@@ -79,7 +79,7 @@ export function PreviewWindow({ className }: { className?: string }) {
       osc.start();
       osc.stop(ctx.currentTime + 0.4);
     } catch (err) {
-      console.warn("Could not play note audio:", err);
+      console.warn('Could not play note audio:', err);
     }
   }, []);
 
@@ -113,7 +113,7 @@ export function PreviewWindow({ className }: { className?: string }) {
     <Window
       title="Sky Player - Playback Preview"
       className={cn(
-        "w-full max-w-md shadow-2xl transition-all duration(--duration-base) hover:[box-shadow:var(--shadow-glass-glow)]",
+        'w-full max-w-md shadow-2xl transition-all duration(--duration-base) hover:[box-shadow:var(--shadow-glass-glow)]',
         className,
       )}
       onClose={() => setIsPlaying(false)}
@@ -135,7 +135,7 @@ export function PreviewWindow({ className }: { className?: string }) {
               variant="outline"
               onClick={() => setIsMuted(!isMuted)}
               className="h-8 w-8 rounded-md"
-              aria-label={isMuted ? "Unmute sounds" : "Mute sounds"}
+              aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
             >
               {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             </Button>
@@ -144,7 +144,7 @@ export function PreviewWindow({ className }: { className?: string }) {
               variant="outline"
               onClick={() => setIsPlaying(!isPlaying)}
               className="h-8 w-8 rounded-md"
-              aria-label={isPlaying ? "Pause simulation" : "Play simulation"}
+              aria-label={isPlaying ? 'Pause simulation' : 'Play simulation'}
             >
               {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
             </Button>
@@ -176,8 +176,8 @@ export function PreviewWindow({ className }: { className?: string }) {
                 onClick={() => handleManualClick(index)}
                 className={`aspect-square rounded-xl border transition-all duration-300 ${
                   isActive
-                    ? "bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) border-(--glass-highlight) shadow-[0_0_15px_var(--primary)] scale-105"
-                    : "border-border bg-muted hover:bg-muted/80"
+                    ? 'bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) border-(--glass-highlight) shadow-[0_0_15px_var(--primary)] scale-105'
+                    : 'border-border bg-muted hover:bg-muted/80'
                 }`}
                 aria-label={`Note ${index + 1}`}
               />

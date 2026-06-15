@@ -76,18 +76,23 @@ Use this before implementing a non-trivial feature:
 
 ```md
 ## Goal
+
 [User-visible outcome]
 
 ## Scope
+
 [Files/modules likely touched]
 
 ## Data ownership
+
 [Server Component, TanStack Query, Zustand UI state, or Supabase]
 
 ## Security
+
 [RLS/auth/key boundary impact]
 
 ## Validation
+
 [Commands that prove the change]
 ```
 

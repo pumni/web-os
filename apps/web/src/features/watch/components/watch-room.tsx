@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useRef, useState, useTransition, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import type { Route } from "next";
-import type { MediaPlayerInstance } from "@vidstack/react";
+import React, { useRef, useState, useTransition, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
+import type { MediaPlayerInstance } from '@vidstack/react';
 import {
   Button,
   Input,
@@ -22,32 +22,32 @@ import {
   SheetHeader,
   SheetTitle,
   GlassSurface,
-} from "@pumni/ui";
-import { toast } from "sonner";
-import { ArrowLeft, ListVideo, Link2, Hash } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
+} from '@pumni/ui';
+import { toast } from 'sonner';
+import { ArrowLeft, ListVideo, Link2, Hash } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 
-import { useServerClock } from "../hooks/use-server-clock";
-import { useRoomChannel } from "../hooks/use-room-channel";
-import { useSyncController } from "../hooks/use-sync-controller";
-import { SyncPlayer } from "./sync-player";
-import { RoomControls } from "./room-controls";
-import { SyncIndicator } from "./sync-indicator";
-import { SideDock } from "./side-dock";
-import { setRoomSource, leaveRoom } from "../actions";
-import { useRoomQuery } from "../hooks/use-room-query";
-import { useQueueQuery, useAdvanceQueue } from "../hooks/use-room-queue";
-import { watchKeys } from "../query-keys";
-import type { Room, PlaybackAnchor, QueueItem, ChatMessage, ReactionEvent } from "../types";
-import { TapToPlayOverlay } from "./tap-to-play-overlay";
-import { HostClaimBanner } from "./host-claim-banner";
-import { useHostHeartbeat } from "../hooks/use-host-heartbeat";
-import { useMemberProfiles } from "../hooks/use-room-members";
+import { useServerClock } from '../hooks/use-server-clock';
+import { useRoomChannel } from '../hooks/use-room-channel';
+import { useSyncController } from '../hooks/use-sync-controller';
+import { SyncPlayer } from './sync-player';
+import { RoomControls } from './room-controls';
+import { SyncIndicator } from './sync-indicator';
+import { SideDock } from './side-dock';
+import { setRoomSource, leaveRoom } from '../actions';
+import { useRoomQuery } from '../hooks/use-room-query';
+import { useQueueQuery, useAdvanceQueue } from '../hooks/use-room-queue';
+import { watchKeys } from '../query-keys';
+import type { Room, PlaybackAnchor, QueueItem, ChatMessage, ReactionEvent } from '../types';
+import { TapToPlayOverlay } from './tap-to-play-overlay';
+import { HostClaimBanner } from './host-claim-banner';
+import { useHostHeartbeat } from '../hooks/use-host-heartbeat';
+import { useMemberProfiles } from '../hooks/use-room-members';
 
 // Phase 6 imports
-import { useRoomChat } from "../hooks/use-room-chat";
-import { useHostAutopromote } from "../hooks/use-host-autopromote";
-import { type ReactionOverlayRef } from "./reaction-overlay";
+import { useRoomChat } from '../hooks/use-room-chat';
+import { useHostAutopromote } from '../hooks/use-host-autopromote';
+import { type ReactionOverlayRef } from './reaction-overlay';
 
 interface WatchRoomProps {
   room: Room;
@@ -66,8 +66,8 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   // Source change modal state (Host only)
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
-  const [newSourceType, setNewSourceType] = useState<"youtube" | "url">("youtube");
-  const [newSourceRef, setNewSourceRef] = useState("");
+  const [newSourceType, setNewSourceType] = useState<'youtube' | 'url'>('youtube');
+  const [newSourceRef, setNewSourceRef] = useState('');
 
   const queryClient = useQueryClient();
 
@@ -79,7 +79,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     let cancelled = false;
     async function join(attempt = 0) {
       try {
-        const res = await fetch(`/api/watch/${room.id}/join`, { method: "POST" });
+        const res = await fetch(`/api/watch/${room.id}/join`, { method: 'POST' });
         if (!res.ok) throw new Error(`join failed: ${res.status}`);
         if (cancelled) return;
         await queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
@@ -89,9 +89,9 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         if (attempt < 3) {
           setTimeout(() => void join(attempt + 1), 1000 * (attempt + 1));
         } else {
-          console.error("Failed to join room after retries", err);
+          console.error('Failed to join room after retries', err);
           toast.error(
-            "Không thể tham gia phòng. Một số thao tác có thể bị hạn chế — hãy tải lại trang.",
+            'Không thể tham gia phòng. Một số thao tác có thể bị hạn chế — hãy tải lại trang.',
           );
         }
       }
@@ -117,7 +117,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     if (!isHost) return;
     if (queueItems.length === 0) return;
     advanceQueueMutation.mutate(undefined, {
-      onSuccess: () => broadcastQueueEvent({ action: "advance" }),
+      onSuccess: () => broadcastQueueEvent({ action: 'advance' }),
     });
   };
 
@@ -211,24 +211,24 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   // explicit leave; abandoned rooms (tab closed) are reaped by the TTL cron.
   const handleLeave = () => {
     void leaveRoom(currentRoom.id);
-    router.push("/watch" as Route);
+    router.push('/watch' as Route);
   };
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(currentRoom.code);
-    toast.success("Đã sao chép mã phòng!");
+    toast.success('Đã sao chép mã phòng!');
   };
 
   const handleCopyLink = () => {
     const link = `${window.location.origin}/watch/${currentRoom.id}`;
     navigator.clipboard.writeText(link);
-    toast.success("Đã sao chép liên kết phòng!");
+    toast.success('Đã sao chép liên kết phòng!');
   };
 
   const handleSourceChangeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSourceRef.trim()) {
-      toast.error("Vui lòng nhập link hoặc ID video.");
+      toast.error('Vui lòng nhập link hoặc ID video.');
       return;
     }
 
@@ -241,15 +241,15 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         });
 
         if (res.ok) {
-          toast.success("Đổi nguồn phát thành công!");
+          toast.success('Đổi nguồn phát thành công!');
           setIsSourceModalOpen(false);
-          setNewSourceRef("");
+          setNewSourceRef('');
           void queryClient.invalidateQueries({ queryKey: watchKeys.room(currentRoom.id) });
         } else {
-          toast.error(res.message || "Đổi nguồn phát thất bại.");
+          toast.error(res.message || 'Đổi nguồn phát thất bại.');
         }
       } catch (err) {
-        toast.error("Có lỗi xảy ra.");
+        toast.error('Có lỗi xảy ra.');
         console.error(err);
       }
     });
@@ -286,7 +286,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
           <div className="flex items-center gap-2 min-w-0">
             <h2 className="text-sm font-semibold tracking-tight truncate">Phòng xem chung</h2>
             <SyncIndicator status={syncStatus} />
-            {channelStatus !== "connected" && (
+            {channelStatus !== 'connected' && (
               <span
                 role="status"
                 aria-live="polite"
@@ -423,7 +423,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
                 <Label className="text-xs">Nguồn video</Label>
                 <Tabs
                   value={newSourceType}
-                  onValueChange={(val) => setNewSourceType(val as "youtube" | "url")}
+                  onValueChange={(val) => setNewSourceType(val as 'youtube' | 'url')}
                   className="w-full"
                 >
                   <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
@@ -439,16 +439,16 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="new-source-ref" className="text-xs">
-                  {newSourceType === "youtube"
-                    ? "Link hoặc ID video YouTube"
-                    : "Link video trực tiếp"}
+                  {newSourceType === 'youtube'
+                    ? 'Link hoặc ID video YouTube'
+                    : 'Link video trực tiếp'}
                 </Label>
                 <Input
                   id="new-source-ref"
                   placeholder={
-                    newSourceType === "youtube"
-                      ? "https://www.youtube.com/watch?v=..."
-                      : "https://example.com/video.mp4"
+                    newSourceType === 'youtube'
+                      ? 'https://www.youtube.com/watch?v=...'
+                      : 'https://example.com/video.mp4'
                   }
                   value={newSourceRef}
                   onChange={(e) => setNewSourceRef(e.target.value)}
@@ -467,7 +467,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
                   Hủy
                 </Button>
                 <Button type="submit" disabled={isPending}>
-                  {isPending ? "Đang cập nhật..." : "Cập nhật"}
+                  {isPending ? 'Đang cập nhật...' : 'Cập nhật'}
                 </Button>
               </DialogFooter>
             </form>

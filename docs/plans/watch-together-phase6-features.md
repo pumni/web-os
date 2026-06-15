@@ -11,15 +11,15 @@
 
 Bản Phase 6 cũ viết trước khi Phase 5 đổi transport hàng chờ. Trạng thái **hiện tại** (đã verify trong code) khác như sau — mọi thiết kế Phase 6 phải dựa trên đây:
 
-| Thành phần | Thực tế hiện tại (KHÔNG được hồi quy) |
-| :- | :- |
-| `useRoomChannel` chữ ký | `useRoomChannel(room, userId, isHost, onAnchor)` |
-| `useRoomChannel` return | `{ participants, broadcastAnchor, broadcastQueueEvent, channelStatus }` — **`broadcastQueueEvent` là sống còn** (đồng bộ thêm/xóa/reorder/advance hàng chờ; dùng trong `watch-room.tsx` + truyền xuống `SideDock`/`PlaylistPanel`). |
-| Channel `room:{id}` đang mang | broadcast `playback`, broadcast `queue`, postgres_changes `watch_rooms` (UPDATE), presence. **Queue KHÔNG còn dùng postgres_changes** (migration 015 đã revert replica identity). |
-| Sync controller | Đã có `programmaticUntilRef`/`markProgrammatic`/`isFollowerManualEvent` + auto-gom follower trong `handleReceiveAnchor`. Không đụng tới ở Phase 6. |
-| Host heartbeat | `use-host-heartbeat.ts` bump `host_heartbeat_at` mỗi **20s**. |
-| `claim_room_host` (migration 011) | Atomic, **cổng staleness 30s** (`host_heartbeat_at < now() - 30s` HOẶC host rời phòng). |
-| Migrations | tới **015** (`015_revert_queue_replica_identity.sql`). |
+| Thành phần                        | Thực tế hiện tại (KHÔNG được hồi quy)                                                                                                                                                                                               |
+| :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `useRoomChannel` chữ ký           | `useRoomChannel(room, userId, isHost, onAnchor)`                                                                                                                                                                                    |
+| `useRoomChannel` return           | `{ participants, broadcastAnchor, broadcastQueueEvent, channelStatus }` — **`broadcastQueueEvent` là sống còn** (đồng bộ thêm/xóa/reorder/advance hàng chờ; dùng trong `watch-room.tsx` + truyền xuống `SideDock`/`PlaylistPanel`). |
+| Channel `room:{id}` đang mang     | broadcast `playback`, broadcast `queue`, postgres_changes `watch_rooms` (UPDATE), presence. **Queue KHÔNG còn dùng postgres_changes** (migration 015 đã revert replica identity).                                                   |
+| Sync controller                   | Đã có `programmaticUntilRef`/`markProgrammatic`/`isFollowerManualEvent` + auto-gom follower trong `handleReceiveAnchor`. Không đụng tới ở Phase 6.                                                                                  |
+| Host heartbeat                    | `use-host-heartbeat.ts` bump `host_heartbeat_at` mỗi **20s**.                                                                                                                                                                       |
+| `claim_room_host` (migration 011) | Atomic, **cổng staleness 30s** (`host_heartbeat_at < now() - 30s` HOẶC host rời phòng).                                                                                                                                             |
+| Migrations                        | tới **015** (`015_revert_queue_replica_identity.sql`).                                                                                                                                                                              |
 
 > ⚠️ **Quy tắc vàng cho Phase F:** khi mở rộng `useRoomChannel`, **PHẢI giữ `broadcastQueueEvent` trong return**. Bỏ sót sẽ làm `watch-room.tsx` nhận `undefined` → **crash khi thêm/xóa video** hoặc **mất đồng bộ hàng chờ**.
 
@@ -37,12 +37,12 @@ Bản Phase 6 cũ viết trước khi Phase 5 đổi transport hàng chờ. Tr�
 
 ## 2. Bảng quyết định
 
-| # | Vấn đề | Cách chọn | Lý do |
-| :- | :- | :- | :- |
-| F | Lưu chat ở đâu | **Ephemeral qua Broadcast** trên channel `room:{id}` sẵn có | Free tier nhẹ; độ trễ thấp; không thêm connection. Lưu DB → Phụ lục §6 (tùy chọn sau). |
-| F | Reaction | Broadcast event riêng `reaction` + overlay emoji bay | Nhẹ, vui, không cần state bền. |
-| G | Host rớt | **Auto-promote member vào sớm nhất** (presence `joinedAt`) với **retry định kỳ** sau khi vượt cổng staleness; **giữ** banner thủ công làm fallback | RPC atomic; chỉ 1 ứng viên gọi để tránh spam. **Phải retry** vì DB từ chối cho tới khi heartbeat host cũ > 30s (xem Lỗi nghiêm trọng §3-G). |
-| H | Kéo-thả | `@dnd-kit/core` + `@dnd-kit/sortable` + `@dnd-kit/utilities` (**dep mới**), giữ `fractionalPosition` + `useReorderQueue` + broadcast `queue`; **giữ ▲/▼** làm fallback A11y | dnd-kit hỗ trợ keyboard + touch. Xác nhận tương thích React 19/Next 16 khi cài. |
+| #   | Vấn đề         | Cách chọn                                                                                                                                                                   | Lý do                                                                                                                                       |
+| :-- | :------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| F   | Lưu chat ở đâu | **Ephemeral qua Broadcast** trên channel `room:{id}` sẵn có                                                                                                                 | Free tier nhẹ; độ trễ thấp; không thêm connection. Lưu DB → Phụ lục §6 (tùy chọn sau).                                                      |
+| F   | Reaction       | Broadcast event riêng `reaction` + overlay emoji bay                                                                                                                        | Nhẹ, vui, không cần state bền.                                                                                                              |
+| G   | Host rớt       | **Auto-promote member vào sớm nhất** (presence `joinedAt`) với **retry định kỳ** sau khi vượt cổng staleness; **giữ** banner thủ công làm fallback                          | RPC atomic; chỉ 1 ứng viên gọi để tránh spam. **Phải retry** vì DB từ chối cho tới khi heartbeat host cũ > 30s (xem Lỗi nghiêm trọng §3-G). |
+| H   | Kéo-thả        | `@dnd-kit/core` + `@dnd-kit/sortable` + `@dnd-kit/utilities` (**dep mới**), giữ `fractionalPosition` + `useReorderQueue` + broadcast `queue`; **giữ ▲/▼** làm fallback A11y | dnd-kit hỗ trợ keyboard + touch. Xác nhận tương thích React 19/Next 16 khi cài.                                                             |
 
 ---
 
@@ -60,6 +60,7 @@ export const chatMessageSchema = z.object({
 });
 export type ChatMessageInput = z.infer<typeof chatMessageSchema>;
 ```
+
 Export trong `packages/validators/src/index.ts`.
 
 #### F2. Types — `apps/web/src/features/watch/types.ts`
@@ -68,16 +69,16 @@ Thêm (cạnh `QueueBroadcastEvent` đã có):
 
 ```ts
 export interface ChatMessage {
-  id: string;          // crypto.randomUUID() phía client gửi
+  id: string; // crypto.randomUUID() phía client gửi
   userId: string;
   text: string;
-  sentAt: number;      // Date.now() của người gửi (hiển thị/sort cục bộ)
+  sentAt: number; // Date.now() của người gửi (hiển thị/sort cục bộ)
 }
 
 export interface ReactionEvent {
   id: string;
   userId: string;
-  emoji: string;       // 1 trong tập cho phép
+  emoji: string; // 1 trong tập cho phép
   sentAt: number;
 }
 ```
@@ -105,10 +106,10 @@ export function useRoomChannel(
 Trong `useEffect` subscribe, **sau listener `queue` hiện có** (giữ nguyên listener queue), thêm:
 
 ```ts
-activeChannel.on("broadcast", { event: "chat" }, (p: { payload: ChatMessage }) => {
+activeChannel.on('broadcast', { event: 'chat' }, (p: { payload: ChatMessage }) => {
   if (p.payload) onChatLatestRef.current?.(p.payload);
 });
-activeChannel.on("broadcast", { event: "reaction" }, (p: { payload: ReactionEvent }) => {
+activeChannel.on('broadcast', { event: 'reaction' }, (p: { payload: ReactionEvent }) => {
   if (p.payload) onReactionLatestRef.current?.(p.payload);
 });
 ```
@@ -117,10 +118,10 @@ Thêm 2 helper phát (cạnh `broadcastAnchor`/`broadcastQueueEvent`):
 
 ```ts
 const broadcastChat = (m: ChatMessage) => {
-  channelRef.current?.send({ type: "broadcast", event: "chat", payload: m });
+  channelRef.current?.send({ type: 'broadcast', event: 'chat', payload: m });
 };
 const broadcastReaction = (r: ReactionEvent) => {
-  channelRef.current?.send({ type: "broadcast", event: "reaction", payload: r });
+  channelRef.current?.send({ type: 'broadcast', event: 'reaction', payload: r });
 };
 ```
 
@@ -142,11 +143,11 @@ return {
 #### F4. `use-room-chat.ts` — MỚI (state + send), có **lọc trùng theo id**
 
 ```ts
-"use client";
+'use client';
 
-import { useState } from "react";
-import { chatMessageSchema } from "@pumni/validators";
-import type { ChatMessage, ReactionEvent } from "../types";
+import { useState } from 'react';
+import { chatMessageSchema } from '@pumni/validators';
+import type { ChatMessage, ReactionEvent } from '../types';
 
 const MAX_MESSAGES = 100;
 
@@ -209,19 +210,30 @@ const onChatRef = useRef<(m: ChatMessage) => void>(() => {});
 const onReactionRef = useRef<(r: ReactionEvent) => void>(() => {});
 
 const {
-  participants, broadcastAnchor, broadcastQueueEvent, channelStatus,
-  broadcastChat, broadcastReaction,
+  participants,
+  broadcastAnchor,
+  broadcastQueueEvent,
+  channelStatus,
+  broadcastChat,
+  broadcastReaction,
 } = useRoomChannel(
-  currentRoom, userId, isHost,
+  currentRoom,
+  userId,
+  isHost,
   (a) => onAnchorRef.current(a),
   (m) => onChatRef.current(m),
   (r) => onReactionRef.current(r),
 );
 
-const { messages, receiveChat, sendChat, sendReaction } =
-  useRoomChat(userId, broadcastChat, broadcastReaction);
+const { messages, receiveChat, sendChat, sendReaction } = useRoomChat(
+  userId,
+  broadcastChat,
+  broadcastReaction,
+);
 
-useEffect(() => { onChatRef.current = receiveChat; }, [receiveChat]);
+useEffect(() => {
+  onChatRef.current = receiveChat;
+}, [receiveChat]);
 // onReactionRef.current trỏ tới hàm push của overlay (lift state reaction lên watch-room
 // rồi truyền xuống <ReactionOverlay/>, hoặc overlay tự giữ state và expose push qua ref).
 ```
@@ -229,6 +241,7 @@ useEffect(() => { onChatRef.current = receiveChat; }, [receiveChat]);
 - Render `<ReactionOverlay/>` làm child Stage; `<ReactionBar onReact={sendReaction}/>` cạnh Stage. Truyền `messages`, `sendChat` vào `<SideDock>`.
 
 > **Cổng nghiệm thu F (2 trình duyệt):**
+>
 > - B gửi chat → A thấy ngay & ngược lại; người gửi thấy tin của mình (self-append, không trùng). Log có `aria-live`.
 > - Thả reaction → emoji bay hiện ở **cả hai** màn hình.
 > - Reload → chat trống (ephemeral — đúng kỳ vọng).
@@ -242,16 +255,17 @@ useEffect(() => { onChatRef.current = receiveChat; }, [receiveChat]);
 > Sẵn có: `host_heartbeat_at` bump mỗi **20s**; RPC `claim_room_host` (atomic, **cổng staleness 30s**); `useClaimHost`; banner thủ công `HostClaimBanner`. Phase G thêm **tự động** chọn 1 ứng viên gọi claim — nhưng phải **retry** vì cổng 30s.
 
 #### 🔴 Lỗi nghiêm trọng đã vá so với bản cũ
+
 Bản cũ chờ **một lần** 12s rồi gọi claim. Nhưng DB từ chối cho tới khi heartbeat host cũ > **30s**; vì `useEffect` dep không đổi, timeout **chỉ chạy 1 lần → phòng kẹt không host**. Bản này dùng **retry định kỳ**: DB là cổng thật, ta cứ thử lại tới khi qua 30s thì thành công.
 
 #### G1. `use-host-autopromote.ts` — MỚI (retry every 5s)
 
 ```ts
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import type { Participant } from "../types";
-import { useClaimHost } from "./use-room-queue";
+import { useEffect } from 'react';
+import type { Participant } from '../types';
+import { useClaimHost } from './use-room-queue';
 
 const RETRY_MS = 5_000; // DB cổng staleness 30s là nguồn chân lý; cứ thử tới khi qua
 
@@ -282,7 +296,10 @@ export function useHostAutopromote(
     // Khi claim thành công → host_id đổi → isHost=true → effect cleanup dừng interval.
     attempt();
     const interval = setInterval(attempt, RETRY_MS);
-    return () => { stopped = true; clearInterval(interval); };
+    return () => {
+      stopped = true;
+      clearInterval(interval);
+    };
   }, [isHost, hostPresent, iAmCandidate, claim]);
 }
 ```
@@ -296,9 +313,11 @@ export function useHostAutopromote(
 ```tsx
 useHostAutopromote(currentRoom.id, userId, isHost, participants);
 ```
+
 **Giữ nguyên** `HostClaimBanner` thủ công làm fallback.
 
 > **Cổng nghiệm thu G (2–3 trình duyệt):**
+>
 > - A=host, B,C=follower (B vào trước C). Đóng hẳn tab A. Sau khi heartbeat host cũ > 30s, **B** tự thành host (badge "Host", điều khiển hoạt động) không cần bấm gì; C thành follower của B.
 > - Devtools: chỉ B gọi `claim_room_host` (retry vài lần rồi thành công), không phải mọi follower.
 > - Nếu B cũng đóng tab trước khi promote → C (ứng viên kế) tiếp quản.
@@ -313,6 +332,7 @@ useHostAutopromote(currentRoom.id, userId, isHost, participants);
 ```
 cd apps/web && bun add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
 ```
+
 > Sau khi thêm: `bun run typecheck` + `bun run build` (xác nhận tương thích React 19 / Next 16). Nếu lỗi tương thích → giữ ▲/▼ (đã đúng) và hoãn H.
 
 #### H2. `playlist-panel.tsx` — bọc Sortable (CÓ guard `over`)
@@ -321,12 +341,13 @@ cd apps/web && bun add @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities
 - Mỗi item: `useSortable({ id: item.id })` → áp `transform/transition` + `attributes`/`listeners` lên handle kéo (icon grip), `setNodeRef` lên row.
 
 #### 🔴 Lỗi nghiêm trọng đã vá: guard `over === null`
+
 Thả ra ngoài danh sách → `over` là `null` → truy cập `over.id` ném `TypeError` crash component. **Bắt buộc** guard:
 
 ```ts
 const handleDragEnd = (event: DragEndEvent) => {
   const { active, over } = event;
-  if (!over) return;                 // ⚠️ BẮT BUỘC — thả ngoài list → over null
+  if (!over) return; // ⚠️ BẮT BUỘC — thả ngoài list → over null
   if (active.id === over.id) return;
 
   const without = items.filter((i) => i.id !== active.id);
@@ -341,11 +362,11 @@ const handleDragEnd = (event: DragEndEvent) => {
     { itemId: String(active.id), beforeId: before?.id ?? null, afterId: after?.id ?? null },
     {
       onSuccess: () => {
-        toast.success("Đã sắp xếp lại hàng chờ");
-        broadcastQueueEvent({ action: "reorder", title: undefined });
+        toast.success('Đã sắp xếp lại hàng chờ');
+        broadcastQueueEvent({ action: 'reorder', title: undefined });
       },
-      onError: (err) => toast.error(err.message || "Sắp xếp thất bại."),
-    }
+      onError: (err) => toast.error(err.message || 'Sắp xếp thất bại.'),
+    },
   );
 };
 ```
@@ -354,9 +375,11 @@ const handleDragEnd = (event: DragEndEvent) => {
 > **Giữ ▲/▼** làm đường A11y/fallback; thêm `aria-label="Kéo để sắp xếp"` cho handle.
 
 #### H3. A11y kéo-thả
+
 - `KeyboardSensor` + `sortableKeyboardCoordinates` cho kéo bằng bàn phím (Tab tới handle, Space + mũi tên). Tôn trọng `prefers-reduced-motion` (tắt animation transform nếu bật).
 
 > **Cổng nghiệm thu H (2 trình duyệt):**
+>
 > - Kéo-thả bằng chuột & bàn phím đổi thứ tự; **thả ra ngoài list không crash**; thứ tự **giữ sau refetch** và **đồng bộ chéo** (toast + list ở B).
 > - ▲/▼ vẫn hoạt động.
 > - `bun run typecheck/lint/build` xanh.
@@ -373,6 +396,7 @@ const handleDragEnd = (event: DragEndEvent) => {
 ---
 
 ## 5. Bất biến tuyệt đối (KHÔNG phá)
+
 - **Một** channel `room:{id}` mang Broadcast(playback/queue/chat/reaction) + Presence + postgres_changes(`watch_rooms`). Chat/reaction KHÔNG tạo channel/connection mới.
 - **`broadcastQueueEvent` PHẢI còn trong return của `useRoomChannel`** — đây là transport đồng bộ hàng chờ sau Phase 5.
 - Anchor/heartbeat **chỉ host ghi** qua RLS `watch_rooms_update_host`; `claim_room_host` SECURITY DEFINER giữ cổng staleness 30s — auto-promote chỉ là trigger có retry, DB là authorization.
@@ -382,9 +406,11 @@ const handleDragEnd = (event: DragEndEvent) => {
 - Không mã màu raw (token OKLCH `@pumni/ui`); tôn trọng `prefers-reduced-motion`.
 
 ## 6. Phụ lục (TÙY CHỌN, làm sau): lưu lịch sử chat vào DB
+
 Nếu cần chat bền: bảng `watch_messages(id, room_id, user_id, text, created_at)` + RLS `is_room_member` cho select/insert; seed qua TanStack + tiếp tục realtime qua broadcast. **Ngoài phạm vi Phase 6** để giữ Free tier nhẹ.
 
 ## 7. Checklist thực thi nhanh
+
 - [ ] **Tiền đề:** Phase 5 xong & gates xanh; xác nhận `useRoomChannel` đang return `broadcastQueueEvent`
 - [ ] F1–F7 (validator, types, channel broadcast chat/reaction **giữ broadcastQueueEvent**, hook chat lọc-trùng, chat-panel, reaction overlay/bar, wire) → cổng F (kèm regression queue)
 - [ ] G1–G2 (auto-promote **retry 5s**) → cổng G (2–3 trình duyệt, chờ >30s)

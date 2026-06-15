@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import { describe, expect, it } from "vitest";
-import { apcaContrast } from "@pumni/ui";
+import { describe, expect, it } from 'vitest';
+import { apcaContrast } from '@pumni/ui';
 
 type Color = {
   l: number;
@@ -15,27 +15,29 @@ type Color = {
 type Rgb = [number, number, number];
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(testDir, "../../../../..");
-const tokenCss = readFileSync(path.join(repoRoot, "packages/ui/src/styles/tokens.css"), "utf8");
-const themeCss = readFileSync(path.join(repoRoot, "packages/ui/src/styles/theme.css"), "utf8");
+const repoRoot = path.resolve(testDir, '../../../../..');
+const tokenCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/tokens.css'), 'utf8');
+const themeCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/theme.css'), 'utf8');
 const personalizationCss = readFileSync(
-  path.join(repoRoot, "packages/ui/src/styles/personalization.css"),
-  "utf8",
+  path.join(repoRoot, 'packages/ui/src/styles/personalization.css'),
+  'utf8',
 );
 
-const ACCENTS = ["cyan", "indigo", "violet", "rose"] as const;
+const ACCENTS = ['cyan', 'indigo', 'violet', 'rose'] as const;
 type Accent = (typeof ACCENTS)[number];
 
 const desktopBlobTokens = [
-  "--desktop-blob-primary",
-  "--desktop-blob-secondary",
-  "--desktop-blob-accent",
-  "--desktop-blob-cyan",
+  '--desktop-blob-primary',
+  '--desktop-blob-secondary',
+  '--desktop-blob-accent',
+  '--desktop-blob-cyan',
 ];
 
-function readVariables(css: string, selector: ":root" | ".dark") {
-  const match = css.match(new RegExp(`${selector.replace(".", "\\.")}\\s*\\{(?<body>[\\s\\S]*?)\\}`));
-  const body = match?.groups?.body ?? "";
+function readVariables(css: string, selector: ':root' | '.dark') {
+  const match = css.match(
+    new RegExp(`${selector.replace('.', '\\.')}\\s*\\{(?<body>[\\s\\S]*?)\\}`),
+  );
+  const body = match?.groups?.body ?? '';
   const variables = new Map<string, string>();
 
   for (const variable of body.matchAll(/(?<name>--[\w-]+):\s*(?<value>[^;]+);/g)) {
@@ -50,16 +52,16 @@ function readVariables(css: string, selector: ":root" | ".dark") {
   return variables;
 }
 
-function buildTokenMap(mode: "light" | "dark") {
-  const tokenMap = readVariables(tokenCss, ":root");
-  const themeMap = readVariables(themeCss, ":root");
+function buildTokenMap(mode: 'light' | 'dark') {
+  const tokenMap = readVariables(tokenCss, ':root');
+  const themeMap = readVariables(themeCss, ':root');
 
   for (const [name, value] of themeMap) {
     tokenMap.set(name, value);
   }
 
-  if (mode === "dark") {
-    for (const [name, value] of readVariables(themeCss, ".dark")) {
+  if (mode === 'dark') {
+    for (const [name, value] of readVariables(themeCss, '.dark')) {
       tokenMap.set(name, value);
     }
   }
@@ -69,9 +71,9 @@ function buildTokenMap(mode: "light" | "dark") {
 
 function parseOklch(value: string): Color {
   const oklchPattern = new RegExp(
-    "^" +
-      "oklch" +
-      "\\(\\s*(?<l>[\\d.]+)\\s+(?<c>[\\d.]+)\\s+(?<h>[\\d.]+)(?:\\s*\\/\\s*(?<alpha>[\\d.]+))?\\s*\\)$",
+    '^' +
+      'oklch' +
+      '\\(\\s*(?<l>[\\d.]+)\\s+(?<c>[\\d.]+)\\s+(?<h>[\\d.]+)(?:\\s*\\/\\s*(?<alpha>[\\d.]+))?\\s*\\)$',
   );
   const match = value.match(oklchPattern);
 
@@ -126,13 +128,13 @@ function composite(foreground: Color, background: Color): Rgb {
   ];
 }
 
-describe("Glass contrast tokens", () => {
-  it.each(["light", "dark"] as const)(
-    "keeps text contrast at APCA Lc 60 over desktop blobs in %s mode",
+describe('Glass contrast tokens', () => {
+  it.each(['light', 'dark'] as const)(
+    'keeps text contrast at APCA Lc 60 over desktop blobs in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const foreground = oklchToSrgb(tokenColor("--foreground", tokenMap));
-      const glass = tokenColor("--glass-bg", tokenMap);
+      const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
+      const glass = tokenColor('--glass-bg', tokenMap);
 
       for (const blobToken of desktopBlobTokens) {
         const background = tokenColor(blobToken, tokenMap);
@@ -141,18 +143,18 @@ describe("Glass contrast tokens", () => {
         expect(
           Math.abs(apcaContrast(foreground, glassOverBlob)),
           `${mode} ${blobToken} text contrast (APCA)`,
-        ).toBeGreaterThanOrEqual(mode === "light" ? 50 : 60);
+        ).toBeGreaterThanOrEqual(mode === 'light' ? 50 : 60);
       }
     },
   );
 
-  it.each(["light", "dark"] as const)(
-    "keeps UI edge contrast above APCA Lc 25 threshold in %s mode",
+  it.each(['light', 'dark'] as const)(
+    'keeps UI edge contrast above APCA Lc 25 threshold in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const border = oklchToSrgb(tokenColor("--glass-border", tokenMap));
-      const borderColor = tokenColor("--glass-border", tokenMap);
-      const glass = tokenColor("--glass-bg", tokenMap);
+      const border = oklchToSrgb(tokenColor('--glass-border', tokenMap));
+      const borderColor = tokenColor('--glass-border', tokenMap);
+      const glass = tokenColor('--glass-bg', tokenMap);
 
       for (const blobToken of desktopBlobTokens) {
         const background = tokenColor(blobToken, tokenMap);
@@ -182,16 +184,18 @@ describe("Glass contrast tokens", () => {
  * ------------------------------------------------------------------ */
 
 function stripComments(css: string) {
-  return css.replace(/\/\*[\s\S]*?\*\//g, "");
+  return css.replace(/\/\*[\s\S]*?\*\//g, '');
 }
 
 function readBlock(css: string, selector: string): Map<string, string> {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const match = stripComments(css).match(
-    new RegExp(`(?:^|\\})\\s*${escaped}\\s*\\{(?<body>[^}]*)\\}`, "m"),
+    new RegExp(`(?:^|\\})\\s*${escaped}\\s*\\{(?<body>[^}]*)\\}`, 'm'),
   );
   const vars = new Map<string, string>();
-  for (const variable of (match?.groups?.body ?? "").matchAll(/(?<name>--[\w-]+):\s*(?<value>[^;]+);/g)) {
+  for (const variable of (match?.groups?.body ?? '').matchAll(
+    /(?<name>--[\w-]+):\s*(?<value>[^;]+);/g,
+  )) {
     if (variable.groups?.name && variable.groups?.value) {
       vars.set(variable.groups.name, variable.groups.value.trim());
     }
@@ -199,14 +203,14 @@ function readBlock(css: string, selector: string): Map<string, string> {
   return vars;
 }
 
-function buildAccentTokenMap(mode: "light" | "dark", accent: Accent) {
+function buildAccentTokenMap(mode: 'light' | 'dark', accent: Accent) {
   const map = buildTokenMap(mode);
-  if (accent === "cyan") return map;
+  if (accent === 'cyan') return map;
 
   for (const [name, value] of readBlock(personalizationCss, `[data-accent="${accent}"]`)) {
     map.set(name, value);
   }
-  if (mode === "dark") {
+  if (mode === 'dark') {
     for (const [name, value] of readBlock(personalizationCss, `.dark[data-accent="${accent}"]`)) {
       map.set(name, value);
     }
@@ -214,7 +218,7 @@ function buildAccentTokenMap(mode: "light" | "dark", accent: Accent) {
   for (const [name, value] of readBlock(personalizationCss, `[data-accent]`)) {
     map.set(name, value);
   }
-  if (mode === "dark") {
+  if (mode === 'dark') {
     for (const [name, value] of readBlock(personalizationCss, `.dark[data-accent]`)) {
       map.set(name, value);
     }
@@ -251,16 +255,16 @@ function mixOklch(a: Color, b: Color, weightA: number): Color {
 
 function splitTopLevelCommas(str: string): string[] {
   const parts: string[] = [];
-  let current = "";
+  let current = '';
   let depth = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str[i];
-    if (char === "(") depth++;
-    else if (char === ")") depth--;
+    if (char === '(') depth++;
+    else if (char === ')') depth--;
 
-    if (char === "," && depth === 0) {
+    if (char === ',' && depth === 0) {
       parts.push(current);
-      current = "";
+      current = '';
     } else {
       current += char;
     }
@@ -272,7 +276,7 @@ function splitTopLevelCommas(str: string): string[] {
 function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: Set<string>): Color {
   const trimmed = value.trim();
 
-  if (trimmed === "transparent") {
+  if (trimmed === 'transparent') {
     return { l: 0, c: 0, h: 0, alpha: 0 };
   }
 
@@ -281,15 +285,15 @@ function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: S
     return resolveColor(varMatch.groups.name, tokenMap, seen);
   }
 
-  if (trimmed.startsWith("oklch" + "(")) {
+  if (trimmed.startsWith('oklch' + '(')) {
     return parseOklch(trimmed);
   }
 
   const mixMatch = trimmed.match(/^color-mix\(in oklch,\s*(?<inner>.+)\)$/);
   if (mixMatch?.groups?.inner) {
     const parts = splitTopLevelCommas(mixMatch.groups.inner).map((part) => part.trim());
-    const aPart = parts[0] ?? "";
-    const bPart = parts[1] ?? "";
+    const aPart = parts[0] ?? '';
+    const bPart = parts[1] ?? '';
     const aWeighted = aPart.match(/^(?<expr>.+?)\s+(?<pct>[\d.]+)%$/);
     const bWeighted = bPart.match(/^(?<expr>.+?)\s+(?<pct>[\d.]+)%$/);
     const aExpr = aWeighted?.groups?.expr ?? aPart;
@@ -307,9 +311,13 @@ function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: S
   throw new Error(`Unsupported color value: ${trimmed}`);
 }
 
-function resolveColor(name: string, tokenMap: Map<string, string>, seen = new Set<string>()): Color {
+function resolveColor(
+  name: string,
+  tokenMap: Map<string, string>,
+  seen = new Set<string>(),
+): Color {
   if (seen.has(name)) {
-    throw new Error(`Circular token reference: ${[...seen, name].join(" -> ")}`);
+    throw new Error(`Circular token reference: ${[...seen, name].join(' -> ')}`);
   }
   const value = tokenMap.get(name);
   if (!value) {
@@ -318,15 +326,15 @@ function resolveColor(name: string, tokenMap: Map<string, string>, seen = new Se
   return resolveColorValue(value, tokenMap, new Set([...seen, name]));
 }
 
-describe("Accent personalization contrast", () => {
-  const modes = ["light", "dark"] as const;
+describe('Accent personalization contrast', () => {
+  const modes = ['light', 'dark'] as const;
 
   it.each(ACCENTS.flatMap((accent) => modes.map((mode) => [accent, mode] as const)))(
-    "%s accent keeps primary-foreground readable on primary in %s mode",
+    '%s accent keeps primary-foreground readable on primary in %s mode',
     (accent, mode) => {
       const tokenMap = buildAccentTokenMap(mode, accent);
-      const foreground = oklchToSrgb(resolveColor("--primary-foreground", tokenMap));
-      const background = oklchToSrgb(resolveColor("--primary", tokenMap));
+      const foreground = oklchToSrgb(resolveColor('--primary-foreground', tokenMap));
+      const background = oklchToSrgb(resolveColor('--primary', tokenMap));
 
       expect(
         Math.abs(apcaContrast(foreground, background)),
@@ -336,11 +344,11 @@ describe("Accent personalization contrast", () => {
   );
 
   it.each(ACCENTS.flatMap((accent) => modes.map((mode) => [accent, mode] as const)))(
-    "%s accent keeps accent-foreground readable on the accent surface in %s mode",
+    '%s accent keeps accent-foreground readable on the accent surface in %s mode',
     (accent, mode) => {
       const tokenMap = buildAccentTokenMap(mode, accent);
-      const foreground = oklchToSrgb(resolveColor("--accent-foreground", tokenMap));
-      const background = oklchToSrgb(resolveColor("--accent", tokenMap));
+      const foreground = oklchToSrgb(resolveColor('--accent-foreground', tokenMap));
+      const background = oklchToSrgb(resolveColor('--accent', tokenMap));
 
       expect(
         Math.abs(apcaContrast(foreground, background)),
@@ -357,27 +365,27 @@ describe("Accent personalization contrast", () => {
  * for body-sized text. These are the most common reading surfaces.
  * ------------------------------------------------------------------ */
 
-describe("Semantic surface contrast", () => {
-  it.each(["light", "dark"] as const)(
-    "muted-foreground is readable on muted background in %s mode",
+describe('Semantic surface contrast', () => {
+  it.each(['light', 'dark'] as const)(
+    'muted-foreground is readable on muted background in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const foreground = oklchToSrgb(resolveColor("--muted-foreground", tokenMap));
-      const background = oklchToSrgb(resolveColor("--muted", tokenMap));
+      const foreground = oklchToSrgb(resolveColor('--muted-foreground', tokenMap));
+      const background = oklchToSrgb(resolveColor('--muted', tokenMap));
 
       expect(
         Math.abs(apcaContrast(foreground, background)),
         `${mode} muted text contrast (APCA)`,
-      ).toBeGreaterThanOrEqual(mode === "dark" ? 55 : 60);
+      ).toBeGreaterThanOrEqual(mode === 'dark' ? 55 : 60);
     },
   );
 
-  it.each(["light", "dark"] as const)(
-    "secondary-foreground is readable on secondary background in %s mode",
+  it.each(['light', 'dark'] as const)(
+    'secondary-foreground is readable on secondary background in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const foreground = oklchToSrgb(resolveColor("--secondary-foreground", tokenMap));
-      const background = oklchToSrgb(resolveColor("--secondary", tokenMap));
+      const foreground = oklchToSrgb(resolveColor('--secondary-foreground', tokenMap));
+      const background = oklchToSrgb(resolveColor('--secondary', tokenMap));
 
       expect(
         Math.abs(apcaContrast(foreground, background)),
@@ -386,12 +394,12 @@ describe("Semantic surface contrast", () => {
     },
   );
 
-  it.each(["light", "dark"] as const)(
-    "card-foreground is readable on card background in %s mode",
+  it.each(['light', 'dark'] as const)(
+    'card-foreground is readable on card background in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const foreground = oklchToSrgb(resolveColor("--card-foreground", tokenMap));
-      const background = oklchToSrgb(resolveColor("--card", tokenMap));
+      const foreground = oklchToSrgb(resolveColor('--card-foreground', tokenMap));
+      const background = oklchToSrgb(resolveColor('--card', tokenMap));
 
       expect(
         Math.abs(apcaContrast(foreground, background)),
@@ -400,34 +408,31 @@ describe("Semantic surface contrast", () => {
     },
   );
 
-  it.each(["light", "dark"] as const)(
-    "foreground is readable on background in %s mode",
+  it.each(['light', 'dark'] as const)('foreground is readable on background in %s mode', (mode) => {
+    const tokenMap = buildTokenMap(mode);
+    const foreground = oklchToSrgb(resolveColor('--foreground', tokenMap));
+    const background = oklchToSrgb(resolveColor('--background', tokenMap));
+
+    expect(
+      Math.abs(apcaContrast(foreground, background)),
+      `${mode} page text contrast (APCA)`,
+    ).toBeGreaterThanOrEqual(60);
+  });
+
+  it.each(['light', 'dark'] as const)(
+    'muted-foreground is readable on muted hover background (80% opacity over page background) in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const foreground = oklchToSrgb(resolveColor("--foreground", tokenMap));
-      const background = oklchToSrgb(resolveColor("--background", tokenMap));
-
-      expect(
-        Math.abs(apcaContrast(foreground, background)),
-        `${mode} page text contrast (APCA)`,
-      ).toBeGreaterThanOrEqual(60);
-    },
-  );
-
-  it.each(["light", "dark"] as const)(
-    "muted-foreground is readable on muted hover background (80% opacity over page background) in %s mode",
-    (mode) => {
-      const tokenMap = buildTokenMap(mode);
-      const foreground = oklchToSrgb(resolveColor("--muted-foreground", tokenMap));
-      const mutedColor = oklchToSrgb(resolveColor("--muted", tokenMap));
-      const pageBackground = oklchToSrgb(resolveColor("--background", tokenMap));
+      const foreground = oklchToSrgb(resolveColor('--muted-foreground', tokenMap));
+      const mutedColor = oklchToSrgb(resolveColor('--muted', tokenMap));
+      const pageBackground = oklchToSrgb(resolveColor('--background', tokenMap));
 
       const hoverBg = compositeAlpha(mutedColor, pageBackground, 0.8);
 
       expect(
         Math.abs(apcaContrast(foreground, hoverBg)),
         `${mode} muted hover text contrast (APCA)`,
-      ).toBeGreaterThanOrEqual(mode === "dark" ? 55 : 60);
+      ).toBeGreaterThanOrEqual(mode === 'dark' ? 55 : 60);
     },
   );
 });
@@ -439,7 +444,11 @@ describe("Semantic surface contrast", () => {
  * as the text colour.
  * ------------------------------------------------------------------ */
 
-function compositeAlpha(fg: [number, number, number], bg: [number, number, number], alpha: number): [number, number, number] {
+function compositeAlpha(
+  fg: [number, number, number],
+  bg: [number, number, number],
+  alpha: number,
+): [number, number, number] {
   return [
     fg[0] * alpha + bg[0] * (1 - alpha),
     fg[1] * alpha + bg[1] * (1 - alpha),
@@ -447,12 +456,7 @@ function compositeAlpha(fg: [number, number, number], bg: [number, number, numbe
   ];
 }
 
-const STATUS_TOKENS = [
-  "--destructive",
-  "--success",
-  "--warning",
-  "--primary",
-] as const;
+const STATUS_TOKENS = ['--destructive', '--success', '--warning', '--primary'] as const;
 
 const STATUS_TINT_THRESHOLDS: Record<
   (typeof STATUS_TOKENS)[number],
@@ -461,57 +465,54 @@ const STATUS_TINT_THRESHOLDS: Record<
     dark: number;
   }
 > = {
-  "--destructive": {
+  '--destructive': {
     light: 59,
     dark: 33,
   },
-  "--success": {
+  '--success': {
     light: 60,
     dark: 26,
   },
-  "--warning": {
+  '--warning': {
     light: 40,
     dark: 48,
   },
-  "--primary": {
+  '--primary': {
     light: 60,
     dark: 0,
   },
 };
 
-describe("Status tint readability", () => {
+describe('Status tint readability', () => {
   it.each(
     STATUS_TOKENS.flatMap((token) =>
-      (["light", "dark"] as const).map((mode) => [token, mode] as const),
+      (['light', 'dark'] as const).map((mode) => [token, mode] as const),
     ),
-  )(
-    "%s text on 10%%-tint chip is readable in %s mode",
-    (token, mode) => {
-      const tokenMap = buildTokenMap(mode);
-      const statusColor = resolveColor(token, tokenMap);
-      const pageBackground = oklchToSrgb(resolveColor("--background", tokenMap));
+  )('%s text on 10%%-tint chip is readable in %s mode', (token, mode) => {
+    const tokenMap = buildTokenMap(mode);
+    const statusColor = resolveColor(token, tokenMap);
+    const pageBackground = oklchToSrgb(resolveColor('--background', tokenMap));
 
-      const chipBg = compositeAlpha(oklchToSrgb(statusColor), pageBackground, 0.1);
-      const chipFg = oklchToSrgb(statusColor);
+    const chipBg = compositeAlpha(oklchToSrgb(statusColor), pageBackground, 0.1);
+    const chipFg = oklchToSrgb(statusColor);
 
-      const threshold = STATUS_TINT_THRESHOLDS[token][mode];
+    const threshold = STATUS_TINT_THRESHOLDS[token][mode];
 
-      expect(
-        Math.abs(apcaContrast(chipFg, chipBg)),
-        `${token} ${mode} status tint contrast (APCA)`,
-      ).toBeGreaterThanOrEqual(threshold);
-    },
-  );
+    expect(
+      Math.abs(apcaContrast(chipFg, chipBg)),
+      `${token} ${mode} status tint contrast (APCA)`,
+    ).toBeGreaterThanOrEqual(threshold);
+  });
 });
 
-describe("Field contrast readable", () => {
-  it.each(["light", "dark"] as const)(
-    "keeps text contrast at APCA Lc 60 over field background in %s mode",
+describe('Field contrast readable', () => {
+  it.each(['light', 'dark'] as const)(
+    'keeps text contrast at APCA Lc 60 over field background in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const fieldBg = oklchToSrgb(resolveColor("--field", tokenMap));
-      const foreground = oklchToSrgb(resolveColor("--foreground", tokenMap));
-      const mutedForeground = oklchToSrgb(resolveColor("--muted-foreground", tokenMap));
+      const fieldBg = oklchToSrgb(resolveColor('--field', tokenMap));
+      const foreground = oklchToSrgb(resolveColor('--foreground', tokenMap));
+      const mutedForeground = oklchToSrgb(resolveColor('--muted-foreground', tokenMap));
 
       expect(
         Math.abs(apcaContrast(foreground, fieldBg)),
@@ -526,30 +527,31 @@ describe("Field contrast readable", () => {
   );
 });
 
-describe("Popover dark elevation contrast", () => {
-  it("keeps popover foreground contrast at APCA Lc 60 in dark mode", () => {
-    const tokenMap = buildTokenMap("dark");
-    const popoverBg = oklchToSrgb(resolveColor("--popover", tokenMap));
-    const popoverFg = oklchToSrgb(resolveColor("--popover-foreground", tokenMap));
+describe('Popover dark elevation contrast', () => {
+  it('keeps popover foreground contrast at APCA Lc 60 in dark mode', () => {
+    const tokenMap = buildTokenMap('dark');
+    const popoverBg = oklchToSrgb(resolveColor('--popover', tokenMap));
+    const popoverFg = oklchToSrgb(resolveColor('--popover-foreground', tokenMap));
 
     expect(
       Math.abs(apcaContrast(popoverFg, popoverBg)),
-      "dark popover foreground contrast (APCA)",
+      'dark popover foreground contrast (APCA)',
     ).toBeGreaterThanOrEqual(60);
   });
 });
 
-describe("State-selected contrast", () => {
-  it.each(["light", "dark"] as const)(
-    "keeps foreground text contrast above Lc 60 on state-selected overlay in %s mode",
+describe('State-selected contrast', () => {
+  it.each(['light', 'dark'] as const)(
+    'keeps foreground text contrast above Lc 60 on state-selected overlay in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const baseBg = resolveColor("--background", tokenMap);
-      const text = oklchToSrgb(resolveColor("--foreground", tokenMap));
+      const baseBg = resolveColor('--background', tokenMap);
+      const text = oklchToSrgb(resolveColor('--foreground', tokenMap));
 
-      const fgToken = resolveColor("--foreground", tokenMap);
-      const stateSelectedPct = Number(tokenMap.get("--state-selected")?.replace("%", "") ?? "10") / 100;
-      
+      const fgToken = resolveColor('--foreground', tokenMap);
+      const stateSelectedPct =
+        Number(tokenMap.get('--state-selected')?.replace('%', '') ?? '10') / 100;
+
       const mixedBgColor = mixOklch(fgToken, baseBg, stateSelectedPct);
       const mixedBg = oklchToSrgb(mixedBgColor);
 
@@ -561,21 +563,26 @@ describe("State-selected contrast", () => {
   );
 });
 
-describe("Chart color CVD distinctness", () => {
-  it.each(["light", "dark"] as const)(
-    "ensures chart color series have distinct lightness delta in %s mode",
+describe('Chart color CVD distinctness', () => {
+  it.each(['light', 'dark'] as const)(
+    'ensures chart color series have distinct lightness delta in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const chart1 = resolveColor("--chart-1", tokenMap).l;
-      const chart2 = resolveColor("--chart-2", tokenMap).l;
-      const chart3 = resolveColor("--chart-3", tokenMap).l;
-      const chart4 = resolveColor("--chart-4", tokenMap).l;
-      const chart5 = resolveColor("--chart-5", tokenMap).l;
+      const chart1 = resolveColor('--chart-1', tokenMap).l;
+      const chart2 = resolveColor('--chart-2', tokenMap).l;
+      const chart3 = resolveColor('--chart-3', tokenMap).l;
+      const chart4 = resolveColor('--chart-4', tokenMap).l;
+      const chart5 = resolveColor('--chart-5', tokenMap).l;
 
-      const lightnesses = [chart1, chart2, chart3, chart4, chart5];
-      for (let i = 0; i < lightnesses.length - 1; i++) {
-        const delta = Math.abs(lightnesses[i] - lightnesses[i+1]);
-        expect(delta).toBeGreaterThanOrEqual(0.02);
+      const pairs = [
+        [chart1, chart2],
+        [chart2, chart3],
+        [chart3, chart4],
+        [chart4, chart5],
+      ] as const;
+
+      for (const [a, b] of pairs) {
+        expect(Math.abs(a - b)).toBeGreaterThanOrEqual(0.02);
       }
     },
   );

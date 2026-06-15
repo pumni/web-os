@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React, { useRef, useEffect, useState } from "react";
-import { Button, Input, Avatar, AvatarFallback, AvatarImage } from "@pumni/ui";
-import { Send, MessageSquare } from "lucide-react";
-import type { ChatMessage } from "../types";
-import { ReactionOverlay, type ReactionOverlayRef } from "./reaction-overlay";
+import React, { useRef, useEffect, useState } from 'react';
+import { Button, Input, Avatar, AvatarFallback, AvatarImage } from '@pumni/ui';
+import { Send, MessageSquare } from 'lucide-react';
+import type { ChatMessage } from '../types';
+import { ReactionOverlay, type ReactionOverlayRef } from './reaction-overlay';
 
 interface ChatPanelProps {
   messages: ChatMessage[];
@@ -23,7 +23,7 @@ export function ChatPanel({
   onReact,
   reactionOverlayRef,
 }: ChatPanelProps) {
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState('');
   const logRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when messages list updates
@@ -38,7 +38,7 @@ export function ChatPanel({
     if (!inputText.trim()) return;
     const ok = sendChat(inputText.trim());
     if (ok) {
-      setInputText("");
+      setInputText('');
     }
   };
 
@@ -65,7 +65,7 @@ export function ChatPanel({
             const isMe = msg.userId === userId;
             const profile = profiles[msg.userId];
             const displayName =
-              profile?.username ?? (isMe ? "Bạn" : `User #${msg.userId.slice(0, 6)}`);
+              profile?.username ?? (isMe ? 'Bạn' : `User #${msg.userId.slice(0, 6)}`);
             const initials = profile?.username
               ? profile.username.slice(0, 2).toUpperCase()
               : msg.userId.slice(0, 2).toUpperCase();
@@ -74,7 +74,7 @@ export function ChatPanel({
               <div
                 key={msg.id}
                 className={`flex gap-1.5 text-xs ${
-                  isMe ? "self-end flex-row-reverse items-end" : "self-start items-end"
+                  isMe ? 'self-end flex-row-reverse items-end' : 'self-start items-end'
                 } max-w-[88%]`}
               >
                 {/* Avatar — only for others */}
@@ -94,7 +94,7 @@ export function ChatPanel({
                 )}
 
                 <div
-                  className={`flex flex-col gap-0.5 min-w-0 ${isMe ? "items-end" : "items-start"}`}
+                  className={`flex flex-col gap-0.5 min-w-0 ${isMe ? 'items-end' : 'items-start'}`}
                 >
                   {/* Name — only for others */}
                   {!isMe && (
@@ -107,8 +107,8 @@ export function ChatPanel({
                   <div
                     className={`px-3 py-1.5 wrap-break-word max-w-full ${
                       isMe
-                        ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm"
-                        : "bg-muted text-foreground rounded-2xl rounded-bl-sm"
+                        ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-sm'
+                        : 'bg-muted text-foreground rounded-2xl rounded-bl-sm'
                     }`}
                   >
                     <p className="leading-relaxed whitespace-pre-wrap text-xs select-text">
@@ -125,7 +125,7 @@ export function ChatPanel({
       {/* Reaction Bar */}
       {onReact && (
         <div className="flex items-center gap-0.5 px-0.5 py-1 border-t border-border shrink-0 select-none">
-          {["❤️", "😂", "😮", "👍", "🎉"].map((emoji) => (
+          {['❤️', '😂', '😮', '👍', '🎉'].map((emoji) => (
             <Button
               key={emoji}
               variant="ghost"

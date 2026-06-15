@@ -1,14 +1,14 @@
-import { useSyncExternalStore } from "react";
-import { create } from "zustand";
-import { SIDEBAR_COOKIE } from "@/components/app-shell/sidebar-config";
+import { useSyncExternalStore } from 'react';
+import { create } from 'zustand';
+import { SIDEBAR_COOKIE } from '@/components/app-shell/sidebar-config';
 
 function readCollapsedCookie(): boolean {
-  if (typeof document === "undefined") return false;
-  return document.cookie.split("; ").includes(`${SIDEBAR_COOKIE}=1`);
+  if (typeof document === 'undefined') return false;
+  return document.cookie.split('; ').includes(`${SIDEBAR_COOKIE}=1`);
 }
 
 function writeCollapsedCookie(collapsed: boolean): void {
-  if (typeof document === "undefined") return;
+  if (typeof document === 'undefined') return;
   // Non-sensitive UI preference; 1-year lifetime, lax so the server layout can
   // read it for zero-flash SSR.
   document.cookie = `${SIDEBAR_COOKIE}=${collapsed ? 1 : 0}; path=/; max-age=31536000; samesite=lax`;

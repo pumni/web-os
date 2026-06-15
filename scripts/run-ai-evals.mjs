@@ -65,7 +65,8 @@ function parseFrontmatter(relativePath) {
 function printEvalCoverageReport() {
   console.log('\n=== Eval coverage ===');
   const evalDir = path.join(ROOT, '.agents', 'evals');
-  const evalFiles = fs.readdirSync(evalDir)
+  const evalFiles = fs
+    .readdirSync(evalDir)
     .filter((fileName) => fileName.endsWith('.md'))
     .sort()
     .map((fileName) => `.agents/evals/${fileName}`);
@@ -79,10 +80,12 @@ function printEvalCoverageReport() {
     if (frontmatter.manual === true) manual++;
     if (frontmatter['automated-rule']) automated++;
 
-    const rules = new Set([
-      frontmatter['automated-rule'],
-      ...(Array.isArray(frontmatter['covered-rules']) ? frontmatter['covered-rules'] : []),
-    ].filter(Boolean));
+    const rules = new Set(
+      [
+        frontmatter['automated-rule'],
+        ...(Array.isArray(frontmatter['covered-rules']) ? frontmatter['covered-rules'] : []),
+      ].filter(Boolean),
+    );
 
     for (const ruleId of rules) {
       if (!coveredRules.has(ruleId)) coveredRules.set(ruleId, []);
@@ -92,7 +95,9 @@ function printEvalCoverageReport() {
 
   const ruleIds = Object.values(RULES);
   console.log(`Evals: ${evalFiles.length} total (${automated} automated, ${manual} manual).`);
-  console.log(`Static rule coverage: ${coveredRules.size}/${ruleIds.length} rules covered by at least one eval.`);
+  console.log(
+    `Static rule coverage: ${coveredRules.size}/${ruleIds.length} rules covered by at least one eval.`,
+  );
 
   const missing = ruleIds.filter((ruleId) => !coveredRules.has(ruleId));
   if (missing.length > 0) {

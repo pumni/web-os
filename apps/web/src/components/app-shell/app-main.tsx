@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
-import { useSidebarCollapsed } from "@/stores/app-ui-store";
-import { SIDEBAR_WIDTH } from "./sidebar-config";
+import type { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+import { useSidebarCollapsed } from '@/stores/app-ui-store';
+import { SIDEBAR_WIDTH } from './sidebar-config';
 
 type AppMainProps = Readonly<{
   defaultCollapsed: boolean;
@@ -22,7 +22,7 @@ export function AppMain({ defaultCollapsed, topbar, children }: AppMainProps) {
   return (
     <div
       className={cn(
-        "relative flex min-h-dvh flex-col transition-[padding] duration-300 ease-out",
+        'relative flex min-h-dvh flex-col transition-[padding] duration-300 ease-out',
         collapsed ? SIDEBAR_WIDTH.collapsed.pad : SIDEBAR_WIDTH.expanded.pad,
       )}
     >

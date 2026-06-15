@@ -19,10 +19,10 @@
 
 ## 1. Nguyên nhân gốc (đã truy trong code)
 
-| # | Hiện tượng | Nguyên nhân |
-| :- | :- | :- |
+| #         | Hiện tượng                                                                                     | Nguyên nhân                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| :-------- | :--------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 🔴 **P1** | Host **dừng → play lại** nhưng follower **không tự resume**; phải tự play + bấm "Đồng bộ lại". | `use-sync-controller.ts:261-287`: follower coi là "thao tác thủ công" **chỉ dựa trên `e?.isOriginTrusted`**. Với **YouTube**, event play/pause do Vidstack **tổng hợp** từ `onStateChange` của iframe → `isOriginTrusted` **không đáng tin**. Khi host dừng, follower `reconcile()` gọi `player.pause()` **programmatic** → event `pause` bị báo "trusted" → `handleFollowerManualInteraction()` chạy nhầm → follower **âm thầm `isFollowingHost=false`**. |
-| 🔴 **P2** | Khi follower lỡ lệch thì **phục hồi hoàn toàn thủ công**. | `handleReceiveAnchor` (dòng 242-247): nếu `isFollowingHostRef.current===false` thì **bỏ qua `reconcile()`**. Host play lại → anchor tới nhưng follower không phản ứng. Mà host **chỉ broadcast khi thao tác thật** → mỗi anchor lẽ ra phải tự kéo cả phòng về. |
+| 🔴 **P2** | Khi follower lỡ lệch thì **phục hồi hoàn toàn thủ công**.                                      | `handleReceiveAnchor` (dòng 242-247): nếu `isFollowingHostRef.current===false` thì **bỏ qua `reconcile()`**. Host play lại → anchor tới nhưng follower không phản ứng. Mà host **chỉ broadcast khi thao tác thật** → mỗi anchor lẽ ra phải tự kéo cả phòng về.                                                                                                                                                                                             |
 
 > Với nguồn **direct URL** (HTML5) `isOriginTrusted` đúng chuẩn nên bug không xảy ra → khẳng định đây là lỗi đặc thù provider + thiết kế phục hồi.
 
@@ -134,17 +134,26 @@ const isFollowerManualEvent = (e?: { isOriginTrusted?: boolean }) =>
   !isWithinProgrammaticWindow() && e?.isOriginTrusted !== false;
 
 const handlePlay = (e?: MediaPlayEvent) => {
-  if (isHost) { emitAnchor(); return; }
+  if (isHost) {
+    emitAnchor();
+    return;
+  }
   if (isFollowerManualEvent(e)) handleFollowerManualInteraction();
 };
 
 const handlePause = (e?: MediaPauseEvent) => {
-  if (isHost) { emitAnchor(); return; }
+  if (isHost) {
+    emitAnchor();
+    return;
+  }
   if (isFollowerManualEvent(e)) handleFollowerManualInteraction();
 };
 
 const handleSeeked = (detail?: number, e?: MediaSeekedEvent) => {
-  if (isHost) { emitAnchor(); return; }
+  if (isHost) {
+    emitAnchor();
+    return;
+  }
   if (isFollowerManualEvent(e)) handleFollowerManualInteraction();
 };
 ```
@@ -179,22 +188,23 @@ Banner "Đã ngắt đồng bộ" có thể thêm gợi ý ngắn để người
 
 ## 4. Cổng nghiệm thu (smoke 2 trình duyệt, **ưu tiên nguồn YouTube**)
 
-| # | Kịch bản | Kỳ vọng |
-| :- | :- | :- |
-| 1 | A pause → A play lại | **B tự dừng rồi tự resume**, KHÔNG cần thao tác, KHÔNG hiện banner "Đã ngắt đồng bộ". *(P1 cũ vỡ)* |
-| 2 | A seek tới đoạn khác | B tự nhảy theo, vẫn "Đang đồng bộ với Host". |
-| 3 | A đổi tốc độ | B đổi theo. |
-| 4 | B **tự seek** lùi để xem lại | B hiện "Đã ngắt đồng bộ" (tách tạm, đúng ý người dùng). |
-| 5 | Sau (4), A pause hoặc play | **B tự gom về đồng bộ** ngay (auto-regather), không cần bấm nút. |
-| 6 | B bấm "Đồng bộ lại" thủ công | B về đúng vị trí host. |
-| 7 | Lặp 1–6 với **nguồn direct URL (mp4/HLS)** | Hành vi đồng nhất, không hồi quy. |
-| 8 | Autoplay bị chặn lúc resume | Hiện overlay **tap-to-play**, không kẹt im lặng. |
+| #   | Kịch bản                                   | Kỳ vọng                                                                                            |
+| :-- | :----------------------------------------- | :------------------------------------------------------------------------------------------------- |
+| 1   | A pause → A play lại                       | **B tự dừng rồi tự resume**, KHÔNG cần thao tác, KHÔNG hiện banner "Đã ngắt đồng bộ". _(P1 cũ vỡ)_ |
+| 2   | A seek tới đoạn khác                       | B tự nhảy theo, vẫn "Đang đồng bộ với Host".                                                       |
+| 3   | A đổi tốc độ                               | B đổi theo.                                                                                        |
+| 4   | B **tự seek** lùi để xem lại               | B hiện "Đã ngắt đồng bộ" (tách tạm, đúng ý người dùng).                                            |
+| 5   | Sau (4), A pause hoặc play                 | **B tự gom về đồng bộ** ngay (auto-regather), không cần bấm nút.                                   |
+| 6   | B bấm "Đồng bộ lại" thủ công               | B về đúng vị trí host.                                                                             |
+| 7   | Lặp 1–6 với **nguồn direct URL (mp4/HLS)** | Hành vi đồng nhất, không hồi quy.                                                                  |
+| 8   | Autoplay bị chặn lúc resume                | Hiện overlay **tap-to-play**, không kẹt im lặng.                                                   |
 
 **Gates:** `bun run typecheck` + `bun run lint` + `bun run build` xanh.
 
 ---
 
 ## 5. Bất biến tuyệt đối (KHÔNG phá)
+
 - Anchor chỉ host ghi qua RLS `watch_rooms_update_host`; host **không** broadcast định kỳ.
 - Một channel `room:{id}` cho mọi realtime.
 - React Compiler bật → không thêm `useCallback/useMemo`.
@@ -205,16 +215,17 @@ Banner "Đã ngắt đồng bộ" có thể thêm gợi ý ngắn để người
 
 ## 6. Rủi ro & khắc phục
 
-| Rủi ro | Khắc phục |
-| :- | :- |
-| `PROGRAMMATIC_WINDOW_MS=800` quá ngắn cho YouTube (seeked về trễ) → vẫn ngắt nhầm | Tăng lên 1000–1200ms; vòng lặp 1s tự re-mark khi còn catch-up. Tinh chỉnh tại cổng #1/#2. |
-| Auto-gom "quá tay": follower đang xem lại bị kéo đi khi host vô tình thao tác | Đây là mô hình đã chốt (host action gom cả phòng). Follower có thể tách lại bằng seek của mình sau đó; host không broadcast định kỳ nên giữa các thao tác follower vẫn yên. |
-| `isOriginTrusted` ở Vidstack 1.15.6 không có trên một số event | Guard dùng `!== false` (an toàn khi `undefined`) + cửa sổ thời gian là tín hiệu chính. |
-| Follower tự play cục bộ (gesture thật) trong cửa sổ ức chế bị bỏ qua | Cửa sổ chỉ 800ms quanh thao tác programmatic; xác suất trùng rất thấp, chấp nhận được. |
+| Rủi ro                                                                            | Khắc phục                                                                                                                                                                   |
+| :-------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PROGRAMMATIC_WINDOW_MS=800` quá ngắn cho YouTube (seeked về trễ) → vẫn ngắt nhầm | Tăng lên 1000–1200ms; vòng lặp 1s tự re-mark khi còn catch-up. Tinh chỉnh tại cổng #1/#2.                                                                                   |
+| Auto-gom "quá tay": follower đang xem lại bị kéo đi khi host vô tình thao tác     | Đây là mô hình đã chốt (host action gom cả phòng). Follower có thể tách lại bằng seek của mình sau đó; host không broadcast định kỳ nên giữa các thao tác follower vẫn yên. |
+| `isOriginTrusted` ở Vidstack 1.15.6 không có trên một số event                    | Guard dùng `!== false` (an toàn khi `undefined`) + cửa sổ thời gian là tín hiệu chính.                                                                                      |
+| Follower tự play cục bộ (gesture thật) trong cửa sổ ức chế bị bỏ qua              | Cửa sổ chỉ 800ms quanh thao tác programmatic; xác suất trùng rất thấp, chấp nhận được.                                                                                      |
 
 ---
 
 ## 7. Checklist thực thi nhanh
+
 - [ ] 3.1 cửa sổ ức chế + 3.2 tryPlay
 - [ ] 3.3 reconcile mark + 3.4 resync/resumeFromGesture mark
 - [ ] 3.5 handlers (kết hợp window + isOriginTrusted) + 3.6 handleReceiveAnchor auto-gom

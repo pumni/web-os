@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const sourceTypeSchema = z.enum(["youtube", "url"]);
+export const sourceTypeSchema = z.enum(['youtube', 'url']);
 
 // YouTube: 11-char id. URL: http(s) only.
 export const createRoomSchema = z.object({
@@ -28,7 +28,7 @@ export const reorderQueueSchema = z.object({
   roomId: z.string().uuid(),
   itemId: z.string().uuid(),
   beforeId: z.string().uuid().nullable(), // item đứng trước mục tiêu (null nếu đưa lên đầu)
-  afterId: z.string().uuid().nullable(),  // item đứng sau mục tiêu (null nếu đưa xuống cuối)
+  afterId: z.string().uuid().nullable(), // item đứng sau mục tiêu (null nếu đưa xuống cuối)
 });
 
 export const transferHostSchema = z.object({
@@ -44,4 +44,3 @@ export const chatMessageSchema = z.object({
   text: z.string().trim().min(1).max(500),
 });
 export type ChatMessageInput = z.infer<typeof chatMessageSchema>;
-

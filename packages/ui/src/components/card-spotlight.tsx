@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Card } from "./card";
-import type { VariantProps } from "class-variance-authority";
-import type { cardVariants } from "./card";
-import { cn } from "../lib/cn";
+import * as React from 'react';
+import { Card } from './card';
+import type { VariantProps } from 'class-variance-authority';
+import type { cardVariants } from './card';
+import { cn } from '../lib/cn';
 
 /**
  * CardSpotlight — opt-in client wrapper that adds a pointer-tracked radial
@@ -39,26 +39,21 @@ import { cn } from "../lib/cn";
  * </CardSpotlight>
  * ```
  */
-type CardSpotlightProps = Omit<React.ComponentProps<"div">, "style"> &
-  Omit<VariantProps<typeof cardVariants>, "variant"> & {
+type CardSpotlightProps = Omit<React.ComponentProps<'div'>, 'style'> &
+  Omit<VariantProps<typeof cardVariants>, 'variant'> & {
     asChild?: boolean;
     style?: React.CSSProperties;
   };
 
-function CardSpotlight({
-  className,
-  onPointerMove,
-  style,
-  ...props
-}: CardSpotlightProps) {
+function CardSpotlight({ className, onPointerMove, style, ...props }: CardSpotlightProps) {
   const handlePointerMove = React.useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
       // Update CSS vars inline; the CSS utility reads them for gradient position.
-      e.currentTarget.style.setProperty("--spot-x", `${x}%`);
-      e.currentTarget.style.setProperty("--spot-y", `${y}%`);
+      e.currentTarget.style.setProperty('--spot-x', `${x}%`);
+      e.currentTarget.style.setProperty('--spot-y', `${y}%`);
       // Forward to any consumer-provided handler.
       onPointerMove?.(e);
     },

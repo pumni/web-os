@@ -1,9 +1,14 @@
-import { describe, it, expect } from "vitest";
-import { calculateExpectedPosition, extractYouTubeId, isValidHttpUrl, getStructuralSignature } from "../../features/watch/sync-math";
+import { describe, it, expect } from 'vitest';
+import {
+  calculateExpectedPosition,
+  extractYouTubeId,
+  isValidHttpUrl,
+  getStructuralSignature,
+} from '../../features/watch/sync-math';
 
-describe("Watch synced playback math & helpers", () => {
-  describe("calculateExpectedPosition", () => {
-    it("should return static position when video is paused", () => {
+describe('Watch synced playback math & helpers', () => {
+  describe('calculateExpectedPosition', () => {
+    it('should return static position when video is paused', () => {
       const anchor = {
         isPlaying: false,
         anchorPosition: 42.5,
@@ -15,7 +20,7 @@ describe("Watch synced playback math & helpers", () => {
       expect(expected).toBe(42.5);
     });
 
-    it("should calculate correct position when video is playing at 1x speed", () => {
+    it('should calculate correct position when video is playing at 1x speed', () => {
       const anchor = {
         isPlaying: true,
         anchorPosition: 10.0,
@@ -27,7 +32,7 @@ describe("Watch synced playback math & helpers", () => {
       expect(expected).toBe(15.0);
     });
 
-    it("should calculate correct position when video is playing at 1.5x speed", () => {
+    it('should calculate correct position when video is playing at 1.5x speed', () => {
       const anchor = {
         isPlaying: true,
         anchorPosition: 20.0,
@@ -40,48 +45,48 @@ describe("Watch synced playback math & helpers", () => {
     });
   });
 
-  describe("extractYouTubeId", () => {
-    it("should parse 11-char ID directly", () => {
-      expect(extractYouTubeId("dQw4w9WgXcQ")).toBe("dQw4w9WgXcQ");
+  describe('extractYouTubeId', () => {
+    it('should parse 11-char ID directly', () => {
+      expect(extractYouTubeId('dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
     });
 
-    it("should parse standard watch link", () => {
-      expect(extractYouTubeId("https://www.youtube.com/watch?v=dQw4w9WgXcQ")).toBe("dQw4w9WgXcQ");
+    it('should parse standard watch link', () => {
+      expect(extractYouTubeId('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
     });
 
-    it("should parse shortened link", () => {
-      expect(extractYouTubeId("https://youtu.be/dQw4w9WgXcQ")).toBe("dQw4w9WgXcQ");
+    it('should parse shortened link', () => {
+      expect(extractYouTubeId('https://youtu.be/dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
     });
 
-    it("should parse embed link", () => {
-      expect(extractYouTubeId("https://www.youtube.com/embed/dQw4w9WgXcQ")).toBe("dQw4w9WgXcQ");
+    it('should parse embed link', () => {
+      expect(extractYouTubeId('https://www.youtube.com/embed/dQw4w9WgXcQ')).toBe('dQw4w9WgXcQ');
     });
 
-    it("should return null for invalid YouTube links", () => {
-      expect(extractYouTubeId("https://youtube.com/invalid")).toBeNull();
-      expect(extractYouTubeId("not-eleven-chars")).toBeNull();
-    });
-  });
-
-  describe("isValidHttpUrl", () => {
-    it("should accept valid http and https links", () => {
-      expect(isValidHttpUrl("https://example.com/video.mp4")).toBe(true);
-      expect(isValidHttpUrl("http://localhost/stream.m3u8")).toBe(true);
-    });
-
-    it("should reject invalid urls and protocols", () => {
-      expect(isValidHttpUrl("ftp://example.com")).toBe(false);
-      expect(isValidHttpUrl("not-a-link")).toBe(false);
+    it('should return null for invalid YouTube links', () => {
+      expect(extractYouTubeId('https://youtube.com/invalid')).toBeNull();
+      expect(extractYouTubeId('not-eleven-chars')).toBeNull();
     });
   });
 
-  describe("getStructuralSignature", () => {
-    it("should return identical signature when structural fields are unchanged", () => {
+  describe('isValidHttpUrl', () => {
+    it('should accept valid http and https links', () => {
+      expect(isValidHttpUrl('https://example.com/video.mp4')).toBe(true);
+      expect(isValidHttpUrl('http://localhost/stream.m3u8')).toBe(true);
+    });
+
+    it('should reject invalid urls and protocols', () => {
+      expect(isValidHttpUrl('ftp://example.com')).toBe(false);
+      expect(isValidHttpUrl('not-a-link')).toBe(false);
+    });
+  });
+
+  describe('getStructuralSignature', () => {
+    it('should return identical signature when structural fields are unchanged', () => {
       const room = {
-        source_type: "youtube" as const,
-        source_ref: "dQw4w9WgXcQ",
-        host_id: "user-1",
-        current_queue_item_id: "item-1",
+        source_type: 'youtube' as const,
+        source_ref: 'dQw4w9WgXcQ',
+        host_id: 'user-1',
+        current_queue_item_id: 'item-1',
         is_playing: false,
         anchor_position: 12.3,
       };
@@ -99,19 +104,19 @@ describe("Watch synced playback math & helpers", () => {
       expect(sig1).toBe(sig2);
     });
 
-    it("should return different signature when structural fields change", () => {
+    it('should return different signature when structural fields change', () => {
       const room = {
-        source_type: "youtube" as const,
-        source_ref: "dQw4w9WgXcQ",
-        host_id: "user-1",
-        current_queue_item_id: "item-1",
+        source_type: 'youtube' as const,
+        source_ref: 'dQw4w9WgXcQ',
+        host_id: 'user-1',
+        current_queue_item_id: 'item-1',
       };
 
       const sig1 = getStructuralSignature(room);
 
       const roomWithNewSource = {
         ...room,
-        source_ref: "another-video",
+        source_ref: 'another-video',
       };
 
       const sig2 = getStructuralSignature(roomWithNewSource);

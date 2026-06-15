@@ -1,7 +1,7 @@
-import type { User } from "@supabase/supabase-js";
-import { OsCommand } from "./os-command";
-import { SidebarToggle } from "./sidebar-toggle";
-import { UserMenu } from "./user-menu";
+import type { User } from '@supabase/supabase-js';
+import { OsCommand } from './os-command';
+import { SidebarToggle } from './sidebar-toggle';
+import { UserMenu } from './user-menu';
 
 type AppTopbarProps = {
   user: User;

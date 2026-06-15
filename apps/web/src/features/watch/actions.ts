@@ -1,31 +1,29 @@
-"use server";
+'use server';
 
-import { requireUser } from "@pumni/auth";
-import { createSupabaseServerClient } from "@pumni/supabase/server";
-import { 
-  createRoomSchema, 
-  setSourceSchema, 
+import { requireUser } from '@pumni/auth';
+import { createSupabaseServerClient } from '@pumni/supabase/server';
+import {
+  createRoomSchema,
+  setSourceSchema,
   addQueueItemSchema,
   reorderQueueSchema,
   transferHostSchema,
-  type CreateRoomInput, 
+  type CreateRoomInput,
   type SetSourceInput,
   type AddQueueItemInput,
   type ReorderQueueInput,
-  type TransferHostInput
-} from "@pumni/validators";
-import { randomBytes } from "crypto";
-import { extractYouTubeId, isValidHttpUrl, fractionalPosition } from "./sync-math";
-import { revalidatePath } from "next/cache";
+  type TransferHostInput,
+} from '@pumni/validators';
+import { randomBytes } from 'crypto';
+import { extractYouTubeId, isValidHttpUrl, fractionalPosition } from './sync-math';
+import { revalidatePath } from 'next/cache';
 
-export type ActionResult<T = void> = 
-  | { ok: true; data: T }
-  | { ok: false; message: string };
+export type ActionResult<T = void> = { ok: true; data: T } | { ok: false; message: string };
 
 function generateJoinCode(): string {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
   const bytes = randomBytes(6);
-  let code = "";
+  let code = '';
   for (let i = 0; i < 6; i++) {
     const val = bytes[i];
     if (val !== undefined) {
@@ -40,15 +38,12 @@ function generateJoinCode(): string {
  * public oEmbed endpoint (no API key); direct URLs fall back to the file name.
  * Never throws — returns null on any failure so adding still succeeds.
  */
-async function fetchVideoTitle(
-  sourceType: "youtube" | "url",
-  ref: string
-): Promise<string | null> {
+async function fetchVideoTitle(sourceType: 'youtube' | 'url', ref: string): Promise<string | null> {
   try {
-    if (sourceType === "youtube") {
+    if (sourceType === 'youtube') {
       const res = await fetch(
         `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${ref}&format=json`,
-        { signal: AbortSignal.timeout(5000) }
+        { signal: AbortSignal.timeout(5000) },
       );
       if (res.ok) {
         const data = (await res.json()) as { title?: string };
@@ -57,7 +52,7 @@ async function fetchVideoTitle(
       }
     } else {
       const u = new URL(ref);
-      const last = u.pathname.split("/").filter(Boolean).pop();
+      const last = u.pathname.split('/').filter(Boolean).pop();
       if (last) return decodeURIComponent(last).slice(0, 300);
     }
   } catch {
@@ -66,23 +61,25 @@ async function fetchVideoTitle(
   return null;
 }
 
-export async function createRoom(input: CreateRoomInput): Promise<ActionResult<{ roomId: string; code: string }>> {
+export async function createRoom(
+  input: CreateRoomInput,
+): Promise<ActionResult<{ roomId: string; code: string }>> {
   const user = await requireUser();
   const parsed = createRoomSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, message: "Dữ liệu tạo phòng không hợp lệ." };
+    return { ok: false, message: 'Dữ liệu tạo phòng không hợp lệ.' };
   }
 
   let sanitizedRef = parsed.data.sourceRef.trim();
-  if (parsed.data.sourceType === "youtube") {
+  if (parsed.data.sourceType === 'youtube') {
     const ytId = extractYouTubeId(sanitizedRef);
     if (!ytId) {
-      return { ok: false, message: "Link hoặc ID video YouTube không hợp lệ." };
+      return { ok: false, message: 'Link hoặc ID video YouTube không hợp lệ.' };
     }
     sanitizedRef = ytId;
   } else {
     if (!isValidHttpUrl(sanitizedRef)) {
-      return { ok: false, message: "URL video trực tiếp không hợp lệ." };
+      return { ok: false, message: 'URL video trực tiếp không hợp lệ.' };
     }
   }
 
@@ -93,7 +90,7 @@ export async function createRoom(input: CreateRoomInput): Promise<ActionResult<{
   while (attempts < 3) {
     const code = generateJoinCode();
     const { data, error } = await supabase
-      .from("watch_rooms")
+      .from('watch_rooms')
       .insert({
         code,
         host_id: user.id,
@@ -105,47 +102,48 @@ export async function createRoom(input: CreateRoomInput): Promise<ActionResult<{
         anchor_server_ts: new Date().toISOString(),
         last_active_at: new Date().toISOString(),
       })
-      .select("id, code")
+      .select('id, code')
       .maybeSingle();
 
     if (!error && data) {
       // Add host as the first member of the room
-      await supabase.from("room_members").insert({
+      await supabase.from('room_members').insert({
         room_id: data.id,
         user_id: user.id,
       });
 
-      revalidatePath("/watch");
+      revalidatePath('/watch');
       return { ok: true, data: { roomId: data.id, code: data.code } };
     }
 
-    if (error && error.code !== "23505") { // 23505 is unique violation code in Postgres
+    if (error && error.code !== '23505') {
+      // 23505 is unique violation code in Postgres
       return { ok: false, message: error.message };
     }
 
     attempts++;
   }
 
-  return { ok: false, message: "Không thể khởi tạo mã phòng độc nhất. Vui lòng thử lại." };
+  return { ok: false, message: 'Không thể khởi tạo mã phòng độc nhất. Vui lòng thử lại.' };
 }
 
 export async function setRoomSource(input: SetSourceInput): Promise<ActionResult> {
   const user = await requireUser();
   const parsed = setSourceSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, message: "Dữ liệu nguồn phát không hợp lệ." };
+    return { ok: false, message: 'Dữ liệu nguồn phát không hợp lệ.' };
   }
 
   let sanitizedRef = parsed.data.sourceRef.trim();
-  if (parsed.data.sourceType === "youtube") {
+  if (parsed.data.sourceType === 'youtube') {
     const ytId = extractYouTubeId(sanitizedRef);
     if (!ytId) {
-      return { ok: false, message: "Link hoặc ID video YouTube không hợp lệ." };
+      return { ok: false, message: 'Link hoặc ID video YouTube không hợp lệ.' };
     }
     sanitizedRef = ytId;
   } else {
     if (!isValidHttpUrl(sanitizedRef)) {
-      return { ok: false, message: "URL video trực tiếp không hợp lệ." };
+      return { ok: false, message: 'URL video trực tiếp không hợp lệ.' };
     }
   }
 
@@ -153,21 +151,21 @@ export async function setRoomSource(input: SetSourceInput): Promise<ActionResult
 
   // Enforce host boundary (also verified by RLS)
   const { data: room, error: fetchError } = await supabase
-    .from("watch_rooms")
-    .select("host_id")
-    .eq("id", parsed.data.roomId)
+    .from('watch_rooms')
+    .select('host_id')
+    .eq('id', parsed.data.roomId)
     .maybeSingle();
 
   if (fetchError || !room) {
-    return { ok: false, message: "Phòng không tồn tại." };
+    return { ok: false, message: 'Phòng không tồn tại.' };
   }
 
   if (room.host_id !== user.id) {
-    return { ok: false, message: "Chỉ quản phòng (host) mới có quyền đổi nguồn phát." };
+    return { ok: false, message: 'Chỉ quản phòng (host) mới có quyền đổi nguồn phát.' };
   }
 
   const { error } = await supabase
-    .from("watch_rooms")
+    .from('watch_rooms')
     .update({
       source_type: parsed.data.sourceType,
       source_ref: sanitizedRef,
@@ -179,13 +177,13 @@ export async function setRoomSource(input: SetSourceInput): Promise<ActionResult
       last_active_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
-    .eq("id", parsed.data.roomId);
+    .eq('id', parsed.data.roomId);
 
   if (error) {
     return { ok: false, message: error.message };
   }
 
-  revalidatePath("/watch");
+  revalidatePath('/watch');
   return { ok: true, data: undefined };
 }
 
@@ -195,29 +193,26 @@ export async function deleteRoom(roomId: string): Promise<ActionResult> {
 
   // Check host owner
   const { data: room, error: fetchError } = await supabase
-    .from("watch_rooms")
-    .select("host_id")
-    .eq("id", roomId)
+    .from('watch_rooms')
+    .select('host_id')
+    .eq('id', roomId)
     .maybeSingle();
 
   if (fetchError || !room) {
-    return { ok: false, message: "Phòng không tồn tại." };
+    return { ok: false, message: 'Phòng không tồn tại.' };
   }
 
   if (room.host_id !== user.id) {
-    return { ok: false, message: "Chỉ quản phòng (host) mới có quyền xóa phòng." };
+    return { ok: false, message: 'Chỉ quản phòng (host) mới có quyền xóa phòng.' };
   }
 
-  const { error } = await supabase
-    .from("watch_rooms")
-    .delete()
-    .eq("id", roomId);
+  const { error } = await supabase.from('watch_rooms').delete().eq('id', roomId);
 
   if (error) {
     return { ok: false, message: error.message };
   }
 
-  revalidatePath("/watch");
+  revalidatePath('/watch');
   return { ok: true, data: undefined };
 }
 
@@ -227,9 +222,9 @@ export async function joinByCode(code: string): Promise<ActionResult<{ roomId: s
   const cleanCode = code.trim().toUpperCase();
 
   const { data, error } = await supabase
-    .from("watch_rooms")
-    .select("id")
-    .eq("code", cleanCode)
+    .from('watch_rooms')
+    .select('id')
+    .eq('code', cleanCode)
     .maybeSingle();
 
   if (error) {
@@ -237,7 +232,7 @@ export async function joinByCode(code: string): Promise<ActionResult<{ roomId: s
   }
 
   if (!data) {
-    return { ok: false, message: "Mã phòng không tồn tại. Vui lòng kiểm tra lại." };
+    return { ok: false, message: 'Mã phòng không tồn tại. Vui lòng kiểm tra lại.' };
   }
 
   return { ok: true, data: { roomId: data.id } };
@@ -248,7 +243,7 @@ export async function leaveRoom(roomId: string): Promise<ActionResult> {
   await requireUser();
   const supabase = await createSupabaseServerClient();
 
-  const { error } = await supabase.rpc("leave_room", {
+  const { error } = await supabase.rpc('leave_room', {
     p_room_id: roomId,
   });
 
@@ -256,7 +251,7 @@ export async function leaveRoom(roomId: string): Promise<ActionResult> {
     return { ok: false, message: error.message };
   }
 
-  revalidatePath("/watch");
+  revalidatePath('/watch');
   return { ok: true, data: undefined };
 }
 
@@ -265,19 +260,19 @@ export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResu
   const user = await requireUser();
   const parsed = addQueueItemSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, message: "Dữ liệu hàng chờ không hợp lệ." };
+    return { ok: false, message: 'Dữ liệu hàng chờ không hợp lệ.' };
   }
 
   let sanitizedRef = parsed.data.sourceRef.trim();
-  if (parsed.data.sourceType === "youtube") {
+  if (parsed.data.sourceType === 'youtube') {
     const ytId = extractYouTubeId(sanitizedRef);
     if (!ytId) {
-      return { ok: false, message: "Link hoặc ID video YouTube không hợp lệ." };
+      return { ok: false, message: 'Link hoặc ID video YouTube không hợp lệ.' };
     }
     sanitizedRef = ytId;
   } else {
     if (!isValidHttpUrl(sanitizedRef)) {
-      return { ok: false, message: "URL video trực tiếp không hợp lệ." };
+      return { ok: false, message: 'URL video trực tiếp không hợp lệ.' };
     }
   }
 
@@ -285,10 +280,10 @@ export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResu
 
   // Find max position currently in queue
   const { data: maxItem, error: maxError } = await supabase
-    .from("watch_queue_items")
-    .select("position")
-    .eq("room_id", parsed.data.roomId)
-    .order("position", { ascending: false })
+    .from('watch_queue_items')
+    .select('position')
+    .eq('room_id', parsed.data.roomId)
+    .order('position', { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -304,16 +299,14 @@ export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResu
     (await fetchVideoTitle(parsed.data.sourceType, sanitizedRef)) ||
     null;
 
-  const { error: insertError } = await supabase
-    .from("watch_queue_items")
-    .insert({
-      room_id: parsed.data.roomId,
-      position: newPosition,
-      source_type: parsed.data.sourceType,
-      source_ref: sanitizedRef,
-      title: finalTitle,
-      added_by: user.id,
-    });
+  const { error: insertError } = await supabase.from('watch_queue_items').insert({
+    room_id: parsed.data.roomId,
+    position: newPosition,
+    source_type: parsed.data.sourceType,
+    source_ref: sanitizedRef,
+    title: finalTitle,
+    added_by: user.id,
+  });
 
   if (insertError) {
     return { ok: false, message: insertError.message };
@@ -321,11 +314,11 @@ export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResu
 
   // Update room last_active_at
   await supabase
-    .from("watch_rooms")
+    .from('watch_rooms')
     .update({ last_active_at: new Date().toISOString() })
-    .eq("id", parsed.data.roomId);
+    .eq('id', parsed.data.roomId);
 
-  revalidatePath("/watch");
+  revalidatePath('/watch');
   return { ok: true, data: undefined };
 }
 
@@ -334,7 +327,7 @@ export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResu
   await requireUser();
   const parsed = reorderQueueSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, message: "Dữ liệu vị trí không hợp lệ." };
+    return { ok: false, message: 'Dữ liệu vị trí không hợp lệ.' };
   }
 
   const supabase = await createSupabaseServerClient();
@@ -344,31 +337,31 @@ export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResu
 
   if (parsed.data.beforeId) {
     const { data: bItem, error: bError } = await supabase
-      .from("watch_queue_items")
-      .select("position")
-      .eq("id", parsed.data.beforeId)
+      .from('watch_queue_items')
+      .select('position')
+      .eq('id', parsed.data.beforeId)
       .maybeSingle();
-    if (bError || !bItem) return { ok: false, message: "Không tìm thấy item đứng trước." };
+    if (bError || !bItem) return { ok: false, message: 'Không tìm thấy item đứng trước.' };
     beforePosition = bItem.position;
   }
 
   if (parsed.data.afterId) {
     const { data: aItem, error: aError } = await supabase
-      .from("watch_queue_items")
-      .select("position")
-      .eq("id", parsed.data.afterId)
+      .from('watch_queue_items')
+      .select('position')
+      .eq('id', parsed.data.afterId)
       .maybeSingle();
-    if (aError || !aItem) return { ok: false, message: "Không tìm thấy item đứng sau." };
+    if (aError || !aItem) return { ok: false, message: 'Không tìm thấy item đứng sau.' };
     afterPosition = aItem.position;
   }
 
   const newPosition = fractionalPosition(beforePosition, afterPosition);
 
   const { error: updateError } = await supabase
-    .from("watch_queue_items")
+    .from('watch_queue_items')
     .update({ position: newPosition })
-    .eq("id", parsed.data.itemId)
-    .eq("room_id", parsed.data.roomId);
+    .eq('id', parsed.data.itemId)
+    .eq('room_id', parsed.data.roomId);
 
   if (updateError) {
     return { ok: false, message: updateError.message };
@@ -376,11 +369,11 @@ export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResu
 
   // Update room last_active_at
   await supabase
-    .from("watch_rooms")
+    .from('watch_rooms')
     .update({ last_active_at: new Date().toISOString() })
-    .eq("id", parsed.data.roomId);
+    .eq('id', parsed.data.roomId);
 
-  revalidatePath("/watch");
+  revalidatePath('/watch');
   return { ok: true, data: undefined };
 }
 
@@ -391,20 +384,20 @@ export async function removeQueueItem(roomId: string, itemId: string): Promise<A
 
   // Find if it is current item
   const { data: room, error: roomError } = await supabase
-    .from("watch_rooms")
-    .select("current_queue_item_id")
-    .eq("id", roomId)
+    .from('watch_rooms')
+    .select('current_queue_item_id')
+    .eq('id', roomId)
     .maybeSingle();
 
   if (roomError || !room) {
-    return { ok: false, message: "Phòng không tồn tại." };
+    return { ok: false, message: 'Phòng không tồn tại.' };
   }
 
   const { error: deleteError } = await supabase
-    .from("watch_queue_items")
+    .from('watch_queue_items')
     .delete()
-    .eq("id", itemId)
-    .eq("room_id", roomId);
+    .eq('id', itemId)
+    .eq('room_id', roomId);
 
   if (deleteError) {
     return { ok: false, message: deleteError.message };
@@ -412,20 +405,20 @@ export async function removeQueueItem(roomId: string, itemId: string): Promise<A
 
   if (room.current_queue_item_id === itemId) {
     await supabase
-      .from("watch_rooms")
+      .from('watch_rooms')
       .update({
         current_queue_item_id: null,
         last_active_at: new Date().toISOString(),
       })
-      .eq("id", roomId);
+      .eq('id', roomId);
   } else {
     await supabase
-      .from("watch_rooms")
+      .from('watch_rooms')
       .update({ last_active_at: new Date().toISOString() })
-      .eq("id", roomId);
+      .eq('id', roomId);
   }
 
-  revalidatePath("/watch");
+  revalidatePath('/watch');
   return { ok: true, data: undefined };
 }
 
@@ -435,25 +428,25 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
   const supabase = await createSupabaseServerClient();
 
   const { data: room, error: roomError } = await supabase
-    .from("watch_rooms")
-    .select("host_id, current_queue_item_id")
-    .eq("id", roomId)
+    .from('watch_rooms')
+    .select('host_id, current_queue_item_id')
+    .eq('id', roomId)
     .maybeSingle();
 
   if (roomError || !room) {
-    return { ok: false, message: "Phòng không tồn tại." };
+    return { ok: false, message: 'Phòng không tồn tại.' };
   }
 
   if (room.host_id !== user.id) {
-    return { ok: false, message: "Chỉ quản phòng mới có quyền chuyển video." };
+    return { ok: false, message: 'Chỉ quản phòng mới có quyền chuyển video.' };
   }
 
   let currentPosition = -999999.0;
   if (room.current_queue_item_id) {
     const { data: currentItem } = await supabase
-      .from("watch_queue_items")
-      .select("position")
-      .eq("id", room.current_queue_item_id)
+      .from('watch_queue_items')
+      .select('position')
+      .eq('id', room.current_queue_item_id)
       .maybeSingle();
     if (currentItem) {
       currentPosition = currentItem.position;
@@ -462,11 +455,11 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
 
   // Get first item with position > currentPosition
   const { data: nextItem, error: nextError } = await supabase
-    .from("watch_queue_items")
-    .select("id, source_type, source_ref")
-    .eq("room_id", roomId)
-    .gt("position", currentPosition)
-    .order("position", { ascending: true })
+    .from('watch_queue_items')
+    .select('id, source_type, source_ref')
+    .eq('room_id', roomId)
+    .gt('position', currentPosition)
+    .order('position', { ascending: true })
     .limit(1)
     .maybeSingle();
 
@@ -475,11 +468,11 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
   }
 
   if (!nextItem) {
-    return { ok: false, message: "Hàng chờ đã hết. Vui lòng thêm video mới." };
+    return { ok: false, message: 'Hàng chờ đã hết. Vui lòng thêm video mới.' };
   }
 
   const { error: updateError } = await supabase
-    .from("watch_rooms")
+    .from('watch_rooms')
     .update({
       source_type: nextItem.source_type,
       source_ref: nextItem.source_ref,
@@ -491,13 +484,13 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
       last_active_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
-    .eq("id", roomId);
+    .eq('id', roomId);
 
   if (updateError) {
     return { ok: false, message: updateError.message };
   }
 
-  revalidatePath("/watch");
+  revalidatePath('/watch');
   return { ok: true, data: undefined };
 }
 
@@ -506,12 +499,12 @@ export async function transferHost(input: TransferHostInput): Promise<ActionResu
   await requireUser();
   const parsed = transferHostSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, message: "Dữ liệu chuyển chủ phòng không hợp lệ." };
+    return { ok: false, message: 'Dữ liệu chuyển chủ phòng không hợp lệ.' };
   }
 
   const supabase = await createSupabaseServerClient();
 
-  const { error } = await supabase.rpc("transfer_room_host", {
+  const { error } = await supabase.rpc('transfer_room_host', {
     p_room_id: parsed.data.roomId,
     p_new_host: parsed.data.newHostId,
   });
@@ -521,11 +514,11 @@ export async function transferHost(input: TransferHostInput): Promise<ActionResu
   }
 
   await supabase
-    .from("watch_rooms")
+    .from('watch_rooms')
     .update({ last_active_at: new Date().toISOString() })
-    .eq("id", parsed.data.roomId);
+    .eq('id', parsed.data.roomId);
 
-  revalidatePath("/watch");
+  revalidatePath('/watch');
   return { ok: true, data: undefined };
 }
 
@@ -533,10 +526,10 @@ export async function transferHost(input: TransferHostInput): Promise<ActionResu
 export async function claimHost(roomId: string): Promise<ActionResult> {
   await requireUser();
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.rpc("claim_room_host", { p_room_id: roomId });
+  const { error } = await supabase.rpc('claim_room_host', { p_room_id: roomId });
   if (error) {
     return { ok: false, message: error.message };
   }
-  revalidatePath("/watch");
+  revalidatePath('/watch');
   return { ok: true, data: undefined };
 }

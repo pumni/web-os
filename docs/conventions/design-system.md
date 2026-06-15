@@ -20,18 +20,18 @@ These are imported once in `apps/web/src/app/globals.css`.
 The fastest way to stay on-brand: these are the rules an agent breaks when it
 falls back to generic Tailwind. Each is enforced or explained in full below.
 
-| Don't (generic slop) | Do (Pumni) | Why |
-| --- | --- | --- |
-| `bg-neutral-900`, `text-white`, raw `oklch(...)` | Semantic utilities — `bg-card`, `text-muted-foreground` | `pumniNoRawColor` ESLint rule blocks it |
-| `bg-black/40` for scrims | `bg-overlay` | One owned scrim token, theme-aware |
-| `rounded-[14px]`, `rounded-2xl` everywhere | Named radius utilities off `--radius-base` | One personalizable knob, not magic px |
-| `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-[var(--duration-base)]` | Brand curves + owned timing |
-| Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
-| Glass on hero / page backgrounds | Glass only on floating layers; opaque shell | `backdrop-filter` is GPU-heavy |
-| Eyeballing contrast on glass/accents | Trust the gated tokens; verify APCA Lc 60 / Lc 25 | `glass-contrast` test owns the cascade |
-| `backdrop-blur-md` | Glass utility / `GlassSurface` | Reduced-transparency and performance fallbacks |
-| `bg-card/40`, `border-border/20` | Solid surface tokens (opaque, `border-border`) | Surfaces are opaque in the unified system |
-| `shadow-md`, `shadow-lg` (Tailwind built-in) on content | `shadow-card` / `shadow-raised` (owned elevation) | One elevation ladder; floating depth comes from the `glass-*` utilities |
+| Don't (generic slop)                                    | Do (Pumni)                                                          | Why                                                                     |
+| ------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `bg-neutral-900`, `text-white`, raw `oklch(...)`        | Semantic utilities — `bg-card`, `text-muted-foreground`             | `pumniNoRawColor` ESLint rule blocks it                                 |
+| `bg-black/40` for scrims                                | `bg-overlay`                                                        | One owned scrim token, theme-aware                                      |
+| `rounded-[14px]`, `rounded-2xl` everywhere              | Named radius utilities off `--radius-base`                          | One personalizable knob, not magic px                                   |
+| `ease-out`, `duration-300`                              | `ease-fluid` / `ease-snappy`; `duration-(--duration-base)`          | Brand curves + owned timing                                             |
+| Hand-rolled `whileHover={{ scale: 1.05 }}`              | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested                                     |
+| Glass on hero / page backgrounds                        | Glass only on floating layers; opaque shell                         | `backdrop-filter` is GPU-heavy                                          |
+| Eyeballing contrast on glass/accents                    | Trust the gated tokens; verify APCA Lc 60 / Lc 25                   | `glass-contrast` test owns the cascade                                  |
+| `backdrop-blur-md`                                      | Glass utility / `GlassSurface`                                      | Reduced-transparency and performance fallbacks                          |
+| `bg-card/40`, `border-border/20`                        | Solid surface tokens (opaque, `border-border`)                      | Surfaces are opaque in the unified system                               |
+| `shadow-md`, `shadow-lg` (Tailwind built-in) on content | `shadow-card` / `shadow-raised` (owned elevation)                   | One elevation ladder; floating depth comes from the `glass-*` utilities |
 
 This isn't taste-by-vibe: colour, radius, and contrast are enforced by ESLint +
 tests, so "on-brand" is a gate, not a guideline.
@@ -52,20 +52,20 @@ Apps consume semantic utilities (`bg-primary`, `text-muted-foreground`,
 
 ### Semantic tokens
 
-| Token | Role |
-| --- | --- |
-| `background` / `foreground` | Page surface + default text |
-| `card` / `popover` (+ `-foreground`) | Card defaults to a solid raised surface; `variant="glass"` is opt-in for genuinely floating cards; `variant="inset"` is the recessed nested well. |
-| `primary` (+ `-foreground`) | Brand actions (Indigo) |
-| `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
-| `destructive` / `success` / `warning` (+ `-foreground`) | Status |
-| `border` / `input` / `field` / `ring` | Hairlines, fields, input backdrops (`bg-field`), focus ring |
-| `glass-bg` / `glass-border` / `glass-edge` / `glass-highlight` / `glass-scrim` / `glass-blur` | Translucent glass surfaces (`glass-edge` = luminous rim) |
-| `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) — never raw `bg-black/40` — using `--blur-scrim` |
-| `brand-gradient-*` | Brand gradient stops for display text only |
-| `desktop-blob-*` | Decorative OS wallpaper ambience |
-| `window-control-*` | Window traffic-light controls (`-icon` = dark glyph on the dots) |
-| `chart-1` ... `chart-5` | Data-visualization series colors (5 stops across brand hues) |
+| Token                                                                                         | Role                                                                                                                                              |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `background` / `foreground`                                                                   | Page surface + default text                                                                                                                       |
+| `card` / `popover` (+ `-foreground`)                                                          | Card defaults to a solid raised surface; `variant="glass"` is opt-in for genuinely floating cards; `variant="inset"` is the recessed nested well. |
+| `primary` (+ `-foreground`)                                                                   | Brand actions (Indigo)                                                                                                                            |
+| `secondary` / `muted` / `accent` (+ `-foreground`)                                            | Subdued + hover surfaces                                                                                                                          |
+| `destructive` / `success` / `warning` (+ `-foreground`)                                       | Status                                                                                                                                            |
+| `border` / `input` / `field` / `ring`                                                         | Hairlines, fields, input backdrops (`bg-field`), focus ring                                                                                       |
+| `glass-bg` / `glass-border` / `glass-edge` / `glass-highlight` / `glass-scrim` / `glass-blur` | Translucent glass surfaces (`glass-edge` = luminous rim)                                                                                          |
+| `overlay`                                                                                     | Modal / sheet / command-palette scrim (`bg-overlay`) — never raw `bg-black/40` — using `--blur-scrim`                                             |
+| `brand-gradient-*`                                                                            | Brand gradient stops for display text only                                                                                                        |
+| `desktop-blob-*`                                                                              | Decorative OS wallpaper ambience                                                                                                                  |
+| `window-control-*`                                                                            | Window traffic-light controls (`-icon` = dark glyph on the dots)                                                                                  |
+| `chart-1` ... `chart-5`                                                                       | Data-visualization series colors (5 stops across brand hues)                                                                                      |
 
 Primitive color variables (`--indigo-*`, `--violet-*`, `--neutral-*`, status
 scales, and raw `oklch(...)`) are restricted to token/theme files. Components
@@ -84,24 +84,24 @@ Translucent glass layers are reserved for **floating layers**: Dialog, Sheet, Po
 
 Every surface must use one of these roles.
 
-| Role | How to build it | Use for |
-| --- | --- | --- |
-| **Floating glass** | `GlassSurface variant="panel\|bar\|window\|titlebar"` (or the `glass-*` utility on a Radix overlay) | Only the floating layers listed above. Carries the a11y fallbacks. |
-| **Solid card** (raised content) | `<Card>` (new default `variant="solid"`) → `border bg-card shadow-sm rounded-xl` | Primary content surfaces: dashboard/settings cards, side panels, info cards. |
+| Role                             | How to build it                                                                                                                                   | Use for                                                                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Floating glass**               | `GlassSurface variant="panel\|bar\|window\|titlebar"` (or the `glass-*` utility on a Radix overlay)                                               | Only the floating layers listed above. Carries the a11y fallbacks.                                                                                       |
+| **Solid card** (raised content)  | `<Card>` (new default `variant="solid"`) → `border bg-card shadow-sm rounded-xl`                                                                  | Primary content surfaces: dashboard/settings cards, side panels, info cards.                                                                             |
 | **Inset well** (recessed nested) | `<Card variant="inset">` → `border border-border bg-muted rounded-xl` (no shadow); for non-Card `<div>` wells use `bg-muted border border-border` | Nested wells inside a card: stat tiles, list rows, scroll wells. Replaces every `bg-card/40 border-border/20`, `bg-muted/20 border`, `bg-background/25`. |
-| **Control fill** | `bg-muted` (rest) + `motion-safe:hover:bg-muted/80` (hover only) | Small inline controls: `TabsList`, chips, code pills. Hover may keep ONE opacity step (`/80`); rest state is opaque. |
-| **Status tint** | `bg-{destructive\|warning\|success\|primary}/10 border-{…}/20 text-{…}` | Inline status chips/banners. Standardized to **/10 fill + /20 border**, nothing else. |
+| **Control fill**                 | `bg-muted` (rest) + `motion-safe:hover:bg-muted/80` (hover only)                                                                                  | Small inline controls: `TabsList`, chips, code pills. Hover may keep ONE opacity step (`/80`); rest state is opaque.                                     |
+| **Status tint**                  | `bg-{destructive\|warning\|success\|primary}/10 border-{…}/20 text-{…}`                                                                           | Inline status chips/banners. Standardized to **/10 fill + /20 border**, nothing else.                                                                    |
 
 ### Contrast gating (APCA)
 
 All semantic color pairs are gated by automated tests using **APCA** (Accessible
 Perceptual Contrast Algorithm — the WCAG 3.0 draft model), **not** the WCAG 2.x
-luminance ratio. APCA is perceptually accurate across light *and* dark, where the
+luminance ratio. APCA is perceptually accurate across light _and_ dark, where the
 WCAG 2.x formula over-scores dark-mode pairs due to its luminance bias.
 
 | Algorithm | Threshold (text) | Threshold (UI / non-text) |
-|---|---|---|
-| APCA (Lc) | ≥ Lc 60 | ≥ Lc 25 |
+| --------- | ---------------- | ------------------------- |
+| APCA (Lc) | ≥ Lc 60          | ≥ Lc 25                   |
 
 Lc 60 is the body-text floor; a few surfaces carry deliberately tuned thresholds
 in the test (dark `muted` text Lc 55, accent surface Lc 45, status tints
@@ -137,7 +137,7 @@ Type scale and motion are **owned tokens**, not borrowed Tailwind defaults.
   `ease-snappy` (symmetric, for moves/reorders) are the brand curves. Prefer
   them over raw `ease-out`.
 - **Duration** — Tailwind has no `--duration-*` namespace, so durations live as
-  the `--duration-fast|base|slow` CSS vars (use `duration-[var(--duration-base)]`
+  the `--duration-fast|base|slow` CSS vars (use `duration-(--duration-base)`
   in CSS-driven transitions).
 - **JS animations** — the `motion` library reads timing from `lib/motion.ts`
   (`duration`, `easing`, `transition`, or `motionTokens`), a hand-kept mirror of
@@ -170,24 +170,26 @@ Type scale and motion are **owned tokens**, not borrowed Tailwind defaults.
 
 ### Dark-mode typographic compensation (halation)
 
-Bright text on dark backgrounds causes *halation* (a glowing effect that makes glyphs appear thicker and less legible). The system automatically applies typographic offsets in dark mode:
+Bright text on dark backgrounds causes _halation_ (a glowing effect that makes glyphs appear thicker and less legible). The system automatically applies typographic offsets in dark mode:
+
 - **Font weight**: Body text weight is reduced by 50 units (400 to 350 via `--font-weight-body`). Headings are reduced from 600 to 550 via `--font-weight-heading`.
 - **Letter spacing**: Body text tracking is increased slightly by `+0.01em` via `--tracking-body`.
 
 ### Font loading strategy
 
 Our Geist and Geist_Mono variable fonts are optimized via `next/font/google` in [layout.tsx](file:///D:/Dev/web-os/apps/web/src/app/layout.tsx), using the `latin` and `vietnamese` subsets to support multilingual text efficiently.
+
 - **Future CJK/extended**: If adding multilingual support, use `unicode-range` splitting to lazy-load non-Latin glyphs.
 
 ### Scroll-driven animations (progressive enhancement)
 
 CSS scroll-driven animations run off the main thread (no JS scroll listeners) and are gated behind `@supports (animation-timeline: view())` + `prefers-reduced-motion: no-preference`. Available utilities:
 
-| Utility | Effect | Use for |
-|---|---|---|
-| `scroll-fade-in` | Fade + slide up on viewport entry | Cards, sections |
-| `scroll-slide-up` | Slide up + scale on entry | Hero content |
-| `scroll-parallax` | Subtle Y-axis parallax | Background blobs, decorative |
+| Utility           | Effect                            | Use for                      |
+| ----------------- | --------------------------------- | ---------------------------- |
+| `scroll-fade-in`  | Fade + slide up on viewport entry | Cards, sections              |
+| `scroll-slide-up` | Slide up + scale on entry         | Hero content                 |
+| `scroll-parallax` | Subtle Y-axis parallax            | Background blobs, decorative |
 
 ### View Transitions
 
@@ -197,65 +199,45 @@ CSS scroll-driven animations run off the main thread (no JS scroll listeners) an
 
 One knob drives the whole UI: `--radius-base` (`0.625rem`, deliberately softer than the legacy 8px for a smoother, modern look). The `@theme inline` scale derives every step from it via `calc()`, so components consume **named utilities only** — never magic `rounded-[Npx]` values.
 
-| Utility | Value (at base 10px) | Typical use |
-| --- | --- | --- |
-| `rounded-xs` | `calc(--radius - 6px)` = 4px | Checkboxes, tiny indicators, tooltip arrow |
-| `rounded-sm` | `calc(--radius - 4px)` = 6px | Menu items, inline chips |
-| `rounded-md` | `calc(--radius - 2px)` = 8px | Buttons, inputs, dropdown/menu content |
-| `rounded-lg` | `--radius` = 10px | Dialogs |
-| `rounded-xl` | `calc(--radius + 4px)` = 14px | Cards, windows, sheets, command palette |
-| `rounded-2xl` / `rounded-3xl` | +8px / +16px | Large hero surfaces |
-
-### Nested radius convention
-
-When a rounded child sits inside a rounded parent, their curves must stay concentric to look visually balanced. The mathematical rule is `R_child = R_parent - padding`, but in practice our fixed scale handles most cases:
-
-| Parent radius | Inner padding | Child radius | Why |
-|---|---|---|---|
-| `rounded-xl` (14px) | 16px (p-4) | `rounded-lg` (10px) | Padding > radius – use next step down |
-| `rounded-xl` (14px) | 12px (p-3) | `rounded-md` (8px) | 14 - 12 = 2px, snap up to `rounded-md` |
-| `rounded-2xl` (18px) | 16px (p-4) | `rounded-xs` (4px) | 18 - 16 = 2px, snap to `rounded-xs` |
-| `rounded-2xl` (18px) | 24px (p-6) | `rounded-lg` (10px) | Padding > radius – next step down |
-
-Use `rounded-[inherit]` when a child must match its parent exactly (e.g. a full-bleed inner section). The scale above covers the common nesting depths. Use the `@utility rounded-nested` class to auto-calculate concentric rounding when nesting inside standard `rounded-xl` panels.
-
-This is the shadcn-on-v4 pattern (not Tailwind's fixed native scale) so the base
-stays a single personalizable knob. `rounded-[inherit]` is allowed where a child
-must match its parent's radius. The IntelliSense `suggestCanonicalClasses` hint
-can't resolve these `calc(var())` tokens — verify against this table, don't follow
-it blindly.
+| Utility                       | Value (at base 10px)          | Typical use                                |
+| ----------------------------- | ----------------------------- | ------------------------------------------ |
+| `rounded-xs`                  | `calc(--radius - 6px)` = 4px  | Checkboxes, tiny indicators, tooltip arrow |
+| `rounded-sm`                  | `calc(--radius - 4px)` = 6px  | Menu items, inline chips                   |
+| `rounded-md`                  | `calc(--radius - 2px)` = 8px  | Buttons, inputs, dropdown/menu content     |
+| `rounded-lg`                  | `--radius` = 10px             | Dialogs                                    |
+| `rounded-xl`                  | `calc(--radius + 4px)` = 14px | Cards, windows, sheets, command palette    |
+| `rounded-2xl` / `rounded-3xl` | +8px / +16px                  | Large hero surfaces                        |
 
 ## Stacking / z-index (one owned scale)
 
 There is **one** z-index scale and it lives in `tokens.css` (`--z-*`). It is the
-single source of truth for *cross-component* layering — both the OS floating
+single source of truth for _cross-component_ layering — both the OS floating
 primitives and the app-shell chrome read it. The order, low → high:
 
-| Token / utility | Value | Layer |
-| --- | --- | --- |
-| `--z-desktop` | `-1` | Fixed OS wallpaper (`.os-desktop`), behind content |
-| `--z-base` | `0` | In-flow app content |
-| `z-window` / `z-window-active` | `100` / `110` | OS windows (`Window`) |
-| `z-sidebar` | `700` | Persistent shell rail |
-| `z-dock` | `800` | Floating dock |
-| `z-topbar` | `850` | Top app bar |
-| `z-overlay` | `900` | **Scrim only** — behind modals/sheets (never use for content) |
-| `z-modal` | `1000` | Dialog / sheet panel |
-| `z-popover` | `1050` | Popover / DropdownMenu / ContextMenu / Select content — floats **above** modal |
-| `z-command` | `1100` | Command palette |
-| `z-tooltip` | `1150` | Tooltip — above all interactive overlays, below toast |
-| `z-toast` | `1200` | Toasts (always frontmost) |
-
+| Token / utility                | Value         | Layer                                                                          |
+| ------------------------------ | ------------- | ------------------------------------------------------------------------------ |
+| `--z-desktop`                  | `-1`          | Fixed OS wallpaper (`.os-desktop`), behind content                             |
+| `--z-base`                     | `0`           | In-flow app content                                                            |
+| `z-window` / `z-window-active` | `100` / `110` | OS windows (`Window`)                                                          |
+| `z-sidebar`                    | `700`         | Persistent shell rail                                                          |
+| `z-dock`                       | `800`         | Floating dock                                                                  |
+| `z-topbar`                     | `850`         | Top app bar                                                                    |
+| `z-overlay`                    | `900`         | **Scrim only** — behind modals/sheets (never use for content)                  |
+| `z-modal`                      | `1000`        | Dialog / sheet panel                                                           |
+| `z-popover`                    | `1050`        | Popover / DropdownMenu / ContextMenu / Select content — floats **above** modal |
+| `z-command`                    | `1100`        | Command palette                                                                |
+| `z-tooltip`                    | `1150`        | Tooltip — above all interactive overlays, below toast                          |
+| `z-toast`                      | `1200`        | Toasts (always frontmost)                                                      |
 
 **Critical rule — scrim vs. content:**
 
-`--z-overlay` (900) is **scrim-only** (the backdrop dimming layer behind Dialog/Sheet/Command). Floating *content* — Popover, DropdownMenu, ContextMenu, Select — must use `--z-popover` (1050) so they render **above** modal panels (1000). Tooltip uses `--z-tooltip` (1150). Never assign popover/tooltip content to `--z-overlay`; that causes menus to be hidden behind dialogs.
+`--z-overlay` (900) is **scrim-only** (the backdrop dimming layer behind Dialog/Sheet/Command). Floating _content_ — Popover, DropdownMenu, ContextMenu, Select — must use `--z-popover` (1050) so they render **above** modal panels (1000). Tooltip uses `--z-tooltip` (1150). Never assign popover/tooltip content to `--z-overlay`; that causes menus to be hidden behind dialogs.
 
 **Rules:**
 
 - **Never hand-pick a raw `z-40` / `z-50` for a layer that can overlap another
   component.** The OS scale (100–1200) and Tailwind's default scale (0–50) are
-  different axes; a chrome bar left on `z-40` is silently *below* any floating
+  different axes; a chrome bar left on `z-40` is silently _below_ any floating
   `Window` (110) and gets painted over — this is the class of bug this section
   exists to prevent. Chrome consumes the named utilities (`z-topbar`,
   `z-sidebar`, …) exposed from `theme.css`; `@pumni/ui` primitives consume the
@@ -268,16 +250,16 @@ primitives and the app-shell chrome read it. The order, low → high:
 - **Component-internal z is fine** (e.g. an avatar status dot, a tooltip arrow,
   a decorative blob behind a card). Those don't escape their component, so they
   use plain Tailwind `z-10` / `-z-10` locally. The token scale is only for
-  layers that compete *across* components.
+  layers that compete _across_ components.
 
 ## State-layer tokens (hover/press dimming)
 
 `tokens.css` defines three intensity tokens that unify hover and press feedback across controls:
 
-| Token | Value | Meaning |
-| --- | --- | --- |
-| `--state-hover` | `8%` | Overlay strength on hover |
-| `--state-pressed` | `12%` | Overlay strength on press/active |
+| Token              | Value | Meaning                                   |
+| ------------------ | ----- | ----------------------------------------- |
+| `--state-hover`    | `8%`  | Overlay strength on hover                 |
+| `--state-pressed`  | `12%` | Overlay strength on press/active          |
 | `--state-selected` | `10%` | Overlay strength on selected/active items |
 
 Apply via `color-mix` on `currentColor` or the relevant fill:
@@ -287,7 +269,7 @@ Apply via `color-mix` on `currentColor` or the relevant fill:
   &:hover,
   &:focus,
   &[data-highlighted],
-  &[data-active=true] {
+  &[data-active='true'] {
     background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
   }
 }
@@ -298,6 +280,7 @@ State-layer utilities are wired to neutral controls (menu items in dropdowns/con
 ### RTL Logical-First Directional Properties
 
 To ensure future-proof multi-directional layouts (LTR/RTL), write all direction-sensitive layouts using CSS logical properties and Tailwind logical utilities:
+
 - Use `ps-*` / `pe-*` instead of `pl-*` / `pr-*`
 - Use `ms-*` / `me-*` instead of `ml-*` / `mr-*`
 - Use `start-*` / `end-*` instead of `left-*` / `right-*`
@@ -305,7 +288,7 @@ To ensure future-proof multi-directional layouts (LTR/RTL), write all direction-
 
 This applies to all new components or refactored layouts.
 
-**Important distinction from banned surface opacity:** These tokens produce a *transient state overlay* on an interactive fill — they are **not** `bg-card/NN` or `bg-background/NN` (surface opacity, which is banned on solid surfaces). The hard rule in the anti-slop table (`bg-card/40 → Inset well`) targets persistent translucent surfaces; state overlays on interactive controls are the correct modern pattern (Material-3 / WCAG 2.2). This distinction is explicitly allowed and documented here to prevent false positives from linters or reviewers.
+**Important distinction from banned surface opacity:** These tokens produce a _transient state overlay_ on an interactive fill — they are **not** `bg-card/NN` or `bg-background/NN` (surface opacity, which is banned on solid surfaces). The hard rule in the anti-slop table (`bg-card/40 → Inset well`) targets persistent translucent surfaces; state overlays on interactive controls are the correct modern pattern (Material-3 / WCAG 2.2). This distinction is explicitly allowed and documented here to prevent false positives from linters or reviewers.
 
 ## Personalization (accent + glass)
 
@@ -392,7 +375,7 @@ Components live in `packages/ui/src/components/` and are exported from
 ### Optional: scaffold a standard primitive with the shadcn CLI
 
 `@pumni/ui` is hand-owned — `shadcn add` is **not** the source of truth, only a
-seed for *standard* registry primitives (Select, Tooltip, Popover, Tabs…). OS
+seed for _standard_ registry primitives (Select, Tooltip, Popover, Tabs…). OS
 components (`Window`, `Dock`, `GlassSurface`, …) are always written by hand.
 
 `packages/ui/components.json` configures the CLI to drop files into this package

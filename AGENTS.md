@@ -82,16 +82,20 @@ All final responses from the AI coding agent must conclude with a self-declarati
 
 ```md
 ## Summary
+
 [Brief summary of the changes made]
 
 ## Files changed
+
 - [File A](file:///path/to/A)
 - [File B](file:///path/to/B)
 
 ## Validation run
+
 - [x] Command A (passed)
 - [x] Command B (passed)
 
 ## Risks / follow-up
+
 [Any remaining risks, staging testing requirements, or follow-up tasks]
 ```

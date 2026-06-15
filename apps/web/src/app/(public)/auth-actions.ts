@@ -1,15 +1,15 @@
-"use server";
+'use server';
 
-import { verifySession } from "@pumni/auth";
-import { createSupabaseServerClient } from "@pumni/supabase/server";
+import { verifySession } from '@pumni/auth';
+import { createSupabaseServerClient } from '@pumni/supabase/server';
 import {
   forgotPasswordSchema,
   resetPasswordSchema,
   signInSchema,
   signUpSchema,
-} from "@pumni/validators";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+} from '@pumni/validators';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 type AuthFieldErrors = {
   email?: string[];
@@ -24,12 +24,12 @@ export type AuthFormState = {
 
 function getStringValue(formData: FormData, name: string) {
   const value = formData.get(name);
-  return typeof value === "string" ? value : "";
+  return typeof value === 'string' ? value : '';
 }
 
 async function getRequestOrigin() {
   const headerStore = await headers();
-  return headerStore.get("origin") ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  return headerStore.get('origin') ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 }
 
 export async function signInAction(
@@ -37,8 +37,8 @@ export async function signInAction(
   formData: FormData,
 ): Promise<AuthFormState> {
   const parsed = signInSchema.safeParse({
-    email: getStringValue(formData, "email"),
-    password: getStringValue(formData, "password"),
+    email: getStringValue(formData, 'email'),
+    password: getStringValue(formData, 'password'),
   });
 
   if (!parsed.success) {
@@ -52,7 +52,7 @@ export async function signInAction(
     return { message: error.message };
   }
 
-  redirect("/dashboard");
+  redirect('/dashboard');
 }
 
 export async function signUpAction(
@@ -60,9 +60,9 @@ export async function signUpAction(
   formData: FormData,
 ): Promise<AuthFormState> {
   const parsed = signUpSchema.safeParse({
-    email: getStringValue(formData, "email"),
-    password: getStringValue(formData, "password"),
-    fullName: getStringValue(formData, "fullName"),
+    email: getStringValue(formData, 'email'),
+    password: getStringValue(formData, 'password'),
+    fullName: getStringValue(formData, 'fullName'),
   });
 
   if (!parsed.success) {
@@ -86,7 +86,7 @@ export async function signUpAction(
     return { message: error.message };
   }
 
-  redirect("/sign-in");
+  redirect('/sign-in');
 }
 
 export async function forgotPasswordAction(
@@ -94,7 +94,7 @@ export async function forgotPasswordAction(
   formData: FormData,
 ): Promise<AuthFormState> {
   const parsed = forgotPasswordSchema.safeParse({
-    email: getStringValue(formData, "email"),
+    email: getStringValue(formData, 'email'),
   });
 
   if (!parsed.success) {
@@ -111,7 +111,7 @@ export async function forgotPasswordAction(
     return { message: error.message };
   }
 
-  return { message: "Password reset email sent. Check your inbox." };
+  return { message: 'Password reset email sent. Check your inbox.' };
 }
 
 export async function resetPasswordAction(
@@ -121,7 +121,7 @@ export async function resetPasswordAction(
   await verifySession();
 
   const parsed = resetPasswordSchema.safeParse({
-    password: getStringValue(formData, "password"),
+    password: getStringValue(formData, 'password'),
   });
 
   if (!parsed.success) {
@@ -137,5 +137,5 @@ export async function resetPasswordAction(
     return { message: error.message };
   }
 
-  redirect("/dashboard");
+  redirect('/dashboard');
 }

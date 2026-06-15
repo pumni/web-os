@@ -6,12 +6,12 @@
  * runtime secrets — use `@pumni/env` for validated environment variables.
  */
 
-export const APP_NAME = "Pumni Web OS";
+export const APP_NAME = 'Pumni Web OS';
 
 export const siteConfig = {
   name: APP_NAME,
   description:
-    "A modern, reusable SaaS Starter base with Next.js App Router, Bun workspaces, and Supabase SSR.",
+    'A modern, reusable SaaS Starter base with Next.js App Router, Bun workspaces, and Supabase SSR.',
 } as const;
 
 export type SiteConfig = typeof siteConfig;

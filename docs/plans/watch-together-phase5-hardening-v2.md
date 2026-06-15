@@ -21,11 +21,11 @@
 
 ## 1. Ba phát hiện đã xác nhận (lý do tồn tại Phase 5)
 
-| # | Triệu chứng | Nguyên nhân gốc (đã truy trong code) | Cách xác nhận |
-| :- | :- | :- | :- |
-| 🔴 **B1** | Follower **không bao giờ bám host**: A play → B hiện banner *"Bạn đang xem lệch tiến trình phát của phòng"* và đứng yên; A seek/pause/play → B không phản ứng. | `use-sync-controller.ts`: `reconcile()`/`resync()` gọi **programmatic** `player.play()/pause()/currentTime=` → Vidstack phát event `play/pause/seeked` → handler `handlePlay/handlePause/handleSeeked` khai báo `() => void` (**bỏ qua event**) → nhánh follower gọi `handleFollowerManualInteraction()` → `isFollowingHostRef=false`. `suppressSeekedEventRef` chỉ chặn *seek*, không chặn *play/pause*. Sau khi unfollow, `handleReceiveAnchor` có guard `isFollowingHostRef` nên broadcast kế tiếp **không** reconcile → kẹt. | Test 2 trình duyệt (đã chạy) |
-| 🔴 **B2** | **Reorder playlist không đổi thứ tự** (ấn ▲/▼ có hiệu ứng nút nhưng item không di chuyển). | `playlist-panel.tsx`: `handleMoveUp/handleMoveDown` **truyền ngược** `beforeId`/`afterId`. Khi list ít item hoặc đẩy lên-đầu/xuống-cuối, `fractionalPosition` rơi nhánh `null` bất đối xứng → vị trí mới = vị trí cũ → optimistic nhảy nhẹ rồi `onSettled` refetch trả thứ tự cũ. | Test 2 trình duyệt (đã chạy) |
-| 🟠 **B3** | **Tên/avatar người khác không hiện** (chỉ thấy `User: xxxxxxxx`). | RLS `profiles_select_own` (`supabase/migrations/001_initial_profiles.sql:18-22`) chỉ cho `auth.uid() = id`. `use-room-members.ts` `.from("profiles").select(...).in("id", [nhiều id])` → chỉ trả về dòng của chính người gọi. | Đọc RLS (xác nhận tĩnh) |
+| #         | Triệu chứng                                                                                                                                                    | Nguyên nhân gốc (đã truy trong code)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Cách xác nhận                |
+| :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------- |
+| 🔴 **B1** | Follower **không bao giờ bám host**: A play → B hiện banner _"Bạn đang xem lệch tiến trình phát của phòng"_ và đứng yên; A seek/pause/play → B không phản ứng. | `use-sync-controller.ts`: `reconcile()`/`resync()` gọi **programmatic** `player.play()/pause()/currentTime=` → Vidstack phát event `play/pause/seeked` → handler `handlePlay/handlePause/handleSeeked` khai báo `() => void` (**bỏ qua event**) → nhánh follower gọi `handleFollowerManualInteraction()` → `isFollowingHostRef=false`. `suppressSeekedEventRef` chỉ chặn _seek_, không chặn _play/pause_. Sau khi unfollow, `handleReceiveAnchor` có guard `isFollowingHostRef` nên broadcast kế tiếp **không** reconcile → kẹt. | Test 2 trình duyệt (đã chạy) |
+| 🔴 **B2** | **Reorder playlist không đổi thứ tự** (ấn ▲/▼ có hiệu ứng nút nhưng item không di chuyển).                                                                     | `playlist-panel.tsx`: `handleMoveUp/handleMoveDown` **truyền ngược** `beforeId`/`afterId`. Khi list ít item hoặc đẩy lên-đầu/xuống-cuối, `fractionalPosition` rơi nhánh `null` bất đối xứng → vị trí mới = vị trí cũ → optimistic nhảy nhẹ rồi `onSettled` refetch trả thứ tự cũ.                                                                                                                                                                                                                                                | Test 2 trình duyệt (đã chạy) |
+| 🟠 **B3** | **Tên/avatar người khác không hiện** (chỉ thấy `User: xxxxxxxx`).                                                                                              | RLS `profiles_select_own` (`supabase/migrations/001_initial_profiles.sql:18-22`) chỉ cho `auth.uid() = id`. `use-room-members.ts` `.from("profiles").select(...).in("id", [nhiều id])` → chỉ trả về dòng của chính người gọi.                                                                                                                                                                                                                                                                                                    | Đọc RLS (xác nhận tĩnh)      |
 
 ---
 
@@ -70,7 +70,7 @@ vercel.json                              # MỚI/SỬA (D1): crons entry
 
 #### A1. Sync controller phân biệt gesture vs programmatic bằng `isOriginTrusted`
 
-> **Cốt lõi sửa B1.** Vidstack `DOMEvent` (mà `MediaPlayEvent`/`MediaPauseEvent`/`MediaSeekedEvent` kế thừa) có getter `isOriginTrusted` = *"Whether the origin event was triggered by the user"* (`node_modules/@vidstack/react/types/vidstack-instances.d.ts` — `DOMEvent`). Các event do `player.play()/pause()/seek` programmatic phát ra có `isOriginTrusted === false`; thao tác thật của người dùng (click/keyboard) có `isOriginTrusted === true`.
+> **Cốt lõi sửa B1.** Vidstack `DOMEvent` (mà `MediaPlayEvent`/`MediaPauseEvent`/`MediaSeekedEvent` kế thừa) có getter `isOriginTrusted` = _"Whether the origin event was triggered by the user"_ (`node_modules/@vidstack/react/types/vidstack-instances.d.ts` — `DOMEvent`). Các event do `player.play()/pause()/seek` programmatic phát ra có `isOriginTrusted === false`; thao tác thật của người dùng (click/keyboard) có `isOriginTrusted === true`.
 
 **A1.1 — `apps/web/src/features/watch/components/sync-player.tsx`**
 
@@ -88,10 +88,10 @@ import {
   type MediaSeekedEvent,
   type MediaRateChangeEvent,
   type MediaEndedEvent,
-} from "@vidstack/react";
+} from '@vidstack/react';
 
 interface SyncPlayerProps {
-  sourceType: "youtube" | "url";
+  sourceType: 'youtube' | 'url';
   sourceRef: string;
   playerRef: React.RefObject<MediaPlayerInstance | null>;
   onPlay?: (e: MediaPlayEvent) => void;
@@ -112,11 +112,7 @@ Trong `<MediaPlayer>` thêm `onEnded={onEnded}` cạnh các handler hiện có (
 (1) Handlers nhận event, **chỉ soft-lock khi do người dùng**:
 
 ```ts
-import type {
-  MediaPlayEvent,
-  MediaPauseEvent,
-  MediaSeekedEvent,
-} from "@vidstack/react";
+import type { MediaPlayEvent, MediaPauseEvent, MediaSeekedEvent } from '@vidstack/react';
 
 // ...
 
@@ -146,10 +142,14 @@ const handleSeeked = (e?: MediaSeekedEvent) => {
 ```
 
 (2) **Gỡ cơ chế `suppressSeekedEventRef`** (đã thừa nhờ `isOriginTrusted`):
+
 - Xóa khai báo `const suppressSeekedEventRef = useRef<boolean>(false);`.
 - Trong `handleFollowerManualInteraction` xóa khối:
   ```ts
-  if (suppressSeekedEventRef.current) { suppressSeekedEventRef.current = false; return; }
+  if (suppressSeekedEventRef.current) {
+    suppressSeekedEventRef.current = false;
+    return;
+  }
   ```
   (giữ phần `if (isHost) return;` rồi set `isFollowingHostRef=false` …).
 - Trong `reconcile()` nhánh hard-seek, bỏ `suppressSeekedEventRef.current = true;` — giữ guard khoảng cách để tránh seek thừa:
@@ -167,7 +167,8 @@ const handleSeeked = (e?: MediaSeekedEvent) => {
 > **Vì sao an toàn:** seek programmatic trong reconcile/resync phát `seeked` với `isOriginTrusted === false` → `handleSeeked` bỏ qua. Chỉ seek thật của người dùng (kéo slider — đi qua `remote.seek`, có origin trusted) mới soft-lock.
 
 > **Cổng nghiệm thu A1 (2 trình duyệt):**
-> - A bấm Play/Pause/Seek → **B bám theo**, KHÔNG hiện banner *"lệch"*. ✅ (trước đây vỡ)
+>
+> - A bấm Play/Pause/Seek → **B bám theo**, KHÔNG hiện banner _"lệch"_. ✅ (trước đây vỡ)
 > - B **tự kéo** thanh tiến trình → hiện banner soft-lock + nút "Đồng bộ lại" đưa B về đúng vị trí host.
 > - Follower mới vào khi host đang phát → tự phát (muted nếu bị chặn), vẫn đồng bộ.
 
@@ -175,7 +176,7 @@ const handleSeeked = (e?: MediaSeekedEvent) => {
 
 **`apps/web/src/features/watch/components/playlist-panel.tsx`**
 
-Quy ước chuẩn (khớp `actions.ts reorderQueue` + optimistic `use-room-queue.ts useReorderQueue`): item đích nằm **giữa** `beforeId` (item đứng *trước*) và `afterId` (item đứng *sau*); server tính `fractionalPosition(beforePos, afterPos)` với `fractionalPosition(null, X)=X-1` (lên đầu) và `fractionalPosition(X, null)=X+1` (xuống cuối).
+Quy ước chuẩn (khớp `actions.ts reorderQueue` + optimistic `use-room-queue.ts useReorderQueue`): item đích nằm **giữa** `beforeId` (item đứng _trước_) và `afterId` (item đứng _sau_); server tính `fractionalPosition(beforePos, afterPos)` với `fractionalPosition(null, X)=X-1` (lên đầu) và `fractionalPosition(X, null)=X+1` (xuống cuối).
 
 ```tsx
 const handleMoveUp = (index: number) => {
@@ -193,7 +194,7 @@ const handleMoveUp = (index: number) => {
       beforeId: beforeItem ? beforeItem.id : null,
       afterId: afterItem.id,
     },
-    { onError: (err) => toast.error(err.message || "Sắp xếp thất bại.") }
+    { onError: (err) => toast.error(err.message || 'Sắp xếp thất bại.') },
   );
 };
 
@@ -212,7 +213,7 @@ const handleMoveDown = (index: number) => {
       beforeId: beforeItem.id,
       afterId: afterItem ? afterItem.id : null,
     },
-    { onError: (err) => toast.error(err.message || "Sắp xếp thất bại.") }
+    { onError: (err) => toast.error(err.message || 'Sắp xếp thất bại.') },
   );
 };
 ```
@@ -293,25 +294,25 @@ Broadcast là ephemeral: follower rớt mạng rồi nối lại sẽ **mất** 
 Thêm ref theo dõi và xử lý trong `.subscribe`:
 
 ```ts
-  const wasDisconnectedRef = useRef(false);
-  // ...
-    activeChannel.subscribe(async (status) => {
-      if (status === "SUBSCRIBED") {
-        setChannelStatus("connected");
-        if (wasDisconnectedRef.current) {
-          wasDisconnectedRef.current = false;
-          void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
-        }
-        await activeChannel.track({
-          userId,
-          isHost: isHostRef.current,
-          joinedAt: joinedAtRef.current,
-        });
-      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
-        wasDisconnectedRef.current = true;
-        setChannelStatus("disconnected");
-      }
+const wasDisconnectedRef = useRef(false);
+// ...
+activeChannel.subscribe(async (status) => {
+  if (status === 'SUBSCRIBED') {
+    setChannelStatus('connected');
+    if (wasDisconnectedRef.current) {
+      wasDisconnectedRef.current = false;
+      void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
+    }
+    await activeChannel.track({
+      userId,
+      isHost: isHostRef.current,
+      joinedAt: joinedAtRef.current,
     });
+  } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+    wasDisconnectedRef.current = true;
+    setChannelStatus('disconnected');
+  }
+});
 ```
 
 > **Cổng nghiệm thu C1:** B đang đồng bộ → tắt mạng B ~10s (DevTools → Offline) → bật lại. Badge "Mất kết nối…" hiện rồi tắt; B **tự nhảy về đúng vị trí host** sau khi nối lại (không cần thao tác).
@@ -319,17 +320,15 @@ Thêm ref theo dõi và xử lý trong `.subscribe`:
 #### C2. Error boundary tận dụng Next 16.2 — `app/(watch)/watch/[roomId]/error.tsx` (MỚI)
 
 ```tsx
-"use client";
+'use client';
 
-import type { ErrorInfo } from "next/error";
-import { Button } from "@pumni/ui";
+import type { ErrorInfo } from 'next/error';
+import { Button } from '@pumni/ui';
 
 export default function WatchRoomError({ error, unstable_retry }: ErrorInfo) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60dvh] gap-4 p-6 text-center select-none">
-      <h2 className="text-base font-semibold text-foreground">
-        Không tải được phòng xem chung
-      </h2>
+      <h2 className="text-base font-semibold text-foreground">Không tải được phòng xem chung</h2>
       <p className="max-w-md text-sm text-muted-foreground">{error.message}</p>
       <Button onClick={() => unstable_retry()}>Thử lại</Button>
     </div>
@@ -342,7 +341,7 @@ export default function WatchRoomError({ error, unstable_retry }: ErrorInfo) {
 
 #### C3. A11y banner soft-lock — `room-controls.tsx`
 
-Thêm `role="status" aria-live="polite"` vào `<div>` banner *"Bạn đang xem lệch tiến trình…"* (khối `{!isHost && !isFollowingHost && resync && (…)}`) để screen reader thông báo khi mất đồng bộ.
+Thêm `role="status" aria-live="polite"` vào `<div>` banner _"Bạn đang xem lệch tiến trình…"_ (khối `{!isHost && !isFollowingHost && resync && (…)}`) để screen reader thông báo khi mất đồng bộ.
 
 ```tsx
           <div
@@ -361,16 +360,16 @@ Host bắt sự kiện `ended` → tự chuyển video kế nếu còn hàng ch�
 `watch-room.tsx`:
 
 ```tsx
-import { useAdvanceQueue } from "../hooks/use-room-queue";
+import { useAdvanceQueue } from '../hooks/use-room-queue';
 // ...
-  const advanceQueueMutation = useAdvanceQueue(currentRoom.id);
+const advanceQueueMutation = useAdvanceQueue(currentRoom.id);
 
-  const handleEnded = () => {
-    // Chỉ host điều khiển; chỉ advance khi còn item phía sau item hiện tại
-    if (!isHost) return;
-    if (queueItems.length === 0) return;
-    advanceQueueMutation.mutate();
-  };
+const handleEnded = () => {
+  // Chỉ host điều khiển; chỉ advance khi còn item phía sau item hiện tại
+  if (!isHost) return;
+  if (queueItems.length === 0) return;
+  advanceQueueMutation.mutate();
+};
 ```
 
 Truyền vào player: `<SyncPlayer … onEnded={handleEnded}>`. (`advanceQueue` server-side đã trả lỗi "Hàng chờ đã hết" khi không còn item → nuốt lỗi êm, không toast spam: dùng mutate không onError, hoặc onError im lặng cho trường hợp hết queue.)
@@ -388,26 +387,23 @@ Truyền vào player: `<SyncPlayer … onEnded={handleEnded}>`. (`advanceQueue` 
 `apps/web/src/app/api/watch/cleanup/route.ts` (MỚI):
 
 ```ts
-import "server-only";
-import { NextRequest } from "next/server";
-import { createSupabaseServiceRoleClient } from "@pumni/supabase/server";
+import 'server-only';
+import { NextRequest } from 'next/server';
+import { createSupabaseServiceRoleClient } from '@pumni/supabase/server';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   // Chặn truy cập công khai: chỉ Vercel Cron (kèm header bí mật) được gọi.
-  const auth = request.headers.get("authorization");
+  const auth = request.headers.get('authorization');
   if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return Response.json({ ok: false }, { status: 401 });
   }
   const supabase = createSupabaseServiceRoleClient();
   const cutoff = new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString();
-  const { error } = await supabase
-    .from("watch_rooms")
-    .delete()
-    .lt("last_active_at", cutoff);
+  const { error } = await supabase.from('watch_rooms').delete().lt('last_active_at', cutoff);
   if (error) {
-    console.error("watch cleanup failed", error);
+    console.error('watch cleanup failed', error);
     return Response.json({ ok: false }, { status: 500 });
   }
   return Response.json({ ok: true });
@@ -420,9 +416,7 @@ export async function GET(request: NextRequest) {
 
 ```json
 {
-  "crons": [
-    { "path": "/api/watch/cleanup", "schedule": "0 * * * *" }
-  ]
+  "crons": [{ "path": "/api/watch/cleanup", "schedule": "0 * * * *" }]
 }
 ```
 
@@ -490,20 +484,20 @@ Wiring: `room-controls.tsx` nhận `stageRef` (prop) và truyền vào hook; `wa
 Kiểm chứng `fractionalPosition` cho đúng các kịch bản before/after sau khi A2 sửa quy ước (test thuần hàm, không cần DOM):
 
 ```ts
-import { describe, it, expect } from "vitest";
-import { fractionalPosition } from "../../features/watch/sync-math";
+import { describe, it, expect } from 'vitest';
+import { fractionalPosition } from '../../features/watch/sync-math';
 
-describe("reorder fractionalPosition semantics", () => {
-  it("đưa lên đầu (before=null)", () => {
+describe('reorder fractionalPosition semantics', () => {
+  it('đưa lên đầu (before=null)', () => {
     expect(fractionalPosition(null, 0)).toBe(-1); // trước item đầu
   });
-  it("đưa xuống cuối (after=null)", () => {
+  it('đưa xuống cuối (after=null)', () => {
     expect(fractionalPosition(2, null)).toBe(3); // sau item cuối
   });
-  it("chèn vào giữa", () => {
+  it('chèn vào giữa', () => {
     expect(fractionalPosition(1, 2)).toBe(1.5);
   });
-  it("list rỗng", () => {
+  it('list rỗng', () => {
     expect(fractionalPosition(null, null)).toBe(0);
   });
 });
@@ -519,6 +513,7 @@ describe("reorder fractionalPosition semantics", () => {
 6. **D2:** rê chuột trên side-dock không hiện controls video.
 
 #### E3. Gates
+
 `bun run typecheck` + `bun run lint` + `bun run test` + `bun run build` đều xanh.
 
 > **Cổng nghiệm thu cuối Phase 5:** E1 xanh, E2 đủ 6 bước, E3 xanh. Áp `012_*` lên remote + patch `types.ts` trước khi test B3.
@@ -527,17 +522,18 @@ describe("reorder fractionalPosition semantics", () => {
 
 ## 4. Rủi ro & khắc phục
 
-| Rủi ro | Khắc phục |
-| :- | :- |
-| `MediaPlayEvent…` không export ở Vidstack 1.15.6 | Fallback type cục bộ `{ isOriginTrusted?: boolean }` (A1.1 note). Chỉ cần đọc `isOriginTrusted`. |
-| `isOriginTrusted` không phân biệt đúng cho YouTube provider | Verify ở cổng A1; nếu YouTube provider không gắn trusted origin cho click thật → giữ thêm guard phụ (re-introduce 1 cờ chỉ cho seek). Ưu tiên test trước. |
-| Gỡ `suppressSeekedEventRef` làm seek programmatic bị nuốt nhầm | Không xảy ra: programmatic seek có `isOriginTrusted=false` → handler bỏ qua đúng ý. |
-| `createSupabaseServiceRoleClient` chưa tồn tại (D1) | Kiểm tra `@pumni/supabase/server`; thêm helper service-role server-only nếu thiếu. Tuyệt đối không import vào client. |
-| Vercel Cron không chạy trên gói hiện tại | pg_cron (010) làm dự phòng; delete-on-empty vẫn xử lý case chính. |
-| `get_public_profiles` lộ dữ liệu ngoài ý | RPC chỉ `select id, username, avatar_url`; `revoke from public, anon`. |
-| Auto-advance lỗi "hết queue" tạo toast spam | C4: không gắn onError cho trường hợp hết queue (im lặng) hoặc kiểm tra còn item trước khi mutate. |
+| Rủi ro                                                         | Khắc phục                                                                                                                                                 |
+| :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MediaPlayEvent…` không export ở Vidstack 1.15.6               | Fallback type cục bộ `{ isOriginTrusted?: boolean }` (A1.1 note). Chỉ cần đọc `isOriginTrusted`.                                                          |
+| `isOriginTrusted` không phân biệt đúng cho YouTube provider    | Verify ở cổng A1; nếu YouTube provider không gắn trusted origin cho click thật → giữ thêm guard phụ (re-introduce 1 cờ chỉ cho seek). Ưu tiên test trước. |
+| Gỡ `suppressSeekedEventRef` làm seek programmatic bị nuốt nhầm | Không xảy ra: programmatic seek có `isOriginTrusted=false` → handler bỏ qua đúng ý.                                                                       |
+| `createSupabaseServiceRoleClient` chưa tồn tại (D1)            | Kiểm tra `@pumni/supabase/server`; thêm helper service-role server-only nếu thiếu. Tuyệt đối không import vào client.                                     |
+| Vercel Cron không chạy trên gói hiện tại                       | pg_cron (010) làm dự phòng; delete-on-empty vẫn xử lý case chính.                                                                                         |
+| `get_public_profiles` lộ dữ liệu ngoài ý                       | RPC chỉ `select id, username, avatar_url`; `revoke from public, anon`.                                                                                    |
+| Auto-advance lỗi "hết queue" tạo toast spam                    | C4: không gắn onError cho trường hợp hết queue (im lặng) hoặc kiểm tra còn item trước khi mutate.                                                         |
 
 ## 5. Bất biến tuyệt đối (KHÔNG phá)
+
 - Anchor + heartbeat **chỉ host ghi** qua RLS `watch_rooms_update_host` — không service-role, không nới RLS.
 - Service-role **chỉ** ở route handler server (D1) với `"server-only"`; không bao giờ vào client/`"use client"`.
 - RPC `SECURITY DEFINER` giữ `revoke from public, anon`; `get_public_profiles` chỉ trả cột công khai.
@@ -547,6 +543,7 @@ describe("reorder fractionalPosition semantics", () => {
 - Structural-signature guard (`getStructuralSignature`) giữ nguyên; `host_heartbeat_at` KHÔNG nằm trong signature.
 
 ## 6. Checklist thực thi nhanh
+
 - [ ] A1 (isOriginTrusted, gỡ suppress) + A2 (reorder swap) → cổng A
 - [ ] B1–B3 (RPC public profiles) → áp 012 + patch types → cổng B
 - [ ] C1 (reconnect invalidate) + C2 (error.tsx) + C3 (aria-live) + C4 (auto-advance) → cổng C

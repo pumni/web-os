@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Clock } from "lucide-react";
+import * as React from 'react';
+import { Clock } from 'lucide-react';
 
-import { useClock } from "@/hooks/use-clock";
-import { dateFormatter } from "@/lib/formatters";
+import { useClock } from '@/hooks/use-clock';
+import { dateFormatter } from '@/lib/formatters';
 
 export function DashboardClockCard() {
   const timestamp = useClock();
@@ -26,9 +26,9 @@ export function DashboardClockCard() {
 
   const date = new Date(timestamp);
 
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  const seconds = date.getSeconds().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const seconds = date.getSeconds().toString().padStart(2, '0');
 
   const formattedDate = dateFormatter.format(date);
 

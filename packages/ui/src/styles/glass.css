@@ -20,7 +20,9 @@
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   /* layered drop shadow for float + a soft inner top sheen (no hard 2nd line) */
-  box-shadow: var(--shadow-glass), inset 0 1px 1px -0.5px var(--glass-highlight);
+  box-shadow:
+    var(--shadow-glass),
+    inset 0 1px 1px -0.5px var(--glass-highlight);
 }
 
 @utility glass-window {
@@ -31,22 +33,26 @@
   border: 1px solid var(--glass-edge);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  box-shadow: var(--shadow-glass-glow), inset 0 1px 1px -0.5px var(--glass-highlight);
+  box-shadow:
+    var(--shadow-glass-glow),
+    inset 0 1px 1px -0.5px var(--glass-highlight);
 }
 
-.glass-window[data-active="false"] {
+.glass-window[data-active='false'] {
   background-color: color-mix(in oklch, var(--glass-bg) 80%, var(--popover));
   border-color: var(--border);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.0);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.0);
-  box-shadow: var(--shadow-glass-glow-soft), inset 0 1px 1px -0.5px var(--glass-highlight);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1);
+  box-shadow:
+    var(--shadow-glass-glow-soft),
+    inset 0 1px 1px -0.5px var(--glass-highlight);
 }
 
-.glass-window[data-active="false"] .glass-titlebar {
+.glass-window[data-active='false'] .glass-titlebar {
   background-color: color-mix(in oklch, var(--glass-bg) 75%, var(--muted));
   border-color: var(--border);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.0);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.0);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1);
 }
 
 /* Bar variant for shell chrome (sidebar rails, topbars): glass look, NO
@@ -185,33 +191,33 @@
     box-shadow: none;
   }
 
-  [data-slot="button"]:focus-visible,
-  [data-slot="input"]:focus-visible {
+  [data-slot='button']:focus-visible,
+  [data-slot='input']:focus-visible {
     outline: 2px solid CanvasText;
     outline-offset: 2px;
   }
 }
 
-.glass-a11y-preview[data-transparency="reduced"] .glass-panel,
-.glass-a11y-preview[data-transparency="reduced"] .glass-window,
-.glass-a11y-preview[data-transparency="reduced"] .glass-bar,
-.glass-a11y-preview[data-transparency="reduced"] .glass-bar-bordered,
-.glass-a11y-preview[data-transparency="reduced"] .glass-bar-edge-r,
-.glass-a11y-preview[data-transparency="reduced"] .glass-bar-edge-b,
-.glass-a11y-preview[data-transparency="reduced"] .glass-titlebar {
+.glass-a11y-preview[data-transparency='reduced'] .glass-panel,
+.glass-a11y-preview[data-transparency='reduced'] .glass-window,
+.glass-a11y-preview[data-transparency='reduced'] .glass-bar,
+.glass-a11y-preview[data-transparency='reduced'] .glass-bar-bordered,
+.glass-a11y-preview[data-transparency='reduced'] .glass-bar-edge-r,
+.glass-a11y-preview[data-transparency='reduced'] .glass-bar-edge-b,
+.glass-a11y-preview[data-transparency='reduced'] .glass-titlebar {
   background: var(--popover);
   border-color: var(--border);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
-.glass-a11y-preview[data-contrast="more"] .glass-panel,
-.glass-a11y-preview[data-contrast="more"] .glass-window,
-.glass-a11y-preview[data-contrast="more"] .glass-bar,
-.glass-a11y-preview[data-contrast="more"] .glass-bar-bordered,
-.glass-a11y-preview[data-contrast="more"] .glass-bar-edge-r,
-.glass-a11y-preview[data-contrast="more"] .glass-bar-edge-b,
-.glass-a11y-preview[data-contrast="more"] .glass-titlebar {
+.glass-a11y-preview[data-contrast='more'] .glass-panel,
+.glass-a11y-preview[data-contrast='more'] .glass-window,
+.glass-a11y-preview[data-contrast='more'] .glass-bar,
+.glass-a11y-preview[data-contrast='more'] .glass-bar-bordered,
+.glass-a11y-preview[data-contrast='more'] .glass-bar-edge-r,
+.glass-a11y-preview[data-contrast='more'] .glass-bar-edge-b,
+.glass-a11y-preview[data-contrast='more'] .glass-titlebar {
   --glass-bg: color-mix(in oklch, var(--popover) 92%, transparent);
 
   border-color: var(--border);
@@ -250,7 +256,7 @@
   overflow: hidden;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
@@ -281,7 +287,10 @@
   outline: none;
 }
 .focus-ring:focus-visible {
-  box-shadow: 0 0 0 var(--ring-offset) var(--background), 0 0 0 calc(var(--ring-offset) + var(--ring-width)) color-mix(in oklch, var(--ring) 50%, transparent);
+  box-shadow:
+    0 0 0 var(--ring-offset) var(--background),
+    0 0 0 calc(var(--ring-offset) + var(--ring-width))
+      color-mix(in oklch, var(--ring) 50%, transparent);
   border-color: var(--ring);
 }
 
@@ -298,29 +307,28 @@
   &:hover,
   &:focus,
   &[data-highlighted],
-  &[data-active=true] {
+  &[data-active='true'] {
     background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
   }
 }
 
 @utility state-pressed {
   &:active,
-  &[data-state=open] {
+  &[data-state='open'] {
     background-color: color-mix(in oklch, var(--foreground) var(--state-pressed), transparent);
   }
 }
 
 @utility state-selected {
   &,
-  &[data-state=active],
-  &[data-state=selected] {
+  &[data-state='active'],
+  &[data-state='selected'] {
     background-color: color-mix(in oklch, var(--foreground) var(--state-selected), transparent);
   }
 }
 
 /* Forced-colors: color-mix overlays are system-color context — safe, no override needed.
    Reduced-motion: state layers are colour-only (no transform/animation) — no extra handling. */
-
 
 @utility overlay-scrim {
   background-color: var(--overlay);
@@ -362,7 +370,7 @@
       color-mix(in oklch, var(--foreground) 8%, transparent),
       transparent
     );
-    content: "";
+    content: '';
     animation: shimmer 2s infinite;
   }
 }

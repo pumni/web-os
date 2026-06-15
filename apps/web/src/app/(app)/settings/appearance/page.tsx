@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
+import * as React from 'react';
+import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import {
   ACCENTS,
   Button,
@@ -16,12 +16,12 @@ import {
   DropdownMenuTrigger,
   GLASS_LEVELS,
   usePersonalization,
-} from "@pumni/ui";
+} from '@pumni/ui';
 
 const themeOptions = [
-  { value: "system", label: "System", icon: MonitorIcon },
-  { value: "light", label: "Light", icon: SunIcon },
-  { value: "dark", label: "Dark", icon: MoonIcon },
+  { value: 'system', label: 'System', icon: MonitorIcon },
+  { value: 'light', label: 'Light', icon: SunIcon },
+  { value: 'dark', label: 'Dark', icon: MoonIcon },
 ] as const;
 
 function subscribeToClientReady() {
@@ -37,7 +37,7 @@ function getServerReadySnapshot() {
 }
 
 export default function AppearanceSettingsPage() {
-  const { theme = "system", setTheme } = useTheme();
+  const { theme = 'system', setTheme } = useTheme();
   const { accent, glass, setAccent, setGlass } = usePersonalization();
   const mounted = React.useSyncExternalStore(
     subscribeToClientReady,
@@ -46,7 +46,7 @@ export default function AppearanceSettingsPage() {
   );
 
   const selectedTheme =
-    themeOptions.find((option) => option.value === (mounted ? theme : "system")) ?? themeOptions[0];
+    themeOptions.find((option) => option.value === (mounted ? theme : 'system')) ?? themeOptions[0];
   const SelectedIcon = selectedTheme.icon;
 
   return (
@@ -73,7 +73,10 @@ export default function AppearanceSettingsPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-36">
-              <DropdownMenuRadioGroup value={selectedTheme.value} onValueChange={(value) => setTheme(value)}>
+              <DropdownMenuRadioGroup
+                value={selectedTheme.value}
+                onValueChange={(value) => setTheme(value)}
+              >
                 {themeOptions.map((option) => {
                   const Icon = option.icon;
 
@@ -111,8 +114,8 @@ export default function AppearanceSettingsPage() {
                 aria-pressed={accent === value}
                 onClick={() => setAccent(value)}
                 className={cn(
-                  "size-7 rounded-full border-2 bg-primary capitalize transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                  accent === value ? "border-foreground" : "border-transparent",
+                  'size-7 rounded-full border-2 bg-primary capitalize transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+                  accent === value ? 'border-foreground' : 'border-transparent',
                 )}
               />
             ))}
@@ -135,7 +138,7 @@ export default function AppearanceSettingsPage() {
                 key={value}
                 type="button"
                 size="sm"
-                variant={glass === value ? "secondary" : "ghost"}
+                variant={glass === value ? 'secondary' : 'ghost'}
                 aria-pressed={glass === value}
                 onClick={() => setGlass(value)}
                 className="capitalize"

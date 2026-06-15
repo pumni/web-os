@@ -15,7 +15,7 @@ export const duration = {
   fast: 0.12,
   base: 0.2,
   slow: 0.32,
-  slower: 0.48, /* page / view-transition (~500ms) */
+  slower: 0.48 /* page / view-transition (~500ms) */,
 } as const;
 
 /**
@@ -74,8 +74,8 @@ export const recipes = {
   },
   /** List/grid entrance — parent orchestrates children. Pair with `staggerItem`. */
   staggerContainer: {
-    initial: "hidden",
-    animate: "visible",
+    initial: 'hidden',
+    animate: 'visible',
     variants: {
       hidden: {},
       visible: { transition: { staggerChildren: staggerBase, delayChildren: 0.02 } },
@@ -97,4 +97,11 @@ export const recipes = {
   },
 } as const;
 
-export const motionTokens = { duration, easing, pressScale, transition, recipes, staggerBase } as const;
+export const motionTokens = {
+  duration,
+  easing,
+  pressScale,
+  transition,
+  recipes,
+  staggerBase,
+} as const;

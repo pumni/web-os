@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { User } from "@supabase/supabase-js";
-import { createSupabaseBrowserClient } from "@pumni/supabase/browser";
-import { useRouter } from "next/navigation";
+import type { User } from '@supabase/supabase-js';
+import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
+import { useRouter } from 'next/navigation';
 import {
   Avatar,
   AvatarFallback,
@@ -15,10 +15,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   withViewTransition,
-} from "@pumni/ui";
-import { LogOut, User as UserIcon, Settings } from "lucide-react";
-import { toast } from "sonner";
-import * as React from "react";
+} from '@pumni/ui';
+import { LogOut, User as UserIcon, Settings } from 'lucide-react';
+import { toast } from 'sonner';
+import * as React from 'react';
 
 type UserMenuProps = {
   user: User;
@@ -38,21 +38,21 @@ export function UserMenu({ user }: UserMenuProps) {
         toast.error(error.message);
         return;
       }
-      toast.success("Signed out successfully.");
-      router.push("/sign-in");
+      toast.success('Signed out successfully.');
+      router.push('/sign-in');
       router.refresh();
     } catch {
-      toast.error("Failed to sign out.");
+      toast.error('Failed to sign out.');
     } finally {
       setIsSigningOut(false);
     }
   };
 
-  const email = user.email ?? "";
-  const initial = email ? email[0]?.toUpperCase() : "U";
+  const email = user.email ?? '';
+  const initial = email ? email[0]?.toUpperCase() : 'U';
   const avatarUrl =
-    typeof user.user_metadata["avatar_url"] === "string"
-      ? user.user_metadata["avatar_url"]
+    typeof user.user_metadata['avatar_url'] === 'string'
+      ? user.user_metadata['avatar_url']
       : undefined;
 
   return (
@@ -75,17 +75,21 @@ export function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {user.user_metadata["full_name"] ?? "User"}
+              {user.user_metadata['full_name'] ?? 'User'}
             </p>
             <p className="text-xs leading-none text-muted-foreground">{email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => withViewTransition(() => router.push("/settings/profile"))}>
+        <DropdownMenuItem
+          onClick={() => withViewTransition(() => router.push('/settings/profile'))}
+        >
           <UserIcon className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => withViewTransition(() => router.push("/settings/account"))}>
+        <DropdownMenuItem
+          onClick={() => withViewTransition(() => router.push('/settings/account'))}
+        >
           <Settings className="mr-2 h-4 w-4" />
           <span>Account</span>
         </DropdownMenuItem>
@@ -99,7 +103,7 @@ export function UserMenu({ user }: UserMenuProps) {
           className="text-destructive focus:text-destructive-foreground focus:bg-destructive"
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>{isSigningOut ? "Signing out..." : "Sign Out"}</span>
+          <span>{isSigningOut ? 'Signing out...' : 'Sign Out'}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

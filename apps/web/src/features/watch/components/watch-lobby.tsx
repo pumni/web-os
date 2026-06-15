@@ -1,37 +1,47 @@
-"use client";
+'use client';
 
-import React, { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import type { Route } from "next";
+import React, { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
 import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle,
-  Button, Input, Label,
-  Tabs, TabsContent, TabsList, TabsTrigger,
-  motion, useReducedMotion, recipes,
-} from "@pumni/ui";
-import { createRoom, joinByCode } from "../actions";
-import { toast } from "sonner";
-import { Clapperboard, LogIn, Sparkles } from "lucide-react";
-
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Button,
+  Input,
+  Label,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  motion,
+  useReducedMotion,
+  recipes,
+} from '@pumni/ui';
+import { createRoom, joinByCode } from '../actions';
+import { toast } from 'sonner';
+import { Clapperboard, LogIn, Sparkles } from 'lucide-react';
 
 export function WatchLobby() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   // Tab state for controlled view transitions
-  const [activeTab, setActiveTab] = useState<string>("create");
+  const [activeTab, setActiveTab] = useState<string>('create');
 
   // Create room form state
-  const [sourceType, setSourceType] = useState<"youtube" | "url">("youtube");
-  const [sourceRef, setSourceRef] = useState("");
+  const [sourceType, setSourceType] = useState<'youtube' | 'url'>('youtube');
+  const [sourceRef, setSourceRef] = useState('');
 
   // Join room form state
-  const [joinCode, setJoinCode] = useState("");
+  const [joinCode, setJoinCode] = useState('');
 
   const handleCreateRoom = (e: React.FormEvent) => {
     e.preventDefault();
     if (!sourceRef.trim()) {
-      toast.error("Vui lòng nhập link hoặc ID video.");
+      toast.error('Vui lòng nhập link hoặc ID video.');
       return;
     }
 
@@ -39,13 +49,13 @@ export function WatchLobby() {
       try {
         const res = await createRoom({ sourceType, sourceRef });
         if (res.ok) {
-          toast.success("Tạo phòng thành công!");
+          toast.success('Tạo phòng thành công!');
           router.push(`/watch/${res.data.roomId}` as Route);
         } else {
           toast.error(res.message);
         }
       } catch (err) {
-        toast.error("Có lỗi xảy ra khi tạo phòng.");
+        toast.error('Có lỗi xảy ra khi tạo phòng.');
         console.error(err);
       }
     });
@@ -54,7 +64,7 @@ export function WatchLobby() {
   const handleJoinRoom = (e: React.FormEvent) => {
     e.preventDefault();
     if (!joinCode.trim()) {
-      toast.error("Vui lòng nhập mã phòng.");
+      toast.error('Vui lòng nhập mã phòng.');
       return;
     }
 
@@ -62,18 +72,17 @@ export function WatchLobby() {
       try {
         const res = await joinByCode(joinCode);
         if (res.ok) {
-          toast.success("Tham gia phòng thành công!");
+          toast.success('Tham gia phòng thành công!');
           router.push(`/watch/${res.data.roomId}` as Route);
         } else {
           toast.error(res.message);
         }
       } catch (err) {
-        toast.error("Có lỗi xảy ra khi tìm phòng.");
+        toast.error('Có lỗi xảy ra khi tìm phòng.');
         console.error(err);
       }
     });
   };
-
 
   const shouldReduceMotion = useReducedMotion();
 
@@ -92,9 +101,7 @@ export function WatchLobby() {
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold tracking-tight text-gradient-brand">
-            Watch Together
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gradient-brand">Watch Together</h1>
           <p className="text-sm text-muted-foreground max-w-[300px] leading-relaxed">
             Xem video cùng bạn bè theo thời gian thực.
           </p>
@@ -104,13 +111,22 @@ export function WatchLobby() {
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} disableTransition={false} className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        disableTransition={false}
+        className="w-full"
+      >
         <TabsList className="grid grid-cols-2 w-full h-9 p-1 bg-muted border border-border rounded-lg mb-4">
-          <TabsTrigger value="create" className="text-xs h-full">Tạo Phòng Mới</TabsTrigger>
-          <TabsTrigger value="join" className="text-xs h-full">Tham Gia Phòng</TabsTrigger>
+          <TabsTrigger value="create" className="text-xs h-full">
+            Tạo Phòng Mới
+          </TabsTrigger>
+          <TabsTrigger value="join" className="text-xs h-full">
+            Tham Gia Phòng
+          </TabsTrigger>
         </TabsList>
 
-        <div style={{ viewTransitionName: "watch-lobby-card" }}>
+        <div style={{ viewTransitionName: 'watch-lobby-card' }}>
           {/* Create Room Tab */}
           <TabsContent value="create">
             <Card variant="glass">
@@ -128,29 +144,37 @@ export function WatchLobby() {
               <CardContent>
                 <form onSubmit={handleCreateRoom} className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2">
-                    <Label htmlFor="source-type" className="text-xs font-medium">Nguồn video</Label>
+                    <Label htmlFor="source-type" className="text-xs font-medium">
+                      Nguồn video
+                    </Label>
                     <Tabs
                       value={sourceType}
-                      onValueChange={(val) => setSourceType(val as "youtube" | "url")}
+                      onValueChange={(val) => setSourceType(val as 'youtube' | 'url')}
                       className="w-full"
                     >
                       <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
-                        <TabsTrigger value="youtube" className="text-xs h-7">YouTube</TabsTrigger>
-                        <TabsTrigger value="url" className="text-xs h-7">Direct URL (MP4/HLS)</TabsTrigger>
+                        <TabsTrigger value="youtube" className="text-xs h-7">
+                          YouTube
+                        </TabsTrigger>
+                        <TabsTrigger value="url" className="text-xs h-7">
+                          Direct URL (MP4/HLS)
+                        </TabsTrigger>
                       </TabsList>
                     </Tabs>
                   </div>
 
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="source-ref" className="text-xs font-medium">
-                      {sourceType === "youtube" ? "Link hoặc ID video YouTube" : "Link video trực tiếp"}
+                      {sourceType === 'youtube'
+                        ? 'Link hoặc ID video YouTube'
+                        : 'Link video trực tiếp'}
                     </Label>
                     <Input
                       id="source-ref"
                       placeholder={
-                        sourceType === "youtube"
-                          ? "https://www.youtube.com/watch?v=..."
-                          : "https://example.com/video.mp4"
+                        sourceType === 'youtube'
+                          ? 'https://www.youtube.com/watch?v=...'
+                          : 'https://example.com/video.mp4'
                       }
                       value={sourceRef}
                       onChange={(e) => setSourceRef(e.target.value)}
@@ -158,14 +182,14 @@ export function WatchLobby() {
                       required
                     />
                     <p className="text-xs text-muted-foreground/70 select-none">
-                      {sourceType === "youtube"
-                        ? "Dán full link YouTube hoặc chỉ mã ID 11 ký tự."
-                        : "Hỗ trợ link video MP4 hoặc luồng HLS (.m3u8)."}
+                      {sourceType === 'youtube'
+                        ? 'Dán full link YouTube hoặc chỉ mã ID 11 ký tự.'
+                        : 'Hỗ trợ link video MP4 hoặc luồng HLS (.m3u8).'}
                     </p>
                   </div>
 
                   <Button type="submit" disabled={isPending} className="w-full mt-1">
-                    {isPending ? "Đang xử lý..." : "Khởi tạo phòng"}
+                    {isPending ? 'Đang xử lý...' : 'Khởi tạo phòng'}
                   </Button>
                 </form>
               </CardContent>
@@ -189,7 +213,9 @@ export function WatchLobby() {
               <CardContent>
                 <form onSubmit={handleJoinRoom} className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="join-code" className="text-xs font-medium">Mã phòng (Join Code)</Label>
+                    <Label htmlFor="join-code" className="text-xs font-medium">
+                      Mã phòng (Join Code)
+                    </Label>
                     <Input
                       id="join-code"
                       placeholder="VD: ABCD23"
@@ -206,7 +232,7 @@ export function WatchLobby() {
                   </div>
 
                   <Button type="submit" disabled={isPending} className="w-full mt-1">
-                    {isPending ? "Đang kết nối..." : "Tham gia phòng"}
+                    {isPending ? 'Đang kết nối...' : 'Tham gia phòng'}
                   </Button>
                 </form>
               </CardContent>

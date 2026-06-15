@@ -1,15 +1,25 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, AvatarFallback, AvatarImage } from "@pumni/ui";
-import { Crown, Users, ListVideo, MessageSquare } from "lucide-react";
-import { toast } from "sonner";
-import { ParticipantRail } from "./participant-rail";
-import { PlaylistPanel } from "./playlist-panel";
-import { ChatPanel } from "./chat-panel";
-import { type ReactionOverlayRef } from "./reaction-overlay";
-import { useTransferHost } from "../hooks/use-room-queue";
-import type { Participant, QueueItem, QueueBroadcastEvent, ChatMessage } from "../types";
+import React from 'react';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Card,
+  Button,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@pumni/ui';
+import { Crown, Users, ListVideo, MessageSquare } from 'lucide-react';
+import { toast } from 'sonner';
+import { ParticipantRail } from './participant-rail';
+import { PlaylistPanel } from './playlist-panel';
+import { ChatPanel } from './chat-panel';
+import { type ReactionOverlayRef } from './reaction-overlay';
+import { useTransferHost } from '../hooks/use-room-queue';
+import type { Participant, QueueItem, QueueBroadcastEvent, ChatMessage } from '../types';
 
 interface SideDockProps {
   roomId: string;
@@ -46,10 +56,10 @@ export function SideDock({
   const handleTransferHost = (newHostId: string) => {
     transferHostMutation.mutate(newHostId, {
       onSuccess: () => {
-        toast.success("Đã chuyển quyền chủ phòng thành công!");
+        toast.success('Đã chuyển quyền chủ phòng thành công!');
       },
       onError: (err) => {
-        toast.error(err.message || "Chuyển quyền thất bại.");
+        toast.error(err.message || 'Chuyển quyền thất bại.');
       },
     });
   };
@@ -59,15 +69,24 @@ export function SideDock({
       <div className="p-4 flex flex-col gap-4 flex-1 h-full min-h-0">
         <Tabs defaultValue="playlist" className="w-full flex-1 flex flex-col h-full min-h-0">
           <TabsList className="grid grid-cols-3 h-9 p-1 bg-muted border border-border rounded-lg shrink-0">
-            <TabsTrigger value="playlist" className="text-xs flex items-center justify-center gap-1 h-full">
+            <TabsTrigger
+              value="playlist"
+              className="text-xs flex items-center justify-center gap-1 h-full"
+            >
               <ListVideo className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Danh sách</span>
             </TabsTrigger>
-            <TabsTrigger value="chat" className="text-xs flex items-center justify-center gap-1.5 h-full">
+            <TabsTrigger
+              value="chat"
+              className="text-xs flex items-center justify-center gap-1.5 h-full"
+            >
               <MessageSquare className="size-3.5 shrink-0" />
               Chat
             </TabsTrigger>
-            <TabsTrigger value="participants" className="text-xs flex items-center justify-center gap-1.5 h-full">
+            <TabsTrigger
+              value="participants"
+              className="text-xs flex items-center justify-center gap-1.5 h-full"
+            >
               <Users className="size-3.5 shrink-0" />
               <span className="inline-flex items-center justify-center size-4 rounded-full bg-muted text-[10px] font-semibold leading-none">
                 {participants.length}
@@ -87,7 +106,10 @@ export function SideDock({
           </TabsContent>
 
           {/* Chat Tab */}
-          <TabsContent value="chat" className="flex-1 mt-3 focus-visible:outline-none flex flex-col min-h-0">
+          <TabsContent
+            value="chat"
+            className="flex-1 mt-3 focus-visible:outline-none flex flex-col min-h-0"
+          >
             <ChatPanel
               messages={messages}
               sendChat={sendChat}
@@ -99,7 +121,10 @@ export function SideDock({
           </TabsContent>
 
           {/* Participants Tab */}
-          <TabsContent value="participants" className="flex-1 mt-3 flex flex-col gap-4 focus-visible:outline-none overflow-hidden min-h-0">
+          <TabsContent
+            value="participants"
+            className="flex-1 mt-3 flex flex-col gap-4 focus-visible:outline-none overflow-hidden min-h-0"
+          >
             {/* Visual avatar rail */}
             <ParticipantRail participants={participants} profiles={profiles} />
 
@@ -108,14 +133,15 @@ export function SideDock({
               <span className="text-xs font-semibold text-muted-foreground shrink-0">
                 Quản lý thành viên
               </span>
-              
+
               <div className="flex flex-col gap-1.5">
                 {participants.map((p) => {
                   const isCurrentUser = p.userId === userId;
                   const profile = profiles[p.userId];
-                  const displayName = profile?.username ?? (isCurrentUser ? "Bạn" : `User: ${p.userId.slice(0, 8)}`);
-                  const initials = profile?.username 
-                    ? profile.username.slice(0, 2) 
+                  const displayName =
+                    profile?.username ?? (isCurrentUser ? 'Bạn' : `User: ${p.userId.slice(0, 8)}`);
+                  const initials = profile?.username
+                    ? profile.username.slice(0, 2)
                     : p.userId.slice(0, 2);
 
                   return (
@@ -126,7 +152,11 @@ export function SideDock({
                       <div className="flex items-center gap-2 min-w-0">
                         <Avatar className="size-7 border border-border shrink-0">
                           {profile?.avatar_url && (
-                            <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
+                            <AvatarImage
+                              src={profile.avatar_url}
+                              alt={displayName}
+                              className="object-cover"
+                            />
                           )}
                           <AvatarFallback className="text-[10px] font-bold uppercase select-none bg-primary/10 text-primary">
                             {initials}
@@ -134,7 +164,9 @@ export function SideDock({
                         </Avatar>
                         <div className="flex flex-col min-w-0">
                           <span className="truncate pr-1 font-medium text-foreground">
-                            {isCurrentUser && profile?.username ? `${displayName} (Bạn)` : displayName}
+                            {isCurrentUser && profile?.username
+                              ? `${displayName} (Bạn)`
+                              : displayName}
                           </span>
                           {p.isHost && (
                             <span className="text-[9px] text-primary font-medium flex items-center gap-0.5 mt-0.5">

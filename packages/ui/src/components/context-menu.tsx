@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
-import { ContextMenu as ContextMenuPrimitive } from "radix-ui";
+import * as React from 'react';
+import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react';
+import { ContextMenu as ContextMenuPrimitive } from 'radix-ui';
 
-import { cn } from "../lib/cn";
+import { cn } from '../lib/cn';
 
 function ContextMenu({ ...props }: React.ComponentProps<typeof ContextMenuPrimitive.Root>) {
   return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />;
@@ -43,9 +43,9 @@ function ContextMenuContent({
     <ContextMenuPrimitive.Portal>
       <ContextMenuPrimitive.Content
         data-slot="context-menu-content"
-        style={{ zIndex: "var(--z-popover)", ...style }}
+        style={{ zIndex: 'var(--z-popover)', ...style }}
         className={cn(
-          "glass-panel max-h-(--radix-context-menu-content-available-height) min-w-32 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md p-1 text-popover-foreground motion-safe:will-change-[opacity,transform] data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+          'glass-panel max-h-(--radix-context-menu-content-available-height) min-w-32 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md p-1 text-popover-foreground motion-safe:will-change-[opacity,transform] data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
           className,
         )}
         {...props}
@@ -57,11 +57,11 @@ function ContextMenuContent({
 function ContextMenuItem({
   className,
   inset,
-  variant = "default",
+  variant = 'default',
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Item> & {
   inset?: boolean;
-  variant?: "default" | "destructive";
+  variant?: 'default' | 'destructive';
 }) {
   return (
     <ContextMenuPrimitive.Item
@@ -138,10 +138,7 @@ function ContextMenuLabel({
     <ContextMenuPrimitive.Label
       data-slot="context-menu-label"
       data-inset={inset}
-      className={cn(
-        "px-2 py-1.5 text-sm font-medium text-foreground data-[inset]:pl-8",
-        className,
-      )}
+      className={cn('px-2 py-1.5 text-sm font-medium text-foreground data-[inset]:pl-8', className)}
       {...props}
     />
   );
@@ -154,17 +151,17 @@ function ContextMenuSeparator({
   return (
     <ContextMenuPrimitive.Separator
       data-slot="context-menu-separator"
-      className={cn("-mx-1 my-1 h-px bg-border", className)}
+      className={cn('-mx-1 my-1 h-px bg-border', className)}
       {...props}
     />
   );
 }
 
-function ContextMenuShortcut({ className, ...props }: React.ComponentProps<"span">) {
+function ContextMenuShortcut({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span
       data-slot="context-menu-shortcut"
-      className={cn("ml-auto text-xs tracking-widest text-muted-foreground", className)}
+      className={cn('ml-auto text-xs tracking-widest text-muted-foreground', className)}
       {...props}
     />
   );
@@ -202,9 +199,9 @@ function ContextMenuSubContent({
   return (
     <ContextMenuPrimitive.SubContent
       data-slot="context-menu-sub-content"
-      style={{ zIndex: "var(--z-popover)", ...style }}
+      style={{ zIndex: 'var(--z-popover)', ...style }}
       className={cn(
-        "glass-panel min-w-32 origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md p-1 text-popover-foreground data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
+        'glass-panel min-w-32 origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md p-1 text-popover-foreground data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
         className,
       )}
       {...props}

@@ -20,7 +20,7 @@
 }
 
 .os-desktop::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: -50px;
   pointer-events: none;
@@ -66,26 +66,26 @@
  * Dock magnification — macOS-style. The hovered item grows; immediate
  * neighbours grow a little (via :has + sibling). CSS-only, no JS.
  */
-[data-slot="dock-item"] {
+[data-slot='dock-item'] {
   transition: transform var(--duration-base) var(--ease-out);
   will-change: transform;
   transform-origin: bottom center;
 }
 
-[data-slot="dock-item"]:hover {
+[data-slot='dock-item']:hover {
   transform: translateY(-0.6rem) scale(1.45);
 }
 
-[data-slot="dock-item"]:hover + [data-slot="dock-item"],
-[data-slot="dock-item"]:has(+ [data-slot="dock-item"]:hover) {
+[data-slot='dock-item']:hover + [data-slot='dock-item'],
+[data-slot='dock-item']:has(+ [data-slot='dock-item']:hover) {
   transform: translateY(-0.3rem) scale(1.2);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-slot="dock-item"],
-  [data-slot="dock-item"]:hover,
-  [data-slot="dock-item"]:hover + [data-slot="dock-item"],
-  [data-slot="dock-item"]:has(+ [data-slot="dock-item"]:hover) {
+  [data-slot='dock-item'],
+  [data-slot='dock-item']:hover,
+  [data-slot='dock-item']:hover + [data-slot='dock-item'],
+  [data-slot='dock-item']:has(+ [data-slot='dock-item']:hover) {
     transform: none;
   }
 }

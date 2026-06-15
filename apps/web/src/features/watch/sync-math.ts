@@ -1,4 +1,4 @@
-import type { PlaybackAnchor } from "./types";
+import type { PlaybackAnchor } from './types';
 
 /**
  * Calculates where the playback head should be right now on the server timeline.
@@ -20,15 +20,15 @@ export function extractYouTubeId(urlOrId: string): string | null {
 
   try {
     const urlObj = new URL(urlOrId);
-    if (urlObj.hostname === "youtu.be") {
+    if (urlObj.hostname === 'youtu.be') {
       const id = urlObj.pathname.slice(1);
       if (ytIdPattern.test(id)) return id;
-    } else if (urlObj.hostname.includes("youtube.com")) {
-      if (urlObj.pathname === "/watch") {
-        const id = urlObj.searchParams.get("v");
+    } else if (urlObj.hostname.includes('youtube.com')) {
+      if (urlObj.pathname === '/watch') {
+        const id = urlObj.searchParams.get('v');
         if (id && ytIdPattern.test(id)) return id;
-      } else if (urlObj.pathname.startsWith("/embed/")) {
-        const id = urlObj.pathname.split("/")[2];
+      } else if (urlObj.pathname.startsWith('/embed/')) {
+        const id = urlObj.pathname.split('/')[2];
         if (id && ytIdPattern.test(id)) return id;
       }
     }
@@ -44,7 +44,7 @@ export function extractYouTubeId(urlOrId: string): string | null {
 export function isValidHttpUrl(url: string): boolean {
   try {
     const u = new URL(url);
-    return u.protocol === "http:" || u.protocol === "https:";
+    return u.protocol === 'http:' || u.protocol === 'https:';
   } catch {
     return false;
   }
@@ -71,5 +71,5 @@ export function getStructuralSignature(room: {
   host_id: string;
   current_queue_item_id: string | null;
 }): string {
-  return `${room.source_type}|${room.source_ref}|${room.host_id}|${room.current_queue_item_id || ""}`;
+  return `${room.source_type}|${room.source_ref}|${room.host_id}|${room.current_queue_item_id || ''}`;
 }
