@@ -34,13 +34,15 @@ describe("DesignSystemShowcase", () => {
     );
 
     expect(screen.getByRole("heading", { name: "Design System" })).toBeInTheDocument();
-    expect(screen.getByText("Foundations")).toBeInTheDocument();
-    expect(screen.getByText("Controls")).toBeInTheDocument();
-    expect(screen.getByText("Surfaces & Layout")).toBeInTheDocument();
-    expect(screen.getByText("Overlays & Menus")).toBeInTheDocument();
-    expect(screen.getByText("Feedback")).toBeInTheDocument();
-    expect(screen.getByText("Identity & Personalization")).toBeInTheDocument();
-    expect(screen.getByText("Motion")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Foundations", level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Controls", level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Surfaces & Layout", level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Overlays & Menus", level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Feedback", level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Identity & Personalization", level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Motion", level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Bento Grid (12-col)", level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Card States & Spotlight", level: 2 })).toBeInTheDocument();
     expect(screen.getByRole("navigation", { name: "Application dock" })).toBeInTheDocument();
 
     // Additional coverage for new primitives and structures
@@ -139,7 +141,7 @@ describe("DesignSystemShowcase", () => {
     expect(screen.getByText("+3")).toBeInTheDocument();
   });
 
-  it("toggles glass accessibility preview states", () => {
+  it("toggles APCA contrast preview states", () => {
     render(
       <PersonalizationProvider>
         <DesignSystemShowcase />
@@ -158,5 +160,42 @@ describe("DesignSystemShowcase", () => {
     expect(solidToggle).toHaveAttribute("aria-pressed", "true");
     expect(highToggle).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByText("Contrast Boosted")).toBeInTheDocument();
+  });
+
+  it("renders fadeRise recipe demo and toggles visibility toggle", () => {
+    render(
+      <PersonalizationProvider>
+        <DesignSystemShowcase />
+      </PersonalizationProvider>
+    );
+
+    expect(screen.getByText("fadeRise Recipe")).toBeInTheDocument();
+    expect(screen.getByText("Fade + Rise")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Hide" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Hide" }));
+    expect(screen.getByRole("button", { name: "Show" })).toBeInTheDocument();
+  });
+
+  it("renders withViewTransition demo", () => {
+    render(
+      <PersonalizationProvider>
+        <DesignSystemShowcase />
+      </PersonalizationProvider>
+    );
+
+    expect(screen.getByText("View Transitions")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Trigger withViewTransition" })).toBeInTheDocument();
+  });
+
+  it("renders APCA contrast calculator with pass/fail indicator", () => {
+    render(
+      <PersonalizationProvider>
+        <DesignSystemShowcase />
+      </PersonalizationProvider>
+    );
+
+    expect(screen.getByText("APCA Contrast Verification")).toBeInTheDocument();
+    expect(screen.getByText("Pass — Text")).toBeInTheDocument();
   });
 });

@@ -3,27 +3,20 @@
 import * as React from "react";
 import { Clock } from "lucide-react";
 
+import { useClock } from "@/hooks/use-clock";
+import { dateFormatter } from "@/lib/formatters";
+
 export function DashboardClockCard() {
-  const [time, setTime] = React.useState<Date | null>(() => {
-    if (typeof window !== "undefined") {
-      return new Date();
-    }
-    return null;
-  });
+  const timestamp = useClock();
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  if (!time) {
+  if (timestamp === null) {
     return (
-      <div className="flex h-full flex-col justify-between min-h-[120px]">
+      <div className="flex min-h-[120px] h-full flex-col justify-between">
         <div className="flex items-center justify-between text-muted-foreground">
           <Clock className="h-4 w-4" />
-          <span className="text-xs uppercase tracking-wider font-semibold">Time</span>
+          <span className="text-xs font-semibold uppercase tracking-wider">
+            Time
+          </span>
         </div>
         <div className="space-y-1">
           <div className="h-8 w-24 animate-pulse rounded bg-muted" />
@@ -33,31 +26,39 @@ export function DashboardClockCard() {
     );
   }
 
-  const hours = time.getHours().toString().padStart(2, "0");
-  const minutes = time.getMinutes().toString().padStart(2, "0");
-  const seconds = time.getSeconds().toString().padStart(2, "0");
+  const date = new Date(timestamp);
 
-  const formattedDate = time.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+
+  const formattedDate = dateFormatter.format(date);
 
   return (
-    <div className="flex h-full flex-col justify-between min-h-[120px] select-none">
+    <div className="flex min-h-[120px] h-full select-none flex-col justify-between">
       <div className="flex items-center justify-between text-muted-foreground">
         <Clock className="h-4 w-4 text-primary" />
-        <span className="text-xs uppercase tracking-wider font-semibold">System Time</span>
+        <span className="text-xs font-semibold uppercase tracking-wider">
+          System Time
+        </span>
       </div>
+
       <div className="mt-4 space-y-1">
-        <div className="flex items-baseline gap-1 font-mono text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        <time
+          dateTime={date.toISOString()}
+          className="flex items-baseline gap-1 font-mono text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
+        >
           <span>{hours}</span>
           <span className="animate-pulse text-primary">:</span>
           <span>{minutes}</span>
-          <span className="text-sm font-medium text-muted-foreground">:{seconds}</span>
-        </div>
-        <p className="text-xs font-medium text-muted-foreground">{formattedDate}</p>
+          <span className="text-sm font-medium text-muted-foreground">
+            :{seconds}
+          </span>
+        </time>
+
+        <p className="text-xs font-medium text-muted-foreground">
+          {formattedDate}
+        </p>
       </div>
     </div>
   );
