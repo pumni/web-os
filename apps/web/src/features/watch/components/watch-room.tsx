@@ -4,18 +4,18 @@ import React, { useRef, useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import type { MediaPlayerInstance } from "@vidstack/react";
-import { 
-  Button, 
-  Input, 
-  Label, 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle, 
-  Tabs, 
-  TabsList, 
+import {
+  Button,
+  Input,
+  Label,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Tabs,
+  TabsList,
   TabsTrigger,
   Sheet,
   SheetContent,
@@ -90,7 +90,9 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
           setTimeout(() => void join(attempt + 1), 1000 * (attempt + 1));
         } else {
           console.error("Failed to join room after retries", err);
-          toast.error("Không thể tham gia phòng. Một số thao tác có thể bị hạn chế — hãy tải lại trang.");
+          toast.error(
+            "Không thể tham gia phòng. Một số thao tác có thể bị hạn chế — hãy tải lại trang.",
+          );
         }
       }
     }
@@ -128,20 +130,20 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   const reactionOverlayRef = useRef<ReactionOverlayRef>(null);
 
   // 4. Realtime channel (Broadcast anchor + Presence + postgres_changes + Chat + Reactions).
-  const { 
-    participants, 
-    broadcastAnchor, 
-    broadcastQueueEvent, 
+  const {
+    participants,
+    broadcastAnchor,
+    broadcastQueueEvent,
     channelStatus,
     broadcastChat,
-    broadcastReaction
+    broadcastReaction,
   } = useRoomChannel(
     currentRoom,
     userId,
     isHost,
     (anchor) => onAnchorRef.current(anchor),
     (m) => onChatRef.current(m),
-    (r) => onReactionRef.current(r)
+    (r) => onReactionRef.current(r),
   );
 
   // 4.5 Chat & Reactions & Host Auto-promote
@@ -149,7 +151,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     userId,
     broadcastChat,
     broadcastReaction,
-    (r) => reactionOverlayRef.current?.pushReaction(r)
+    (r) => reactionOverlayRef.current?.pushReaction(r),
   );
 
   useEffect(() => {
@@ -173,13 +175,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     resumeFromGesture,
     handleReceiveAnchor,
     playerHandlers,
-  } = useSyncController(
-    playerRef,
-    currentRoom,
-    isHost,
-    serverClock,
-    broadcastAnchor
-  );
+  } = useSyncController(playerRef, currentRoom, isHost, serverClock, broadcastAnchor);
 
   const { data: profiles = {} } = useMemberProfiles(participants.map((p) => p.userId));
 
@@ -261,7 +257,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   if (!clockReady) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3 select-none text-foreground/75">
+      <div className="flex flex-col items-center justify-center min-h-100 gap-3 select-none text-foreground/75">
         <div className="size-8 motion-safe:animate-spin rounded-full border-2 border-primary border-t-transparent" />
         <span className="text-sm font-medium">Đang đồng bộ thời gian với máy chủ...</span>
       </div>
@@ -271,7 +267,10 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   return (
     <div className="w-full flex-1 flex flex-col gap-3 p-4 min-h-0 select-none">
       {/* Top Header Bar */}
-      <GlassSurface variant="bar" className="flex items-center justify-between w-full select-none shrink-0 px-3 py-2 rounded-xl">
+      <GlassSurface
+        variant="bar"
+        className="flex items-center justify-between w-full select-none shrink-0 px-3 py-2 rounded-xl"
+      >
         {/* Left: Back + Title + Status */}
         <div className="flex items-center gap-2">
           <Button
@@ -306,10 +305,12 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             type="button"
             onClick={handleCopyCode}
             aria-label="Sao chép mã phòng"
-            className="hidden sm:flex items-center gap-1 h-7 px-2.5 rounded-md border border-border bg-muted motion-safe:hover:bg-muted/80 transition-colors duration-[var(--duration-fast)] cursor-pointer"
+            className="hidden sm:flex items-center gap-1 h-7 px-2.5 rounded-md border border-border bg-muted motion-safe:hover:bg-muted/80 transition-colors duration-(--duration-fast) cursor-pointer"
           >
             <Hash className="size-3 text-muted-foreground/70" />
-            <span className="font-mono text-xs font-bold tracking-widest text-foreground">{currentRoom.code}</span>
+            <span className="font-mono text-xs font-bold tracking-widest text-foreground">
+              {currentRoom.code}
+            </span>
           </button>
 
           <Button
@@ -361,7 +362,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         </div>
 
         {/* Right: Side Dock (Desktop only) */}
-        <div className="hidden lg:block w-[340px] shrink-0 min-h-0">
+        <div className="hidden lg:block w-85 shrink-0 min-h-0">
           <SideDock
             roomId={currentRoom.id}
             userId={userId}
@@ -381,7 +382,10 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
       {/* Mobile Drawer (Sheet) */}
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent side="right" className="w-full sm:max-w-md p-0 border-l border-border flex flex-col h-full">
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-md p-0 border-l border-border flex flex-col h-full"
+        >
           <SheetHeader className="p-4 border-b border-border shrink-0">
             <SheetTitle className="text-sm font-semibold">Bảng điều khiển</SheetTitle>
           </SheetHeader>
@@ -423,15 +427,21 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
                   className="w-full"
                 >
                   <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
-                    <TabsTrigger value="youtube" className="text-xs h-7">YouTube</TabsTrigger>
-                    <TabsTrigger value="url" className="text-xs h-7">Direct URL (MP4/HLS)</TabsTrigger>
+                    <TabsTrigger value="youtube" className="text-xs h-7">
+                      YouTube
+                    </TabsTrigger>
+                    <TabsTrigger value="url" className="text-xs h-7">
+                      Direct URL (MP4/HLS)
+                    </TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="new-source-ref" className="text-xs">
-                  {newSourceType === "youtube" ? "Link hoặc ID video YouTube" : "Link video trực tiếp"}
+                  {newSourceType === "youtube"
+                    ? "Link hoặc ID video YouTube"
+                    : "Link video trực tiếp"}
                 </Label>
                 <Input
                   id="new-source-ref"

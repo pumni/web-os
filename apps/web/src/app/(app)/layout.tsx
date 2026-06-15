@@ -9,11 +9,9 @@ export const unstable_instant = {
   samples: [
     {
       params: { itemId: "00000000000000000000000000000000" },
-      cookies: [
-        { name: "pumni-sidebar", value: null }
-      ]
-    }
-  ]
+      cookies: [{ name: "pumni-sidebar", value: null }],
+    },
+  ],
 };
 
 export default function ProtectedLayout({
@@ -56,10 +54,14 @@ async function AuthenticatedAppShell({ children }: Readonly<{ children: React.Re
 function ProtectedShellFallback() {
   return (
     <div className="min-h-dvh bg-background">
-      <aside className="fixed inset-y-0 left-0 z-sidebar hidden w-64 border-r border-border bg-card lg:block">
-        <div className="flex h-16 items-center border-b border-border px-6">
+      <aside className="fixed inset-y-0 left-0 z-sidebar hidden w-64 bg-card lg:block">
+        <div className="flex h-16 items-center px-6">
           <div className="h-5 w-32 rounded bg-muted" />
         </div>
+        <div
+          aria-hidden
+          className="mx-auto h-px bg-linear-to-r from-transparent via-glass-border/20 to-transparent"
+        />
         <div className="space-y-2 p-4">
           <div className="h-9 rounded-md bg-muted" />
           <div className="h-9 rounded-md bg-muted" />
@@ -67,7 +69,7 @@ function ProtectedShellFallback() {
         </div>
       </aside>
       <div className="flex min-h-dvh flex-col lg:pl-64">
-        <header className="glass-bar sticky top-0 z-topbar flex h-16 shrink-0 items-center justify-between border-b px-4 sm:px-6 lg:px-8">
+        <header className="glass-bar-edge-b sticky top-0 z-topbar flex h-16 shrink-0 items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="h-5 w-32 rounded bg-muted lg:hidden" />
           <div className="h-8 w-8 rounded-full bg-muted" />
         </header>

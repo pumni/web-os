@@ -19,9 +19,21 @@ const BEAT_PATTERNS: Record<number, number[]> = {
 
 // C Major scale frequencies for the 15-key grid
 const NOTE_FREQS = [
-  261.63, 293.66, 329.63, 349.23, 392.00, // Row 1: C4, D4, E4, F4, G4
-  440.00, 493.88, 523.25, 587.33, 659.25, // Row 2: A4, B4, C5, D5, E5
-  698.46, 783.99, 880.00, 987.77, 1046.50, // Row 3: F5, G5, A5, B5, C6
+  261.63,
+  293.66,
+  329.63,
+  349.23,
+  392.0, // Row 1: C4, D4, E4, F4, G4
+  440.0,
+  493.88,
+  523.25,
+  587.33,
+  659.25, // Row 2: A4, B4, C5, D5, E5
+  698.46,
+  783.99,
+  880.0,
+  987.77,
+  1046.5, // Row 3: F5, G5, A5, B5, C6
 ];
 
 export function PreviewWindow({ className }: { className?: string }) {
@@ -36,7 +48,9 @@ export function PreviewWindow({ className }: { className?: string }) {
     if (typeof window === "undefined") return;
     try {
       if (!audioContextRef.current) {
-        const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        const AudioContextClass =
+          window.AudioContext ||
+          (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
         audioContextRef.current = new AudioContextClass();
       }
 
@@ -49,7 +63,10 @@ export function PreviewWindow({ className }: { className?: string }) {
       const gain = ctx.createGain();
 
       osc.type = "sine";
-      osc.frequency.setValueAtTime(NOTE_FREQS[index % NOTE_FREQS.length] ?? 261.63, ctx.currentTime);
+      osc.frequency.setValueAtTime(
+        NOTE_FREQS[index % NOTE_FREQS.length] ?? 261.63,
+        ctx.currentTime,
+      );
 
       // Simple volume envelope: instant attack, exponential release
       gain.gain.setValueAtTime(0, ctx.currentTime);
@@ -95,7 +112,10 @@ export function PreviewWindow({ className }: { className?: string }) {
   return (
     <Window
       title="Sky Player - Playback Preview"
-      className={cn("w-full max-w-md shadow-2xl transition-all duration-[var(--duration-base)] hover:[box-shadow:var(--shadow-glass-glow)]", className)}
+      className={cn(
+        "w-full max-w-md shadow-2xl transition-all duration(--duration-base) hover:[box-shadow:var(--shadow-glass-glow)]",
+        className,
+      )}
       onClose={() => setIsPlaying(false)}
       onMinimize={() => setIsPlaying(false)}
       onMaximize={() => setIsPlaying(true)}
@@ -107,9 +127,7 @@ export function PreviewWindow({ className }: { className?: string }) {
             <h3 className="text-lg font-bold tracking-tight text-foreground">
               Dawn (Sky COTL Theme)
             </h3>
-            <p className="text-xs text-muted-foreground">
-              JSON · skysheet · TXT compatible
-            </p>
+            <p className="text-xs text-muted-foreground">JSON · skysheet · TXT compatible</p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -143,7 +161,11 @@ export function PreviewWindow({ className }: { className?: string }) {
         </div>
 
         {/* 3x5 Music Note Grid */}
-        <div className="grid grid-cols-5 gap-3" role="grid" aria-label="Interactive Sky Music keyboard">
+        <div
+          className="grid grid-cols-5 gap-3"
+          role="grid"
+          aria-label="Interactive Sky Music keyboard"
+        >
           {Array.from({ length: 15 }).map((_, index) => {
             const isActive = activeNotes.includes(index);
             return (
@@ -154,7 +176,7 @@ export function PreviewWindow({ className }: { className?: string }) {
                 onClick={() => handleManualClick(index)}
                 className={`aspect-square rounded-xl border transition-all duration-300 ${
                   isActive
-                    ? "bg-gradient-to-br from-(--brand-gradient-from) to-(--brand-gradient-via) border-(--glass-highlight) shadow-[0_0_15px_var(--primary)] scale-105"
+                    ? "bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) border-(--glass-highlight) shadow-[0_0_15px_var(--primary)] scale-105"
                     : "border-border bg-muted hover:bg-muted/80"
                 }`}
                 aria-label={`Note ${index + 1}`}
@@ -167,7 +189,7 @@ export function PreviewWindow({ className }: { className?: string }) {
         <div className="space-y-2">
           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full bg-gradient-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) transition-all duration-[var(--duration-base)] ease-fluid"
+              className="h-full bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) transition-all duration-(--duration-base) ease-fluid"
               style={{ width: `${progressPercent}%` }}
             />
           </div>

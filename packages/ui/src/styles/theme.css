@@ -88,6 +88,15 @@
   --shadow-glass-glow: var(--shadow-glass-glow-base),
     0 0 0 1px color-mix(in oklch, var(--primary) 6%, transparent);
 
+  /* Shell chrome — unified glass edge + ambient depth.
+     Same design language in both themes (glass rim + soft shadow), value
+     calibration adapts to background luminance so perceived separation
+     stays consistent. */
+  --glass-edge-rim: inset -1px 0 0 0 oklch(1 0 0 / 0.03);
+  --glass-edge-rim-bottom: inset 0 -1px 0 0 oklch(1 0 0 / 0.03);
+  --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.06);
+  --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.06);
+
   /* Interactive card hover shadow with dynamic accent ambient glow */
   --shadow-interactive-hover: 0 4px 12px -2px color-mix(in oklch, var(--primary) 12%, oklch(0 0 0 / 0.08)),
     0 2px 4px -2px color-mix(in oklch, var(--primary) 8%, oklch(0 0 0 / 0.04));
@@ -168,6 +177,14 @@
   /* Active window shadow with dynamic accent border */
   --shadow-glass-glow: var(--shadow-glass-glow-base),
     0 0 0 1px color-mix(in oklch, var(--primary) 10%, transparent);
+
+  /* Shell chrome — dark-adapted calibration (same glass rim + depth language).
+     Dark surfaces swallow shadows but amplify bright edges, so the rim gets
+     a 2× boost (3→6%) while the shadow gets 3× (6→18%) to stay perceivable. */
+  --glass-edge-rim: inset -1px 0 0 0 oklch(1 0 0 / 0.06);
+  --glass-edge-rim-bottom: inset 0 -1px 0 0 oklch(1 0 0 / 0.06);
+  --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.18);
+  --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.18);
 
   /* Interactive card hover shadow with dynamic accent ambient glow */
   --shadow-interactive-hover: 0 4px 14px -1px color-mix(in oklch, var(--primary) 18%, oklch(0 0 0 / 0.2)),

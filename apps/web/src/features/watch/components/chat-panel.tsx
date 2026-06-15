@@ -64,7 +64,8 @@ export function ChatPanel({
           messages.map((msg) => {
             const isMe = msg.userId === userId;
             const profile = profiles[msg.userId];
-            const displayName = profile?.username ?? (isMe ? "Bạn" : `User #${msg.userId.slice(0, 6)}`);
+            const displayName =
+              profile?.username ?? (isMe ? "Bạn" : `User #${msg.userId.slice(0, 6)}`);
             const initials = profile?.username
               ? profile.username.slice(0, 2).toUpperCase()
               : msg.userId.slice(0, 2).toUpperCase();
@@ -80,7 +81,11 @@ export function ChatPanel({
                 {!isMe && (
                   <Avatar className="size-6 border border-border shrink-0 mb-0.5">
                     {profile?.avatar_url && (
-                      <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
+                      <AvatarImage
+                        src={profile.avatar_url}
+                        alt={displayName}
+                        className="object-cover"
+                      />
                     )}
                     <AvatarFallback className="text-[9px] font-bold bg-primary/15 text-primary">
                       {initials}
@@ -88,23 +93,27 @@ export function ChatPanel({
                   </Avatar>
                 )}
 
-                <div className={`flex flex-col gap-0.5 min-w-0 ${isMe ? "items-end" : "items-start"}`}>
+                <div
+                  className={`flex flex-col gap-0.5 min-w-0 ${isMe ? "items-end" : "items-start"}`}
+                >
                   {/* Name — only for others */}
                   {!isMe && (
-                    <span className="text-xs text-muted-foreground/60 font-medium px-1 truncate max-w-[120px]">
+                    <span className="text-xs text-muted-foreground/60 font-medium px-1 truncate max-w-30">
                       {displayName}
                     </span>
                   )}
 
                   {/* Message Bubble */}
                   <div
-                    className={`px-3 py-1.5 break-words max-w-full ${
+                    className={`px-3 py-1.5 wrap-break-word max-w-full ${
                       isMe
                         ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm"
                         : "bg-muted text-foreground rounded-2xl rounded-bl-sm"
                     }`}
                   >
-                    <p className="leading-relaxed whitespace-pre-wrap text-xs select-text">{msg.text}</p>
+                    <p className="leading-relaxed whitespace-pre-wrap text-xs select-text">
+                      {msg.text}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -122,7 +131,7 @@ export function ChatPanel({
               variant="ghost"
               size="sm"
               onClick={() => onReact(emoji)}
-              className="size-8 p-0 text-base motion-safe:hover:scale-125 transition-transform duration-[var(--duration-fast)] active:scale-90 rounded-lg"
+              className="size-8 p-0 text-base motion-safe:hover:scale-125 transition-transform duration-(--duration-fast) active:scale-90 rounded-lg"
               type="button"
             >
               {emoji}

@@ -73,21 +73,21 @@ function Window({
           <WindowControl
             label="Close window"
             onClick={onClose}
-            className="bg-[var(--window-control-close)]"
+            className="bg-(--window-control-close)"
           >
             <X />
           </WindowControl>
           <WindowControl
             label="Minimize window"
             onClick={onMinimize}
-            className="bg-[var(--window-control-minimize)]"
+            className="bg-(--window-control-minimize)"
           >
             <Minus />
           </WindowControl>
           <WindowControl
             label="Maximize window"
             onClick={onMaximize}
-            className="bg-[var(--window-control-maximize)]"
+            className="bg-(--window-control-maximize)"
           >
             <Maximize2 />
           </WindowControl>

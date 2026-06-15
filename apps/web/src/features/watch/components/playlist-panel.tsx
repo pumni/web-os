@@ -38,7 +38,13 @@ interface PlaylistPanelProps {
   broadcastQueueEvent: (e: QueueBroadcastEvent) => void;
 }
 
-export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broadcastQueueEvent }: PlaylistPanelProps) {
+export function PlaylistPanel({
+  roomId,
+  items,
+  currentQueueItemId,
+  isHost,
+  broadcastQueueEvent,
+}: PlaylistPanelProps) {
   // Add item form state
   const [sourceType, setSourceType] = useState<"youtube" | "url">("youtube");
   const [sourceRef, setSourceRef] = useState("");
@@ -82,7 +88,7 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
         onError: (err) => {
           toast.error(err.message || "Thêm thất bại.");
         },
-      }
+      },
     );
   };
 
@@ -118,12 +124,15 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
       {
         onSuccess: () => {
           toast.success("Đã sắp xếp lại hàng chờ");
-          broadcastQueueEvent({ action: "reorder", title: targetItem.title ?? targetItem.source_ref });
+          broadcastQueueEvent({
+            action: "reorder",
+            title: targetItem.title ?? targetItem.source_ref,
+          });
         },
         onError: (err) => {
           toast.error(err.message || "Sắp xếp thất bại.");
         },
-      }
+      },
     );
   };
 
@@ -146,12 +155,15 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
       {
         onSuccess: () => {
           toast.success("Đã sắp xếp lại hàng chờ");
-          broadcastQueueEvent({ action: "reorder", title: targetItem.title ?? targetItem.source_ref });
+          broadcastQueueEvent({
+            action: "reorder",
+            title: targetItem.title ?? targetItem.source_ref,
+          });
         },
         onError: (err) => {
           toast.error(err.message || "Sắp xếp thất bại.");
         },
-      }
+      },
     );
   };
 
@@ -176,12 +188,12 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (!over) return;                 // ⚠️ BẮT BUỘC — thả ngoài list → over null
+    if (!over) return; // ⚠️ BẮT BUỘC — thả ngoài list → over null
     if (active.id === over.id) return;
 
     const without = items.filter((i) => i.id !== active.id);
@@ -206,12 +218,12 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
         onError: (err) => {
           toast.error(err.message || "Sắp xếp thất bại.");
         },
-      }
+      },
     );
   };
 
   return (
-    <div className="flex flex-col gap-4 h-full min-h-[300px]">
+    <div className="flex flex-col gap-4 h-full min-h-75">
       {/* Host Controls */}
       {isHost && (
         <div className="flex justify-between items-center pb-2 select-none shrink-0">
@@ -236,13 +248,14 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
       >
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-foreground">Thêm video</span>
-          <Tabs
-            value={sourceType}
-            onValueChange={(val) => setSourceType(val as "youtube" | "url")}
-          >
+          <Tabs value={sourceType} onValueChange={(val) => setSourceType(val as "youtube" | "url")}>
             <TabsList className="h-6 p-0.5 bg-muted border border-border rounded-md gap-0.5">
-              <TabsTrigger value="youtube" className="text-xs h-5 px-2 py-0">YT</TabsTrigger>
-              <TabsTrigger value="url" className="text-xs h-5 px-2 py-0">URL</TabsTrigger>
+              <TabsTrigger value="youtube" className="text-xs h-5 px-2 py-0">
+                YT
+              </TabsTrigger>
+              <TabsTrigger value="url" className="text-xs h-5 px-2 py-0">
+                URL
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -270,10 +283,10 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
       {/* Items List */}
       <div className="flex flex-col gap-1.5 flex-1 overflow-y-auto min-h-0 pr-0.5">
         <div className="flex items-center justify-between shrink-0">
-          <span className="text-xs font-semibold text-muted-foreground">
-            Hàng chờ
+          <span className="text-xs font-semibold text-muted-foreground">Hàng chờ</span>
+          <span className="text-xs text-muted-foreground/60 tabular-nums">
+            {items.length} video
           </span>
-          <span className="text-xs text-muted-foreground/60 tabular-nums">{items.length} video</span>
         </div>
 
         {items.length === 0 ? (
@@ -282,7 +295,11 @@ export function PlaylistPanel({ roomId, items, currentQueueItemId, isHost, broad
             <span className="text-xs">Hàng chờ trống</span>
           </div>
         ) : (
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
             <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
               <div className="flex flex-col gap-1">
                 {items.map((item, idx) => (
@@ -318,7 +335,6 @@ interface SortableItemProps {
   handleRemoveItem: (id: string) => void;
 }
 
-
 function SortableItem({
   item,
   idx,
@@ -329,14 +345,9 @@ function SortableItem({
   handleMoveDown,
   handleRemoveItem,
 }: SortableItemProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: item.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -352,11 +363,11 @@ function SortableItem({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group flex items-center gap-2 px-2 py-1.5 rounded-md border text-xs transition-all duration-[var(--duration-fast)] ease-snappy",
+        "group flex items-center gap-2 px-2 py-1.5 rounded-md border text-xs transition-all duration-(--duration-fast) ease-snappy",
         isCurrent
           ? "border-primary/20 bg-primary/10 text-primary"
           : "border-border bg-muted text-foreground motion-safe:hover:bg-muted/80",
-        isDragging && "opacity-60 shadow-sm scale-[1.02] border-primary/20"
+        isDragging && "opacity-60 shadow-sm scale-[1.02] border-primary/20",
       )}
     >
       {/* Index / Playing indicator */}
@@ -386,15 +397,18 @@ function SortableItem({
 
       {/* Title + source type */}
       <div className="flex flex-col gap-0.5 min-w-0 flex-1 select-none">
-        <span className={cn("truncate font-medium text-left leading-tight", isCurrent ? "text-primary" : "text-foreground")}>
+        <span
+          className={cn(
+            "truncate font-medium text-left leading-tight",
+            isCurrent ? "text-primary" : "text-foreground",
+          )}
+        >
           {item.title || item.source_ref}
         </span>
         <span
           className={cn(
             "inline-flex w-fit items-center px-1 py-px rounded text-[10px] font-medium leading-none",
-            isYoutube
-              ? "bg-destructive/10 text-destructive/80"
-              : "bg-muted text-muted-foreground"
+            isYoutube ? "bg-destructive/10 text-destructive/80" : "bg-muted text-muted-foreground",
           )}
         >
           {isYoutube ? "YouTube" : "URL"}
@@ -402,11 +416,13 @@ function SortableItem({
       </div>
 
       {/* Action buttons — visible only on hover (or always on current) */}
-      <div className={cn(
-        "flex items-center gap-0.5 transition-opacity duration-[var(--duration-fast)]",
-        "opacity-0 group-hover:opacity-100",
-        isCurrent && "opacity-100"
-      )}>
+      <div
+        className={cn(
+          "flex items-center gap-0.5 transition-opacity duration-(--duration-fast)",
+          "opacity-0 group-hover:opacity-100",
+          isCurrent && "opacity-100",
+        )}
+      >
         <Button
           variant="ghost"
           size="icon"

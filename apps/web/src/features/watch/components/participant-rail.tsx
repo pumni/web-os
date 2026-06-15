@@ -1,7 +1,15 @@
 "use client";
 
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage, motion, useReducedMotion, recipes, cn } from "@pumni/ui";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  motion,
+  useReducedMotion,
+  recipes,
+  cn,
+} from "@pumni/ui";
 import { Crown } from "lucide-react";
 import type { Participant } from "../types";
 
@@ -27,7 +35,9 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
           const displayName = profile?.username ?? `User: ${p.userId.slice(0, 8)}`;
           const initials = profile?.username
             ? profile.username.slice(0, 2)
-            : (p.isHost ? "Ho" : p.userId.slice(0, 2));
+            : p.isHost
+              ? "Ho"
+              : p.userId.slice(0, 2);
 
           return (
             <motion.div
@@ -37,14 +47,16 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
             >
               <Avatar
                 className={cn(
-                  "size-9 border ring-2 ring-background motion-safe:hover:scale-110 transition-transform duration-[var(--duration-fast)] ease-snappy",
-                  p.isHost
-                    ? "border-primary/40 ring-primary/20"
-                    : "border-border"
+                  "size-9 border ring-2 ring-background motion-safe:hover:scale-110 transition-transform duration-(--duration-fast) ease-snappy",
+                  p.isHost ? "border-primary/40 ring-primary/20" : "border-border",
                 )}
               >
                 {profile?.avatar_url && (
-                  <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
+                  <AvatarImage
+                    src={profile.avatar_url}
+                    alt={displayName}
+                    className="object-cover"
+                  />
                 )}
                 <AvatarFallback className="text-xs font-semibold uppercase select-none">
                   {initials}
@@ -56,7 +68,7 @@ export function ParticipantRail({ participants, profiles = {} }: ParticipantRail
                 </span>
               )}
               {/* Tooltip on hover */}
-              <div className="pointer-events-none absolute bottom-11 left-1/2 -translate-x-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-[var(--duration-fast)] bg-popover text-popover-foreground text-xs px-2 py-1 rounded-md border border-border shadow-md whitespace-nowrap">
+              <div className="pointer-events-none absolute bottom-11 left-1/2 -translate-x-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-(--duration-fast) bg-popover text-popover-foreground text-xs px-2 py-1 rounded-md border border-border shadow-md whitespace-nowrap">
                 {p.isHost ? `Chủ phòng (${displayName})` : displayName}
               </div>
             </motion.div>

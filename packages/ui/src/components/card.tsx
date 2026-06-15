@@ -54,7 +54,7 @@ const cardVariants = cva("flex flex-col gap-6 py-6 text-card-foreground", {
       spotlight: "border bg-card shadow-card card-spotlight group",
     },
     interactive: {
-      true: "cursor-pointer transition-[transform,box-shadow,border-color] duration-[var(--duration-base)] ease-snappy hover:shadow-interactive-hover hover:border-primary/30 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)",
+      true: "cursor-pointer transition-[transform,box-shadow,border-color] duration-(--duration-base) ease-snappy hover:shadow-interactive-hover hover:border-primary/30 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)",
       false: "",
     },
     radius: {
@@ -79,12 +79,14 @@ const cardVariants = cva("flex flex-col gap-6 py-6 text-card-foreground", {
        * Error: lateral shake (runs once), destructive border tint.
        * Status-tint pattern: /20 border is valid per design-system.md.
        */
-      error: "border-destructive/20 motion-safe:animate-[shake_var(--duration-base)_var(--ease-spring)_1]",
+      error:
+        "border-destructive/20 motion-safe:animate-[shake_var(--duration-base)_var(--ease-spring)_1]",
       /**
        * Success: success border tint with spring transition.
        * Status-tint pattern: /20 border is valid per design-system.md.
        */
-      success: "border-success/20 transition-[border-color,box-shadow] duration-[var(--duration-base)] ease-[var(--ease-spring)]",
+      success:
+        "border-success/20 transition-[border-color,box-shadow] duration-(--duration-base) ease-(--ease-spring)",
     },
   },
   defaultVariants: {
@@ -103,8 +105,7 @@ function Card({
   state,
   asChild = false,
   ...props
-}: React.ComponentProps<"div"> &
-  VariantProps<typeof cardVariants> & { asChild?: boolean }) {
+}: React.ComponentProps<"div"> & VariantProps<typeof cardVariants> & { asChild?: boolean }) {
   const Comp = asChild ? Slot.Root : "div";
 
   // aria-busy should be true when in loading state
@@ -136,9 +137,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div data-slot="card-title" className={cn("type-heading", className)} {...props} />
-  );
+  return <div data-slot="card-title" className={cn("type-heading", className)} {...props} />;
 }
 
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {

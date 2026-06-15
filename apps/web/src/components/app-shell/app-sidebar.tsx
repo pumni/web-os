@@ -39,13 +39,13 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          "glass-bar fixed inset-y-0 left-0 z-sidebar hidden border-r transition-[width] duration-300 ease-out lg:block",
+          "glass-bar-edge-r fixed inset-y-0 left-0 z-sidebar hidden transition-[width] duration-300 ease-out lg:block",
           collapsed ? SIDEBAR_WIDTH.collapsed.rail : SIDEBAR_WIDTH.expanded.rail,
         )}
       >
         <div
           className={cn(
-            "flex h-16 items-center border-b border-border",
+            "flex h-16 items-center",
             collapsed ? "justify-center px-2" : "justify-between px-4",
           )}
         >
@@ -78,6 +78,10 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
             </TooltipContent>
           </Tooltip>
         </div>
+        <div
+          aria-hidden
+          className="mx-auto h-px bg-linear-to-r from-transparent via-glass-border/20 to-transparent"
+        />
 
         <nav className={cn("space-y-1 p-3", !collapsed && "px-4")}>
           {navItems.map((item) => {

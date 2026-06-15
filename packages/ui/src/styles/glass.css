@@ -49,13 +49,54 @@
   backdrop-filter: blur(var(--glass-blur)) saturate(1.0);
 }
 
-/* Bar variant for topbars / docks: glass look, hairline edge only. */
+/* Bar variant for shell chrome (sidebar rails, topbars): glass look, NO
+   border — shell edges that touch the viewport should be seamless. Edge
+   separation is handled by directional variants below. */
 @utility glass-bar {
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+}
+
+/* Bordered bar variant for FLOATING elements (docks, floating toolbars).
+   Carries the full hairline glass border on all four sides so the element
+   reads as a distinct floating surface against the background. */
+@utility glass-bar-bordered {
   background-color: var(--glass-bg);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
   border: 1px solid var(--glass-border);
   box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+}
+
+/* Shell chrome variant — glass bar base + right-side glass edge + ambient depth.
+   Uses TWO unified mechanisms (same values in both themes):
+   1. Glass edge rim (white, 5%) — catches light like frosted glass edges.
+      Reads stronger on dark backgrounds, subtler on light.
+   2. Ambient depth shadow (black, 6%, spread 14px) — soft elevation.
+      Reads stronger on light backgrounds, subtler on dark.
+   Together they provide consistent shell separation without theme overrides. */
+@utility glass-bar-edge-r {
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  box-shadow:
+    var(--shadow-shell-depth),
+    var(--glass-edge-rim),
+    inset 0 1px 0 0 var(--glass-highlight);
+}
+
+/* Shell chrome variant — glass bar base + bottom-side glass edge + depth.
+   Same unified dual-mechanism approach as `glass-bar-edge-r`. */
+@utility glass-bar-edge-b {
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  box-shadow:
+    var(--shadow-shell-depth-bottom),
+    var(--glass-edge-rim-bottom),
+    inset 0 1px 0 0 var(--glass-highlight);
 }
 
 @utility glass-titlebar {
@@ -75,6 +116,9 @@
   .glass-panel,
   .glass-window,
   .glass-bar,
+  .glass-bar-bordered,
+  .glass-bar-edge-r,
+  .glass-bar-edge-b,
   .glass-titlebar {
     background: var(--popover);
     border-color: var(--border);
@@ -91,6 +135,9 @@
   .glass-panel,
   .glass-window,
   .glass-bar,
+  .glass-bar-bordered,
+  .glass-bar-edge-r,
+  .glass-bar-edge-b,
   .glass-titlebar {
     background: var(--popover);
     border-color: var(--border);
@@ -107,6 +154,9 @@
   .glass-panel,
   .glass-window,
   .glass-bar,
+  .glass-bar-bordered,
+  .glass-bar-edge-r,
+  .glass-bar-edge-b,
   .glass-titlebar {
     --glass-bg: color-mix(in oklch, var(--popover) 92%, transparent);
 
@@ -123,6 +173,9 @@
   .glass-panel,
   .glass-window,
   .glass-bar,
+  .glass-bar-bordered,
+  .glass-bar-edge-r,
+  .glass-bar-edge-b,
   .glass-titlebar {
     background: Canvas;
     border-color: CanvasText;
@@ -142,6 +195,9 @@
 .glass-a11y-preview[data-transparency="reduced"] .glass-panel,
 .glass-a11y-preview[data-transparency="reduced"] .glass-window,
 .glass-a11y-preview[data-transparency="reduced"] .glass-bar,
+.glass-a11y-preview[data-transparency="reduced"] .glass-bar-bordered,
+.glass-a11y-preview[data-transparency="reduced"] .glass-bar-edge-r,
+.glass-a11y-preview[data-transparency="reduced"] .glass-bar-edge-b,
 .glass-a11y-preview[data-transparency="reduced"] .glass-titlebar {
   background: var(--popover);
   border-color: var(--border);
@@ -152,6 +208,9 @@
 .glass-a11y-preview[data-contrast="more"] .glass-panel,
 .glass-a11y-preview[data-contrast="more"] .glass-window,
 .glass-a11y-preview[data-contrast="more"] .glass-bar,
+.glass-a11y-preview[data-contrast="more"] .glass-bar-bordered,
+.glass-a11y-preview[data-contrast="more"] .glass-bar-edge-r,
+.glass-a11y-preview[data-contrast="more"] .glass-bar-edge-b,
 .glass-a11y-preview[data-contrast="more"] .glass-titlebar {
   --glass-bg: color-mix(in oklch, var(--popover) 92%, transparent);
 

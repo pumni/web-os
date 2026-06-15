@@ -52,7 +52,7 @@ export function BentoGrid({ className, children, columns = 12, ...props }: Bento
         // Mobile: 1 col → Tablet: 6 col → Desktop: configurable (6 or 12)
         "grid grid-cols-1 gap-4 sm:grid-cols-6 lg:gap-6",
         columns === 12 ? "lg:grid-cols-12" : "lg:grid-cols-6",
-        className
+        className,
       )}
       {...props}
     >
@@ -91,8 +91,7 @@ const bentoTierVariants = cva("", {
   },
 });
 
-interface BentoGridItemProps
-  extends Omit<React.ComponentProps<typeof Card>, "title"> {
+interface BentoGridItemProps extends Omit<React.ComponentProps<typeof Card>, "title"> {
   children?: React.ReactNode;
   /**
    * Optional media/visual header well — rendered as an inset muted surface
@@ -146,13 +145,13 @@ export function BentoGridItem({
       aria-label={ariaLabel}
       className={cn(
         // Tile layout: container-query context so each tile measures its own width.
-        // [container-type:inline-size] gives access to @min-[Nrem] variants
+        // @container gives access to @min-[Nrem] variants
         // for content reflow inside the tile (independent of viewport).
-        "relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 [container-type:inline-size]",
+        "relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container",
         // All tiles share the same radius for visual Bento consistency.
         "rounded-xl",
         bentoTierVariants({ tier }),
-        className
+        className,
       )}
       style={minHeight !== undefined ? { minHeight } : undefined}
       {...props}
@@ -160,7 +159,7 @@ export function BentoGridItem({
       {loading ? (
         // Skeleton preserves tile height to prevent CLS during data fetch.
         <div className="flex flex-col gap-3 flex-1">
-          <Skeleton className="h-full min-h-[80px] w-full rounded-lg" />
+          <Skeleton className="h-full min-h-20 w-full rounded-lg" />
           <Skeleton className="h-4 w-2/3" />
           <Skeleton className="h-3 w-1/2" />
         </div>
@@ -168,7 +167,7 @@ export function BentoGridItem({
         <>
           {header && (
             // Inset well — opaque muted surface (rule 3: no bg-muted/NN on content)
-            <div className="flex w-full items-center justify-center rounded-lg bg-muted overflow-hidden min-h-[120px] max-h-[160px] border border-border">
+            <div className="flex w-full items-center justify-center rounded-lg bg-muted overflow-hidden min-h-30 max-h-40 border border-border">
               {header}
             </div>
           )}
@@ -181,16 +180,8 @@ export function BentoGridItem({
                     {icon}
                   </div>
                 )}
-                {title && (
-                  <h3 className="type-heading text-foreground">
-                    {title}
-                  </h3>
-                )}
-                {description && (
-                  <p className="type-label text-muted-foreground">
-                    {description}
-                  </p>
-                )}
+                {title && <h3 className="type-heading text-foreground">{title}</h3>}
+                {description && <p className="type-label text-muted-foreground">{description}</p>}
               </div>
             )}
             {children && (

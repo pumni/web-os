@@ -3,22 +3,8 @@
 import React from "react";
 import { useMediaState, useMediaRemote } from "@vidstack/react";
 import { Button, Slider, GlassSurface, cn } from "@pumni/ui";
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Maximize,
-  Minimize,
-  Clapperboard,
-} from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@pumni/ui";
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Clapperboard } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@pumni/ui";
 import { useControlsVisibility } from "../hooks/use-controls-visibility";
 
 interface RoomControlsProps {
@@ -41,12 +27,12 @@ function formatTime(seconds: number): string {
   return `${m}:${pad(s)}`;
 }
 
-export function RoomControls({ 
-  isHost, 
+export function RoomControls({
+  isHost,
   onSourceChange,
   isFollowingHost = true,
   resync,
-  stageRef
+  stageRef,
 }: RoomControlsProps) {
   const paused = useMediaState("paused");
   const muted = useMediaState("muted");
@@ -107,25 +93,26 @@ export function RoomControls({
 
   return (
     <>
-      <div 
+      <div
         className={cn(
-          "absolute inset-x-0 bottom-0 h-48 pointer-events-none z-10 transition-opacity duration-[var(--duration-base)] ease-fluid",
-          visible ? "opacity-100" : "opacity-0"
+          "absolute inset-x-0 bottom-0 h-48 pointer-events-none z-10 transition-opacity duration-(--duration-base) ease-fluid",
+          visible ? "opacity-100" : "opacity-0",
         )}
         style={{
-          background: "linear-gradient(to top, var(--color-overlay) 0%, color-mix(in oklch, var(--color-overlay) 45%, transparent) 55%, transparent 100%)"
+          background:
+            "linear-gradient(to top, var(--color-overlay) 0%, color-mix(in oklch, var(--color-overlay) 45%, transparent) 55%, transparent 100%)",
         }}
       />
 
-      <GlassSurface 
+      <GlassSurface
         variant="bar"
         onMouseEnter={controlsBind.onMouseEnter}
         onMouseLeave={controlsBind.onMouseLeave}
         onFocus={controlsBind.onFocus}
         onBlur={controlsBind.onBlur}
         className={cn(
-          "absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 border border-glass-border transition-all duration-[var(--duration-base)] ease-fluid",
-          visible ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
+          "absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 border border-glass-border transition-all duration-(--duration-base) ease-fluid",
+          visible ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2",
         )}
       >
         {/* Soft-lock alert banner for follower */}
@@ -136,10 +123,10 @@ export function RoomControls({
             className="flex items-center justify-between w-full px-3 py-1.5 rounded-md border border-warning/20 bg-warning/10 text-warning text-xs select-none"
           >
             <span className="leading-snug">Bạn đang xem lệch tiến trình của phòng.</span>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={resync} 
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={resync}
               className="h-6 text-xs px-2.5 font-semibold motion-safe:hover:bg-warning/10 text-warning border border-warning/20 shrink-0 ml-2"
             >
               Đồng bộ lại
@@ -149,7 +136,7 @@ export function RoomControls({
 
         {/* Timeline progress slider */}
         <div className="flex items-center gap-3 w-full">
-          <span className="text-xs font-mono text-foreground/90 select-none tabular-nums min-w-[36px] text-right">
+          <span className="text-xs font-mono text-foreground/90 select-none tabular-nums min-w-9 text-right">
             {formatTime(currentTime)}
           </span>
           <Slider
@@ -159,10 +146,10 @@ export function RoomControls({
             step={0.1}
             onValueChange={handleSeek}
             onValueCommit={handleSeekCommit}
-            className="flex-1 [&_[data-slot=track]]:bg-foreground/20 [&_[data-slot=range]]:bg-foreground [&_[data-slot=thumb]]:bg-foreground [&_[data-slot=thumb]]:border-foreground/30"
+            className="flex-1 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-foreground/30"
             aria-label="Seek progress"
           />
-          <span className="text-xs font-mono text-foreground/60 select-none tabular-nums min-w-[36px]">
+          <span className="text-xs font-mono text-foreground/60 select-none tabular-nums min-w-9">
             {formatTime(duration)}
           </span>
         </div>
@@ -205,14 +192,12 @@ export function RoomControls({
               max={1}
               step={0.05}
               onValueChange={handleVolumeChange}
-              className="w-20 [&_[data-slot=track]]:bg-foreground/20 [&_[data-slot=range]]:bg-foreground [&_[data-slot=thumb]]:bg-foreground [&_[data-slot=thumb]]:border-foreground/30"
+              className="w-20 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-foreground/30"
               aria-label="Volume level"
             />
 
             {!isHost && isFollowingHost && (
-              <span className="text-xs text-foreground/50 ml-2 select-none">
-                • Đồng bộ
-              </span>
+              <span className="text-xs text-foreground/50 ml-2 select-none">• Đồng bộ</span>
             )}
             {!isHost && !isFollowingHost && (
               <span className="text-xs text-warning/90 ml-2 select-none font-medium">
@@ -262,11 +247,7 @@ export function RoomControls({
               aria-label={fullscreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
               className="size-8 text-foreground/80 motion-safe:hover:text-foreground"
             >
-              {fullscreen ? (
-                <Minimize className="size-4" />
-              ) : (
-                <Maximize className="size-4" />
-              )}
+              {fullscreen ? <Minimize className="size-4" /> : <Maximize className="size-4" />}
             </Button>
           </div>
         </div>
