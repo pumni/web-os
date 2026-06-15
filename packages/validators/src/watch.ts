@@ -9,7 +9,7 @@ export const createRoomSchema = z.object({
 });
 
 export const setSourceSchema = z.object({
-  roomId: z.string().uuid(),
+  roomId: z.uuid(),
   sourceType: sourceTypeSchema,
   sourceRef: z.string().min(1).max(2048),
 });
@@ -18,22 +18,22 @@ export type CreateRoomInput = z.infer<typeof createRoomSchema>;
 export type SetSourceInput = z.infer<typeof setSourceSchema>;
 
 export const addQueueItemSchema = z.object({
-  roomId: z.string().uuid(),
+  roomId: z.uuid(),
   sourceType: sourceTypeSchema,
   sourceRef: z.string().min(1).max(2048),
   title: z.string().max(300).optional(),
 });
 
 export const reorderQueueSchema = z.object({
-  roomId: z.string().uuid(),
-  itemId: z.string().uuid(),
-  beforeId: z.string().uuid().nullable(), // item đứng trước mục tiêu (null nếu đưa lên đầu)
-  afterId: z.string().uuid().nullable(), // item đứng sau mục tiêu (null nếu đưa xuống cuối)
+  roomId: z.uuid(),
+  itemId: z.uuid(),
+  beforeId: z.uuid().nullable(),
+  afterId: z.uuid().nullable(),
 });
 
 export const transferHostSchema = z.object({
-  roomId: z.string().uuid(),
-  newHostId: z.string().uuid(),
+  roomId: z.uuid(),
+  newHostId: z.uuid(),
 });
 
 export type AddQueueItemInput = z.infer<typeof addQueueItemSchema>;

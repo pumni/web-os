@@ -1,22 +1,23 @@
 import { z } from 'zod';
 
 export const signInSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(8),
 });
 
 export const signUpSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(8),
   fullName: z.string().min(1).max(80),
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 });
 
 export const resetPasswordSchema = z.object({
   password: z.string().min(8),
+  confirmPassword: z.string().min(8),
 });
 
 export type SignInInput = z.infer<typeof signInSchema>;
