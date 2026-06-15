@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import {
   AnimatePresence,
+  apcaContrast,
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -56,9 +57,12 @@ import {
   Dock,
   DockItem,
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Form,
@@ -94,6 +98,7 @@ import {
   SheetClose,
   Skeleton,
   Slider,
+  SubmitButton,
   Switch,
   Tabs,
   TabsContent,
@@ -159,6 +164,13 @@ export function DesignSystemShowcase() {
     "standard",
   );
   const [previewContrast, setPreviewContrast] = React.useState<"standard" | "more">("standard");
+  const [dropdownCheckState, setDropdownCheckState] = React.useState({
+    notifications: true,
+    compact: false,
+  });
+  const [dropdownRadio, setDropdownRadio] = React.useState("comfortable");
+  const [apcaFg, setApcaFg] = React.useState("#0a0a0a");
+  const [apcaBg, setApcaBg] = React.useState("#fafafa");
 
   const form = useForm<DemoFormValues>({
     defaultValues: {
@@ -351,11 +363,22 @@ export function DesignSystemShowcase() {
                       </FormItem>
                     )}
                   />
-                  <div className="flex justify-end">
-                    <Button type="submit" size="sm">Submit Form</Button>
+                  <div className="flex justify-end gap-2">
+                    <SubmitButton size="sm">Submit Form</SubmitButton>
                   </div>
                 </form>
               </Form>
+              <Separator />
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-muted-foreground">SubmitButton (Server Action ready)</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Reads <code>useFormStatus</code> for auto-pending state. Falls back to manual <code>loading</code> prop.
+                </p>
+                <div className="flex gap-2">
+                  <SubmitButton size="sm">Save</SubmitButton>
+                  <SubmitButton size="sm" loading>Saving…</SubmitButton>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -646,6 +669,29 @@ export function DesignSystemShowcase() {
                     <SettingsIcon />
                     Appearance
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuCheckboxItem
+                    checked={dropdownCheckState.notifications}
+                    onCheckedChange={(checked) =>
+                      setDropdownCheckState((s) => ({ ...s, notifications: checked }))
+                    }
+                  >
+                    Push Notifications
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={dropdownCheckState.compact}
+                    onCheckedChange={(checked) =>
+                      setDropdownCheckState((s) => ({ ...s, compact: checked }))
+                    }
+                  >
+                    Compact Mode
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>Layout Density</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup value={dropdownRadio} onValueChange={setDropdownRadio}>
+                    <DropdownMenuRadioItem value="comfortable">Comfortable</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="compact">Compact</DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem variant="destructive" onClick={() => toast.error("Account delete clicked.")}>
                     <TrashIcon />
@@ -1088,10 +1134,11 @@ export function DesignSystemShowcase() {
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="space-y-1">
             <h2 className="text-xl font-semibold tracking-tight text-foreground">
-              A11Y Surface Contrast Preview
+              APCA Contrast Verification
             </h2>
             <p className="text-sm text-muted-foreground">
-              Simulated surface opacity and high contrast modes layered on top of wallpaper gradients.
+              Perceptual contrast (APCA Lc) across surface opacities, accent layers, and high-contrast
+              mode. This is the single contrast source of truth — APCA, not WCAG 2.x.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1154,24 +1201,25 @@ export function DesignSystemShowcase() {
           <div className="relative grid gap-4 md:grid-cols-2">
             <GlassSurface variant="panel" className="p-5 flex flex-col justify-between min-h-64">
               <div className="space-y-2">
-                <span className="text-xs font-semibold text-primary uppercase">Readability Grid</span>
+                <span className="text-xs font-semibold text-primary uppercase">APCA Contrast Gate</span>
                 <h3 className="text-2xl font-bold tracking-tight text-foreground">
-                  AA/AAA Accessibility
+                  Lc 60 / Lc 25
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Contrast ratio complies with WCAG guidelines on both light and dark backgrounds.
+                  All semantic color pairs are gated: body text ≥ Lc 60, UI elements ≥ Lc 25.
+                  APCA is perceptually accurate across both light and dark backgrounds.
                 </p>
               </div>
               <div className="flex gap-2">
-                <span className="rounded bg-success/20 px-2 py-0.5 text-xs text-success font-medium">Text Pass</span>
-                <span className="rounded bg-accent/20 px-2 py-0.5 text-xs text-accent font-medium">Icon Pass</span>
+                <span className="rounded bg-success/20 px-2 py-0.5 text-xs text-success font-medium">Lc 60+ Text</span>
+                <span className="rounded bg-accent/20 px-2 py-0.5 text-xs text-accent font-medium">Lc 25+ UI</span>
               </div>
             </GlassSurface>
 
-            <Window title="A11y Window Monitor" className="min-h-64">
+            <Window title="Surface Contrast Monitor" className="min-h-64">
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Render State</span>
+                  <span className="text-sm font-medium">APCA Gate Status</span>
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-[10px] font-semibold",
@@ -1190,6 +1238,66 @@ export function DesignSystemShowcase() {
                 </div>
               </div>
             </Window>
+          </div>
+
+          <Separator />
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold text-foreground">APCA Contrast Utility</h4>
+            <p className="text-xs text-muted-foreground">
+              <code>apcaContrast</code> from <code>@pumni/ui</code> computes perceptual contrast (Lc) using the
+              APCA algorithm. Drag the color pickers to see live values.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1">
+                <Label htmlFor="apca-fg" className="text-xs">Foreground</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    id="apca-fg"
+                    type="color"
+                    value={apcaFg}
+                    onChange={(e) => setApcaFg(e.target.value)}
+                    className="size-8 cursor-pointer rounded border bg-transparent"
+                  />
+                  <span className="font-mono text-xs text-muted-foreground">{apcaFg}</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="apca-bg" className="text-xs">Background</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    id="apca-bg"
+                    type="color"
+                    value={apcaBg}
+                    onChange={(e) => setApcaBg(e.target.value)}
+                    className="size-8 cursor-pointer rounded border bg-transparent"
+                  />
+                  <span className="font-mono text-xs text-muted-foreground">{apcaBg}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 rounded-lg border p-3" style={{ backgroundColor: apcaBg }}>
+              <span className="text-lg font-bold" style={{ color: apcaFg }}>
+                Aa
+              </span>
+              <div className="text-xs space-y-0.5">
+                <span className="font-mono font-semibold text-foreground" style={{ color: apcaFg }}>
+                  Lc {(() => {
+                    const hexToRgb = (h: string): [number, number, number] => [
+                      Number.parseInt(h.slice(1, 3), 16) / 255,
+                      Number.parseInt(h.slice(3, 5), 16) / 255,
+                      Number.parseInt(h.slice(5, 7), 16) / 255,
+                    ];
+                    const val = apcaContrast(hexToRgb(apcaFg), hexToRgb(apcaBg));
+                    const absVal = Math.abs(val);
+                    const polarity = val > 0 ? "BoW" : val < 0 ? "WoB" : "";
+                    return `${absVal.toFixed(1)} ${polarity}`.trim();
+                  })()}
+                </span>
+                <span className="block text-muted-foreground" style={{ color: apcaFg }}>
+                  Lc 75+ = Body text, Lc 60+ = Large text, Lc 45+ = Icons
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
