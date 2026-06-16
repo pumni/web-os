@@ -4,11 +4,14 @@ import * as React from 'react';
 
 import {
   Window,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
   Button,
   motion,
   recipes,
   useReducedMotion,
-  cn,
 } from '@pumni/ui';
 
 import { RELEASE_INSTALL_STEPS, SOURCE_INSTALL_STEPS, SKY_PLAYER_LINKS } from '../content';
@@ -81,42 +84,23 @@ function SourcePanel() {
 }
 
 export function InstallTabs() {
-  const [activeTab, setActiveTab] = React.useState<'release' | 'source'>('release');
-
   return (
     <Window title="Sky Player — Installation" className="w-full shadow-raised">
-      <div className="border-b border-border p-3">
-        <div className="inline-flex rounded-lg bg-muted p-1 text-muted-foreground">
-          <button
-            type="button"
-            onClick={() => setActiveTab('release')}
-            className={cn(
-              'inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
-              activeTab === 'release'
-                ? 'bg-primary text-primary-foreground shadow-xs'
-                : 'hover:bg-foreground/5 hover:text-foreground',
-            )}
-          >
-            Standalone release
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('source')}
-            className={cn(
-              'inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
-              activeTab === 'source'
-                ? 'bg-primary text-primary-foreground shadow-xs'
-                : 'hover:bg-foreground/5 hover:text-foreground',
-            )}
-          >
-            From source
-          </button>
+      <Tabs defaultValue="release" className="w-full flex flex-col gap-2">
+        <div className="border-b border-border p-3 -mx-4 -mt-4 bg-muted/10">
+          <TabsList>
+            <TabsTrigger value="release">Standalone release</TabsTrigger>
+            <TabsTrigger value="source">From source</TabsTrigger>
+          </TabsList>
         </div>
-      </div>
 
-      <div className="min-h-[280px]">
-        {activeTab === 'release' ? <ReleasePanel /> : <SourcePanel />}
-      </div>
+        <TabsContent value="release" className="mt-0 min-h-[280px] focus-visible:outline-none">
+          <ReleasePanel />
+        </TabsContent>
+        <TabsContent value="source" className="mt-0 min-h-[280px] focus-visible:outline-none">
+          <SourcePanel />
+        </TabsContent>
+      </Tabs>
     </Window>
   );
 }

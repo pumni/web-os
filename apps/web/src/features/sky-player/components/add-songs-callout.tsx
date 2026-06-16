@@ -1,6 +1,9 @@
 'use client';
 
 import { Download, Monitor, Terminal } from 'lucide-react';
+import * as React from 'react';
+
+import { Card } from '@pumni/ui';
 
 import { ADD_SONGS_STEPS, SKY_PLAYER_LINKS, SUPPORTED_FORMATS } from '../content';
 
@@ -60,12 +63,18 @@ export function AddSongsCallout() {
         <p className="type-label font-semibold text-foreground">Supported File Types</p>
         <div className="grid gap-2 sm:grid-cols-3">
           {SUPPORTED_FORMATS.map((format) => (
-            <div key={format.ext} className="rounded-lg border border-border bg-muted/40 p-3">
-              <code className="inline-block rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary mb-1.5">
-                {format.ext}
-              </code>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">{format.note}</p>
-            </div>
+            <Card
+              key={format.ext}
+              variant="inset"
+              className="p-3 gap-0 rounded-lg flex flex-col justify-between"
+            >
+              <div>
+                <code className="inline-block rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary mb-1.5">
+                  {format.ext}
+                </code>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">{format.note}</p>
+              </div>
+            </Card>
           ))}
         </div>
       </div>

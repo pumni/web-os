@@ -8,6 +8,8 @@ import {
   motion,
   useReducedMotion,
   cn,
+  Card,
+  CardContent,
 } from '@pumni/ui';
 
 import { FAQ_ITEMS } from '../content';
@@ -26,18 +28,18 @@ export function FaqSection() {
         const isOpen = activeIndex === idx;
 
         return (
-          <div
+          <Card
             key={faq.question}
             className={cn(
-              'overflow-hidden rounded-xl border transition-colors duration-(--duration-base) ease-fluid',
-              isOpen ? 'border-primary/30 bg-card' : 'border-border bg-card',
+              'overflow-hidden gap-0 py-0 transition-colors duration-(--duration-base) ease-fluid',
+              isOpen ? 'border-primary/30' : '',
             )}
           >
             <button
               type="button"
               onClick={() => toggle(idx)}
               aria-expanded={isOpen}
-              className="flex w-full items-start justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-muted"
+              className="flex w-full items-start justify-between gap-4 px-6 py-4 text-left transition-colors hover:bg-muted/50 cursor-pointer"
             >
               <div className="flex items-start gap-3 min-w-0">
                 {/* Question number */}
@@ -72,15 +74,15 @@ export function FaqSection() {
                   transition={shouldReduce ? { duration: 0 } : { duration: 0.2, ease: 'easeOut' }}
                   className="overflow-hidden"
                 >
-                  <div className="border-t border-border px-5 pb-5 pt-4">
+                  <CardContent className="border-t border-border pb-5 pt-4">
                     <p className="type-body ps-8 text-muted-foreground leading-relaxed">
                       {faq.answer}
                     </p>
-                  </div>
+                  </CardContent>
                 </motion.div>
               ) : null}
             </AnimatePresence>
-          </div>
+          </Card>
         );
       })}
     </div>

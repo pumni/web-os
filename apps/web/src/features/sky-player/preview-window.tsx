@@ -117,15 +117,15 @@ export function PreviewWindow({
   const noteMotion = shouldReduce ? {} : { ...recipes.hoverLift, ...recipes.pressScale };
 
   return (
-    <div className={cn('space-y-3 w-full', className)}>
+    <div className={cn('space-y-3 w-full flex flex-col justify-between', className)}>
       <Window
         title="Sky Player - Playback Preview"
-        className="w-full shadow-raised transition-all duration-(--duration-base) hover:[box-shadow:var(--shadow-glass-glow)]"
+        className="w-full flex-1 shadow-raised transition-all duration-(--duration-base) hover:[box-shadow:var(--shadow-glass-glow)]"
         onClose={() => setIsPlaying(false)}
         onMinimize={() => setIsPlaying(false)}
         onMaximize={() => setIsPlaying(true)}
       >
-        <div className="space-y-6">
+        <div className="space-y-6 h-full flex flex-col justify-between">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="type-heading text-foreground">

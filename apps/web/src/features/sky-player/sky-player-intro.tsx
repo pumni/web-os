@@ -30,7 +30,7 @@ export function SkyPlayerIntro() {
           <div className="absolute bottom-0 left-1/3 size-80 rounded-full bg-(--brand-gradient-to)/8 blur-[80px]" />
         </div>
 
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+        <div className="grid items-stretch gap-12 lg:grid-cols-12 lg:gap-8">
           {/* Left: Text + CTA */}
           <motion.div
             {...(shouldReduce ? {} : recipes.fadeRise)}
@@ -68,28 +68,28 @@ export function SkyPlayerIntro() {
             {/* Stats row */}
             <div className="flex flex-wrap gap-2 border-t border-border pt-6">
               {HERO_HIGHLIGHTS.map((item) => (
-                <div
+                <Card
                   key={item.label}
-                  className="flex flex-col rounded-lg border border-border bg-card px-4 py-2.5 shadow-card"
+                  variant="inset"
+                  className="flex flex-col px-4 py-2.5 gap-0.5 rounded-lg"
                 >
                   <span className="text-xs font-bold text-foreground">{item.label}</span>
                   <span className="type-caption mt-0.5 text-muted-foreground">{item.detail}</span>
-                </div>
+                </Card>
               ))}
             </div>
           </motion.div>
 
-          {/* Right: Preview window */}
           <motion.div
             {...(shouldReduce ? {} : { ...recipes.fadeRise, transition: { ...recipes.fadeRise.transition, delay: 0.15 } })}
-            className="relative flex justify-center lg:col-span-6"
+            className="relative flex items-stretch justify-center lg:col-span-6 h-full"
           >
             {/* Glow halo behind window */}
             <div
               aria-hidden
               className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 mx-auto h-80 w-full max-w-xl -translate-y-1/2 rounded-full bg-primary/12 blur-3xl"
             />
-            <PreviewWindow elevated className="w-full max-w-xl" />
+            <PreviewWindow className="w-full max-w-xl h-full" />
           </motion.div>
         </div>
       </section>
