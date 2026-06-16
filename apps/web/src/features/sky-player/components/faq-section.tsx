@@ -1,14 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 
 import {
-  Card,
-  CardContent,
   AnimatePresence,
   motion,
-  recipes,
   useReducedMotion,
   cn,
 } from '@pumni/ui';
@@ -24,28 +21,47 @@ export function FaqSection() {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="grid gap-3 lg:grid-cols-2 lg:items-start">
       {FAQ_ITEMS.map((faq, idx) => {
         const isOpen = activeIndex === idx;
+
         return (
-          <Card key={faq.question} className="overflow-hidden">
+          <div
+            key={faq.question}
+            className={cn(
+              'overflow-hidden rounded-xl border transition-colors duration-(--duration-base) ease-fluid',
+              isOpen ? 'border-primary/30 bg-card' : 'border-border bg-card',
+            )}
+          >
             <button
               type="button"
               onClick={() => toggle(idx)}
               aria-expanded={isOpen}
-              className="flex w-full items-center justify-between gap-4 p-4 text-left font-bold text-sm text-foreground hover:bg-muted/30 transition-colors"
+              className="flex w-full items-start justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-muted"
             >
-              <span className="flex items-center gap-2">
-                <HelpCircle className="h-4 w-4 shrink-0 text-primary" />
-                {faq.question}
-              </span>
-              <ChevronDown
-                className={cn(
-                  'h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-(--duration-base) ease-fluid',
-                  isOpen && 'rotate-180',
+              <div className="flex items-start gap-3 min-w-0">
+                {/* Question number */}
+                <span
+                  className={cn(
+                    'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-colors',
+                    isOpen
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-muted-foreground',
+                  )}
+                >
+                  {idx + 1}
+                </span>
+                <span className="type-label font-semibold text-foreground">{faq.question}</span>
+              </div>
+              <span className="mt-0.5 shrink-0 text-muted-foreground">
+                {isOpen ? (
+                  <Minus className="size-4" />
+                ) : (
+                  <Plus className="size-4" />
                 )}
-              />
+              </span>
             </button>
+
             <AnimatePresence initial={false}>
               {isOpen ? (
                 <motion.div
@@ -53,16 +69,18 @@ export function FaqSection() {
                   initial={shouldReduce ? false : { height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={shouldReduce ? undefined : { height: 0, opacity: 0 }}
-                  transition={shouldReduce ? { duration: 0 } : recipes.fadeRise.transition}
+                  transition={shouldReduce ? { duration: 0 } : { duration: 0.2, ease: 'easeOut' }}
                   className="overflow-hidden"
                 >
-                  <CardContent className="border-t border-border bg-muted p-4 text-xs text-muted-foreground leading-relaxed">
-                    {faq.answer}
-                  </CardContent>
+                  <div className="border-t border-border px-5 pb-5 pt-4">
+                    <p className="type-body ps-8 text-muted-foreground leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
                 </motion.div>
               ) : null}
             </AnimatePresence>
-          </Card>
+          </div>
         );
       })}
     </div>

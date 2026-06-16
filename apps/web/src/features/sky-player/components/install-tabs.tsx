@@ -3,51 +3,53 @@
 import * as React from 'react';
 
 import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  Card,
-  CardContent,
+  Window,
   Button,
   motion,
   recipes,
   useReducedMotion,
+  cn,
 } from '@pumni/ui';
 
 import { RELEASE_INSTALL_STEPS, SOURCE_INSTALL_STEPS, SKY_PLAYER_LINKS } from '../content';
 
-function InstallSteps({ steps }: { steps: readonly string[] }) {
+function InstallStep({
+  index,
+  total,
+  text,
+}: {
+  index: number;
+  total: number;
+  text: React.ReactNode;
+}) {
   return (
-    <ol className="space-y-3">
-      {steps.map((step, idx) => (
-        <li key={idx}>
-          <Card interactive variant="inset">
-            <CardContent className="flex items-center gap-4 p-4">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-(--brand-gradient-from) to-(--brand-gradient-via) text-xs font-bold text-primary-foreground">
-                {idx + 1}
-              </div>
-              <p className="text-sm font-medium text-foreground">{step}</p>
-            </CardContent>
-          </Card>
-        </li>
-      ))}
-    </ol>
+    <li className="relative flex gap-4 pb-5 last:pb-0">
+      {index < total - 1 ? (
+        <span
+          aria-hidden
+          className="absolute start-4 top-8 bottom-0 w-px bg-border"
+        />
+      ) : null}
+      <div className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-xs font-bold text-primary">
+        {index + 1}
+      </div>
+      <p className="pt-1.5 text-sm leading-relaxed text-foreground">{text}</p>
+    </li>
   );
 }
 
 function ReleasePanel() {
   const shouldReduce = useReducedMotion();
-
   return (
-    <motion.div
-      {...(shouldReduce ? {} : recipes.fadeRise)}
-      className="space-y-4"
-    >
-      <p className="text-sm text-muted-foreground">
-        Recommended for most users — no Python or build tools required.
+    <motion.div {...(shouldReduce ? {} : recipes.fadeRise)} className="space-y-5 p-5 pt-4">
+      <p className="type-label text-muted-foreground">
+        Recommended — no Python or build tools required.
       </p>
-      <InstallSteps steps={RELEASE_INSTALL_STEPS} />
+      <ol className="space-y-0">
+        {RELEASE_INSTALL_STEPS.map((step, idx) => (
+          <InstallStep key={idx} index={idx} total={RELEASE_INSTALL_STEPS.length} text={step} />
+        ))}
+      </ol>
       <Button asChild className="rounded-full">
         <a href={SKY_PLAYER_LINKS.releases} target="_blank" rel="noopener noreferrer">
           Get latest release
@@ -59,16 +61,16 @@ function ReleasePanel() {
 
 function SourcePanel() {
   const shouldReduce = useReducedMotion();
-
   return (
-    <motion.div
-      {...(shouldReduce ? {} : recipes.fadeRise)}
-      className="space-y-4"
-    >
-      <p className="text-sm text-muted-foreground">
+    <motion.div {...(shouldReduce ? {} : recipes.fadeRise)} className="space-y-5 p-5 pt-4">
+      <p className="type-label text-muted-foreground">
         For developers who want to run or modify the Python source directly.
       </p>
-      <InstallSteps steps={SOURCE_INSTALL_STEPS} />
+      <ol className="space-y-0">
+        {SOURCE_INSTALL_STEPS.map((step, idx) => (
+          <InstallStep key={idx} index={idx} total={SOURCE_INSTALL_STEPS.length} text={step} />
+        ))}
+      </ol>
       <Button asChild variant="outline" className="rounded-full">
         <a href={SKY_PLAYER_LINKS.repo} target="_blank" rel="noopener noreferrer">
           View repository
@@ -79,23 +81,42 @@ function SourcePanel() {
 }
 
 export function InstallTabs() {
-  return (
-    <Tabs defaultValue="release">
-      <TabsList className="grid w-full max-w-md grid-cols-2 h-9 p-1 bg-muted border border-border rounded-lg">
-        <TabsTrigger value="release" className="text-xs h-7">
-          Standalone release
-        </TabsTrigger>
-        <TabsTrigger value="source" className="text-xs h-7">
-          From source
-        </TabsTrigger>
-      </TabsList>
+  const [activeTab, setActiveTab] = React.useState<'release' | 'source'>('release');
 
-      <TabsContent value="release" className="mt-6 min-h-[280px]">
-        <ReleasePanel />
-      </TabsContent>
-      <TabsContent value="source" className="mt-6 min-h-[280px]">
-        <SourcePanel />
-      </TabsContent>
-    </Tabs>
+  return (
+    <Window title="Sky Player — Installation" className="w-full shadow-raised">
+      <div className="border-b border-border p-3">
+        <div className="inline-flex rounded-lg bg-muted p-1 text-muted-foreground">
+          <button
+            type="button"
+            onClick={() => setActiveTab('release')}
+            className={cn(
+              'inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
+              activeTab === 'release'
+                ? 'bg-primary text-primary-foreground shadow-xs'
+                : 'hover:bg-foreground/5 hover:text-foreground',
+            )}
+          >
+            Standalone release
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('source')}
+            className={cn(
+              'inline-flex items-center justify-center whitespace-nowrap rounded-md px-4 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
+              activeTab === 'source'
+                ? 'bg-primary text-primary-foreground shadow-xs'
+                : 'hover:bg-foreground/5 hover:text-foreground',
+            )}
+          >
+            From source
+          </button>
+        </div>
+      </div>
+
+      <div className="min-h-[280px]">
+        {activeTab === 'release' ? <ReleasePanel /> : <SourcePanel />}
+      </div>
+    </Window>
   );
 }

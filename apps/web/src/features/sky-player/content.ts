@@ -15,6 +15,19 @@ export const SKY_PLAYER_LINKS = {
 
 export const SKY_PLAYER_VERSION = 'v2.2.2';
 
+export const HERO_HIGHLIGHTS = [
+  { label: 'MIT License', detail: 'Open source' },
+  { label: 'Windows PC', detail: 'Desktop-first' },
+  { label: 'Textual TUI', detail: 'Terminal UI' },
+] as const;
+
+export const PAGE_SECTIONS = [
+  { id: 'capabilities', label: 'Capabilities' },
+  { id: 'get-started', label: 'Get started' },
+  { id: 'shortcuts', label: 'Shortcuts' },
+  { id: 'faq', label: 'FAQ' },
+] as const;
+
 export type Capability = {
   icon: LucideIcon;
   title: string;
@@ -68,21 +81,54 @@ export type Shortcut = {
   description: string;
 };
 
-export const KEYBOARD_SHORTCUTS: Shortcut[] = [
-  { keys: ['Type'], label: 'Search songs', description: 'Fuzzy-search the song list by name.' },
-  { keys: ['↑', '↓'], label: 'Browse results', description: 'Move through matching songs.' },
-  { keys: ['Enter'], label: 'Play song', description: 'Start playback for the selected song.' },
-  { keys: ['/'], label: 'Command palette', description: 'Open timing, tempo, FPS, and theme options.' },
-  { keys: ['p'], label: 'Timing profile', description: 'Cycle through timing profiles.' },
-  { keys: ['t'], label: 'Tempo', description: 'Adjust playback tempo.' },
-  { keys: ['f'], label: 'FPS', description: 'Change the playback frame rate.' },
-  { keys: ['y'], label: 'Theme', description: 'Switch the TUI color theme.' },
-  { keys: ['d'], label: 'Dry-run', description: 'Simulate playback without sending keypresses.' },
-  { keys: ['h'], label: 'HUD detail', description: 'Toggle on-screen playback HUD.' },
-  { keys: ['F3'], label: 'Telemetry', description: 'Show or hide timing telemetry.' },
-  { keys: ['Ctrl', 'R'], label: 'Reload songs', description: 'Rescan the songs/ directory.' },
-  { keys: ['q', 'Esc'], label: 'Quit', description: 'Exit the player.' },
+export type ShortcutGroup = {
+  id: string;
+  label: string;
+  shortcuts: Shortcut[];
+};
+
+export const SHORTCUT_GROUPS: ShortcutGroup[] = [
+  {
+    id: 'picker',
+    label: 'Song picker',
+    shortcuts: [
+      { keys: ['Type'], label: 'Search songs', description: 'Fuzzy-search the song list by name.' },
+      { keys: ['↑', '↓'], label: 'Browse results', description: 'Move through matching songs.' },
+      { keys: ['Enter'], label: 'Play song', description: 'Start playback for the selected song.' },
+    ],
+  },
+  {
+    id: 'palette',
+    label: 'Command palette',
+    shortcuts: [
+      { keys: ['/'], label: 'Open palette', description: 'Timing, tempo, FPS, and theme options.' },
+      { keys: ['p'], label: 'Timing profile', description: 'Cycle through timing profiles.' },
+      { keys: ['t'], label: 'Tempo', description: 'Adjust playback tempo.' },
+      { keys: ['f'], label: 'FPS', description: 'Change the playback frame rate.' },
+      { keys: ['y'], label: 'Theme', description: 'Switch the TUI color theme.' },
+    ],
+  },
+  {
+    id: 'playback',
+    label: 'Playback',
+    shortcuts: [
+      { keys: ['d'], label: 'Dry-run', description: 'Simulate playback without sending keypresses.' },
+      { keys: ['h'], label: 'HUD detail', description: 'Toggle on-screen playback HUD.' },
+      { keys: ['F3'], label: 'Telemetry', description: 'Show or hide timing telemetry.' },
+    ],
+  },
+  {
+    id: 'system',
+    label: 'Library & exit',
+    shortcuts: [
+      { keys: ['Ctrl', 'R'], label: 'Reload songs', description: 'Rescan the songs/ directory.' },
+      { keys: ['q', 'Esc'], label: 'Quit', description: 'Exit the player.' },
+    ],
+  },
 ];
+
+/** Flat list derived from groups — useful for search or docs export. */
+export const KEYBOARD_SHORTCUTS: Shortcut[] = SHORTCUT_GROUPS.flatMap((g) => g.shortcuts);
 
 export const SUPPORTED_FORMATS = [
   { ext: '.json', note: 'Structured key lists with timestamp offsets from Sky Music editors.' },

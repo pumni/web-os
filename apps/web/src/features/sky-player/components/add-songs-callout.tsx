@@ -1,18 +1,37 @@
-import { Card, CardContent } from '@pumni/ui';
+'use client';
 
-import { ADD_SONGS_STEPS, SUPPORTED_FORMATS, SKY_PLAYER_LINKS } from '../content';
+import { Download, Monitor, Terminal } from 'lucide-react';
+
+import { ADD_SONGS_STEPS, SKY_PLAYER_LINKS, SUPPORTED_FORMATS } from '../content';
+
+const STEP_ICONS = [Download, Terminal, Monitor] as const;
 
 export function AddSongsCallout() {
   return (
     <div className="space-y-6">
-      <Card variant="solid">
-        <CardContent className="space-y-4 p-5">
-          <h3 className="text-sm font-bold text-foreground">Adding songs to your library</h3>
-          <ol className="space-y-2">
-            {ADD_SONGS_STEPS.map((step, idx) => (
-              <li key={idx} className="flex gap-3 text-sm text-muted-foreground">
-                <span className="shrink-0 font-bold text-primary">{idx + 1}.</span>
-                <span>
+      <div className="space-y-1">
+        <h4 className="type-heading text-sm font-semibold text-foreground">
+          Importing Song Sheets
+        </h4>
+        <p className="type-caption text-muted-foreground">
+          Follow these steps to add custom songs to your library.
+        </p>
+      </div>
+
+      {/* Steps List - Vertical Timeline */}
+      <ol className="relative border-s border-border ms-3.5 space-y-6">
+        {ADD_SONGS_STEPS.map((step, idx) => {
+          const Icon = STEP_ICONS[idx] ?? Download;
+          return (
+            <li key={idx} className="ms-6">
+              <span className="absolute -inset-s-3.5 flex size-7 items-center justify-center rounded-full border border-border bg-card text-primary shadow-sm">
+                <Icon className="size-3.5" />
+              </span>
+              <div className="space-y-1 pt-0.5">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                  Step {idx + 1}
+                </p>
+                <p className="type-label text-foreground leading-relaxed">
                   {idx === 0 ? (
                     <>
                       Visit{' '}
@@ -20,7 +39,7 @@ export function AddSongsCallout() {
                         href={SKY_PLAYER_LINKS.skyMusic}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-medium text-primary underline-offset-4 hover:underline"
+                        className="font-semibold text-primary underline underline-offset-4 hover:text-primary/80"
                       >
                         Sky Music Nightly
                       </a>{' '}
@@ -29,24 +48,26 @@ export function AddSongsCallout() {
                   ) : (
                     step
                   )}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        {SUPPORTED_FORMATS.map((format) => (
-          <Card key={format.ext} variant="inset">
-            <CardContent className="space-y-1 p-4">
-              <code className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
+      {/* Supported formats */}
+      <div className="space-y-3 pt-2">
+        <p className="type-label font-semibold text-foreground">Supported File Types</p>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {SUPPORTED_FORMATS.map((format) => (
+            <div key={format.ext} className="rounded-lg border border-border bg-muted/40 p-3">
+              <code className="inline-block rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary mb-1.5">
                 {format.ext}
               </code>
-              <p className="text-xs text-muted-foreground leading-relaxed">{format.note}</p>
-            </CardContent>
-          </Card>
-        ))}
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{format.note}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

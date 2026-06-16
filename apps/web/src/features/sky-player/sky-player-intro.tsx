@@ -1,127 +1,187 @@
 'use client';
 
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Sparkles, Download, Keyboard, HelpCircle } from 'lucide-react';
 
 import { Card, CardContent, motion, recipes, useReducedMotion } from '@pumni/ui';
 
 import { PreviewWindow } from './preview-window';
-import { SKY_PLAYER_VERSION } from './content';
+import { HERO_HIGHLIGHTS, SKY_PLAYER_VERSION } from './content';
+import { SectionNav } from './components/section-nav';
+import { PageSection } from './components/page-section';
 import { SectionHeader } from './components/section-header';
 import { SkyPlayerCta } from './components/sky-player-cta';
 import { CapabilitiesGrid } from './components/capabilities-grid';
 import { InstallTabs } from './components/install-tabs';
 import { ShortcutsReference } from './components/shortcuts-reference';
-import { AddSongsCallout } from './components/add-songs-callout';
 import { FaqSection } from './components/faq-section';
+import { FooterCta } from './components/footer-cta';
 
 export function SkyPlayerIntro() {
   const shouldReduce = useReducedMotion();
 
   return (
-    <motion.div {...(shouldReduce ? {} : recipes.staggerContainer)} className="space-y-16 pb-20">
-      {/* Hero */}
-      <motion.section
-        {...(shouldReduce ? {} : recipes.staggerItem)}
-        className="grid gap-10 lg:grid-cols-12 lg:items-center"
-      >
-        <div className="space-y-6 lg:col-span-7">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-            <span className="h-2 w-2 rounded-full bg-warning motion-safe:animate-pulse" />
-            {SKY_PLAYER_VERSION} · Textual TUI · Windows PC
-          </div>
-
-          <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl lg:text-6xl">
-            Play Sky music sheets on PC{' '}
-            <span className="bg-linear-to-r from-(--brand-gradient-from) via-(--brand-gradient-via) to-(--brand-gradient-to) bg-clip-text text-transparent">
-              with Sky Player.
-            </span>
-          </h1>
-
-          <p className="text-lg text-muted-foreground">
-            Sky Player is an automatic music sheet player for{' '}
-            <strong>Sky: Children of the Light</strong> on Windows. Pick a song from the Textual TUI,
-            then let it simulate keyboard keypresses in real time while you play in-game.
-          </p>
-
-          <SkyPlayerCta />
+    <div className="min-h-screen">
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <section className="relative flex min-h-[80vh] flex-col justify-center overflow-hidden pb-20 pt-14 md:pb-28 md:pt-20 lg:pb-32 lg:pt-24">
+        {/* Ambient background blobs */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-1/4 top-0 size-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/8 blur-[100px]" />
+          <div className="absolute right-0 top-1/3 size-96 rounded-full bg-(--desktop-blob-cyan)/10 blur-[80px]" />
+          <div className="absolute bottom-0 left-1/3 size-80 rounded-full bg-(--brand-gradient-to)/8 blur-[80px]" />
         </div>
 
-        <div className="flex justify-center lg:col-span-5">
-          <PreviewWindow />
-        </div>
-      </motion.section>
+        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+          {/* Left: Text + CTA */}
+          <motion.div
+            {...(shouldReduce ? {} : recipes.fadeRise)}
+            className="space-y-8 lg:col-span-6"
+          >
+            {/* Version badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1">
+              <span className="size-1.5 rounded-full bg-primary motion-safe:animate-pulse" />
+              <span className="type-caption font-semibold text-primary">
+                {SKY_PLAYER_VERSION} · Windows PC
+              </span>
+            </div>
 
-      {/* Capabilities */}
-      <motion.section {...(shouldReduce ? {} : recipes.staggerItem)} className="space-y-8">
-        <SectionHeader
-          align="center"
-          eyebrow="Capabilities"
-          title="Everything you need in one focused player."
-          description="Fuzzy search, a command palette, playback tuning, and a drop-in song library — built for Sky PC musicians."
-        />
-        <CapabilitiesGrid />
-      </motion.section>
+            {/* Headline */}
+            <div className="space-y-4">
+              <h1 className="type-display text-balance leading-[1.08] text-foreground md:text-5xl lg:text-6xl xl:text-7xl">
+                Play Sky music
+                <br />
+                <span className="text-gradient-brand">with Sky Player.</span>
+              </h1>
 
-      {/* Get Started */}
-      <motion.section {...(shouldReduce ? {} : recipes.staggerItem)} className="space-y-8">
-        <SectionHeader
-          eyebrow="Get started"
-          title="Download and play in a few steps."
-          description="Choose the standalone release for quick setup, or run from source if you prefer Python."
-        />
-        <InstallTabs />
-      </motion.section>
-
-      {/* Using Sky Player */}
-      <motion.section {...(shouldReduce ? {} : recipes.staggerItem)} className="space-y-10">
-        <SectionHeader
-          eyebrow="Using Sky Player"
-          title="Keyboard reference and song library."
-          description="Master the TUI shortcuts, then expand your library with sheets from Sky Music."
-        />
-        <ShortcutsReference />
-        <AddSongsCallout />
-      </motion.section>
-
-      {/* Responsible use */}
-      <motion.section {...(shouldReduce ? {} : recipes.staggerItem)}>
-        <Card className="border-warning/20 bg-warning/5">
-          <CardContent className="flex items-start gap-4 p-5">
-            <AlertTriangle className="h-5 w-5 shrink-0 text-warning" />
-            <div className="space-y-1">
-              <h4 className="font-bold text-foreground text-sm">Responsible use guidance</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Automatically playing music sheets or using simulated keystrokes might violate
-                Thatgamecompany&apos;s Terms of Service. Use this tool responsibly and at your own
-                risk.
+              <p className="type-body max-w-lg text-pretty text-muted-foreground md:text-lg">
+                An automatic music sheet player for{' '}
+                <strong className="font-semibold text-foreground">
+                  Sky: Children of the Light
+                </strong>{' '}
+                on Windows. Pick a song from the Textual TUI, then let it simulate keyboard
+                keypresses in real time while you play in-game.
               </p>
             </div>
-          </CardContent>
-        </Card>
-      </motion.section>
 
-      {/* FAQ */}
-      <motion.section {...(shouldReduce ? {} : recipes.staggerItem)} className="space-y-6">
-        <SectionHeader eyebrow="FAQ" title="Common questions." />
-        <FaqSection />
-      </motion.section>
+            {/* CTA Buttons */}
+            <SkyPlayerCta />
 
-      {/* Footer CTA */}
-      <motion.section {...(shouldReduce ? {} : recipes.staggerItem)}>
-        <div className="relative overflow-hidden rounded-xl border border-border bg-card p-8 md:p-12">
-          <div className="absolute right-0 top-0 -z-10 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
-          <div className="space-y-6 max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
-              Ready to try Sky Player?
-            </h2>
-            <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-              Grab the latest release, open your instrument in Sky, and experience automatic song
-              playback from the terminal.
-            </p>
-            <SkyPlayerCta size="compact" />
-          </div>
+            {/* Stats row */}
+            <div className="flex flex-wrap gap-2 border-t border-border pt-6">
+              {HERO_HIGHLIGHTS.map((item) => (
+                <div
+                  key={item.label}
+                  className="flex flex-col rounded-lg border border-border bg-card px-4 py-2.5 shadow-card"
+                >
+                  <span className="text-xs font-bold text-foreground">{item.label}</span>
+                  <span className="type-caption mt-0.5 text-muted-foreground">{item.detail}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Right: Preview window */}
+          <motion.div
+            {...(shouldReduce ? {} : { ...recipes.fadeRise, transition: { ...recipes.fadeRise.transition, delay: 0.15 } })}
+            className="relative flex justify-center lg:col-span-6"
+          >
+            {/* Glow halo behind window */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 mx-auto h-80 w-full max-w-xl -translate-y-1/2 rounded-full bg-primary/12 blur-3xl"
+            />
+            <PreviewWindow elevated className="w-full max-w-xl" />
+          </motion.div>
         </div>
-      </motion.section>
-    </motion.div>
+      </section>
+
+      {/* ── Sticky section nav ───────────────────────────────────────────── */}
+      <SectionNav />
+
+      {/* ── Main content ─────────────────────────────────────────────────── */}
+      <motion.div
+        {...(shouldReduce ? {} : recipes.staggerContainer)}
+        className="space-y-24 py-16"
+      >
+        {/* Capabilities */}
+        <motion.div {...(shouldReduce ? {} : recipes.staggerItem)}>
+          <PageSection id="capabilities">
+            <SectionHeader
+              eyebrow="Capabilities"
+              icon={Sparkles}
+              title="Everything you need in one focused player."
+              description="Fuzzy search, a command palette, playback tuning, and a drop-in song library — built for Sky PC musicians."
+            />
+            <CapabilitiesGrid />
+          </PageSection>
+        </motion.div>
+
+        {/* Get Started */}
+        <motion.div {...(shouldReduce ? {} : recipes.staggerItem)}>
+          <PageSection id="get-started">
+            <SectionHeader
+              eyebrow="Get started"
+              icon={Download}
+              title="Download and play in a few steps."
+              description="Choose the standalone release for quick setup, or run from source if you prefer Python."
+            />
+            <InstallTabs />
+          </PageSection>
+        </motion.div>
+
+        {/* Shortcuts */}
+        <motion.div {...(shouldReduce ? {} : recipes.staggerItem)}>
+          <PageSection id="shortcuts">
+            <SectionHeader
+              eyebrow="Using Sky Player"
+              icon={Keyboard}
+              title="Keyboard reference and song library."
+              description="Shortcuts are grouped by workflow — picker, palette, playback, and library management."
+            />
+            <ShortcutsReference />
+          </PageSection>
+        </motion.div>
+
+        {/* Responsible use */}
+        <motion.div {...(shouldReduce ? {} : recipes.staggerItem)}>
+          <PageSection id="responsible-use">
+            <Card className="border-warning/20 bg-warning/5">
+              <CardContent className="flex items-start gap-4 p-6 md:p-7">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-warning/10">
+                  <AlertTriangle className="h-5 w-5 text-warning" />
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="type-label font-bold text-foreground">
+                    Responsible use guidance
+                  </h3>
+                  <p className="type-body text-muted-foreground">
+                    Automatically playing music sheets or using simulated keystrokes might violate
+                    Thatgamecompany&apos;s Terms of Service. Use this tool responsibly and at your
+                    own risk.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </PageSection>
+        </motion.div>
+
+        {/* FAQ */}
+        <motion.div {...(shouldReduce ? {} : recipes.staggerItem)}>
+          <PageSection id="faq">
+            <SectionHeader
+              eyebrow="FAQ"
+              icon={HelpCircle}
+              title="Common questions."
+              description="Answers to topics not covered in the sections above."
+            />
+            <FaqSection />
+          </PageSection>
+        </motion.div>
+
+        {/* Footer CTA */}
+        <motion.div {...(shouldReduce ? {} : recipes.staggerItem)}>
+          <FooterCta />
+        </motion.div>
+      </motion.div>
+    </div>
   );
 }

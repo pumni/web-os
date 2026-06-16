@@ -38,9 +38,14 @@ const NOTE_LABELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Q', 'W',
 type PreviewWindowProps = {
   className?: string;
   showLearnMore?: boolean;
+  /** Subtle float animation for hero placement */
+  elevated?: boolean;
 };
 
-export function PreviewWindow({ className, showLearnMore = false }: PreviewWindowProps) {
+export function PreviewWindow({
+  className,
+  showLearnMore = false,
+}: PreviewWindowProps) {
   const [beat, setBeat] = React.useState(0);
   const [isPlaying, setIsPlaying] = React.useState(true);
   const [isMuted, setIsMuted] = React.useState(true);
@@ -112,10 +117,10 @@ export function PreviewWindow({ className, showLearnMore = false }: PreviewWindo
   const noteMotion = shouldReduce ? {} : { ...recipes.hoverLift, ...recipes.pressScale };
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn('space-y-3 w-full', className)}>
       <Window
         title="Sky Player - Playback Preview"
-        className="w-full max-w-md shadow-raised transition-all duration-(--duration-base) hover:[box-shadow:var(--shadow-glass-glow)]"
+        className="w-full shadow-raised transition-all duration-(--duration-base) hover:[box-shadow:var(--shadow-glass-glow)]"
         onClose={() => setIsPlaying(false)}
         onMinimize={() => setIsPlaying(false)}
         onMaximize={() => setIsPlaying(true)}
@@ -123,7 +128,7 @@ export function PreviewWindow({ className, showLearnMore = false }: PreviewWindo
         <div className="space-y-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h3 className="text-lg font-bold tracking-tight text-foreground">
+              <h3 className="type-heading text-foreground">
                 Dawn (Sky COTL Theme)
               </h3>
               <p className="text-xs text-muted-foreground">Interactive playback preview</p>
@@ -133,7 +138,6 @@ export function PreviewWindow({ className, showLearnMore = false }: PreviewWindo
                 size="icon"
                 variant="outline"
                 onClick={() => setIsMuted(!isMuted)}
-                className="h-8 w-8 rounded-md"
                 aria-label={isMuted ? 'Unmute sounds' : 'Mute sounds'}
               >
                 {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -142,7 +146,6 @@ export function PreviewWindow({ className, showLearnMore = false }: PreviewWindo
                 size="icon"
                 variant="outline"
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="h-8 w-8 rounded-md"
                 aria-label={isPlaying ? 'Pause simulation' : 'Play simulation'}
               >
                 {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
@@ -151,7 +154,6 @@ export function PreviewWindow({ className, showLearnMore = false }: PreviewWindo
                 size="icon"
                 variant="outline"
                 onClick={() => setBeat(0)}
-                className="h-8 w-8 rounded-md"
                 aria-label="Restart simulation"
               >
                 <RefreshCw className="h-4 w-4" />
@@ -216,7 +218,6 @@ export function PreviewWindow({ className, showLearnMore = false }: PreviewWindo
           </div>
         </div>
       </Window>
-
       {showLearnMore ? (
         <p className="text-center text-xs text-muted-foreground">
           <Link

@@ -1,27 +1,42 @@
+import type { LucideIcon } from 'lucide-react';
+
 type SectionHeaderProps = {
+  id?: string;
   eyebrow: string;
   title: string;
   description?: string;
-  align?: 'left' | 'center';
+  icon?: LucideIcon;
 };
 
 export function SectionHeader({
+  id,
   eyebrow,
   title,
   description,
-  align = 'left',
+  icon: Icon,
 }: SectionHeaderProps) {
-  const alignClass = align === 'center' ? 'text-center mx-auto' : '';
-
   return (
-    <div className={`space-y-2 max-w-2xl ${alignClass}`}>
-      <span className="text-xs font-bold tracking-widest text-primary uppercase">{eyebrow}</span>
-      <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">{title}</h2>
+    <header id={id} className="space-y-3">
+      <div className="flex items-center gap-2">
+        {Icon ? (
+          <div className="flex size-5 shrink-0 items-center justify-center text-primary">
+            <Icon className="size-4" aria-hidden />
+          </div>
+        ) : null}
+        <span className="type-caption font-bold tracking-widest text-primary uppercase">
+          {eyebrow}
+        </span>
+      </div>
+
+      <h2 className="type-title text-balance text-foreground">
+        {title}
+      </h2>
+
       {description ? (
-        <p className={`text-muted-foreground text-sm ${align === 'center' ? 'mx-auto' : ''}`}>
+        <p className="type-body max-w-2xl text-pretty text-muted-foreground">
           {description}
         </p>
       ) : null}
-    </div>
+    </header>
   );
 }
