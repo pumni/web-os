@@ -120,7 +120,7 @@ export function PreviewWindow({
     <div className={cn('space-y-3 w-full flex flex-col justify-between', className)}>
       <Window
         title="Sky Player - Playback Preview"
-        className="w-full flex-1 shadow-raised transition-all duration-(--duration-base) hover:[box-shadow:var(--shadow-glass-glow)]"
+        className="w-full flex-1 shadow-raised transition-all duration-(--duration-base) hover:shadow-interactive-hover"
         onClose={() => setIsPlaying(false)}
         onMinimize={() => setIsPlaying(false)}
         onMaximize={() => setIsPlaying(true)}
@@ -184,7 +184,7 @@ export function PreviewWindow({
                 >
                   <span
                     className={cn(
-                      'absolute inset-0 flex items-center justify-center text-[10px] font-mono font-bold',
+                      'absolute inset-0 flex items-center justify-center text-xs font-mono font-bold',
                       isActive ? 'text-primary-foreground' : 'text-muted-foreground',
                     )}
                   >
@@ -196,7 +196,14 @@ export function PreviewWindow({
           </div>
 
           <div className="space-y-2">
-            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-2 w-full overflow-hidden rounded-full bg-muted"
+              role="progressbar"
+              aria-valuenow={progressPercent}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label="Playback progress"
+            >
               <AnimatePresence mode="wait">
                 <motion.div
                   key={isPlaying ? 'playing' : 'paused'}
@@ -204,13 +211,13 @@ export function PreviewWindow({
                   animate={{ opacity: 1 }}
                   className={cn(
                     'h-full bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) transition-all duration-(--duration-base) ease-fluid',
-                    isPlaying && !shouldReduce && 'motion-safe:animate-pulse',
+                    isPlaying && 'motion-safe:animate-pulse',
                   )}
                   style={{ width: `${progressPercent}%` }}
                 />
               </AnimatePresence>
             </div>
-            <div className="flex justify-between text-[10px] text-muted-foreground">
+            <div className="flex justify-between text-xs text-muted-foreground">
               <span>0:0{beat}</span>
               <span>{isPlaying ? 'Playing' : 'Paused'}</span>
               <span>0:08</span>

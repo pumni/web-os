@@ -150,7 +150,7 @@ export function SkyPlayerIntro() {
                   <AlertTriangle className="h-5 w-5 text-warning" />
                 </div>
                 <div className="space-y-1.5">
-                  <h3 className="type-label font-bold text-foreground">
+                  <h3 className="type-heading text-foreground">
                     Responsible use guidance
                   </h3>
                   <p className="type-body text-muted-foreground">

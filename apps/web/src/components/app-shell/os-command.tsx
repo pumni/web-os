@@ -3,21 +3,21 @@
 import * as React from 'react';
 import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
-import {
-  ComponentIcon,
-  LayoutDashboard,
-  Palette,
-  SearchIcon,
-  Settings,
-  User,
-  Music,
-} from 'lucide-react';
+import { SearchIcon } from 'lucide-react';
 
 import { CommandPalette, type CommandItem, withViewTransition } from '@pumni/ui';
+import { navItems } from './nav-items';
+
+/** Turns a route path into a DOM-safe id: "/settings/account" -> "settings-account". */
+function toCommandId(href: Route): string {
+  return href.replace(/^\/+/, '').replace(/\//g, '-') || 'root';
+}
 
 /**
  * Wires the command palette into the OS shell: a ⌘K / Ctrl+K hotkey plus a
- * topbar search trigger. Navigation items mirror the sidebar.
+ * topbar search trigger. Items are derived from the shared nav source so the
+ * palette stays in sync with the sidebar automatically — no manual duplication
+ * when a feature is added.
  */
 export function OsCommand() {
   const router = useRouter();
@@ -35,49 +35,18 @@ export function OsCommand() {
   }, []);
 
   const items = React.useMemo<CommandItem[]>(
-    () => [
-      {
-        id: 'dashboard',
-        label: 'Dashboard',
-        icon: <LayoutDashboard />,
-        onSelect: () => withViewTransition(() => router.push('/dashboard')),
-      },
-      {
-        id: 'sky-player',
-        label: 'Sky Player',
-        keywords: 'music song sheet play cotl instrument',
-        icon: <Music />,
-        onSelect: () => withViewTransition(() => router.push('/sky-player' as Route)),
-      },
-      {
-        id: 'profile',
-        label: 'Profile',
-        keywords: 'settings account name',
-        icon: <User />,
-        onSelect: () => withViewTransition(() => router.push('/settings/profile')),
-      },
-      {
-        id: 'account',
-        label: 'Account settings',
-        keywords: 'email password security',
-        icon: <Settings />,
-        onSelect: () => withViewTransition(() => router.push('/settings/account')),
-      },
-      {
-        id: 'appearance',
-        label: 'Appearance',
-        keywords: 'theme dark light mode',
-        icon: <Palette />,
-        onSelect: () => withViewTransition(() => router.push('/settings/appearance')),
-      },
-      {
-        id: 'design-system',
-        label: 'Design System',
-        keywords: 'tokens components qa visual',
-        icon: <ComponentIcon />,
-        onSelect: () => withViewTransition(() => router.push('/design-system' as Route)),
-      },
-    ],
+    () =>
+      navItems.map((item) => {
+        const Icon = item.icon;
+        return {
+          id: toCommandId(item.href),
+          label: item.label,
+          keywords: item.keywords,
+          group: item.group,
+          icon: <Icon />,
+          onSelect: () => withViewTransition(() => router.push(item.href)),
+        };
+      }),
     [router],
   );
 

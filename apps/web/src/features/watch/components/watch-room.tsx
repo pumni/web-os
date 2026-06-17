@@ -22,9 +22,10 @@ import {
   SheetHeader,
   SheetTitle,
   GlassSurface,
+  cn,
 } from '@pumni/ui';
 import { toast } from 'sonner';
-import { ArrowLeft, ListVideo, Link2, Hash } from 'lucide-react';
+import { ArrowLeft, ListVideo, Link2, Hash, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useServerClock } from '../hooks/use-server-clock';
@@ -47,7 +48,7 @@ import { useMemberProfiles } from '../hooks/use-room-members';
 // Phase 6 imports
 import { useRoomChat } from '../hooks/use-room-chat';
 import { useHostAutopromote } from '../hooks/use-host-autopromote';
-import { type ReactionOverlayRef } from './reaction-overlay';
+import { ReactionOverlay, type ReactionOverlayRef } from './reaction-overlay';
 
 interface WatchRoomProps {
   room: Room;
@@ -63,6 +64,12 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   // Mobile Side Dock Sheet state
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Desktop Side Dock collapsed state
+  const [isDockOpen, setIsDockOpen] = useState(true);
+
+  // Auto-play toggle (host-only — when on, video auto-advances after ending)
+  const [autoPlay, setAutoPlay] = useState(true);
 
   // Source change modal state (Host only)
   const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
@@ -115,6 +122,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   const handleEnded = () => {
     if (!isHost) return;
+    if (!autoPlay) return; // User has auto-play off — just stop
     if (queueItems.length === 0) return;
     advanceQueueMutation.mutate(undefined, {
       onSuccess: () => broadcastQueueEvent({ action: 'advance' }),
@@ -257,9 +265,14 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   if (!clockReady) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 gap-3 select-none text-foreground/75">
-        <div className="size-8 motion-safe:animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <span className="text-sm font-medium">Đang đồng bộ thời gian với máy chủ...</span>
+      <div className="flex flex-1 items-center justify-center p-4 min-h-0">
+        <GlassSurface
+          variant="panel"
+          className="flex flex-col items-center justify-center gap-4 px-8 py-10 rounded-xl max-w-xs w-full select-none"
+        >
+          <div className="size-10 motion-safe:animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <span className="type-caption text-muted-foreground">Đang đồng bộ với máy chủ...</span>
+        </GlassSurface>
       </div>
     );
   }
@@ -284,7 +297,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
           </Button>
 
           <div className="flex items-center gap-2 min-w-0">
-            <h2 className="text-sm font-semibold tracking-tight truncate">Phòng xem chung</h2>
+            <h2 className="type-heading text-sm truncate">Phòng xem chung</h2>
             <SyncIndicator status={syncStatus} />
             {channelStatus !== 'connected' && (
               <span
@@ -301,17 +314,16 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         {/* Right: Room code chip + actions */}
         <div className="flex items-center gap-1 shrink-0">
           {/* Room code — click to copy */}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleCopyCode}
             aria-label="Sao chép mã phòng"
-            className="hidden sm:flex items-center gap-1 h-7 px-2.5 rounded-md border border-border bg-muted motion-safe:hover:bg-muted/80 transition-colors duration-(--duration-fast) cursor-pointer"
+            className="hidden sm:inline-flex items-center gap-1 h-7 px-2.5 rounded-md border border-border bg-muted font-mono text-xs font-bold tracking-widest text-foreground motion-safe:hover:bg-muted/80 transition-colors duration-(--duration-fast)"
           >
-            <Hash className="size-3 text-muted-foreground/70" />
-            <span className="font-mono text-xs font-bold tracking-widest text-foreground">
-              {currentRoom.code}
-            </span>
-          </button>
+            <Hash className="size-3 text-muted-foreground" />
+            <span>{currentRoom.code}</span>
+          </Button>
 
           <Button
             variant="ghost"
@@ -321,6 +333,21 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             className="size-8"
           >
             <Link2 className="size-4" />
+          </Button>
+
+          {/* Desktop: Dock toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsDockOpen((prev) => !prev)}
+            aria-label={isDockOpen ? 'Ẩn bảng điều khiển' : 'Hiện bảng điều khiển'}
+            className="hidden lg:flex size-8"
+          >
+            {isDockOpen ? (
+              <PanelRightClose className="size-4" />
+            ) : (
+              <PanelRightOpen className="size-4" />
+            )}
           </Button>
 
           {/* Mobile Sheet Trigger */}
@@ -350,33 +377,42 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             stageRef={stageRef}
             {...playerHandlers}
           >
+            <ReactionOverlay ref={reactionOverlayRef} />
             <RoomControls
               isHost={isHost}
               onSourceChange={() => setIsSourceModalOpen(true)}
               isFollowingHost={isFollowingHost}
               resync={resync}
               stageRef={stageRef}
+              autoPlay={autoPlay}
+              onAutoPlayToggle={() => setAutoPlay((prev) => !prev)}
             />
             {needsGesture && <TapToPlayOverlay onResume={resumeFromGesture} />}
           </SyncPlayer>
         </div>
 
-        {/* Right: Side Dock (Desktop only) */}
-        <div className="hidden lg:block w-85 shrink-0 min-h-0">
-          <SideDock
-            roomId={currentRoom.id}
-            userId={userId}
-            isHost={isHost}
-            participants={participants}
-            queueItems={queueItems}
-            currentQueueItemId={currentRoom.current_queue_item_id}
-            profiles={profiles}
-            broadcastQueueEvent={broadcastQueueEvent}
-            messages={messages}
-            sendChat={sendChat}
-            onReact={sendReaction}
-            reactionOverlayRef={reactionOverlayRef}
-          />
+        {/* Right: Side Dock — collapsible desktop panel */}
+        <div
+          className={cn(
+            'hidden lg:block shrink-0 min-h-0 overflow-hidden transition-[width,opacity] duration-(--duration-base) ease-fluid',
+            isDockOpen ? 'w-80 opacity-100' : 'w-0 opacity-0',
+          )}
+        >
+          <div className="w-80 min-h-0 h-full">
+            <SideDock
+              roomId={currentRoom.id}
+              userId={userId}
+              isHost={isHost}
+              participants={participants}
+              queueItems={queueItems}
+              currentQueueItemId={currentRoom.current_queue_item_id}
+              profiles={profiles}
+              broadcastQueueEvent={broadcastQueueEvent}
+              messages={messages}
+              sendChat={sendChat}
+              onReact={sendReaction}
+            />
+          </div>
         </div>
       </div>
 
@@ -387,7 +423,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
           className="w-full sm:max-w-md p-0 border-l border-border flex flex-col h-full"
         >
           <SheetHeader className="p-4 border-b border-border shrink-0">
-            <SheetTitle className="text-sm font-semibold">Bảng điều khiển</SheetTitle>
+            <SheetTitle className="type-heading text-sm">Bảng điều khiển</SheetTitle>
           </SheetHeader>
           <div className="flex-1 overflow-hidden min-h-0 p-2">
             <SideDock
@@ -402,7 +438,6 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               messages={messages}
               sendChat={sendChat}
               onReact={sendReaction}
-              reactionOverlayRef={reactionOverlayRef}
             />
           </div>
         </SheetContent>
@@ -413,14 +448,14 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         <Dialog open={isSourceModalOpen} onOpenChange={setIsSourceModalOpen}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-base">Đổi nguồn phát video</DialogTitle>
-              <DialogDescription className="text-xs">
+              <DialogTitle className="type-heading text-base">Đổi nguồn phát video</DialogTitle>
+              <DialogDescription className="type-caption">
                 Thay đổi nguồn phát video cho tất cả mọi người trong phòng.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSourceChangeSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label className="text-xs">Nguồn video</Label>
+                <Label className="type-label">Nguồn video</Label>
                 <Tabs
                   value={newSourceType}
                   onValueChange={(val) => setNewSourceType(val as 'youtube' | 'url')}
@@ -438,7 +473,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="new-source-ref" className="text-xs">
+                <Label htmlFor="new-source-ref" className="type-label">
                   {newSourceType === 'youtube'
                     ? 'Link hoặc ID video YouTube'
                     : 'Link video trực tiếp'}

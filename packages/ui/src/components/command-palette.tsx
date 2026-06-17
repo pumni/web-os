@@ -3,12 +3,17 @@
 import * as React from 'react';
 import { SearchIcon } from 'lucide-react';
 import { Dialog as DialogPrimitive } from 'radix-ui';
+import { matchSorter } from 'match-sorter';
+
+import { Highlight } from './highlight';
 
 export type CommandItem = {
   id: string;
   label: string;
   /** Extra search terms not shown in the label. */
   keywords?: string;
+  /** Optional group heading — items with the same value are bucketed under a label. */
+  group?: string;
   icon?: React.ReactNode;
   shortcut?: string;
   onSelect: () => void;
@@ -33,11 +38,32 @@ function CommandPalette({
   const [activeIndex, setActiveIndex] = React.useState(0);
   const listRef = React.useRef<HTMLDivElement>(null);
 
+  // match-sorter gives fuzzy matching (typo tolerance), relevance ranking, and
+  // acronym support ("db" → "Dashboard") across both label and keywords.
   const filtered = React.useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = query.trim();
     if (!q) return items;
-    return items.filter((item) => `${item.label} ${item.keywords ?? ''}`.toLowerCase().includes(q));
+    return matchSorter(items, q, { keys: ['label', 'keywords'] });
   }, [items, query]);
+
+  // Bucket results by `group` (first-seen order) so grouped items render under
+  // a heading. Ungrouped items fall into a synthetic "Other" bucket only when
+  // any other item is grouped — otherwise the list stays flat for back-compat.
+  const grouped = React.useMemo(() => {
+    const hasGroups = filtered.some((item) => item.group);
+    if (!hasGroups) return null;
+    const buckets: { name: string; items: CommandItem[] }[] = [];
+    for (const item of filtered) {
+      const name = item.group ?? 'Other';
+      let bucket = buckets.find((b) => b.name === name);
+      if (!bucket) {
+        bucket = { name, items: [] };
+        buckets.push(bucket);
+      }
+      bucket.items.push(item);
+    }
+    return buckets;
+  }, [filtered]);
 
   function handleOpenChange(next: boolean) {
     if (!next) {
@@ -71,6 +97,31 @@ function CommandPalette({
       event.preventDefault();
       select(activeIndex);
     }
+  }
+
+  function renderOption(item: CommandItem, index: number) {
+    return (
+      <button
+        key={item.id}
+        id={`command-item-${item.id}`}
+        type="button"
+        role="option"
+        aria-selected={index === activeIndex}
+        data-index={index}
+        data-active={index === activeIndex}
+        onClick={() => select(index)}
+        onMouseMove={() => setActiveIndex(index)}
+        className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-foreground outline-none transition-colors state-hover state-pressed [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground"
+      >
+        {item.icon}
+        <span className="flex-1 truncate">
+          <Highlight text={item.label} query={query} />
+        </span>
+        {item.shortcut && (
+          <kbd className="ml-auto text-xs tracking-widest text-muted-foreground">{item.shortcut}</kbd>
+        )}
+      </button>
+    );
   }
 
   return (
@@ -121,29 +172,24 @@ function CommandPalette({
           >
             {filtered.length === 0 ? (
               <p className="px-2 py-6 text-center text-sm text-muted-foreground">{emptyMessage}</p>
-            ) : (
-              filtered.map((item, index) => (
-                <button
-                  key={item.id}
-                  id={`command-item-${item.id}`}
-                  type="button"
-                  role="option"
-                  aria-selected={index === activeIndex}
-                  data-index={index}
-                  data-active={index === activeIndex}
-                  onClick={() => select(index)}
-                  onMouseMove={() => setActiveIndex(index)}
-                  className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-foreground outline-none transition-colors state-hover state-pressed [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground"
-                >
-                  {item.icon}
-                  <span className="flex-1 truncate">{item.label}</span>
-                  {item.shortcut && (
-                    <kbd className="ml-auto text-xs tracking-widest text-muted-foreground">
-                      {item.shortcut}
-                    </kbd>
-                  )}
-                </button>
+            ) : grouped ? (
+              grouped.map((bucket) => (
+                <div key={bucket.name} role="group" aria-label={bucket.name} className="p-1">
+                  <div
+                    role="presentation"
+                    data-slot="command-group-label"
+                    className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                  >
+                    {bucket.name}
+                  </div>
+                  {bucket.items.map((item) => {
+                    const index = filtered.indexOf(item);
+                    return renderOption(item, index);
+                  })}
+                </div>
               ))
+            ) : (
+              filtered.map((item, index) => renderOption(item, index))
             )}
           </div>
         </DialogPrimitive.Content>

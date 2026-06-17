@@ -1,28 +1,4 @@
-import type { Route } from 'next';
-import type { ComponentType } from 'react';
-import {
-  Clapperboard,
-  ComponentIcon,
-  LayoutDashboard,
-  Music,
-  Palette,
-  Settings,
-  User,
-} from 'lucide-react';
-
-export type NavItem = {
-  href: Route;
-  label: string;
-  icon: ComponentType<{ className?: string }>;
-};
-
-/** Single source of nav entries, shared by the desktop rail and mobile drawer. */
-export const navItems: ReadonlyArray<NavItem> = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/sky-player' as Route, label: 'Sky Player', icon: Music },
-  { href: '/watch' as Route, label: 'Watch Together', icon: Clapperboard },
-  { href: '/settings/profile', label: 'Profile', icon: User },
-  { href: '/settings/account', label: 'Account', icon: Settings },
-  { href: '/settings/appearance', label: 'Appearance', icon: Palette },
-  { href: '/design-system' as Route, label: 'Design System', icon: ComponentIcon },
-] as const;
+// Re-exported so existing consumers (app-sidebar, mobile-nav, os-command) keep
+// importing from './nav-items' unchanged. The real source is the registry,
+// which derives this list from each page's co-located `nav.ts`.
+export { navItems, type NavItem } from './nav-registry';

@@ -422,7 +422,8 @@ export async function removeQueueItem(roomId: string, itemId: string): Promise<A
   return { ok: true, data: undefined };
 }
 
-/** Host-only action to advance to next item in the queue. */
+/** Host-only action to advance to next item in the queue.
+ *  Also removes the currently-playing item so played videos don't linger. */
 export async function advanceQueue(roomId: string): Promise<ActionResult> {
   const user = await requireUser();
   const supabase = await createSupabaseServerClient();
@@ -488,6 +489,15 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
 
   if (updateError) {
     return { ok: false, message: updateError.message };
+  }
+
+  // Delete the just-played item so it won't linger in the queue
+  if (room.current_queue_item_id) {
+    await supabase
+      .from('watch_queue_items')
+      .delete()
+      .eq('id', room.current_queue_item_id)
+      .eq('room_id', roomId);
   }
 
   revalidatePath('/watch');

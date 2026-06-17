@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useMediaState, useMediaRemote } from '@vidstack/react';
-import { Button, Slider, GlassSurface, cn } from '@pumni/ui';
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Clapperboard } from 'lucide-react';
+import { Button, Slider, GlassSurface, Switch, cn } from '@pumni/ui';
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Clapperboard, SkipForward } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@pumni/ui';
 import { useControlsVisibility } from '../hooks/use-controls-visibility';
 
@@ -13,6 +13,9 @@ interface RoomControlsProps {
   isFollowingHost?: boolean;
   resync?: () => void;
   stageRef?: React.RefObject<HTMLDivElement | null>;
+  autoPlay?: boolean;
+  onAutoPlayToggle?: () => void;
+  onAdvance?: () => void;
 }
 
 function formatTime(seconds: number): string {
@@ -33,6 +36,9 @@ export function RoomControls({
   isFollowingHost = true,
   resync,
   stageRef,
+  autoPlay,
+  onAutoPlayToggle,
+  onAdvance,
 }: RoomControlsProps) {
   const paused = useMediaState('paused');
   const muted = useMediaState('muted');
@@ -105,13 +111,13 @@ export function RoomControls({
       />
 
       <GlassSurface
-        variant="bar"
+        variant="panel"
         onMouseEnter={controlsBind.onMouseEnter}
         onMouseLeave={controlsBind.onMouseLeave}
         onFocus={controlsBind.onFocus}
         onBlur={controlsBind.onBlur}
         className={cn(
-          'absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 border border-glass-border transition-all duration-(--duration-base) ease-fluid',
+          'absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 rounded-nested transition-all duration-(--duration-base) ease-fluid',
           visible ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none translate-y-2',
         )}
       >
@@ -136,7 +142,7 @@ export function RoomControls({
 
         {/* Timeline progress slider */}
         <div className="flex items-center gap-3 w-full">
-          <span className="text-xs font-mono text-foreground/90 select-none tabular-nums min-w-9 text-right">
+          <span className="text-xs font-mono text-foreground select-none tabular-nums min-w-9 text-right">
             {formatTime(currentTime)}
           </span>
           <Slider
@@ -149,7 +155,7 @@ export function RoomControls({
             className="flex-1 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-foreground/30"
             aria-label="Seek progress"
           />
-          <span className="text-xs font-mono text-foreground/60 select-none tabular-nums min-w-9">
+          <span className="text-xs font-mono text-muted-foreground select-none tabular-nums min-w-9">
             {formatTime(duration)}
           </span>
         </div>
@@ -197,11 +203,11 @@ export function RoomControls({
             />
 
             {!isHost && isFollowingHost && (
-              <span className="text-xs text-foreground/50 ml-2 select-none">• Đồng bộ</span>
+              <span className="type-caption text-muted-foreground ml-2 select-none">&bull; Đồng bộ</span>
             )}
             {!isHost && !isFollowingHost && (
-              <span className="text-xs text-warning/90 ml-2 select-none font-medium">
-                • Lệch sync
+              <span className="type-caption text-warning ml-2 select-none font-medium">
+                &bull; Lệch sync
               </span>
             )}
           </div>
@@ -214,7 +220,7 @@ export function RoomControls({
                 size="icon"
                 onClick={onSourceChange}
                 aria-label="Đổi nguồn phát"
-                className="size-8 text-foreground/80 motion-safe:hover:text-foreground"
+                className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
               >
                 <Clapperboard className="size-4" />
               </Button>
@@ -239,13 +245,54 @@ export function RoomControls({
               </SelectContent>
             </Select>
 
+            {/* Auto-play Toggle */}
+            {isHost && onAutoPlayToggle && (
+              <div className="flex items-center gap-1.5">
+                <span className="type-caption text-muted-foreground select-none whitespace-nowrap">
+                  Tự động phát
+                </span>
+                <Switch
+                  checked={autoPlay}
+                  onCheckedChange={onAutoPlayToggle}
+                  aria-label="Tự động phát video tiếp theo"
+                />
+              </div>
+            )}
+
+            {/* Skip to next video (host only) */}
+            {isHost && onAdvance && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onAdvance}
+                aria-label="Phát video tiếp theo"
+                className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
+                title="Video tiếp theo"
+              >
+                <SkipForward className="size-4" />
+              </Button>
+            )}
+
+            {/* Source Change Button (Host only) */}
+            {isHost && onSourceChange && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onSourceChange}
+                aria-label="Đổi nguồn phát"
+                className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
+              >
+                <Clapperboard className="size-4" />
+              </Button>
+            )}
+
             {/* Fullscreen */}
             <Button
               variant="ghost"
               size="icon"
               onClick={handleFullscreenToggle}
               aria-label={fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'}
-              className="size-8 text-foreground/80 motion-safe:hover:text-foreground"
+              className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
             >
               {fullscreen ? <Minimize className="size-4" /> : <Maximize className="size-4" />}
             </Button>

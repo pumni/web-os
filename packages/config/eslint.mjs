@@ -130,7 +130,6 @@ export const pumniNoAdHocSurface = [
       '**/*.test.{ts,tsx}',
       // TODO: Migrate these out-of-scope surfaces in follow-up passes (Section 7 of plan)
       '**/layout.tsx',
-      '**/sky-player/**',
       '**/profile-form.tsx',
       '**/app-shell/**',
       '**/showcase.tsx',

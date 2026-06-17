@@ -5,6 +5,13 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
   motion,
   useReducedMotion,
   recipes,
@@ -13,68 +20,116 @@ import {
 import { Crown } from 'lucide-react';
 import type { Participant } from '../types';
 
-interface ParticipantRailProps {
+interface ParticipantPanelProps {
   participants: Participant[];
   profiles?: Record<string, { username: string | null; avatar_url: string | null }>;
+  isHost?: boolean;
+  userId?: string;
+  onTransferHost?: (newHostId: string) => void;
+  isPending?: boolean;
 }
 
-export function ParticipantRail({ participants, profiles = {} }: ParticipantRailProps) {
+export function ParticipantRail({
+  participants,
+  profiles = {},
+  isHost = false,
+  userId,
+  onTransferHost,
+  isPending = false,
+}: ParticipantPanelProps) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <div className="flex flex-col gap-2">
-      <span className="text-xs font-semibold text-muted-foreground select-none">
-        Người tham gia ({participants.length})
-      </span>
-      <motion.div
-        {...(shouldReduceMotion ? {} : recipes.staggerContainer)}
-        className="flex flex-wrap gap-2 items-center"
-      >
-        {participants.map((p) => {
-          const profile = profiles[p.userId];
-          const displayName = profile?.username ?? `User: ${p.userId.slice(0, 8)}`;
-          const initials = profile?.username
-            ? profile.username.slice(0, 2)
-            : p.isHost
-              ? 'Ho'
-              : p.userId.slice(0, 2);
+    <motion.div
+      {...(shouldReduceMotion ? {} : recipes.staggerContainer)}
+      className="flex flex-col gap-1.5 flex-1 overflow-y-auto min-h-0"
+    >
+      {participants.map((p) => {
+        const profile = profiles[p.userId];
+        const isCurrentUser = p.userId === userId;
+        const displayName =
+          profile?.username ?? (isCurrentUser ? 'Bạn' : `User: ${p.userId.slice(0, 8)}`);
+        const initials = profile?.username
+          ? profile.username.slice(0, 2)
+          : p.isHost
+            ? 'Ho'
+            : p.userId.slice(0, 2);
 
-          return (
-            <motion.div
-              key={p.userId}
-              {...(shouldReduceMotion ? {} : recipes.staggerItem)}
-              className="relative group"
-            >
+        const canTransfer = isHost && !p.isHost;
+
+        const participantRow = (
+          <motion.div
+            {...(shouldReduceMotion ? {} : recipes.staggerItem)}
+            className={cn(
+              'flex items-center justify-between p-2 rounded-md border text-xs transition-colors duration-(--duration-fast)',
+              p.isHost
+                ? 'border-primary/20 bg-primary/10'
+                : 'border-border bg-muted motion-safe:hover:bg-muted/80',
+            )}
+          >
+            <div className="flex items-center gap-2 min-w-0">
               <Avatar
                 className={cn(
-                  'size-9 border ring-2 ring-background motion-safe:hover:scale-110 transition-transform duration-(--duration-fast) ease-snappy',
-                  p.isHost ? 'border-primary/40 ring-primary/20' : 'border-border',
+                  'size-7 border shrink-0',
+                  p.isHost ? 'border-primary/40 ring-2 ring-primary/20' : 'border-border',
                 )}
               >
                 {profile?.avatar_url && (
-                  <AvatarImage
-                    src={profile.avatar_url}
-                    alt={displayName}
-                    className="object-cover"
-                  />
+                  <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
                 )}
-                <AvatarFallback className="text-xs font-semibold uppercase select-none">
+                <AvatarFallback
+                  className={cn(
+                    'text-[10px] font-bold uppercase select-none',
+                    p.isHost ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground',
+                  )}
+                >
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              {p.isHost && (
-                <span className="absolute -bottom-1 -right-1 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm shadow-primary/30">
-                  <Crown className="size-2.5 fill-current" />
+              <div className="flex flex-col min-w-0">
+                <span className="truncate font-medium text-foreground">
+                  {isCurrentUser && profile?.username ? `${displayName} (Bạn)` : displayName}
                 </span>
-              )}
-              {/* Tooltip on hover */}
-              <div className="pointer-events-none absolute bottom-11 left-1/2 -translate-x-1/2 z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-(--duration-fast) bg-popover text-popover-foreground text-xs px-2 py-1 rounded-md border border-border shadow-md whitespace-nowrap">
-                {p.isHost ? `Chủ phòng (${displayName})` : displayName}
+                {p.isHost && (
+                  <span className="type-caption flex items-center gap-0.5 mt-0.5 text-primary font-medium">
+                    <Crown className="size-2.5 fill-current" />
+                    Chủ phòng
+                  </span>
+                )}
               </div>
-            </motion.div>
+            </div>
+          </motion.div>
+        );
+
+        if (canTransfer && onTransferHost) {
+          return (
+            <ContextMenu key={p.userId}>
+              <ContextMenuTrigger asChild>{participantRow}</ContextMenuTrigger>
+              <ContextMenuContent className="w-48">
+                <ContextMenuItem
+                  disabled={isPending}
+                  onClick={() => onTransferHost(p.userId)}
+                  className="text-xs gap-2"
+                >
+                  <Crown className="size-3.5" />
+                  Chuyển quyền chủ phòng
+                </ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
           );
-        })}
-      </motion.div>
-    </div>
+        }
+
+        return (
+          <Tooltip key={p.userId}>
+            <TooltipTrigger asChild>
+              <div className="contents">{participantRow}</div>
+            </TooltipTrigger>
+            <TooltipContent>
+              {p.isHost ? `Chủ phòng (${displayName})` : displayName}
+            </TooltipContent>
+          </Tooltip>
+        );
+      })}
+    </motion.div>
   );
 }

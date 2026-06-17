@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button, GlassSurface } from '@pumni/ui';
+import { Button, GlassSurface, recipes, motion, useReducedMotion } from '@pumni/ui';
 
 interface ReactionBarProps {
   onReact: (emoji: string) => void;
@@ -10,6 +10,8 @@ interface ReactionBarProps {
 const EMOJIS = ['❤️', '😂', '😮', '👍', '🎉'];
 
 export function ReactionBar({ onReact }: ReactionBarProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <GlassSurface
       variant="panel"
@@ -22,10 +24,16 @@ export function ReactionBar({ onReact }: ReactionBarProps) {
           variant="ghost"
           size="sm"
           onClick={() => onReact(emoji)}
-          className="size-8 p-0 text-lg motion-safe:hover:bg-muted/80 hover:scale-125 transition-transform duration-(--duration-fast) active:scale-95 rounded-full"
+          className="size-8 p-0 text-lg motion-safe:hover:bg-muted/80 rounded-full"
           aria-label={`Thả cảm xúc ${emoji}`}
+          asChild
         >
-          {emoji}
+          <motion.button
+            {...(shouldReduceMotion ? {} : recipes.pressScale)}
+            className="size-8 flex items-center justify-center rounded-full"
+          >
+            {emoji}
+          </motion.button>
         </Button>
       ))}
     </GlassSurface>

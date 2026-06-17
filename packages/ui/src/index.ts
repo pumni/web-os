@@ -94,6 +94,7 @@ export {
   useFormField,
 } from './components/form';
 export { GlassSurface, glassSurfaceVariants } from './components/glass-surface';
+export { Highlight } from './components/highlight';
 export { Input, inputVariants } from './components/input';
 export { Label } from './components/label';
 export {

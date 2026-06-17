@@ -39,13 +39,13 @@ export function FaqSection() {
               type="button"
               onClick={() => toggle(idx)}
               aria-expanded={isOpen}
-              className="flex w-full items-start justify-between gap-4 px-6 py-4 text-left transition-colors hover:bg-muted/50 cursor-pointer"
+              className="flex w-full items-start justify-between gap-4 px-6 py-4 text-left transition-colors hover:bg-muted/50 cursor-pointer focus-visible:outline-ring"
             >
               <div className="flex items-start gap-3 min-w-0">
                 {/* Question number */}
                 <span
                   className={cn(
-                    'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-colors',
+                    'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors',
                     isOpen
                       ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground',

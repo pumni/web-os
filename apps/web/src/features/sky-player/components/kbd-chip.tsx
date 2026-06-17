@@ -12,7 +12,7 @@ export function KbdChip({ children, className }: KbdChipProps) {
     <kbd
       className={cn(
         'inline-flex min-w-6 items-center justify-center rounded-md border border-border bg-muted px-1.5 py-0.5',
-        'text-[10px] font-mono font-semibold text-foreground shadow-sm select-none',
+        'text-xs font-mono font-semibold text-foreground shadow-sm select-none',
         className,
       )}
     >

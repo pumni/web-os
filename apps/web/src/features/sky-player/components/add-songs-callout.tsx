@@ -1,7 +1,4 @@
-'use client';
-
 import { Download, Monitor, Terminal } from 'lucide-react';
-import * as React from 'react';
 
 import { Card } from '@pumni/ui';
 
@@ -31,7 +28,7 @@ export function AddSongsCallout() {
                 <Icon className="size-3.5" />
               </span>
               <div className="space-y-1 pt-0.5">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-primary">
+                <p className="text-xs font-bold uppercase tracking-widest text-primary">
                   Step {idx + 1}
                 </p>
                 <p className="type-label text-foreground leading-relaxed">
@@ -69,10 +66,10 @@ export function AddSongsCallout() {
               className="p-3 gap-0 rounded-lg flex flex-col justify-between"
             >
               <div>
-                <code className="inline-block rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary mb-1.5">
+                <code className="inline-block rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-bold text-primary mb-1.5">
                   {format.ext}
                 </code>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">{format.note}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{format.note}</p>
               </div>
             </Card>
           ))}

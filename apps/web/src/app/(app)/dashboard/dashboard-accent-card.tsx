@@ -11,32 +11,42 @@ const ACCENT_OPTIONS: { name: Accent; label: string }[] = [
   { name: 'rose', label: 'Rose' },
 ];
 
+/**
+ * Accent personalizer tile body.
+ *
+ * Reads `accent` from the personalization provider so the selected swatch
+ * stays in sync with the one set on `/settings/appearance`. Layout height is
+ * owned by the parent `BentoGridItem` via `minHeight`.
+ */
 export function DashboardAccentCard() {
   const { accent, setAccent } = usePersonalization();
 
   return (
-    <div className="flex h-full flex-col justify-between min-h-30 select-none">
+    <div className="flex h-full flex-col justify-between select-none">
       <div className="flex items-center justify-between text-muted-foreground">
-        <Palette className="h-4 w-4 text-primary" />
-        <span className="text-xs uppercase tracking-wider font-semibold">Accent Theme</span>
+        <Palette className="size-4 text-primary" />
+        <span className="type-caption font-semibold uppercase tracking-wider">
+          Accent theme
+        </span>
       </div>
       <div className="mt-4 space-y-3">
         <div className="flex gap-2">
           {ACCENT_OPTIONS.map((opt) => (
-            <div key={opt.name} data-accent={opt.name}>
-              <button
-                onClick={() => setAccent(opt.name)}
-                className="relative flex size-8 items-center justify-center rounded-full bg-primary transition-all duration-(--duration-fast) hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-                aria-label={`Set accent color to ${opt.label}`}
-              >
-                {accent === opt.name && (
-                  <Check className="h-4 w-4 text-primary-foreground stroke-[3px]" />
-                )}
-              </button>
-            </div>
+            <button
+              key={opt.name}
+              type="button"
+              onClick={() => setAccent(opt.name)}
+              aria-pressed={accent === opt.name}
+              aria-label={`Set accent color to ${opt.label}`}
+              className="relative inline-flex size-8 items-center justify-center rounded-full bg-primary transition-transform duration-(--duration-fast) motion-safe:hover:scale-110 motion-safe:active:scale-(--press-scale) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              {accent === opt.name && (
+                <Check className="size-4 stroke-[3px] text-primary-foreground" />
+              )}
+           </button>
           ))}
-        </div>
-        <p className="text-[10px] font-medium text-muted-foreground capitalize">
+       </div>
+        <p className="type-caption font-medium capitalize text-muted-foreground">
           Current: {accent}
         </p>
       </div>

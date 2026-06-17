@@ -1,116 +1,162 @@
 import { requireUser } from '@pumni/auth';
 import Link from 'next/link';
-import { UserIcon, Tv, Sparkles } from 'lucide-react';
+import { GitFork } from 'lucide-react';
 
-import { BentoGrid, BentoGridItem, Avatar, AvatarFallback, AvatarImage, Button } from '@pumni/ui';
+import { BentoGrid, BentoGridItem, Button } from '@pumni/ui';
 
-import { DashboardClockCard } from './dashboard-clock-card';
 import { DashboardAccentCard } from './dashboard-accent-card';
-import { PreviewWindow } from '@/features/sky-player/preview-window';
+import { DashboardClockCard } from './dashboard-clock-card';
 import { DashboardDock } from './dashboard-dock';
+import { DashboardProfileCard } from './dashboard-profile-card';
+import { DashboardWatchCard } from './dashboard-watch-card';
+import { tiles } from './dashboard-meta';
+import { QuickActions } from './quick-actions';
+import { PreviewWindow } from '@/features/sky-player/preview-window';
+import { Kbd } from '@/components/kbd';
 
+/**
+ * Desktop Bento math (12-col grid):
+ *
+ *   Rows 1–2: hero (6×2, left)  |  sky-player (6×2, right)
+ *   Row    3: clock(3) | accent(3) | profile(3) | watch(3)
+ *
+ * Tile sums = 12 cols per row, no wrapping.
+ */
 export default async function DashboardPage() {
   const user = await requireUser();
+  const tileById = new Map(tiles.map((tile) => [tile.id, tile]));
+
+  const hero = tileById.get('hero')!;
+  const clock = tileById.get('clock')!;
+  const accent = tileById.get('accent')!;
+  const skyPlayer = tileById.get('sky-player')!;
+  const profile = tileById.get('profile')!;
+  const watch = tileById.get('watch')!;
+
+  const HeroIcon = hero.icon!;
+  const ClockIcon = clock.icon!;
+  const AccentIcon = accent.icon!;
+  const SkyPlayerIcon = skyPlayer.icon!;
+  const ProfileIcon = profile.icon!;
+  const WatchIcon = watch.icon!;
 
   return (
     <div className="space-y-6 pb-28">
-      <div>
-        <h1 className="text-gradient-brand text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground font-medium">Welcome back, {user.email}.</p>
-      </div>
+      <header>
+        <h1 className="text-gradient-brand text-4xl font-bold tracking-tight">Dashboard</h1>
+        <p className="type-label font-medium text-muted-foreground">
+          Welcome back, {user.email}.
+        </p>
+      </header>
 
-      <BentoGrid>
-        {/* Card 1: Welcome & Info — hero (6 cols desktop, 6 cols tablet) */}
+      <BentoGrid aria-labelledby="dashboard-heading">
+        <h2 id="dashboard-heading" className="sr-only">
+          Dashboard tiles
+        </h2>
+
+        {/* Rows 1–2: hero deck (left). Vertical air below the CTA row is
+            filled with a brand-gradient glow to keep the tile anchored without
+            adding slop. The decorative layer is aria-hidden so it never reaches
+            assistive tech. */}
         <BentoGridItem
-          tier="hero"
-          icon={<Sparkles className="size-5" />}
-          title="Welcome to Pumni OS"
-          description="This desktop runs on Pumni's token-first design system: OKLCH color roles, shared @pumni/ui primitives, and accessible surfaces."
+          tier={hero.tier}
+          minHeight={hero.minHeight}
+          icon={<HeroIcon className="size-5" />}
+          title={hero.title}
+          description="Token-first design system: OKLCH color roles, shared @pumni/ui primitives, accessible surfaces."
           interactive={false}
+          className="overflow-hidden"
         >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-primary/10 via-primary/5 to-transparent"
+          />
           <div className="flex flex-wrap items-center gap-4">
             <Button asChild size="sm">
+              <Link href="/design-system">Open Design System</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
               <a
                 href="https://github.com/pumni/Sky-Player"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5"
               >
-                GitHub Repository
+                <GitFork className="size-4" aria-hidden />
+                <span>GitHub repository</span>
               </a>
             </Button>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-mono select-none">
-                ⌘K
-              </kbd>
-              <span>to open command palette</span>
+            <div className="flex items-center gap-2 type-caption text-muted-foreground">
+              <Kbd>⌘K</Kbd>
+              <span>opens the command palette</span>
             </div>
           </div>
         </BentoGridItem>
 
-        {/* Card 2: System Time — metric (3 cols desktop, 3 cols tablet) */}
-        <BentoGridItem tier="metric" interactive={true}>
-          <DashboardClockCard />
-        </BentoGridItem>
-
-        {/* Card 3: Sky Player Controller — feature (4 cols / row-span-2) */}
+        {/* Rows 1–2: Sky Player preview (right). The tile surface is opted out
+            so the embedded `Window` glass isn't double-stacked under another
+            Card. */}
         <BentoGridItem
-          tier="feature"
-          className="p-0 border-0 bg-transparent shadow-none"
+          tier={skyPlayer.tier}
+          minHeight={skyPlayer.minHeight}
+          icon={<SkyPlayerIcon className="size-5" />}
+          title={skyPlayer.title}
+          description={skyPlayer.description}
+          className="overflow-hidden border-0 bg-transparent p-0 shadow-none"
           interactive={false}
         >
           <PreviewWindow className="max-w-none w-full" showLearnMore />
         </BentoGridItem>
 
-        {/* Card 4: Accent personalizer — metric (3 cols desktop) */}
-        <BentoGridItem tier="metric" interactive={true}>
+        {/* Row 3: clock */}
+        <BentoGridItem
+          tier={clock.tier}
+          minHeight={clock.minHeight}
+          icon={<ClockIcon className="size-5" />}
+          title={clock.title}
+          interactive
+        >
+          <DashboardClockCard />
+        </BentoGridItem>
+
+        {/* Row 3: accent */}
+        <BentoGridItem
+          tier={accent.tier}
+          minHeight={accent.minHeight}
+          icon={<AccentIcon className="size-5" />}
+          title={accent.title}
+          interactive
+        >
           <DashboardAccentCard />
         </BentoGridItem>
 
-        {/* Card 5: Profile quick summary — metric (3 cols) */}
+        {/* Row 3: profile */}
         <BentoGridItem
-          tier="metric"
-          icon={<UserIcon className="size-5" />}
-          title="User Profile"
-          description={user.email}
-          interactive={true}
+          tier={profile.tier}
+          minHeight={profile.minHeight}
+          icon={<ProfileIcon className="size-5" />}
+          title={profile.title}
+          description="Avatar, display name and notification email."
+          interactive
         >
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5">
-              <Avatar className="size-9 ring-1 ring-border">
-                <AvatarImage src={user.user_metadata?.avatar_url ?? undefined} />
-                <AvatarFallback className="font-semibold text-xs">
-                  {user.email?.slice(0, 2).toUpperCase() || 'US'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="space-y-0.5">
-                <p className="text-[10px] font-semibold text-foreground">Logged In</p>
-                <p className="text-[9px] font-mono text-muted-foreground">
-                  ID: {user.id.slice(0, 8)}...
-                </p>
-              </div>
-            </div>
-            <Button asChild size="sm" variant="outline" className="h-8 rounded-lg">
-              <Link href="/settings/profile">Manage</Link>
-            </Button>
-          </div>
+          <DashboardProfileCard user={user} />
         </BentoGridItem>
 
-        {/* Card 6: Watch Together — full (12 cols desktop, spans wide) */}
+        {/* Row 3: watch — idle, intentionally no `state="loading"` so the Card
+            stays solid and never breathes. Recent-rooms data lands in Phase 2
+            via a TanStack Query hook in `features/watch/`. */}
         <BentoGridItem
-          tier="full"
-          icon={<Tv className="size-5" />}
-          title="Watch Together"
-          description="Watch synchronized video loops together with friends in real-time."
-          interactive={true}
+          tier={watch.tier}
+          minHeight={watch.minHeight}
+          icon={<WatchIcon className="size-5" />}
+          title={watch.title}
+          interactive
         >
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-[10px] font-medium text-muted-foreground">Multiplayer lobby</span>
-            <Button asChild size="sm" variant="outline" className="h-8 rounded-lg">
-              <Link href="/watch">Join Room</Link>
-            </Button>
-          </div>
+          <DashboardWatchCard />
         </BentoGridItem>
       </BentoGrid>
+
+      <QuickActions />
 
       <DashboardDock />
     </div>

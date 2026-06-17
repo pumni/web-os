@@ -50,7 +50,7 @@ function ShortcutList({ groupId }: { groupId: string }) {
                   return (
                     <React.Fragment key={i}>
                       {i > 0 && (
-                        <span className="text-[10px] text-muted-foreground font-semibold">
+                        <span className="text-xs text-muted-foreground font-semibold">
                           {isCombination ? '+' : '/'}
                         </span>
                       )}

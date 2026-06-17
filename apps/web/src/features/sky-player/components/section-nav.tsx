@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { cn } from '@pumni/ui';
+import { cn, withViewTransition } from '@pumni/ui';
 
 import { PAGE_SECTIONS } from '../content';
 
@@ -47,10 +47,12 @@ export function SectionNav() {
             href={`#${section.id}`}
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' });
+              withViewTransition(() => {
+                document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' });
+              });
             }}
             className={cn(
-              'shrink-0 border-b-2 px-5 py-3.5 text-sm font-medium transition-colors duration-(--duration-base) ease-fluid whitespace-nowrap',
+              'shrink-0 border-b-2 px-5 py-3.5 text-sm font-medium transition-colors duration-(--duration-base) ease-fluid whitespace-nowrap focus-visible:outline-ring',
               activeSection === section.id
                 ? 'border-primary text-foreground'
                 : 'border-transparent text-muted-foreground hover:text-foreground',
