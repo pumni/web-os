@@ -3,13 +3,7 @@ name: r1-server-action-revalidation
 category: nextjs
 description: Evaluates whether an agent uses Next.js 16 cache invalidation correctly after Server Action mutations.
 automated-rule: server-action-missing-revalidation
-covered-rules:
-  [
-    server-action-missing-auth,
-    server-action-missing-revalidation,
-    swallowed-error,
-    route-business-logic,
-  ]
+covered-rules: [server-action-missing-auth, server-action-missing-revalidation, swallowed-error, route-business-logic]
 ---
 
 # R1 Server Action Revalidation

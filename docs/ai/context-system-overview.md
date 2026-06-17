@@ -71,6 +71,21 @@ Current scan roots are web monorepo roots: `apps/web/src`, `packages`, and
    gates.
 7. Agent reports changed files, validation, and remaining risks.
 
+## Prompt-cache layout
+
+Keep instruction context **stable** so a client that caches prompts can reuse
+it across turns. This is a file-organisation principle, not infrastructure:
+
+- Put durable rules in fixed paths: `AGENTS.md`, `apps/web/AGENTS.md`,
+  `packages/*/AGENTS.md`, and `docs/conventions/*`. These change rarely.
+- Keep volatile detail (current task, scratchpad notes, session state) out of
+  those files — in chat turns or `.agents/scratchpad/` (see
+  `docs/ai/memory-layer.md`).
+- Do not duplicate a canonical rule into a second file; link to it instead.
+  Duplicates drift, and drift defeats the cache and confuses the priority stack.
+- Size caps (`AGENTS.md` < 6500 bytes, `docs/ai/*.md` < 5000 bytes, task routes
+  < 4000 bytes) keep the static prefix small and predictable.
+
 ## Extending The System
 
 Add a task route when agents repeatedly over-read or under-read context for a

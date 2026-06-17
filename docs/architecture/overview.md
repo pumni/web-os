@@ -28,3 +28,9 @@ graph TD
 4. **`packages/validators`**: Zero-dependency Zod validation schemas shared between Client Forms and Server Actions.
 5. **`packages/supabase`**: Supabase browser and server connection clients.
 6. **`packages/auth`**: High-level authentication checking helpers (`getCurrentUser`, `requireUser`).
+
+## Dependency Graph
+
+For the real `workspace:*` edge map, foundational blocks, and blast-radius
+reasoning before cross-package changes, see
+`docs/architecture/project-graph.md`.
