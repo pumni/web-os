@@ -6,35 +6,35 @@
   "ignoreExports": [
     {
       "file": "apps/web/src/app/(app)/dashboard/nav.ts",
-      "exports": ["*"]
+      "exports": ["pageNav"]
     },
     {
       "file": "apps/web/src/app/(app)/design-system/nav.ts",
-      "exports": ["*"]
+      "exports": ["pageNav"]
     },
     {
       "file": "apps/web/src/app/(app)/nextjs-ecosystem/nav.ts",
-      "exports": ["*"]
+      "exports": ["pageNav"]
     },
     {
       "file": "apps/web/src/app/(app)/settings/account/nav.ts",
-      "exports": ["*"]
+      "exports": ["pageNav"]
     },
     {
       "file": "apps/web/src/app/(app)/settings/appearance/nav.ts",
-      "exports": ["*"]
+      "exports": ["pageNav"]
     },
     {
       "file": "apps/web/src/app/(app)/settings/profile/nav.ts",
-      "exports": ["*"]
+      "exports": ["pageNav"]
     },
     {
       "file": "apps/web/src/app/(app)/sky-player/nav.ts",
-      "exports": ["*"]
+      "exports": ["pageNav"]
     },
     {
       "file": "apps/web/src/app/(app)/watch/nav.ts",
-      "exports": ["*"]
+      "exports": ["pageNav"]
     },
     {
       "file": "packages/supabase/src/types.ts",

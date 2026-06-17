@@ -59,6 +59,7 @@ function MessageAvatar({
   );
 }
 
+// fallow-ignore-next-line complexity
 function BubbleContent({
   isMe,
   isGrouped,

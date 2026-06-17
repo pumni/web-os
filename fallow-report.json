@@ -2,33 +2,33 @@
   "schema_version": 7,
   "version": "2.98.0",
   "command": "audit",
-  "verdict": "fail",
-  "changed_files_count": 248,
+  "verdict": "pass",
+  "changed_files_count": 250,
   "base_ref": "79be92a128c49d7634faedc3bf8866ff3e277d5a",
   "base_description": "merge-base with origin/main",
-  "head_sha": "bb70e61",
+  "head_sha": "4e5b21a",
   "elapsed_ms": 1116,
   "summary": {
-    "dead_code_issues": 7,
-    "dead_code_has_errors": true,
-    "complexity_findings": 73,
+    "dead_code_issues": 0,
+    "dead_code_has_errors": false,
+    "complexity_findings": 67,
     "max_cyclomatic": 18,
-    "duplication_clone_groups": 11
+    "duplication_clone_groups": 7
   },
   "attribution": {
     "gate": "new-only",
-    "dead_code_introduced": 1,
-    "dead_code_inherited": 6,
-    "complexity_introduced": 4,
-    "complexity_inherited": 67,
-    "duplication_introduced": 4,
+    "dead_code_introduced": 0,
+    "dead_code_inherited": 0,
+    "complexity_introduced": 0,
+    "complexity_inherited": 65,
+    "duplication_introduced": 0,
     "duplication_inherited": 7
   },
   "dead_code": {
     "schema_version": 7,
     "version": "2.98.0",
-    "elapsed_ms": 455,
-    "total_issues": 7,
+    "elapsed_ms": 456,
+    "total_issues": 0,
     "entry_points": {
       "total": 90,
       "sources": {
@@ -37,10 +37,10 @@
       }
     },
     "summary": {
-      "total_issues": 7,
+      "total_issues": 0,
       "unused_files": 0,
-      "unused_exports": 1,
-      "unused_types": 5,
+      "unused_exports": 0,
+      "unused_types": 0,
       "private_type_leaks": 0,
       "unused_dependencies": 0,
       "unused_enum_members": 0,
@@ -57,7 +57,7 @@
       "unused_load_data_keys": 0,
       "unresolved_imports": 0,
       "unlisted_dependencies": 0,
-      "duplicate_exports": 1,
+      "duplicate_exports": 0,
       "type_only_dependencies": 0,
       "test_only_dependencies": 0,
       "circular_dependencies": 0,
@@ -79,148 +79,8 @@
       "dynamic_segment_name_conflicts": 0
     },
     "unused_files": [],
-    "unused_exports": [
-      {
-        "path": "packages/supabase/src/types.ts",
-        "export_name": "Constants",
-        "is_type_only": false,
-        "line": 382,
-        "col": 13,
-        "span_start": 11056,
-        "is_re_export": false,
-        "actions": [
-          {
-            "type": "remove-export",
-            "auto_fixable": true,
-            "description": "Remove the unused export from the public API"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the line",
-            "comment": "// fallow-ignore-next-line unused-export"
-          }
-        ],
-        "introduced": false
-      }
-    ],
-    "unused_types": [
-      {
-        "path": "packages/supabase/src/types.ts",
-        "export_name": "Tables",
-        "is_type_only": true,
-        "line": 271,
-        "col": 12,
-        "span_start": 6843,
-        "is_re_export": false,
-        "actions": [
-          {
-            "type": "remove-export",
-            "auto_fixable": true,
-            "description": "Remove the `export` (or `export type`) keyword from the type declaration"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the line",
-            "comment": "// fallow-ignore-next-line unused-type"
-          }
-        ],
-        "introduced": false
-      },
-      {
-        "path": "packages/supabase/src/types.ts",
-        "export_name": "TablesInsert",
-        "is_type_only": true,
-        "line": 298,
-        "col": 12,
-        "span_start": 7923,
-        "is_re_export": false,
-        "actions": [
-          {
-            "type": "remove-export",
-            "auto_fixable": true,
-            "description": "Remove the `export` (or `export type`) keyword from the type declaration"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the line",
-            "comment": "// fallow-ignore-next-line unused-type"
-          }
-        ],
-        "introduced": false
-      },
-      {
-        "path": "packages/supabase/src/types.ts",
-        "export_name": "TablesUpdate",
-        "is_type_only": true,
-        "line": 323,
-        "col": 12,
-        "span_start": 8758,
-        "is_re_export": false,
-        "actions": [
-          {
-            "type": "remove-export",
-            "auto_fixable": true,
-            "description": "Remove the `export` (or `export type`) keyword from the type declaration"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the line",
-            "comment": "// fallow-ignore-next-line unused-type"
-          }
-        ],
-        "introduced": false
-      },
-      {
-        "path": "packages/supabase/src/types.ts",
-        "export_name": "Enums",
-        "is_type_only": true,
-        "line": 348,
-        "col": 12,
-        "span_start": 9593,
-        "is_re_export": false,
-        "actions": [
-          {
-            "type": "remove-export",
-            "auto_fixable": true,
-            "description": "Remove the `export` (or `export type`) keyword from the type declaration"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the line",
-            "comment": "// fallow-ignore-next-line unused-type"
-          }
-        ],
-        "introduced": false
-      },
-      {
-        "path": "packages/supabase/src/types.ts",
-        "export_name": "CompositeTypes",
-        "is_type_only": true,
-        "line": 365,
-        "col": 12,
-        "span_start": 10281,
-        "is_re_export": false,
-        "actions": [
-          {
-            "type": "remove-export",
-            "auto_fixable": true,
-            "description": "Remove the `export` (or `export type`) keyword from the type declaration"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the line",
-            "comment": "// fallow-ignore-next-line unused-type"
-          }
-        ],
-        "introduced": false
-      }
-    ],
+    "unused_exports": [],
+    "unused_types": [],
     "private_type_leaks": [],
     "unused_dependencies": [],
     "unused_dev_dependencies": [],
@@ -229,126 +89,7 @@
     "unused_class_members": [],
     "unresolved_imports": [],
     "unlisted_dependencies": [],
-    "duplicate_exports": [
-      {
-        "export_name": "pageNav",
-        "locations": [
-          {
-            "path": "apps/web/src/app/(app)/dashboard/nav.ts",
-            "line": 4,
-            "col": 13
-          },
-          {
-            "path": "apps/web/src/app/(app)/design-system/nav.ts",
-            "line": 4,
-            "col": 13
-          },
-          {
-            "path": "apps/web/src/app/(app)/nextjs-ecosystem/nav.ts",
-            "line": 4,
-            "col": 13
-          },
-          {
-            "path": "apps/web/src/app/(app)/settings/account/nav.ts",
-            "line": 4,
-            "col": 13
-          },
-          {
-            "path": "apps/web/src/app/(app)/settings/appearance/nav.ts",
-            "line": 4,
-            "col": 13
-          },
-          {
-            "path": "apps/web/src/app/(app)/settings/profile/nav.ts",
-            "line": 4,
-            "col": 13
-          },
-          {
-            "path": "apps/web/src/app/(app)/sky-player/nav.ts",
-            "line": 4,
-            "col": 13
-          },
-          {
-            "path": "apps/web/src/app/(app)/watch/nav.ts",
-            "line": 4,
-            "col": 13
-          }
-        ],
-        "actions": [
-          {
-            "type": "add-to-config",
-            "auto_fixable": true,
-            "description": "Add an ignoreExports rule so these files are excluded from duplicate-export grouping (use when this duplication is an intentional namespace-barrel API).",
-            "config_key": "ignoreExports",
-            "value": [
-              {
-                "file": "apps/web/src/app/(app)/dashboard/nav.ts",
-                "exports": [
-                  "*"
-                ]
-              },
-              {
-                "file": "apps/web/src/app/(app)/design-system/nav.ts",
-                "exports": [
-                  "*"
-                ]
-              },
-              {
-                "file": "apps/web/src/app/(app)/nextjs-ecosystem/nav.ts",
-                "exports": [
-                  "*"
-                ]
-              },
-              {
-                "file": "apps/web/src/app/(app)/settings/account/nav.ts",
-                "exports": [
-                  "*"
-                ]
-              },
-              {
-                "file": "apps/web/src/app/(app)/settings/appearance/nav.ts",
-                "exports": [
-                  "*"
-                ]
-              },
-              {
-                "file": "apps/web/src/app/(app)/settings/profile/nav.ts",
-                "exports": [
-                  "*"
-                ]
-              },
-              {
-                "file": "apps/web/src/app/(app)/sky-player/nav.ts",
-                "exports": [
-                  "*"
-                ]
-              },
-              {
-                "file": "apps/web/src/app/(app)/watch/nav.ts",
-                "exports": [
-                  "*"
-                ]
-              }
-            ],
-            "value_schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json#/properties/ignoreExports"
-          },
-          {
-            "type": "remove-duplicate",
-            "auto_fixable": false,
-            "description": "Keep one canonical export location and remove the others",
-            "note": "If every location is the sole `index.*` of its directory, this is likely an intentional namespace-barrel API. Prefer adding these files to `ignoreExports` over removing exports."
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the line",
-            "comment": "// fallow-ignore-next-line duplicate-export",
-            "scope": "per-location"
-          }
-        ],
-        "introduced": true
-      }
-    ],
+    "duplicate_exports": [],
     "type_only_dependencies": [],
     "test_only_dependencies": [],
     "circular_dependencies": [],
@@ -412,44 +153,6 @@
       {
         "instances": [
           {
-            "file": "apps/web/src/app/(public)/reset-password/page.tsx",
-            "start_line": 20,
-            "end_line": 47,
-            "start_col": 10,
-            "end_col": 54,
-            "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">\n          {pending ? 'Updating...' : 'Update Password'"
-          },
-          {
-            "file": "apps/web/src/app/(public)/sign-up/page.tsx",
-            "start_line": 56,
-            "end_line": 82,
-            "start_col": 10,
-            "end_col": 79,
-            "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">{pending ? 'Signing up...' : 'Sign Up'"
-          }
-        ],
-        "token_count": 68,
-        "line_count": 28,
-        "fingerprint": "dup:f67a4d1d",
-        "suggested_name": "password",
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract duplicated code (28 lines, 2 instances) into a shared function"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ],
-        "introduced": true
-      },
-      {
-        "instances": [
-          {
             "file": "apps/web/src/features/watch/hooks/use-room-queue.ts",
             "start_line": 79,
             "end_line": 125,
@@ -484,126 +187,6 @@
           }
         ],
         "introduced": false
-      },
-      {
-        "instances": [
-          {
-            "file": "apps/web/src/test/scripts/frontmatter.test.ts",
-            "start_line": 15,
-            "end_line": 25,
-            "start_col": 2,
-            "end_col": 14,
-            "fragment": "const value = rawValue.trim();\n  if (value === 'true') return true;\n  if (value === 'false') return false;\n  if (value.startsWith('[') && value.endsWith(']')) {\n    return value\n      .slice(1, -1)\n      .split(',')\n      .map((item) => item.trim())\n      .filter(Boolean);\n  }\n  return value"
-          },
-          {
-            "file": "scripts/frontmatter.mjs",
-            "start_line": 13,
-            "end_line": 23,
-            "start_col": 2,
-            "end_col": 14,
-            "fragment": "const value = rawValue.trim();\n  if (value === 'true') return true;\n  if (value === 'false') return false;\n  if (value.startsWith('[') && value.endsWith(']')) {\n    return value\n      .slice(1, -1)\n      .split(',')\n      .map((item) => item.trim())\n      .filter(Boolean);\n  }\n  return value"
-          }
-        ],
-        "token_count": 87,
-        "line_count": 11,
-        "fingerprint": "dup:f79277ea",
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract duplicated code (11 lines, 2 instances) into a shared function"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ],
-        "introduced": true
-      },
-      {
-        "instances": [
-          {
-            "file": "apps/web/src/test/scripts/frontmatter.test.ts",
-            "start_line": 29,
-            "end_line": 34,
-            "start_col": 2,
-            "end_col": 38,
-            "fragment": "const content = fs.readFileSync(path.resolve(relativePath), 'utf8');\n\n  if (!content.startsWith('---\\n') && !content.startsWith('---\\r\\n')) return null;\n\n  // Search for closing --- accounting for optional \\r before \\n\n  const end = content.indexOf('\\n---')"
-          },
-          {
-            "file": "scripts/frontmatter.mjs",
-            "start_line": 32,
-            "end_line": 35,
-            "start_col": 2,
-            "end_col": 38,
-            "fragment": "const content = fs.readFileSync(path.resolve(relativePath), 'utf8');\n\n  if (!content.startsWith('---\\n') && !content.startsWith('---\\r\\n')) return null;\n  const end = content.indexOf('\\n---',"
-          }
-        ],
-        "token_count": 50,
-        "line_count": 6,
-        "fingerprint": "dup:ffaef82a",
-        "suggested_name": "content",
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract duplicated code (6 lines, 2 instances) into a shared function"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ],
-        "introduced": true
-      },
-      {
-        "instances": [
-          {
-            "file": "packages/supabase/src/types.ts",
-            "start_line": 116,
-            "end_line": 131,
-            "start_col": 11,
-            "end_col": 10,
-            "fragment": ": {\n          anchor_position: number;\n          anchor_server_ts: string;\n          code: string;\n          created_at: string;\n          host_id: string;\n          id: string;\n          is_playing: boolean;\n          playback_rate: number;\n          source_ref: string;\n          source_type: Database['public']['Enums']['watch_source_type'];\n          updated_at: string;\n          current_queue_item_id: string | null;\n          last_active_at: string;\n          host_heartbeat_at: string;\n        };"
-          },
-          {
-            "file": "packages/supabase/src/types.ts",
-            "start_line": 132,
-            "end_line": 147,
-            "start_col": 14,
-            "end_col": 10,
-            "fragment": ": {\n          anchor_position?: number;\n          anchor_server_ts?: string;\n          code: string;\n          created_at?: string;\n          host_id: string;\n          id?: string;\n          is_playing?: boolean;\n          playback_rate?: number;\n          source_ref: string;\n          source_type: Database['public']['Enums']['watch_source_type'];\n          updated_at?: string;\n          current_queue_item_id?: string | null;\n          last_active_at?: string;\n          host_heartbeat_at?: string;\n        };"
-          },
-          {
-            "file": "packages/supabase/src/types.ts",
-            "start_line": 148,
-            "end_line": 163,
-            "start_col": 14,
-            "end_col": 10,
-            "fragment": ": {\n          anchor_position?: number;\n          anchor_server_ts?: string;\n          code?: string;\n          created_at?: string;\n          host_id?: string;\n          id?: string;\n          is_playing?: boolean;\n          playback_rate?: number;\n          source_ref?: string;\n          source_type?: Database['public']['Enums']['watch_source_type'];\n          updated_at?: string;\n          current_queue_item_id?: string | null;\n          last_active_at?: string;\n          host_heartbeat_at?: string;\n        };"
-          }
-        ],
-        "token_count": 62,
-        "line_count": 16,
-        "fingerprint": "dup:60144f2c",
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract duplicated code (16 lines, 3 instances) into a shared function"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ],
-        "introduced": true
       },
       {
         "instances": [
@@ -1043,198 +626,6 @@
       },
       {
         "files": [
-          "apps/web/src/app/(public)/reset-password/page.tsx",
-          "apps/web/src/app/(public)/sign-up/page.tsx"
-        ],
-        "groups": [
-          {
-            "instances": [
-              {
-                "file": "apps/web/src/app/(public)/reset-password/page.tsx",
-                "start_line": 20,
-                "end_line": 47,
-                "start_col": 10,
-                "end_col": 54,
-                "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">\n          {pending ? 'Updating...' : 'Update Password'"
-              },
-              {
-                "file": "apps/web/src/app/(public)/sign-up/page.tsx",
-                "start_line": 56,
-                "end_line": 82,
-                "start_col": 10,
-                "end_col": 79,
-                "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">{pending ? 'Signing up...' : 'Sign Up'"
-              }
-            ],
-            "token_count": 68,
-            "line_count": 28,
-            "fingerprint": "dup:f67a4d1d",
-            "suggested_name": "password",
-            "actions": [
-              {
-                "type": "extract-shared",
-                "auto_fixable": false,
-                "description": "Extract duplicated code (28 lines, 2 instances) into a shared function"
-              },
-              {
-                "type": "suppress-line",
-                "auto_fixable": false,
-                "description": "Suppress with an inline comment above the duplicated code",
-                "comment": "// fallow-ignore-next-line code-duplication"
-              }
-            ]
-          }
-        ],
-        "total_duplicated_lines": 28,
-        "total_duplicated_tokens": 68,
-        "suggestions": [
-          {
-            "kind": "ExtractFunction",
-            "description": "Extract shared function (28 lines) from page.tsx, page.tsx",
-            "estimated_savings": 28
-          }
-        ],
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract 1 duplicated code block (28 lines) into a shared module",
-            "note": "These clone groups share the same files, indicating a structural relationship; refactor together"
-          },
-          {
-            "type": "apply-suggestion",
-            "auto_fixable": false,
-            "description": "Extract shared function (28 lines) from page.tsx, page.tsx"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ]
-      },
-      {
-        "files": [
-          "apps/web/src/test/scripts/frontmatter.test.ts",
-          "scripts/frontmatter.mjs"
-        ],
-        "groups": [
-          {
-            "instances": [
-              {
-                "file": "apps/web/src/test/scripts/frontmatter.test.ts",
-                "start_line": 15,
-                "end_line": 25,
-                "start_col": 2,
-                "end_col": 14,
-                "fragment": "const value = rawValue.trim();\n  if (value === 'true') return true;\n  if (value === 'false') return false;\n  if (value.startsWith('[') && value.endsWith(']')) {\n    return value\n      .slice(1, -1)\n      .split(',')\n      .map((item) => item.trim())\n      .filter(Boolean);\n  }\n  return value"
-              },
-              {
-                "file": "scripts/frontmatter.mjs",
-                "start_line": 13,
-                "end_line": 23,
-                "start_col": 2,
-                "end_col": 14,
-                "fragment": "const value = rawValue.trim();\n  if (value === 'true') return true;\n  if (value === 'false') return false;\n  if (value.startsWith('[') && value.endsWith(']')) {\n    return value\n      .slice(1, -1)\n      .split(',')\n      .map((item) => item.trim())\n      .filter(Boolean);\n  }\n  return value"
-              }
-            ],
-            "token_count": 87,
-            "line_count": 11,
-            "fingerprint": "dup:f79277ea",
-            "actions": [
-              {
-                "type": "extract-shared",
-                "auto_fixable": false,
-                "description": "Extract duplicated code (11 lines, 2 instances) into a shared function"
-              },
-              {
-                "type": "suppress-line",
-                "auto_fixable": false,
-                "description": "Suppress with an inline comment above the duplicated code",
-                "comment": "// fallow-ignore-next-line code-duplication"
-              }
-            ]
-          },
-          {
-            "instances": [
-              {
-                "file": "apps/web/src/test/scripts/frontmatter.test.ts",
-                "start_line": 29,
-                "end_line": 34,
-                "start_col": 2,
-                "end_col": 38,
-                "fragment": "const content = fs.readFileSync(path.resolve(relativePath), 'utf8');\n\n  if (!content.startsWith('---\\n') && !content.startsWith('---\\r\\n')) return null;\n\n  // Search for closing --- accounting for optional \\r before \\n\n  const end = content.indexOf('\\n---')"
-              },
-              {
-                "file": "scripts/frontmatter.mjs",
-                "start_line": 32,
-                "end_line": 35,
-                "start_col": 2,
-                "end_col": 38,
-                "fragment": "const content = fs.readFileSync(path.resolve(relativePath), 'utf8');\n\n  if (!content.startsWith('---\\n') && !content.startsWith('---\\r\\n')) return null;\n  const end = content.indexOf('\\n---',"
-              }
-            ],
-            "token_count": 50,
-            "line_count": 6,
-            "fingerprint": "dup:ffaef82a",
-            "suggested_name": "content",
-            "actions": [
-              {
-                "type": "extract-shared",
-                "auto_fixable": false,
-                "description": "Extract duplicated code (6 lines, 2 instances) into a shared function"
-              },
-              {
-                "type": "suppress-line",
-                "auto_fixable": false,
-                "description": "Suppress with an inline comment above the duplicated code",
-                "comment": "// fallow-ignore-next-line code-duplication"
-              }
-            ]
-          }
-        ],
-        "total_duplicated_lines": 17,
-        "total_duplicated_tokens": 137,
-        "suggestions": [
-          {
-            "kind": "ExtractFunction",
-            "description": "Extract shared function (11 lines) from frontmatter.test.ts, frontmatter.mjs",
-            "estimated_savings": 11
-          },
-          {
-            "kind": "ExtractFunction",
-            "description": "Extract shared function (6 lines) from frontmatter.test.ts, frontmatter.mjs",
-            "estimated_savings": 6
-          }
-        ],
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract 2 duplicated code blocks (17 lines) into a shared module",
-            "note": "These clone groups share the same files, indicating a structural relationship; refactor together"
-          },
-          {
-            "type": "apply-suggestion",
-            "auto_fixable": false,
-            "description": "Extract shared function (11 lines) from frontmatter.test.ts, frontmatter.mjs"
-          },
-          {
-            "type": "apply-suggestion",
-            "auto_fixable": false,
-            "description": "Extract shared function (6 lines) from frontmatter.test.ts, frontmatter.mjs"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ]
-      },
-      {
-        "files": [
           "scripts/check-review-gate-rules.mjs"
         ],
         "groups": [
@@ -1362,85 +753,6 @@
       },
       {
         "files": [
-          "packages/supabase/src/types.ts"
-        ],
-        "groups": [
-          {
-            "instances": [
-              {
-                "file": "packages/supabase/src/types.ts",
-                "start_line": 116,
-                "end_line": 131,
-                "start_col": 11,
-                "end_col": 10,
-                "fragment": ": {\n          anchor_position: number;\n          anchor_server_ts: string;\n          code: string;\n          created_at: string;\n          host_id: string;\n          id: string;\n          is_playing: boolean;\n          playback_rate: number;\n          source_ref: string;\n          source_type: Database['public']['Enums']['watch_source_type'];\n          updated_at: string;\n          current_queue_item_id: string | null;\n          last_active_at: string;\n          host_heartbeat_at: string;\n        };"
-              },
-              {
-                "file": "packages/supabase/src/types.ts",
-                "start_line": 132,
-                "end_line": 147,
-                "start_col": 14,
-                "end_col": 10,
-                "fragment": ": {\n          anchor_position?: number;\n          anchor_server_ts?: string;\n          code: string;\n          created_at?: string;\n          host_id: string;\n          id?: string;\n          is_playing?: boolean;\n          playback_rate?: number;\n          source_ref: string;\n          source_type: Database['public']['Enums']['watch_source_type'];\n          updated_at?: string;\n          current_queue_item_id?: string | null;\n          last_active_at?: string;\n          host_heartbeat_at?: string;\n        };"
-              },
-              {
-                "file": "packages/supabase/src/types.ts",
-                "start_line": 148,
-                "end_line": 163,
-                "start_col": 14,
-                "end_col": 10,
-                "fragment": ": {\n          anchor_position?: number;\n          anchor_server_ts?: string;\n          code?: string;\n          created_at?: string;\n          host_id?: string;\n          id?: string;\n          is_playing?: boolean;\n          playback_rate?: number;\n          source_ref?: string;\n          source_type?: Database['public']['Enums']['watch_source_type'];\n          updated_at?: string;\n          current_queue_item_id?: string | null;\n          last_active_at?: string;\n          host_heartbeat_at?: string;\n        };"
-              }
-            ],
-            "token_count": 62,
-            "line_count": 16,
-            "fingerprint": "dup:60144f2c",
-            "actions": [
-              {
-                "type": "extract-shared",
-                "auto_fixable": false,
-                "description": "Extract duplicated code (16 lines, 3 instances) into a shared function"
-              },
-              {
-                "type": "suppress-line",
-                "auto_fixable": false,
-                "description": "Suppress with an inline comment above the duplicated code",
-                "comment": "// fallow-ignore-next-line code-duplication"
-              }
-            ]
-          }
-        ],
-        "total_duplicated_lines": 16,
-        "total_duplicated_tokens": 62,
-        "suggestions": [
-          {
-            "kind": "ExtractFunction",
-            "description": "Extract shared function (16 lines) from types.ts, types.ts, types.ts",
-            "estimated_savings": 32
-          }
-        ],
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract 1 duplicated code block (16 lines) into a shared module",
-            "note": "These clone groups share the same files, indicating a structural relationship; refactor together"
-          },
-          {
-            "type": "apply-suggestion",
-            "auto_fixable": false,
-            "description": "Extract shared function (16 lines) from types.ts, types.ts, types.ts"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ]
-      },
-      {
-        "files": [
           "apps/web/src/app/(public)/auth-actions.ts"
         ],
         "groups": [
@@ -1514,14 +826,14 @@
     ],
     "stats": {
       "total_files": 160,
-      "files_with_clones": 9,
-      "total_lines": 19297,
-      "duplicated_lines": 324,
-      "total_tokens": 76330,
-      "duplicated_tokens": 1622,
-      "clone_groups": 11,
-      "clone_instances": 24,
-      "duplication_percentage": 1.679017463854485
+      "files_with_clones": 4,
+      "total_lines": 18892,
+      "duplicated_lines": 189,
+      "total_tokens": 74974,
+      "duplicated_tokens": 1026,
+      "clone_groups": 7,
+      "clone_instances": 15,
+      "duplication_percentage": 1.0004234596654669
     }
   },
   "complexity": {
@@ -2811,79 +2123,6 @@
         "introduced": false
       },
       {
-        "path": "apps/web/src/app/(public)/sign-up/page.tsx",
-        "name": "SignUpPage",
-        "line": 11,
-        "col": 15,
-        "cyclomatic": 7,
-        "cognitive": 3,
-        "line_count": 76,
-        "param_count": 0,
-        "react_hook_count": 1,
-        "react_jsx_max_depth": 3,
-        "react_hook_profile": {
-          "state": 0,
-          "effect": 0,
-          "memo": 0,
-          "callback": 0,
-          "custom": 1
-        },
-        "exceeded": "crap",
-        "severity": "high",
-        "crap": 56.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `SignUpPage` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": false
-      },
-      {
-        "path": "apps/web/src/features/watch/components/chat-panel.tsx",
-        "name": "BubbleContent",
-        "line": 62,
-        "col": 0,
-        "cyclomatic": 7,
-        "cognitive": 6,
-        "line_count": 45,
-        "param_count": 1,
-        "react_jsx_max_depth": 4,
-        "react_prop_count": 5,
-        "exceeded": "crap",
-        "severity": "high",
-        "crap": 56.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `BubbleContent` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
         "path": "apps/web/src/features/watch/components/watch-lobby.tsx",
         "name": "WatchLobby",
         "line": 28,
@@ -3077,37 +2316,6 @@
           }
         ],
         "introduced": false
-      },
-      {
-        "path": "scripts/frontmatter.mjs",
-        "name": "parseFrontmatter",
-        "line": 31,
-        "col": 7,
-        "cyclomatic": 6,
-        "cognitive": 6,
-        "line_count": 16,
-        "param_count": 1,
-        "exceeded": "crap",
-        "severity": "moderate",
-        "crap": 42.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `parseFrontmatter` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
       },
       {
         "path": "apps/web/src/features/watch/hooks/use-room-channel.ts",
@@ -3522,79 +2730,6 @@
         "introduced": false
       },
       {
-        "path": "apps/web/src/features/watch/components/room-controls.tsx",
-        "name": "VolumeControl",
-        "line": 54,
-        "col": 0,
-        "cyclomatic": 5,
-        "cognitive": 4,
-        "line_count": 37,
-        "param_count": 1,
-        "react_jsx_max_depth": 3,
-        "react_prop_count": 4,
-        "exceeded": "crap",
-        "severity": "moderate",
-        "crap": 30.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `VolumeControl` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
-        "path": "apps/web/src/app/(public)/reset-password/page.tsx",
-        "name": "ResetPasswordPage",
-        "line": 10,
-        "col": 15,
-        "cyclomatic": 5,
-        "cognitive": 3,
-        "line_count": 43,
-        "param_count": 0,
-        "react_hook_count": 1,
-        "react_jsx_max_depth": 3,
-        "react_hook_profile": {
-          "state": 0,
-          "effect": 0,
-          "memo": 0,
-          "callback": 0,
-          "custom": 1
-        },
-        "exceeded": "crap",
-        "severity": "moderate",
-        "crap": 30.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `ResetPasswordPage` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": false
-      },
-      {
         "path": "apps/web/src/features/watch/actions.ts",
         "name": "setRoomSource",
         "line": 124,
@@ -3719,37 +2854,6 @@
           }
         ],
         "introduced": false
-      },
-      {
-        "path": "scripts/frontmatter.mjs",
-        "name": "parseValue",
-        "line": 12,
-        "col": 0,
-        "cyclomatic": 5,
-        "cognitive": 4,
-        "line_count": 13,
-        "param_count": 1,
-        "exceeded": "crap",
-        "severity": "moderate",
-        "crap": 30.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `parseValue` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
       },
       {
         "path": "apps/web/src/features/watch/hooks/use-room-channel.ts",
@@ -3967,19 +3071,19 @@
     ],
     "summary": {
       "files_analyzed": 216,
-      "functions_analyzed": 1123,
-      "functions_above_threshold": 73,
+      "functions_analyzed": 1121,
+      "functions_above_threshold": 67,
       "max_cyclomatic_threshold": 20,
       "max_cognitive_threshold": 15,
       "max_crap_threshold": 30.0,
       "coverage_source_consistency": "uniform",
       "severity_critical_count": 15,
-      "severity_high_count": 24,
-      "severity_moderate_count": 34
+      "severity_high_count": 22,
+      "severity_moderate_count": 30
     },
     "vital_signs": {
       "dead_file_pct": 0.0,
-      "dead_export_pct": 1.1,
+      "dead_export_pct": 0.0,
       "avg_cyclomatic": 2.0,
       "critical_complexity_pct": 0.0,
       "p90_cyclomatic": 4,
@@ -3991,20 +3095,20 @@
       "circular_deps_per_k_files": 0.0,
       "counts": {
         "total_files": 216,
-        "total_exports": 536,
+        "total_exports": 529,
         "dead_files": 0,
-        "dead_exports": 6,
-        "total_lines": 21831,
-        "files_scored": 171,
+        "dead_exports": 0,
+        "total_lines": 21426,
+        "files_scored": 172,
         "total_deps": 0
       },
       "unit_size_profile": {
         "low_risk": 71.1,
-        "medium_risk": 18.3,
-        "high_risk": 6.9,
-        "very_high_risk": 3.6
+        "medium_risk": 18.4,
+        "high_risk": 7.0,
+        "very_high_risk": 3.5
       },
-      "functions_over_60_loc_per_k": 35.6,
+      "functions_over_60_loc_per_k": 34.8,
       "unit_interfacing_profile": {
         "low_risk": 97.9,
         "medium_risk": 1.9,
@@ -4038,6 +3142,12 @@
         {
           "component": "DesignSystemShowcase",
           "path": "apps/web/src/app/(app)/design-system/showcase.tsx",
+          "render_sites": 2,
+          "distinct_parents": 2
+        },
+        {
+          "component": "PasswordFields",
+          "path": "apps/web/src/app/(public)/password-fields.tsx",
           "render_sites": 2,
           "distinct_parents": 2
         },
@@ -4130,15 +3240,9 @@
           "path": "apps/web/src/app/(app)/nextjs-ecosystem/page.tsx",
           "render_sites": 4,
           "distinct_parents": 1
-        },
-        {
-          "component": "SectionHeader",
-          "path": "apps/web/src/features/sky-player/components/section-header.tsx",
-          "render_sites": 4,
-          "distinct_parents": 1
         }
       ],
-      "total_loc": 21831
+      "total_loc": 21426
     },
     "large_functions": [
       {
@@ -4228,7 +3332,7 @@
       {
         "path": "apps/web/src/features/watch/components/room-controls.tsx",
         "name": "RoomControls",
-        "line": 269,
+        "line": 270,
         "line_count": 131
       },
       {
@@ -4282,7 +3386,7 @@
       {
         "path": "apps/web/src/test/scripts/frontmatter.test.ts",
         "name": "<arrow>",
-        "line": 51,
+        "line": 18,
         "line_count": 97
       },
       {
@@ -4300,7 +3404,7 @@
       {
         "path": "apps/web/src/features/watch/components/chat-panel.tsx",
         "name": "ChatPanel",
-        "line": 134,
+        "line": 135,
         "line_count": 91
       },
       {
@@ -4318,7 +3422,7 @@
       {
         "path": "apps/web/src/features/watch/components/room-controls.tsx",
         "name": "HostActionGroup",
-        "line": 177,
+        "line": 178,
         "line_count": 86
       },
       {
@@ -4326,12 +3430,6 @@
         "name": "UserMenu",
         "line": 27,
         "line_count": 85
-      },
-      {
-        "path": "apps/web/src/app/(public)/sign-up/page.tsx",
-        "name": "SignUpPage",
-        "line": 11,
-        "line_count": 76
       },
       {
         "path": "apps/web/src/features/watch/actions.ts",
@@ -4385,11 +3483,6 @@
   },
   "next_steps": [
     {
-      "id": "trace-unused-export",
-      "command": "fallow dead-code --trace packages/supabase/src/types.ts:Constants",
-      "reason": "verify an export is truly unused before deleting"
-    },
-    {
       "id": "complexity-breakdown",
       "command": "fallow health --complexity-breakdown",
       "reason": "see per-decision-point contributions for a hotspot"
@@ -4398,7 +3491,7 @@
   "kind": "audit",
   "_meta": {
     "telemetry": {
-      "analysis_run_id": "run_065bd73271ce3c68"
+      "analysis_run_id": "run_754c1a6527c4a3ef"
     }
   }
 }

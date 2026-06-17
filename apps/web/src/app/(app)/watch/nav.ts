@@ -1,7 +1,6 @@
 import { Clapperboard } from 'lucide-react';
 import type { PageNav } from '@/components/app-shell/page-nav';
 
-// fallow-ignore-next-line duplicate-export
 export const pageNav: PageNav = {
   href: '/watch' as PageNav['href'],
   label: 'Watch Together',
