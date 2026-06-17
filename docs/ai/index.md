@@ -7,6 +7,8 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Need | Source |
 | --- | --- |
 | Tool-agnostic project rules | `AGENTS.md` |
+| Claude Code entry point (inherits AGENTS.md) | `CLAUDE.md` |
+| Claude Code scoped rules (lazy-loaded by glob) | `.claude/rules/*.md` |
 | Next.js v16 scoped rules | `apps/web/AGENTS.md` |
 | `@pumni/ui` package rules | `packages/ui/AGENTS.md` |
 | `@pumni/supabase` package rules | `packages/supabase/AGENTS.md` |

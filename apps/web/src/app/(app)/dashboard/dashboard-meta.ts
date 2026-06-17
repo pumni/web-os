@@ -1,16 +1,6 @@
 import type { Route } from 'next';
 import type { ComponentType } from 'react';
-import {
-  Clapperboard,
-  Clock,
-  ComponentIcon,
-  Layers,
-  Music,
-  Palette,
-  Settings,
-  Sparkles,
-  User,
-} from 'lucide-react';
+import { ComponentIcon, Music, Settings, Sparkles, User } from 'lucide-react';
 
 import type { BentoTier } from '@pumni/ui';
 
@@ -30,15 +20,9 @@ export type QuickAction = Readonly<{
 
 export const quickActions: ReadonlyArray<QuickAction> = [
   { id: 'design-system', label: 'Design System', href: '/design-system' as Route, icon: ComponentIcon },
+  { id: 'sky-player', label: 'Sky Player', href: '/nextjs-ecosystem' as Route, icon: Music },
   { id: 'profile', label: 'Manage profile', href: '/settings/profile', icon: User },
   { id: 'account', label: 'Account', href: '/settings/account', icon: Settings },
-  { id: 'appearance', label: 'Appearance', href: '/settings/appearance', icon: Palette },
-  {
-    id: 'next-ecosystem',
-    label: 'Next.js 16',
-    href: '/nextjs-ecosystem' as Route,
-    icon: Layers,
-  },
 ] as const;
 
 /**
@@ -48,11 +32,9 @@ export const quickActions: ReadonlyArray<QuickAction> = [
  *
  * Tile math at desktop (12-col grid):
  *   Rows 1–2: hero (6×2) | sky-player (6×2)
- *   Row    3: clock(3) | accent(3) | profile(3) | watch(3)
- * Final placement is decided in `page.tsx`; this catalog just declares the
- * spans.
+ *   Row    3: recent rooms (12×1) strip
  */
-export type DashboardTileId = 'hero' | 'clock' | 'accent' | 'sky-player' | 'profile' | 'watch';
+export type DashboardTileId = 'hero' | 'sky-player';
 
 export type DashboardTile = Readonly<{
   id: DashboardTileId;
@@ -77,39 +59,11 @@ export const tiles: ReadonlyArray<DashboardTile> = [
     icon: Sparkles,
   },
   {
-    id: 'clock',
-    tier: 'metric',
-    minHeight: 148,
-    title: 'System time',
-    icon: Clock,
-  },
-  {
-    id: 'accent',
-    tier: 'metric',
-    minHeight: 148,
-    title: 'Accent theme',
-    icon: Palette,
-  },
-  {
     id: 'sky-player',
-    tier: 'feature',
+    tier: 'hero', // 6×2 to mirror hero and fill the row
     minHeight: 320,
     title: 'Sky Player',
     description: 'Live preview',
     icon: Music,
-  },
-  {
-    id: 'profile',
-    tier: 'metric',
-    minHeight: 116,
-    title: 'Your profile',
-    icon: User,
-  },
-  {
-    id: 'watch',
-    tier: 'metric',
-    minHeight: 116,
-    title: 'Watch together',
-    icon: Clapperboard,
   },
 ] as const;

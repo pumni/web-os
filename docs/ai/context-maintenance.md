@@ -60,3 +60,7 @@ Watch for these web-os-specific drift points:
 - Supabase service-role usage becoming normalized outside server-only modules.
 - Query data being mirrored into Zustand.
 - Static analyzers silently scanning the wrong roots.
+- Async request APIs (`params`, `searchParams`, `cookies`, `headers`) used without `await`.
+- `cacheTag()` used without a parameterized identifier, causing cross-user collisions.
+- `'use cache'` placed inside wrapper functions (silently becomes dynamic).
+- `.claude/rules/*.md` drifting out of sync with `apps/web/AGENTS.md` cache/async rules.

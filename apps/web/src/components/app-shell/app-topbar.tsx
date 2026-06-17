@@ -1,4 +1,5 @@
 import type { User } from '@supabase/supabase-js';
+import { ClockWidget } from './clock-widget';
 import { OsCommand } from './os-command';
 import { SidebarToggle } from './sidebar-toggle';
 import { UserMenu } from './user-menu';
@@ -16,6 +17,7 @@ export function AppTopbar({ user }: AppTopbarProps) {
         <OsCommand />
       </div>
       <div className="flex items-center gap-4">
+        <ClockWidget />
         <UserMenu user={user} />
       </div>
     </header>

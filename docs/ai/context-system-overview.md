@@ -18,6 +18,12 @@ Instruction files tell the agent what to read and how to reason.
 
 - `AGENTS.md`: root constitution, security mandates, priority stack, response
   format.
+- `CLAUDE.md`: Claude Code entry point; inherits `AGENTS.md` via `@AGENTS.md`
+  and adds Claude-specific session notes. Keep under 200 lines.
+- `.claude/rules/*.md`: Claude Code scoped rules, lazy-loaded by glob pattern
+  when the AI opens matching files. Use for dense, file-type-specific rules
+  (e.g., Next.js async APIs, cache component placement) that would bloat global
+  context if always loaded.
 - `apps/web/AGENTS.md`: scoped Next.js 16 rules; read before writing Next.js
   app code.
 - `docs/ai/index.md`: compact routing index.

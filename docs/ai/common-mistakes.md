@@ -104,3 +104,37 @@ for instant navigation. Protected layouts should either put auth behind a local
 Suspense boundary with a static fallback shell, or use
 `export const unstable_instant = false` if they intentionally cannot be instant.
 Never render protected children in the fallback shell before auth resolves.
+
+## 12. Sync access to async request APIs (`async-request-api`)
+
+All request-time APIs are async in Next.js 16. Sync access **compiles but throws at runtime**.
+
+❌ `const { id } = params;` / `cookies().get('token')`
+✅ `const { id } = await params;` / `(await cookies()).get('token')`
+
+Applies to: `params`, `searchParams`, `cookies()`, `headers()`, `draftMode()`.
+Run `npx next typegen` for correct `PageProps`/`RouteContext` types — do not handcraft them.
+
+## 13. `'use cache'` in a wrapper function (`use-cache-placement`)
+
+`'use cache'` inside a wrapper silently becomes a dynamic boundary — the cache is ignored without any warning.
+
+❌ `function withCache() { return async () => { 'use cache'; ... }; }`
+✅ `'use cache';` at file level, or directly inside the function body that fetches data.
+
+See full examples: `apps/web/AGENTS.md` → Cache Components section.
+
+## 14. `cacheLife('seconds')` breaks PPR static shell (`cache-life-too-short`)
+
+❌ `cacheLife('seconds')` — silently creates a dynamic hole in the PPR static shell.
+✅ Minimum safe: `cacheLife('minutes')`. Use `'hours'` or `'days'` for stable data.
+
+## 15. `updateTag()` outside Server Actions (`update-tag-scope`)
+
+❌ Calling `updateTag()` inside a Route Handler — throws at runtime.
+✅ `updateTag()` is **Server Actions only**. It provides read-your-writes semantics.
+
+## 16. Non-parameterized `cacheTag()` causes cross-user collisions (`cache-tag-unparameterized`)
+
+❌ `cacheTag('profile')` — all users share one cache entry.
+✅ `cacheTag(\`profile:${userId}\`)` — always pass an identifying parameter.

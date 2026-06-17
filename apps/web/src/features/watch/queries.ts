@@ -61,3 +61,41 @@ export async function getQueue(roomId: string): Promise<QueueItem[]> {
   }
   return data || [];
 }
+
+/** Fetches the user's recent watch rooms, ordered by last activity. */
+export async function getRecentRooms(userId: string, limit = 5): Promise<Room[]> {
+  const supabase = await createSupabaseServerClient();
+
+  // Step 1: Get room IDs the user is a member of
+  const { data: memberships, error: membershipError } = await supabase
+    .from('room_members')
+    .select('room_id')
+    .eq('user_id', userId);
+
+  if (membershipError) {
+    console.error('Error fetching room memberships:', membershipError);
+    throw new Error(membershipError.message);
+  }
+
+  const roomIds = memberships.map((m) => m.room_id);
+  if (roomIds.length === 0) {
+    return [];
+  }
+
+  // Step 2: Fetch watch_rooms for those IDs
+  const { data, error } = await supabase
+    .from('watch_rooms')
+    .select(
+      'id, code, host_id, source_type, source_ref, is_playing, anchor_position, anchor_server_ts, playback_rate, created_at, updated_at, current_queue_item_id, last_active_at, host_heartbeat_at',
+    )
+    .in('id', roomIds)
+    .order('last_active_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching recent rooms:', error);
+    throw new Error(error.message);
+  }
+
+  return data || [];
+}

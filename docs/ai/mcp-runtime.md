@@ -63,6 +63,27 @@ the filesystem under `apps/web/src/app`.
 5. Fix the root cause using the evidence you already have (do not guess).
 6. For interaction changes, confirm with `browser_eval`.
 
+## Docs-first workflow for Next.js 16 APIs
+
+Before writing **any** code that uses:
+- Cache APIs (`'use cache'`, `cacheLife`, `cacheTag`, `updateTag`, `revalidateTag`)
+- Async request APIs (`params`, `searchParams`, `cookies`, `headers`, `draftMode`)
+- New 16.2 features (`transitionTypes`, Dev Server Lock, `browserToTerminal`)
+
+Always check the local bundled docs first:
+
+```
+# Option A: via MCP nextjs_docs tool
+nextjs_docs search "cacheLife"
+nextjs_docs get "/app/api-reference/functions/cacheLife"
+
+# Option B: direct filesystem read (no MCP needed)
+cat node_modules/next/dist/docs/app/api-reference/functions/cacheLife.md
+```
+
+This eliminates reliance on stale training-data knowledge. Never assume Next.js 16 API signatures from memory — always verify against the installed version's docs.
+
+
 ## Limits and rules
 
 - MCP reads dev-server state; it is **not** a substitute for RLS, secrets, or
