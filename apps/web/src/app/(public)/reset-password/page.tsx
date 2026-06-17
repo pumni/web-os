@@ -16,7 +16,7 @@ export default function ResetPasswordPage() {
         {/* fallow-ignore-next-line code-duplication */}
         <AuthField
           id="password"
-          label="New Password"
+          label="Password"
           type="password"
           placeholder="••••••••"
           autoComplete="new-password"

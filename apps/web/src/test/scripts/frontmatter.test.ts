@@ -9,42 +9,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-// ---- Inline copy of parseValue + parseFrontmatter from scripts/frontmatter.mjs ----
+// @ts-expect-error - import JS script into test
+import { parseFrontmatter } from '../../../../../scripts/frontmatter.mjs';
 
-function parseValue(rawValue: string): unknown {
-  const value = rawValue.trim();
-  if (value === 'true') return true;
-  if (value === 'false') return false;
-  if (value.startsWith('[') && value.endsWith(']')) {
-    return value
-      .slice(1, -1)
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean);
-  }
-  return value;
-}
-
-function parseFrontmatter(relativePath: string): Record<string, unknown> | null {
-  const content = fs.readFileSync(path.resolve(relativePath), 'utf8');
-
-  if (!content.startsWith('---\n') && !content.startsWith('---\r\n')) return null;
-
-  // Search for closing --- accounting for optional \r before \n
-  const end = content.indexOf('\n---');
-  if (end === -1) return null;
-  // If content started with \r\n, the delimiter is \r\n--- (end points to \n in \r\n---)
-  const endOffset = content.startsWith('---\r\n') && end > 0 && content[end - 1] === '\r' ? end - 1 : end;
-
-  const frontmatter: Record<string, unknown> = {};
-  for (const rawLine of content.slice(4, endOffset).split(/\r?\n/)) {
-    const match = /^([A-Za-z0-9_-]+):\s*(.*)$/.exec(rawLine);
-    if (!match) continue;
-    frontmatter[match[1]!] = parseValue(match[2]!);
-  }
-
-  return frontmatter;
-}
 
 // ---- Tests ----
 

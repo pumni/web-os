@@ -3,15 +3,15 @@
   "version": "2.98.0",
   "command": "audit",
   "verdict": "fail",
-  "changed_files_count": 247,
+  "changed_files_count": 248,
   "base_ref": "79be92a128c49d7634faedc3bf8866ff3e277d5a",
   "base_description": "merge-base with origin/main",
-  "head_sha": "c02f780",
-  "elapsed_ms": 1327,
+  "head_sha": "bb70e61",
+  "elapsed_ms": 1116,
   "summary": {
     "dead_code_issues": 7,
     "dead_code_has_errors": true,
-    "complexity_findings": 83,
+    "complexity_findings": 73,
     "max_cyclomatic": 18,
     "duplication_clone_groups": 11
   },
@@ -19,7 +19,7 @@
     "gate": "new-only",
     "dead_code_introduced": 1,
     "dead_code_inherited": 6,
-    "complexity_introduced": 14,
+    "complexity_introduced": 4,
     "complexity_inherited": 67,
     "duplication_introduced": 4,
     "duplication_inherited": 7
@@ -27,13 +27,13 @@
   "dead_code": {
     "schema_version": 7,
     "version": "2.98.0",
-    "elapsed_ms": 577,
+    "elapsed_ms": 455,
     "total_issues": 7,
     "entry_points": {
-      "total": 89,
+      "total": 90,
       "sources": {
         "package.json": 27,
-        "plugin": 62
+        "plugin": 63
       }
     },
     "summary": {
@@ -413,30 +413,30 @@
         "instances": [
           {
             "file": "apps/web/src/app/(public)/reset-password/page.tsx",
-            "start_line": 19,
-            "end_line": 48,
+            "start_line": 20,
+            "end_line": 47,
             "start_col": 10,
             "end_col": 54,
-            "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n\n        {/* fallow-ignore-next-line code-duplication */}\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">\n          {pending ? 'Updating...' : 'Update Password'"
+            "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">\n          {pending ? 'Updating...' : 'Update Password'"
           },
           {
             "file": "apps/web/src/app/(public)/sign-up/page.tsx",
-            "start_line": 55,
-            "end_line": 83,
+            "start_line": 56,
+            "end_line": 82,
             "start_col": 10,
             "end_col": 79,
-            "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n\n        {/* fallow-ignore-next-line code-duplication */}\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">{pending ? 'Signing up...' : 'Sign Up'"
+            "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">{pending ? 'Signing up...' : 'Sign Up'"
           }
         ],
         "token_count": 68,
-        "line_count": 30,
-        "fingerprint": "dup:8f92e72b",
+        "line_count": 28,
+        "fingerprint": "dup:f67a4d1d",
         "suggested_name": "password",
         "actions": [
           {
             "type": "extract-shared",
             "auto_fixable": false,
-            "description": "Extract duplicated code (30 lines, 2 instances) into a shared function"
+            "description": "Extract duplicated code (28 lines, 2 instances) into a shared function"
           },
           {
             "type": "suppress-line",
@@ -451,54 +451,16 @@
         "instances": [
           {
             "file": "apps/web/src/features/watch/hooks/use-room-queue.ts",
-            "start_line": 21,
-            "end_line": 31,
-            "start_col": 50,
-            "end_col": 7,
-            "fragment": "();\n      const { data, error } = await supabase\n        .from('watch_queue_items')\n        .select(QUEUE_ITEM_SELECT)\n        .eq('room_id', roomId)\n        .order('position', { ascending: true })\n        .order('created_at', { ascending: true });\n\n      if (error) {\n        throw error;\n      }"
-          },
-          {
-            "file": "apps/web/src/features/watch/queries.ts",
-            "start_line": 49,
-            "end_line": 60,
-            "start_col": 51,
-            "end_col": 3,
-            "fragment": "();\n  const { data, error } = await supabase\n    .from('watch_queue_items')\n    .select(QUEUE_ITEM_SELECT)\n    .eq('room_id', roomId)\n    .order('position', { ascending: true })\n    .order('created_at', { ascending: true });\n\n  if (error) {\n    console.error('Error fetching watch queue:', error);\n    return [];\n  }"
-          }
-        ],
-        "token_count": 59,
-        "line_count": 12,
-        "fingerprint": "dup:08b93c45",
-        "suggested_name": "ascending",
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract duplicated code (12 lines, 2 instances) into a shared function"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ],
-        "introduced": true
-      },
-      {
-        "instances": [
-          {
-            "file": "apps/web/src/features/watch/hooks/use-room-queue.ts",
-            "start_line": 78,
-            "end_line": 124,
+            "start_line": 79,
+            "end_line": 125,
             "start_col": 12,
             "end_col": 1,
             "fragment": "nextQueue = [...previousQueue, optimisticItem];\n      queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), nextQueue);\n\n      return { previousQueue };\n    },\n    onError: (err, variables, context) => {\n      if (context?.previousQueue) {\n        queryClient.setQueryData(watchKeys.queue(roomId), context.previousQueue);\n      }\n    },\n    onSettled: () => {\n      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });\n    },\n  });\n}\n\nexport function useRemoveQueueItem(roomId: string) {\n  const queryClient = useQueryClient();\n\n  return useMutation({\n    mutationFn: async (itemId: string) => {\n      const res = await removeQueueItem(roomId, itemId);\n      if (!res.ok) {\n        throw new Error(res.message);\n      }\n      return res;\n    },\n    onMutate: async (itemId) => {\n      await queryClient.cancelQueries({ queryKey: watchKeys.queue(roomId) });\n      const previousQueue = queryClient.getQueryData<QueueItem[]>(watchKeys.queue(roomId)) || [];\n\n      const nextQueue = previousQueue.filter((item) => item.id !== itemId);\n      queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), nextQueue);\n\n      return { previousQueue };\n    },\n    onError: (err, itemId, context) => {\n      if (context?.previousQueue) {\n        queryClient.setQueryData(watchKeys.queue(roomId), context.previousQueue);\n      }\n    },\n    onSettled: () => {\n      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });\n      void queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });\n    },\n  });\n}"
           },
           {
             "file": "apps/web/src/features/watch/hooks/use-room-queue.ts",
-            "start_line": 164,
-            "end_line": 198,
+            "start_line": 165,
+            "end_line": 199,
             "start_col": 6,
             "end_col": 1,
             "fragment": "nextQueue.sort((a, b) => a.position - b.position);\n\n      queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), nextQueue);\n\n      return { previousQueue };\n    },\n    onError: (err, variables, context) => {\n      if (context?.previousQueue) {\n        queryClient.setQueryData(watchKeys.queue(roomId), context.previousQueue);\n      }\n    },\n    onSettled: () => {\n      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });\n    },\n  });\n}\n\nexport function useAdvanceQueue(roomId: string) {\n  const queryClient = useQueryClient();\n\n  return useMutation({\n    mutationFn: async () => {\n      const res = await advanceQueue(roomId);\n      if (!res.ok) {\n        throw new Error(res.message);\n      }\n      return res;\n    },\n\n    onSettled: () => {\n      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });\n      void queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });\n    },\n  });\n}"
@@ -526,31 +488,68 @@
       {
         "instances": [
           {
-            "file": "apps/web/src/test/features/watch-host-claim.test.tsx",
-            "start_line": 57,
-            "end_line": 64,
-            "start_col": 57,
-            "end_col": 26,
-            "fragment": ", () => {\n    const { rerender } = render(<Probe isHost={false} hostPresent={false} />);\n    act(() => {\n      vi.advanceTimersByTime(10_000);\n    });\n    expect(screen.getByTestId('claim')).toHaveTextContent('visible');\n\n    rerender(<Probe isHost"
+            "file": "apps/web/src/test/scripts/frontmatter.test.ts",
+            "start_line": 15,
+            "end_line": 25,
+            "start_col": 2,
+            "end_col": 14,
+            "fragment": "const value = rawValue.trim();\n  if (value === 'true') return true;\n  if (value === 'false') return false;\n  if (value.startsWith('[') && value.endsWith(']')) {\n    return value\n      .slice(1, -1)\n      .split(',')\n      .map((item) => item.trim())\n      .filter(Boolean);\n  }\n  return value"
           },
           {
-            "file": "apps/web/src/test/features/watch-host-claim.test.tsx",
-            "start_line": 68,
-            "end_line": 75,
-            "start_col": 68,
-            "end_col": 26,
-            "fragment": ", () => {\n    const { rerender } = render(<Probe isHost={false} hostPresent={false} />);\n    act(() => {\n      vi.advanceTimersByTime(10_000);\n    });\n    expect(screen.getByTestId('claim')).toHaveTextContent('visible');\n\n    rerender(<Probe isHost"
+            "file": "scripts/frontmatter.mjs",
+            "start_line": 13,
+            "end_line": 23,
+            "start_col": 2,
+            "end_col": 14,
+            "fragment": "const value = rawValue.trim();\n  if (value === 'true') return true;\n  if (value === 'false') return false;\n  if (value.startsWith('[') && value.endsWith(']')) {\n    return value\n      .slice(1, -1)\n      .split(',')\n      .map((item) => item.trim())\n      .filter(Boolean);\n  }\n  return value"
           }
         ],
-        "token_count": 59,
-        "line_count": 8,
-        "fingerprint": "dup:31da8e5d",
-        "suggested_name": "isHost",
+        "token_count": 87,
+        "line_count": 11,
+        "fingerprint": "dup:f79277ea",
         "actions": [
           {
             "type": "extract-shared",
             "auto_fixable": false,
-            "description": "Extract duplicated code (8 lines, 2 instances) into a shared function"
+            "description": "Extract duplicated code (11 lines, 2 instances) into a shared function"
+          },
+          {
+            "type": "suppress-line",
+            "auto_fixable": false,
+            "description": "Suppress with an inline comment above the duplicated code",
+            "comment": "// fallow-ignore-next-line code-duplication"
+          }
+        ],
+        "introduced": true
+      },
+      {
+        "instances": [
+          {
+            "file": "apps/web/src/test/scripts/frontmatter.test.ts",
+            "start_line": 29,
+            "end_line": 34,
+            "start_col": 2,
+            "end_col": 38,
+            "fragment": "const content = fs.readFileSync(path.resolve(relativePath), 'utf8');\n\n  if (!content.startsWith('---\\n') && !content.startsWith('---\\r\\n')) return null;\n\n  // Search for closing --- accounting for optional \\r before \\n\n  const end = content.indexOf('\\n---')"
+          },
+          {
+            "file": "scripts/frontmatter.mjs",
+            "start_line": 32,
+            "end_line": 35,
+            "start_col": 2,
+            "end_col": 38,
+            "fragment": "const content = fs.readFileSync(path.resolve(relativePath), 'utf8');\n\n  if (!content.startsWith('---\\n') && !content.startsWith('---\\r\\n')) return null;\n  const end = content.indexOf('\\n---',"
+          }
+        ],
+        "token_count": 50,
+        "line_count": 6,
+        "fingerprint": "dup:ffaef82a",
+        "suggested_name": "content",
+        "actions": [
+          {
+            "type": "extract-shared",
+            "auto_fixable": false,
+            "description": "Extract duplicated code (6 lines, 2 instances) into a shared function"
           },
           {
             "type": "suppress-line",
@@ -814,16 +813,16 @@
             "instances": [
               {
                 "file": "apps/web/src/features/watch/hooks/use-room-queue.ts",
-                "start_line": 78,
-                "end_line": 124,
+                "start_line": 79,
+                "end_line": 125,
                 "start_col": 12,
                 "end_col": 1,
                 "fragment": "nextQueue = [...previousQueue, optimisticItem];\n      queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), nextQueue);\n\n      return { previousQueue };\n    },\n    onError: (err, variables, context) => {\n      if (context?.previousQueue) {\n        queryClient.setQueryData(watchKeys.queue(roomId), context.previousQueue);\n      }\n    },\n    onSettled: () => {\n      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });\n    },\n  });\n}\n\nexport function useRemoveQueueItem(roomId: string) {\n  const queryClient = useQueryClient();\n\n  return useMutation({\n    mutationFn: async (itemId: string) => {\n      const res = await removeQueueItem(roomId, itemId);\n      if (!res.ok) {\n        throw new Error(res.message);\n      }\n      return res;\n    },\n    onMutate: async (itemId) => {\n      await queryClient.cancelQueries({ queryKey: watchKeys.queue(roomId) });\n      const previousQueue = queryClient.getQueryData<QueueItem[]>(watchKeys.queue(roomId)) || [];\n\n      const nextQueue = previousQueue.filter((item) => item.id !== itemId);\n      queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), nextQueue);\n\n      return { previousQueue };\n    },\n    onError: (err, itemId, context) => {\n      if (context?.previousQueue) {\n        queryClient.setQueryData(watchKeys.queue(roomId), context.previousQueue);\n      }\n    },\n    onSettled: () => {\n      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });\n      void queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });\n    },\n  });\n}"
               },
               {
                 "file": "apps/web/src/features/watch/hooks/use-room-queue.ts",
-                "start_line": 164,
-                "end_line": 198,
+                "start_line": 165,
+                "end_line": 199,
                 "start_col": 6,
                 "end_col": 1,
                 "fragment": "nextQueue.sort((a, b) => a.position - b.position);\n\n      queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), nextQueue);\n\n      return { previousQueue };\n    },\n    onError: (err, variables, context) => {\n      if (context?.previousQueue) {\n        queryClient.setQueryData(watchKeys.queue(roomId), context.previousQueue);\n      }\n    },\n    onSettled: () => {\n      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });\n    },\n  });\n}\n\nexport function useAdvanceQueue(roomId: string) {\n  const queryClient = useQueryClient();\n\n  return useMutation({\n    mutationFn: async () => {\n      const res = await advanceQueue(roomId);\n      if (!res.ok) {\n        throw new Error(res.message);\n      }\n      return res;\n    },\n\n    onSettled: () => {\n      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });\n      void queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });\n    },\n  });\n}"
@@ -1052,30 +1051,30 @@
             "instances": [
               {
                 "file": "apps/web/src/app/(public)/reset-password/page.tsx",
-                "start_line": 19,
-                "end_line": 48,
+                "start_line": 20,
+                "end_line": 47,
                 "start_col": 10,
                 "end_col": 54,
-                "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n\n        {/* fallow-ignore-next-line code-duplication */}\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">\n          {pending ? 'Updating...' : 'Update Password'"
+                "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">\n          {pending ? 'Updating...' : 'Update Password'"
               },
               {
                 "file": "apps/web/src/app/(public)/sign-up/page.tsx",
-                "start_line": 55,
-                "end_line": 83,
+                "start_line": 56,
+                "end_line": 82,
                 "start_col": 10,
                 "end_col": 79,
-                "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n\n        {/* fallow-ignore-next-line code-duplication */}\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">{pending ? 'Signing up...' : 'Sign Up'"
+                "fragment": "type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.password}\n        />\n        <AuthField\n          id=\"confirmPassword\"\n          label=\"Confirm Password\"\n          type=\"password\"\n          placeholder=\"ΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇóΓÇó\"\n          autoComplete=\"new-password\"\n          minLength={8}\n          required\n          disabled={pending}\n          error={state.errors?.confirmPassword}\n        />\n\n        {state.message ? (\n          <p className=\"text-sm text-destructive\" aria-live=\"polite\">\n            {state.message}\n          </p>\n        ) : null}\n\n        <SubmitButton className=\"w-full\">{pending ? 'Signing up...' : 'Sign Up'"
               }
             ],
             "token_count": 68,
-            "line_count": 30,
-            "fingerprint": "dup:8f92e72b",
+            "line_count": 28,
+            "fingerprint": "dup:f67a4d1d",
             "suggested_name": "password",
             "actions": [
               {
                 "type": "extract-shared",
                 "auto_fixable": false,
-                "description": "Extract duplicated code (30 lines, 2 instances) into a shared function"
+                "description": "Extract duplicated code (28 lines, 2 instances) into a shared function"
               },
               {
                 "type": "suppress-line",
@@ -1086,26 +1085,145 @@
             ]
           }
         ],
-        "total_duplicated_lines": 30,
+        "total_duplicated_lines": 28,
         "total_duplicated_tokens": 68,
         "suggestions": [
           {
             "kind": "ExtractFunction",
-            "description": "Extract shared function (30 lines) from page.tsx, page.tsx",
-            "estimated_savings": 30
+            "description": "Extract shared function (28 lines) from page.tsx, page.tsx",
+            "estimated_savings": 28
           }
         ],
         "actions": [
           {
             "type": "extract-shared",
             "auto_fixable": false,
-            "description": "Extract 1 duplicated code block (30 lines) into a shared module",
+            "description": "Extract 1 duplicated code block (28 lines) into a shared module",
             "note": "These clone groups share the same files, indicating a structural relationship; refactor together"
           },
           {
             "type": "apply-suggestion",
             "auto_fixable": false,
-            "description": "Extract shared function (30 lines) from page.tsx, page.tsx"
+            "description": "Extract shared function (28 lines) from page.tsx, page.tsx"
+          },
+          {
+            "type": "suppress-line",
+            "auto_fixable": false,
+            "description": "Suppress with an inline comment above the duplicated code",
+            "comment": "// fallow-ignore-next-line code-duplication"
+          }
+        ]
+      },
+      {
+        "files": [
+          "apps/web/src/test/scripts/frontmatter.test.ts",
+          "scripts/frontmatter.mjs"
+        ],
+        "groups": [
+          {
+            "instances": [
+              {
+                "file": "apps/web/src/test/scripts/frontmatter.test.ts",
+                "start_line": 15,
+                "end_line": 25,
+                "start_col": 2,
+                "end_col": 14,
+                "fragment": "const value = rawValue.trim();\n  if (value === 'true') return true;\n  if (value === 'false') return false;\n  if (value.startsWith('[') && value.endsWith(']')) {\n    return value\n      .slice(1, -1)\n      .split(',')\n      .map((item) => item.trim())\n      .filter(Boolean);\n  }\n  return value"
+              },
+              {
+                "file": "scripts/frontmatter.mjs",
+                "start_line": 13,
+                "end_line": 23,
+                "start_col": 2,
+                "end_col": 14,
+                "fragment": "const value = rawValue.trim();\n  if (value === 'true') return true;\n  if (value === 'false') return false;\n  if (value.startsWith('[') && value.endsWith(']')) {\n    return value\n      .slice(1, -1)\n      .split(',')\n      .map((item) => item.trim())\n      .filter(Boolean);\n  }\n  return value"
+              }
+            ],
+            "token_count": 87,
+            "line_count": 11,
+            "fingerprint": "dup:f79277ea",
+            "actions": [
+              {
+                "type": "extract-shared",
+                "auto_fixable": false,
+                "description": "Extract duplicated code (11 lines, 2 instances) into a shared function"
+              },
+              {
+                "type": "suppress-line",
+                "auto_fixable": false,
+                "description": "Suppress with an inline comment above the duplicated code",
+                "comment": "// fallow-ignore-next-line code-duplication"
+              }
+            ]
+          },
+          {
+            "instances": [
+              {
+                "file": "apps/web/src/test/scripts/frontmatter.test.ts",
+                "start_line": 29,
+                "end_line": 34,
+                "start_col": 2,
+                "end_col": 38,
+                "fragment": "const content = fs.readFileSync(path.resolve(relativePath), 'utf8');\n\n  if (!content.startsWith('---\\n') && !content.startsWith('---\\r\\n')) return null;\n\n  // Search for closing --- accounting for optional \\r before \\n\n  const end = content.indexOf('\\n---')"
+              },
+              {
+                "file": "scripts/frontmatter.mjs",
+                "start_line": 32,
+                "end_line": 35,
+                "start_col": 2,
+                "end_col": 38,
+                "fragment": "const content = fs.readFileSync(path.resolve(relativePath), 'utf8');\n\n  if (!content.startsWith('---\\n') && !content.startsWith('---\\r\\n')) return null;\n  const end = content.indexOf('\\n---',"
+              }
+            ],
+            "token_count": 50,
+            "line_count": 6,
+            "fingerprint": "dup:ffaef82a",
+            "suggested_name": "content",
+            "actions": [
+              {
+                "type": "extract-shared",
+                "auto_fixable": false,
+                "description": "Extract duplicated code (6 lines, 2 instances) into a shared function"
+              },
+              {
+                "type": "suppress-line",
+                "auto_fixable": false,
+                "description": "Suppress with an inline comment above the duplicated code",
+                "comment": "// fallow-ignore-next-line code-duplication"
+              }
+            ]
+          }
+        ],
+        "total_duplicated_lines": 17,
+        "total_duplicated_tokens": 137,
+        "suggestions": [
+          {
+            "kind": "ExtractFunction",
+            "description": "Extract shared function (11 lines) from frontmatter.test.ts, frontmatter.mjs",
+            "estimated_savings": 11
+          },
+          {
+            "kind": "ExtractFunction",
+            "description": "Extract shared function (6 lines) from frontmatter.test.ts, frontmatter.mjs",
+            "estimated_savings": 6
+          }
+        ],
+        "actions": [
+          {
+            "type": "extract-shared",
+            "auto_fixable": false,
+            "description": "Extract 2 duplicated code blocks (17 lines) into a shared module",
+            "note": "These clone groups share the same files, indicating a structural relationship; refactor together"
+          },
+          {
+            "type": "apply-suggestion",
+            "auto_fixable": false,
+            "description": "Extract shared function (11 lines) from frontmatter.test.ts, frontmatter.mjs"
+          },
+          {
+            "type": "apply-suggestion",
+            "auto_fixable": false,
+            "description": "Extract shared function (6 lines) from frontmatter.test.ts, frontmatter.mjs"
           },
           {
             "type": "suppress-line",
@@ -1323,79 +1441,6 @@
       },
       {
         "files": [
-          "apps/web/src/features/watch/hooks/use-room-queue.ts",
-          "apps/web/src/features/watch/queries.ts"
-        ],
-        "groups": [
-          {
-            "instances": [
-              {
-                "file": "apps/web/src/features/watch/hooks/use-room-queue.ts",
-                "start_line": 21,
-                "end_line": 31,
-                "start_col": 50,
-                "end_col": 7,
-                "fragment": "();\n      const { data, error } = await supabase\n        .from('watch_queue_items')\n        .select(QUEUE_ITEM_SELECT)\n        .eq('room_id', roomId)\n        .order('position', { ascending: true })\n        .order('created_at', { ascending: true });\n\n      if (error) {\n        throw error;\n      }"
-              },
-              {
-                "file": "apps/web/src/features/watch/queries.ts",
-                "start_line": 49,
-                "end_line": 60,
-                "start_col": 51,
-                "end_col": 3,
-                "fragment": "();\n  const { data, error } = await supabase\n    .from('watch_queue_items')\n    .select(QUEUE_ITEM_SELECT)\n    .eq('room_id', roomId)\n    .order('position', { ascending: true })\n    .order('created_at', { ascending: true });\n\n  if (error) {\n    console.error('Error fetching watch queue:', error);\n    return [];\n  }"
-              }
-            ],
-            "token_count": 59,
-            "line_count": 12,
-            "fingerprint": "dup:08b93c45",
-            "suggested_name": "ascending",
-            "actions": [
-              {
-                "type": "extract-shared",
-                "auto_fixable": false,
-                "description": "Extract duplicated code (12 lines, 2 instances) into a shared function"
-              },
-              {
-                "type": "suppress-line",
-                "auto_fixable": false,
-                "description": "Suppress with an inline comment above the duplicated code",
-                "comment": "// fallow-ignore-next-line code-duplication"
-              }
-            ]
-          }
-        ],
-        "total_duplicated_lines": 12,
-        "total_duplicated_tokens": 59,
-        "suggestions": [
-          {
-            "kind": "ExtractFunction",
-            "description": "Extract shared function (12 lines) from use-room-queue.ts, queries.ts",
-            "estimated_savings": 12
-          }
-        ],
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract 1 duplicated code block (12 lines) into a shared module",
-            "note": "These clone groups share the same files, indicating a structural relationship; refactor together"
-          },
-          {
-            "type": "apply-suggestion",
-            "auto_fixable": false,
-            "description": "Extract shared function (12 lines) from use-room-queue.ts, queries.ts"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ]
-      },
-      {
-        "files": [
           "apps/web/src/app/(public)/auth-actions.ts"
         ],
         "groups": [
@@ -1465,90 +1510,18 @@
             "comment": "// fallow-ignore-next-line code-duplication"
           }
         ]
-      },
-      {
-        "files": [
-          "apps/web/src/test/features/watch-host-claim.test.tsx"
-        ],
-        "groups": [
-          {
-            "instances": [
-              {
-                "file": "apps/web/src/test/features/watch-host-claim.test.tsx",
-                "start_line": 57,
-                "end_line": 64,
-                "start_col": 57,
-                "end_col": 26,
-                "fragment": ", () => {\n    const { rerender } = render(<Probe isHost={false} hostPresent={false} />);\n    act(() => {\n      vi.advanceTimersByTime(10_000);\n    });\n    expect(screen.getByTestId('claim')).toHaveTextContent('visible');\n\n    rerender(<Probe isHost"
-              },
-              {
-                "file": "apps/web/src/test/features/watch-host-claim.test.tsx",
-                "start_line": 68,
-                "end_line": 75,
-                "start_col": 68,
-                "end_col": 26,
-                "fragment": ", () => {\n    const { rerender } = render(<Probe isHost={false} hostPresent={false} />);\n    act(() => {\n      vi.advanceTimersByTime(10_000);\n    });\n    expect(screen.getByTestId('claim')).toHaveTextContent('visible');\n\n    rerender(<Probe isHost"
-              }
-            ],
-            "token_count": 59,
-            "line_count": 8,
-            "fingerprint": "dup:31da8e5d",
-            "suggested_name": "isHost",
-            "actions": [
-              {
-                "type": "extract-shared",
-                "auto_fixable": false,
-                "description": "Extract duplicated code (8 lines, 2 instances) into a shared function"
-              },
-              {
-                "type": "suppress-line",
-                "auto_fixable": false,
-                "description": "Suppress with an inline comment above the duplicated code",
-                "comment": "// fallow-ignore-next-line code-duplication"
-              }
-            ]
-          }
-        ],
-        "total_duplicated_lines": 8,
-        "total_duplicated_tokens": 59,
-        "suggestions": [
-          {
-            "kind": "ExtractFunction",
-            "description": "Extract shared function (8 lines) from watch-host-claim.test.tsx, watch-host-claim.test.tsx",
-            "estimated_savings": 8
-          }
-        ],
-        "actions": [
-          {
-            "type": "extract-shared",
-            "auto_fixable": false,
-            "description": "Extract 1 duplicated code block (8 lines) into a shared module",
-            "note": "These clone groups share the same files, indicating a structural relationship; refactor together"
-          },
-          {
-            "type": "apply-suggestion",
-            "auto_fixable": false,
-            "description": "Extract shared function (8 lines) from watch-host-claim.test.tsx, watch-host-claim.test.tsx"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the duplicated code",
-            "comment": "// fallow-ignore-next-line code-duplication"
-          }
-        ]
       }
     ],
     "stats": {
-      "total_files": 159,
+      "total_files": 160,
       "files_with_clones": 9,
-      "total_lines": 19130,
-      "duplicated_lines": 335,
-      "total_tokens": 75420,
-      "duplicated_tokens": 1584,
+      "total_lines": 19297,
+      "duplicated_lines": 324,
+      "total_tokens": 76330,
+      "duplicated_tokens": 1622,
       "clone_groups": 11,
       "clone_instances": 24,
-      "duplication_percentage": 1.7511761630946157
+      "duplication_percentage": 1.679017463854485
     }
   },
   "complexity": {
@@ -1815,36 +1788,6 @@
         "introduced": false
       },
       {
-        "path": "packages/ui/src/components/bento-grid.tsx",
-        "name": "BentoGridItem",
-        "line": 128,
-        "col": 7,
-        "cyclomatic": 12,
-        "cognitive": 18,
-        "line_count": 81,
-        "param_count": 1,
-        "react_jsx_max_depth": 4,
-        "react_prop_count": 11,
-        "exceeded": "cognitive",
-        "severity": "moderate",
-        "actions": [
-          {
-            "type": "refactor-function",
-            "auto_fixable": false,
-            "description": "Refactor `BentoGridItem` to reduce complexity (extract helper functions, simplify branching)",
-            "note": "Consider splitting into smaller functions with single responsibilities"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
         "path": "scripts/check-review-gate-rules.mjs",
         "name": "analyzeMissingLoadingState",
         "line": 642,
@@ -2059,72 +2002,6 @@
         "introduced": false
       },
       {
-        "path": "apps/web/src/features/watch/components/chat-panel.tsx",
-        "name": "ChatBubble",
-        "line": 108,
-        "col": 0,
-        "cyclomatic": 11,
-        "cognitive": 7,
-        "line_count": 24,
-        "param_count": 1,
-        "react_jsx_max_depth": 2,
-        "react_prop_count": 4,
-        "exceeded": "crap",
-        "severity": "critical",
-        "crap": 132.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `ChatBubble` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
-        "path": "apps/web/src/features/watch/components/participant-rail.tsx",
-        "name": "ParticipantRow",
-        "line": 56,
-        "col": 0,
-        "cyclomatic": 11,
-        "cognitive": 8,
-        "line_count": 50,
-        "param_count": 1,
-        "react_jsx_max_depth": 5,
-        "react_prop_count": 4,
-        "exceeded": "crap",
-        "severity": "critical",
-        "crap": 132.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `ParticipantRow` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
         "path": "apps/web/src/features/watch/components/watch-room.tsx",
         "name": "WatchRoom",
         "line": 216,
@@ -2235,50 +2112,9 @@
         "introduced": false
       },
       {
-        "path": "apps/web/src/features/watch/components/playlist-panel.tsx",
-        "name": "SortableItem",
-        "line": 295,
-        "col": 0,
-        "cyclomatic": 10,
-        "cognitive": 11,
-        "line_count": 88,
-        "param_count": 1,
-        "react_hook_count": 1,
-        "react_jsx_max_depth": 4,
-        "react_prop_count": 5,
-        "react_hook_profile": {
-          "state": 0,
-          "effect": 0,
-          "memo": 0,
-          "callback": 0,
-          "custom": 1
-        },
-        "exceeded": "crap",
-        "severity": "critical",
-        "crap": 110.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `SortableItem` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
         "path": "apps/web/src/features/profile/profile-form.tsx",
         "name": "onSubmit",
-        "line": 326,
+        "line": 327,
         "col": 4,
         "cyclomatic": 10,
         "cognitive": 12,
@@ -2384,39 +2220,6 @@
         "introduced": false
       },
       {
-        "path": "apps/web/src/features/watch/components/room-controls.tsx",
-        "name": "HostActionGroup",
-        "line": 176,
-        "col": 0,
-        "cyclomatic": 9,
-        "cognitive": 10,
-        "line_count": 86,
-        "param_count": 1,
-        "react_jsx_max_depth": 4,
-        "react_prop_count": 9,
-        "exceeded": "crap",
-        "severity": "high",
-        "crap": 90.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `HostActionGroup` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
         "path": "apps/web/src/features/profile/actions.ts",
         "name": "updateProfile",
         "line": 10,
@@ -2481,7 +2284,7 @@
       {
         "path": "apps/web/src/features/profile/profile-form.tsx",
         "name": "ProfileForm",
-        "line": 209,
+        "line": 210,
         "col": 7,
         "cyclomatic": 9,
         "cognitive": 11,
@@ -2749,39 +2552,6 @@
         "introduced": false
       },
       {
-        "path": "apps/web/src/features/sky-player/components/faq-section.tsx",
-        "name": "FaqCard",
-        "line": 17,
-        "col": 0,
-        "cyclomatic": 8,
-        "cognitive": 8,
-        "line_count": 63,
-        "param_count": 1,
-        "react_jsx_max_depth": 5,
-        "react_prop_count": 5,
-        "exceeded": "crap",
-        "severity": "high",
-        "crap": 72.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `FaqCard` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
         "path": "apps/web/src/components/app-shell/app-sidebar.tsx",
         "name": "AppSidebar",
         "line": 21,
@@ -3041,79 +2811,13 @@
         "introduced": false
       },
       {
-        "path": "apps/web/src/features/sky-player/components/capabilities-grid.tsx",
-        "name": "CapabilityCard",
-        "line": 16,
-        "col": 0,
-        "cyclomatic": 7,
-        "cognitive": 6,
-        "line_count": 58,
-        "param_count": 1,
-        "react_jsx_max_depth": 7,
-        "react_prop_count": 4,
-        "exceeded": "crap",
-        "severity": "high",
-        "crap": 56.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `CapabilityCard` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
-        "path": "apps/web/src/features/profile/profile-form.tsx",
-        "name": "AvatarUpload",
-        "line": 81,
-        "col": 0,
-        "cyclomatic": 7,
-        "cognitive": 10,
-        "line_count": 123,
-        "param_count": 1,
-        "react_jsx_max_depth": 6,
-        "react_prop_count": 8,
-        "exceeded": "crap",
-        "severity": "high",
-        "crap": 56.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `AvatarUpload` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
         "path": "apps/web/src/app/(public)/sign-up/page.tsx",
         "name": "SignUpPage",
         "line": 11,
         "col": 15,
         "cyclomatic": 7,
         "cognitive": 3,
-        "line_count": 77,
+        "line_count": 76,
         "param_count": 0,
         "react_hook_count": 1,
         "react_jsx_max_depth": 3,
@@ -3220,37 +2924,6 @@
         "introduced": false
       },
       {
-        "path": "apps/web/src/features/watch/components/participant-rail.tsx",
-        "name": "getParticipantDisplay",
-        "line": 34,
-        "col": 0,
-        "cyclomatic": 7,
-        "cognitive": 5,
-        "line_count": 14,
-        "param_count": 3,
-        "exceeded": "crap",
-        "severity": "high",
-        "crap": 56.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `getParticipantDisplay` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
-      },
-      {
         "path": "scripts/check-ai-context.mjs",
         "name": "checkGoldenExamplePaths",
         "line": 423,
@@ -3280,53 +2953,6 @@
           }
         ],
         "introduced": false
-      },
-      {
-        "path": "apps/web/src/features/watch/components/room-controls.tsx",
-        "name": "RoomControls",
-        "line": 267,
-        "col": 7,
-        "cyclomatic": 6,
-        "cognitive": 17,
-        "line_count": 131,
-        "param_count": 1,
-        "react_hook_count": 9,
-        "react_jsx_max_depth": 5,
-        "react_prop_count": 8,
-        "react_hook_profile": {
-          "state": 0,
-          "effect": 0,
-          "memo": 0,
-          "callback": 0,
-          "custom": 9
-        },
-        "exceeded": "cognitive_crap",
-        "severity": "moderate",
-        "crap": 42.0,
-        "coverage_tier": "none",
-        "coverage_source": "estimated",
-        "actions": [
-          {
-            "type": "add-tests",
-            "auto_fixable": false,
-            "description": "Add test coverage for `RoomControls` to lower its CRAP score (coverage reduces risk even without refactoring)",
-            "note": "CRAP = CC^2 * (1 - cov/100)^3 + CC; higher coverage is the fastest way to bring CRAP under threshold"
-          },
-          {
-            "type": "refactor-function",
-            "auto_fixable": false,
-            "description": "Refactor `RoomControls` to reduce complexity (extract helper functions, simplify branching)",
-            "note": "Consider splitting into smaller functions with single responsibilities"
-          },
-          {
-            "type": "suppress-line",
-            "auto_fixable": false,
-            "description": "Suppress with an inline comment above the function declaration",
-            "comment": "// fallow-ignore-next-line complexity",
-            "placement": "above-function-declaration"
-          }
-        ],
-        "introduced": true
       },
       {
         "path": "scripts/check-review-gate-rules.mjs",
@@ -3935,7 +3561,7 @@
         "col": 15,
         "cyclomatic": 5,
         "cognitive": 3,
-        "line_count": 44,
+        "line_count": 43,
         "param_count": 0,
         "react_hook_count": 1,
         "react_jsx_max_depth": 3,
@@ -4033,7 +3659,7 @@
       {
         "path": "apps/web/src/features/watch/components/participant-rail.tsx",
         "name": "<arrow>",
-        "line": 122,
+        "line": 124,
         "col": 24,
         "cyclomatic": 5,
         "cognitive": 4,
@@ -4340,16 +3966,16 @@
       }
     ],
     "summary": {
-      "files_analyzed": 215,
-      "functions_analyzed": 1100,
-      "functions_above_threshold": 83,
+      "files_analyzed": 216,
+      "functions_analyzed": 1123,
+      "functions_above_threshold": 73,
       "max_cyclomatic_threshold": 20,
       "max_cognitive_threshold": 15,
       "max_crap_threshold": 30.0,
       "coverage_source_consistency": "uniform",
-      "severity_critical_count": 18,
-      "severity_high_count": 29,
-      "severity_moderate_count": 36
+      "severity_critical_count": 15,
+      "severity_high_count": 24,
+      "severity_moderate_count": 34
     },
     "vital_signs": {
       "dead_file_pct": 0.0,
@@ -4364,23 +3990,23 @@
       "circular_dep_count": 0,
       "circular_deps_per_k_files": 0.0,
       "counts": {
-        "total_files": 215,
+        "total_files": 216,
         "total_exports": 536,
         "dead_files": 0,
         "dead_exports": 6,
-        "total_lines": 21663,
-        "files_scored": 170,
+        "total_lines": 21831,
+        "files_scored": 171,
         "total_deps": 0
       },
       "unit_size_profile": {
-        "low_risk": 70.9,
-        "medium_risk": 18.5,
+        "low_risk": 71.1,
+        "medium_risk": 18.3,
         "high_risk": 6.9,
         "very_high_risk": 3.6
       },
-      "functions_over_60_loc_per_k": 36.4,
+      "functions_over_60_loc_per_k": 35.6,
       "unit_interfacing_profile": {
-        "low_risk": 97.8,
+        "low_risk": 97.9,
         "medium_risk": 1.9,
         "high_risk": 0.2,
         "very_high_risk": 0.1
@@ -4410,12 +4036,6 @@
           "distinct_parents": 3
         },
         {
-          "component": "Card",
-          "path": "packages/ui/src/components/card.tsx",
-          "render_sites": 3,
-          "distinct_parents": 2
-        },
-        {
           "component": "DesignSystemShowcase",
           "path": "apps/web/src/app/(app)/design-system/showcase.tsx",
           "render_sites": 2,
@@ -4442,6 +4062,12 @@
         {
           "component": "VideoSourceTabs",
           "path": "apps/web/src/features/watch/components/source-tabs.tsx",
+          "render_sites": 2,
+          "distinct_parents": 2
+        },
+        {
+          "component": "Card",
+          "path": "packages/ui/src/components/card.tsx",
           "render_sites": 2,
           "distinct_parents": 2
         },
@@ -4512,7 +4138,7 @@
           "distinct_parents": 1
         }
       ],
-      "total_loc": 21663
+      "total_loc": 21831
     },
     "large_functions": [
       {
@@ -4542,7 +4168,7 @@
       {
         "path": "apps/web/src/features/profile/profile-form.tsx",
         "name": "ProfileForm",
-        "line": 209,
+        "line": 210,
         "line_count": 262
       },
       {
@@ -4602,13 +4228,13 @@
       {
         "path": "apps/web/src/features/watch/components/room-controls.tsx",
         "name": "RoomControls",
-        "line": 267,
+        "line": 269,
         "line_count": 131
       },
       {
         "path": "apps/web/src/features/profile/profile-form.tsx",
         "name": "AvatarUpload",
-        "line": 81,
+        "line": 82,
         "line_count": 123
       },
       {
@@ -4654,6 +4280,12 @@
         "line_count": 98
       },
       {
+        "path": "apps/web/src/test/scripts/frontmatter.test.ts",
+        "name": "<arrow>",
+        "line": 51,
+        "line_count": 97
+      },
+      {
         "path": "apps/web/src/features/watch/components/watch-room.tsx",
         "name": "SourceChangeDialog",
         "line": 116,
@@ -4668,13 +4300,13 @@
       {
         "path": "apps/web/src/features/watch/components/chat-panel.tsx",
         "name": "ChatPanel",
-        "line": 133,
+        "line": 134,
         "line_count": 91
       },
       {
         "path": "apps/web/src/features/watch/components/playlist-panel.tsx",
         "name": "SortableItem",
-        "line": 295,
+        "line": 296,
         "line_count": 88
       },
       {
@@ -4686,7 +4318,7 @@
       {
         "path": "apps/web/src/features/watch/components/room-controls.tsx",
         "name": "HostActionGroup",
-        "line": 176,
+        "line": 177,
         "line_count": 86
       },
       {
@@ -4696,16 +4328,10 @@
         "line_count": 85
       },
       {
-        "path": "packages/ui/src/components/bento-grid.tsx",
-        "name": "BentoGridItem",
-        "line": 128,
-        "line_count": 81
-      },
-      {
         "path": "apps/web/src/app/(public)/sign-up/page.tsx",
         "name": "SignUpPage",
         "line": 11,
-        "line_count": 77
+        "line_count": 76
       },
       {
         "path": "apps/web/src/features/watch/actions.ts",
@@ -4740,7 +4366,7 @@
       {
         "path": "apps/web/src/features/sky-player/components/faq-section.tsx",
         "name": "FaqCard",
-        "line": 17,
+        "line": 18,
         "line_count": 63
       },
       {
@@ -4752,7 +4378,7 @@
       {
         "path": "apps/web/src/features/watch/components/participant-rail.tsx",
         "name": "ParticipantRail",
-        "line": 107,
+        "line": 109,
         "line_count": 62
       }
     ]
@@ -4772,7 +4398,7 @@
   "kind": "audit",
   "_meta": {
     "telemetry": {
-      "analysis_run_id": "run_de165b1a0c37c6ef"
+      "analysis_run_id": "run_065bd73271ce3c68"
     }
   }
 }

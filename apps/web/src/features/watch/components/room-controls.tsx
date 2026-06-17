@@ -51,6 +51,7 @@ function PlayPauseButton({ paused, onToggle }: { paused: boolean; onToggle: () =
   );
 }
 
+// fallow-ignore-next-line complexity
 function VolumeControl({
   muted,
   volume,

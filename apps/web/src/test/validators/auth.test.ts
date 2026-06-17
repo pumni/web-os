@@ -33,6 +33,7 @@ describe('Auth Validators', () => {
       const result = signUpSchema.safeParse({
         email: 'test@example.com',
         password: 'password123',
+        confirmPassword: 'password123',
         fullName: 'John Doe',
       });
       expect(result.success).toBe(true);

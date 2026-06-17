@@ -108,7 +108,7 @@ describe('z-index layering scale — semantic ordering', () => {
   it('density tokens are present in tokens.css', () => {
     expect(tokenCss).toContain('--control-height-comfortable');
     expect(tokenCss).toContain('--control-height-compact');
-    expect(tokenCss).toContain('[data-density="compact"]');
+    expect(tokenCss).toMatch(/\[data-density=['"]compact['"]\]/);
     expect(tokenCss).toContain('--switch-width');
     expect(tokenCss).toContain('--switch-thumb-size');
   });

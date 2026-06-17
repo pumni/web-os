@@ -1,5 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "ignorePatterns": [
+    "packages/supabase/src/types.ts"
+  ],
   "ignoreExports": [
     {
       "file": "apps/web/src/app/(app)/dashboard/nav.ts",
