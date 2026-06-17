@@ -74,6 +74,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  GlassLevelPicker,
   GlassSurface,
   Input,
   Label,
@@ -382,30 +383,19 @@ export function DesignSystemShowcase() {
                   <span>Layer Role</span>
                   <span>Utility Name / Value</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Toasts (always frontmost)</span>
-                  <span className="font-mono text-xs">z-toast (1200)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Command Palette</span>
-                  <span className="font-mono text-xs">z-command (1100)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Overlay Scrim</span>
-                  <span className="font-mono text-xs">z-overlay (900)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Floating Dock</span>
-                  <span className="font-mono text-xs">z-dock (800)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Top App Bar</span>
-                  <span className="font-mono text-xs">z-topbar (850)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>OS Windows</span>
-                  <span className="font-mono text-xs">z-window (100)</span>
-                </div>
+                {[
+                  { role: 'Toasts (always frontmost)', token: 'z-toast (1200)' },
+                  { role: 'Command Palette', token: 'z-command (1100)' },
+                  { role: 'Overlay Scrim', token: 'z-overlay (900)' },
+                  { role: 'Floating Dock', token: 'z-dock (800)' },
+                  { role: 'Top App Bar', token: 'z-topbar (850)' },
+                  { role: 'OS Windows', token: 'z-window (100)' },
+                ].map(({ role, token }) => (
+                  <div key={token} className="flex justify-between">
+                    <span>{role}</span>
+                    <span className="font-mono text-xs">{token}</span>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </div>
@@ -1410,21 +1400,7 @@ export function DesignSystemShowcase() {
                 <CardDescription>Adjust transparency fallbacks and blur weights.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="inline-flex rounded-md border bg-card p-1">
-                  {GLASS_LEVELS.map((value) => (
-                    <Button
-                      key={value}
-                      type="button"
-                      size="sm"
-                      variant={glass === value ? 'secondary' : 'ghost'}
-                      aria-pressed={glass === value}
-                      onClick={() => setGlass(value)}
-                      className="capitalize"
-                    >
-                      {value}
-                    </Button>
-                  ))}
-                </div>
+                <GlassLevelPicker value={glass} onChange={setGlass} />
                 <p className="text-xs text-muted-foreground">
                   Current intensity:{' '}
                   <span className="font-mono font-semibold capitalize text-foreground">

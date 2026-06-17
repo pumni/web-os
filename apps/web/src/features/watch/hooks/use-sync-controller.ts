@@ -15,13 +15,13 @@ import { calculateExpectedPosition } from '../sync-math';
 // Pure helpers — no side-effects, no refs
 // ---------------------------------------------------------------------------
 
-type DriftThresholds = {
+export type DriftThresholds = {
   deadband: number;
   hardSeek: number;
   nudge: number;
 };
 
-function getDriftThresholds(sourceType: string): DriftThresholds {
+export function getDriftThresholds(sourceType: string): DriftThresholds {
   const isYouTube = sourceType === 'youtube';
   return {
     deadband: isYouTube ? 1.0 : 0.3,
@@ -30,15 +30,15 @@ function getDriftThresholds(sourceType: string): DriftThresholds {
   };
 }
 
-type DriftAction = 'in-sync' | 'nudge' | 'seek';
+export type DriftAction = 'in-sync' | 'nudge' | 'seek';
 
-function classifyDrift(absDrift: number, thresholds: DriftThresholds): DriftAction {
+export function classifyDrift(absDrift: number, thresholds: DriftThresholds): DriftAction {
   if (absDrift < thresholds.deadband) return 'in-sync';
   if (absDrift < thresholds.hardSeek) return 'nudge';
   return 'seek';
 }
 
-function matchTransportState(
+export function matchTransportState(
   player: MediaPlayerInstance,
   anchor: PlaybackAnchor,
   tryPlay: (p: MediaPlayerInstance) => void,

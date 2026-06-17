@@ -139,16 +139,36 @@ export function BentoGridItem({
   interactive = true,
   ...props
 }: BentoGridItemProps) {
+  if (loading) {
+    return (
+      <Card
+        interactive={interactive}
+        aria-label={ariaLabel}
+        className={cn(
+          'relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container',
+          'rounded-xl',
+          bentoTierVariants({ tier }),
+          className,
+        )}
+        style={minHeight !== undefined ? { minHeight } : undefined}
+        {...props}
+      >
+        {/* Skeleton preserves tile height to prevent CLS during data fetch. */}
+        <div className="flex flex-col gap-3 flex-1">
+          <Skeleton className="h-full min-h-20 w-full rounded-lg" />
+          <Skeleton className="h-4 w-2/3" />
+          <Skeleton className="h-3 w-1/2" />
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card
       interactive={interactive}
       aria-label={ariaLabel}
       className={cn(
-        // Tile layout: container-query context so each tile measures its own width.
-        // @container gives access to @min-[Nrem] variants
-        // for content reflow inside the tile (independent of viewport).
         'relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container',
-        // All tiles share the same radius for visual Bento consistency.
         'rounded-xl',
         bentoTierVariants({ tier }),
         className,
@@ -156,44 +176,33 @@ export function BentoGridItem({
       style={minHeight !== undefined ? { minHeight } : undefined}
       {...props}
     >
-      {loading ? (
-        // Skeleton preserves tile height to prevent CLS during data fetch.
-        <div className="flex flex-col gap-3 flex-1">
-          <Skeleton className="h-full min-h-20 w-full rounded-lg" />
-          <Skeleton className="h-4 w-2/3" />
-          <Skeleton className="h-3 w-1/2" />
+      {header && (
+        // Inset well — opaque muted surface (rule 3: no bg-muted/NN on content)
+        <div className="flex w-full items-center justify-center rounded-lg bg-muted overflow-hidden min-h-30 max-h-40 border border-border">
+          {header}
         </div>
-      ) : (
-        <>
-          {header && (
-            // Inset well — opaque muted surface (rule 3: no bg-muted/NN on content)
-            <div className="flex w-full items-center justify-center rounded-lg bg-muted overflow-hidden min-h-30 max-h-40 border border-border">
-              {header}
-            </div>
-          )}
-          <div className="flex flex-col gap-2 flex-1">
-            {(icon || title || description) && (
-              <div className="space-y-1.5">
-                {icon && (
-                  // Status-tint pattern: /10 fill + semantic text (hợp lệ)
-                  <div className="inline-flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    {icon}
-                  </div>
-                )}
-                {title && <h3 className="type-heading text-foreground">{title}</h3>}
-                {description && <p className="type-label text-muted-foreground">{description}</p>}
-              </div>
-            )}
-            {children && (
-              // Container-query reflow: content switches orientation based on
-              // tile width rather than viewport (e.g. @max-[28rem]:flex-col).
-              <div className="mt-2 flex-1 flex flex-col @min-[28rem]:flex-row @max-[28rem]:flex-col">
-                {children}
-              </div>
-            )}
-          </div>
-        </>
       )}
+      <div className="flex flex-col gap-2 flex-1">
+        {(icon || title || description) && (
+          <div className="space-y-1.5">
+            {icon && (
+              // Status-tint pattern: /10 fill + semantic text (hợp lệ)
+              <div className="inline-flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                {icon}
+              </div>
+            )}
+            {title && <h3 className="type-heading text-foreground">{title}</h3>}
+            {description && <p className="type-label text-muted-foreground">{description}</p>}
+          </div>
+        )}
+        {children && (
+          // Container-query reflow: content switches orientation based on
+          // tile width rather than viewport (e.g. @max-[28rem]:flex-col).
+          <div className="mt-2 flex-1 flex flex-col @min-[28rem]:flex-row @max-[28rem]:flex-col">
+            {children}
+          </div>
+        )}
+      </div>
     </Card>
   );
 }

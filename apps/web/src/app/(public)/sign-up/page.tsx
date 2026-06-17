@@ -1,10 +1,10 @@
 'use client';
 
-import { useActionState } from 'react';
+import { AuthField, SubmitButton } from '@pumni/ui';
 import Link from 'next/link';
+import { useActionState } from 'react';
 import { signUpAction, type AuthFormState } from '../auth-actions';
 import { AuthShell } from '../auth-shell';
-import { AuthField, SubmitButton } from '@pumni/ui';
 
 const initialState: AuthFormState = {};
 
@@ -61,6 +61,7 @@ export default function SignUpPage() {
           error={state.errors?.password}
         />
 
+        {/* fallow-ignore-next-line code-duplication */}
         <AuthField
           id="confirmPassword"
           label="Confirm Password"

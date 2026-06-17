@@ -23,6 +23,7 @@ import {
 import { createRoom, joinByCode } from '../actions';
 import { toast } from 'sonner';
 import { Clapperboard, LogIn, Sparkles } from 'lucide-react';
+import { VideoSourceTabs } from './source-tabs';
 
 export function WatchLobby() {
   const router = useRouter();
@@ -147,20 +148,7 @@ export function WatchLobby() {
                     <Label htmlFor="source-type" className="text-xs font-medium">
                       Nguồn video
                     </Label>
-                    <Tabs
-                      value={sourceType}
-                      onValueChange={(val) => setSourceType(val as 'youtube' | 'url')}
-                      className="w-full"
-                    >
-                      <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
-                        <TabsTrigger value="youtube" className="text-xs h-7">
-                          YouTube
-                        </TabsTrigger>
-                        <TabsTrigger value="url" className="text-xs h-7">
-                          Direct URL (MP4/HLS)
-                        </TabsTrigger>
-                      </TabsList>
-                    </Tabs>
+                    <VideoSourceTabs value={sourceType} onChange={setSourceType} />
                   </div>
 
                   <div className="flex flex-col gap-1.5">

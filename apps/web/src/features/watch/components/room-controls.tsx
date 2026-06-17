@@ -34,6 +34,83 @@ function formatTime(seconds: number): string {
 // Sub-components — presentational, receive all state as props
 // ---------------------------------------------------------------------------
 
+function PlayPauseButton({ paused, onToggle }: { paused: boolean; onToggle: () => void }) {
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={onToggle}
+      aria-label={paused ? 'Play' : 'Pause'}
+    >
+      {paused ? (
+        <Play className="size-4 fill-current text-foreground" />
+      ) : (
+        <Pause className="size-4 fill-current text-foreground" />
+      )}
+    </Button>
+  );
+}
+
+function VolumeControl({
+  muted,
+  volume,
+  onMuteToggle,
+  onVolumeChange,
+}: {
+  muted: boolean;
+  volume: number;
+  onMuteToggle: () => void;
+  onVolumeChange: (values: number[]) => void;
+}) {
+  return (
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onMuteToggle}
+        aria-label={muted ? 'Unmute' : 'Mute'}
+      >
+        {muted || volume === 0 ? (
+          <VolumeX className="size-4 text-foreground" />
+        ) : (
+          <Volume2 className="size-4 text-foreground" />
+        )}
+      </Button>
+      <Slider
+        value={[muted ? 0 : volume]}
+        min={0}
+        max={1}
+        step={0.05}
+        onValueChange={onVolumeChange}
+        className="w-20 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-foreground/30"
+        aria-label="Volume level"
+      />
+    </>
+  );
+}
+
+function SyncStatusBadge({
+  isHost,
+  isFollowingHost,
+}: {
+  isHost: boolean;
+  isFollowingHost: boolean;
+}) {
+  if (isHost) return null;
+  if (isFollowingHost) {
+    return (
+      <span className="type-caption text-muted-foreground ml-2 select-none">
+        &bull; Đồng bộ
+      </span>
+    );
+  }
+  return (
+    <span className="type-caption text-warning ml-2 select-none font-medium">
+      &bull; Lệch sync
+    </span>
+  );
+}
+
 function SoftLockBanner({ onResync }: { onResync: () => void }) {
   return (
     <div
@@ -292,53 +369,14 @@ export function RoomControls({
         {/* Control buttons */}
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2">
-            {/* Play/Pause */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handlePlayPause}
-              aria-label={paused ? 'Play' : 'Pause'}
-            >
-              {paused ? (
-                <Play className="size-4 fill-current text-foreground" />
-              ) : (
-                <Pause className="size-4 fill-current text-foreground" />
-              )}
-            </Button>
-
-            {/* Volume Mute */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleMuteToggle}
-              aria-label={muted ? 'Unmute' : 'Mute'}
-            >
-              {muted || volume === 0 ? (
-                <VolumeX className="size-4 text-foreground" />
-              ) : (
-                <Volume2 className="size-4 text-foreground" />
-              )}
-            </Button>
-
-            {/* Volume slider */}
-            <Slider
-              value={[muted ? 0 : volume]}
-              min={0}
-              max={1}
-              step={0.05}
-              onValueChange={handleVolumeChange}
-              className="w-20 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-foreground/30"
-              aria-label="Volume level"
+            <PlayPauseButton paused={paused} onToggle={handlePlayPause} />
+            <VolumeControl
+              muted={muted}
+              volume={volume}
+              onMuteToggle={handleMuteToggle}
+              onVolumeChange={handleVolumeChange}
             />
-
-            {!isHost && isFollowingHost ? (
-              <span className="type-caption text-muted-foreground ml-2 select-none">&bull; Đồng bộ</span>
-            ) : null}
-            {!isHost && !isFollowingHost ? (
-              <span className="type-caption text-warning ml-2 select-none font-medium">
-                &bull; Lệch sync
-              </span>
-            ) : null}
+            <SyncStatusBadge isHost={isHost} isFollowingHost={isFollowingHost} />
           </div>
 
           <HostActionGroup

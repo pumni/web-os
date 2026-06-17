@@ -11,7 +11,7 @@ import {
   transferHost,
   claimHost,
 } from '../actions';
-import type { QueueItem } from '../types';
+import { type QueueItem, QUEUE_ITEM_SELECT } from '../types';
 import { fractionalPosition } from '../sync-math';
 
 export function useQueueQuery(roomId: string, initialData: QueueItem[]) {
@@ -21,7 +21,7 @@ export function useQueueQuery(roomId: string, initialData: QueueItem[]) {
       const supabase = createSupabaseBrowserClient();
       const { data, error } = await supabase
         .from('watch_queue_items')
-        .select('id, room_id, position, source_type, source_ref, title, added_by, created_at')
+        .select(QUEUE_ITEM_SELECT)
         .eq('room_id', roomId)
         .order('position', { ascending: true })
         .order('created_at', { ascending: true });

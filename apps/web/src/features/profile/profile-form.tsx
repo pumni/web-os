@@ -91,8 +91,8 @@ function AvatarUpload({
   const [isDragging, setIsDragging] = React.useState(false);
   const initial = fullName ? fullName[0]?.toUpperCase() : 'U';
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  /** Validates a selected file and forwards it to the crop flow, or toasts an error. */
+  const processSelectedFile = (file: File | undefined) => {
     if (!file) return;
     const err = validateAvatarFile(file);
     if (err) {
@@ -100,6 +100,10 @@ function AvatarUpload({
       return;
     }
     onFileSelected(file);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    processSelectedFile(e.target.files?.[0]);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -114,14 +118,7 @@ function AvatarUpload({
     e.preventDefault();
     setIsDragging(false);
     if (isPending) return;
-    const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-    const err = validateAvatarFile(file);
-    if (err) {
-      toast.error(err);
-      return;
-    }
-    onFileSelected(file);
+    processSelectedFile(e.dataTransfer.files?.[0]);
   };
 
   return (

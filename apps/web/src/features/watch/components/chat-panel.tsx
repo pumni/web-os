@@ -30,6 +30,81 @@ interface ChatBubbleProps {
   isGrouped: boolean;
 }
 
+function MessageAvatar({
+  isGrouped,
+  displayName,
+  initials,
+  avatarUrl,
+}: {
+  isGrouped: boolean;
+  displayName: string;
+  initials: string;
+  avatarUrl: string | null;
+}) {
+  return (
+    <div className="shrink-0 mb-0.5">
+      {!isGrouped ? (
+        <Avatar className="size-6 border border-border">
+          {avatarUrl && (
+            <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
+          )}
+          <AvatarFallback className="text-[9px] font-bold bg-primary/10 text-primary">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+      ) : (
+        <div className="size-6" />
+      )}
+    </div>
+  );
+}
+
+function BubbleContent({
+  isMe,
+  isGrouped,
+  displayName,
+  sentAt,
+  children,
+}: {
+  isMe: boolean;
+  isGrouped: boolean;
+  displayName: string;
+  sentAt: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={`flex flex-col gap-0.5 min-w-0 ${isMe ? 'items-end' : 'items-start'}`}>
+      {!isMe && !isGrouped && (
+        <span className="type-caption text-muted-foreground px-1 truncate max-w-30">
+          {displayName}
+        </span>
+      )}
+
+      <div className="flex items-end gap-1.5">
+        {isMe && (
+          <span className="type-caption text-muted-foreground shrink-0 mb-0.5">
+            {formatChatTime(sentAt)}
+          </span>
+        )}
+        <div
+          className={`px-3 py-1.5 wrap-break-word max-w-full ${
+            isMe
+              ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-sm'
+              : 'bg-muted text-foreground rounded-2xl rounded-bl-sm'
+          }`}
+        >
+          <p className="leading-relaxed whitespace-pre-wrap text-xs select-text">{children}</p>
+        </div>
+        {!isMe && (
+          <span className="type-caption text-muted-foreground shrink-0 mb-0.5">
+            {formatChatTime(sentAt)}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ChatBubble({ msg, isMe, profile, isGrouped }: ChatBubbleProps) {
   const displayName = profile?.username ?? (isMe ? 'Bạn' : `User #${msg.userId.slice(0, 6)}`);
   const initials = profile?.username
@@ -42,58 +117,15 @@ function ChatBubble({ msg, isMe, profile, isGrouped }: ChatBubbleProps) {
         isMe ? 'self-end flex-row-reverse items-end' : 'self-start items-end'
       } max-w-[88%] ${isGrouped ? 'mt-0.5' : 'mt-2'}`}
     >
-      {!isMe && (
-        <div className="shrink-0 mb-0.5">
-          {!isGrouped ? (
-            <Avatar className="size-6 border border-border">
-              {profile?.avatar_url && (
-                <AvatarImage
-                  src={profile.avatar_url}
-                  alt={displayName}
-                  className="object-cover"
-                />
-              )}
-              <AvatarFallback className="text-[9px] font-bold bg-primary/10 text-primary">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          ) : (
-            <div className="size-6" />
-          )}
-        </div>
-      )}
-
-      <div className={`flex flex-col gap-0.5 min-w-0 ${isMe ? 'items-end' : 'items-start'}`}>
-        {!isMe && !isGrouped && (
-          <span className="type-caption text-muted-foreground px-1 truncate max-w-30">
-            {displayName}
-          </span>
-        )}
-
-        <div className="flex items-end gap-1.5">
-          {isMe && (
-            <span className="type-caption text-muted-foreground shrink-0 mb-0.5">
-              {formatChatTime(msg.sentAt)}
-            </span>
-          )}
-          <div
-            className={`px-3 py-1.5 wrap-break-word max-w-full ${
-              isMe
-                ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-sm'
-                : 'bg-muted text-foreground rounded-2xl rounded-bl-sm'
-            }`}
-          >
-            <p className="leading-relaxed whitespace-pre-wrap text-xs select-text">
-              {msg.text}
-            </p>
-          </div>
-          {!isMe && (
-            <span className="type-caption text-muted-foreground shrink-0 mb-0.5">
-              {formatChatTime(msg.sentAt)}
-            </span>
-          )}
-        </div>
-      </div>
+      <MessageAvatar
+        isGrouped={isMe || isGrouped}
+        displayName={displayName}
+        initials={initials}
+        avatarUrl={profile?.avatar_url ?? null}
+      />
+      <BubbleContent isMe={isMe} isGrouped={isGrouped} displayName={displayName} sentAt={msg.sentAt}>
+        {msg.text}
+      </BubbleContent>
     </div>
   );
 }

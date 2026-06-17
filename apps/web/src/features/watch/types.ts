@@ -18,6 +18,10 @@ export type Participant = {
 
 export type QueueItem = Database['public']['Tables']['watch_queue_items']['Row'];
 
+/** Supabase `.select()` column list for queue items — shared between client hooks and server queries. */
+export const QUEUE_ITEM_SELECT =
+  'id, room_id, position, source_type, source_ref, title, added_by, created_at';
+
 export interface QueueBroadcastEvent {
   action: 'add' | 'remove' | 'reorder' | 'advance';
   title?: string | null;

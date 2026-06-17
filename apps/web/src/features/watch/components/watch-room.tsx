@@ -14,9 +14,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Tabs,
-  TabsList,
-  TabsTrigger,
   Sheet,
   SheetContent,
   SheetHeader,
@@ -28,9 +25,12 @@ import { toast } from 'sonner';
 import { ArrowLeft, ListVideo, Link2, Hash, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { VideoSourceTabs } from './source-tabs';
+
 import { useServerClock } from '../hooks/use-server-clock';
 import { useRoomChannel } from '../hooks/use-room-channel';
 import { useSyncController } from '../hooks/use-sync-controller';
+import { useHostClaimState } from '../hooks/use-host-claim-state';
 import { SyncPlayer } from './sync-player';
 import { RoomControls } from './room-controls';
 import { SyncIndicator } from './sync-indicator';
@@ -99,32 +99,8 @@ function useRoomJoinEffect(roomId: string, queryClient: ReturnType<typeof useQue
 /**
  * Tracks whether the host-claim banner should be shown.
  *
- * Hides the banner whenever a host is present (local user or a remote host in
- * presence); surfaces it after a 10s grace period once no host is detected.
+ * @see {@link ../hooks/use-host-claim-state}
  */
-function useHostClaimState(isHost: boolean, hostPresent: boolean) {
-  const [showClaim, setShowClaim] = useState(false);
-
-  // Hide the banner immediately when a host reappears.
-  const [prevHostOrActive, setPrevHostOrActive] = useState(isHost || hostPresent);
-  const currentHostOrActive = isHost || hostPresent;
-  if (currentHostOrActive !== prevHostOrActive) {
-    setPrevHostOrActive(currentHostOrActive);
-    if (currentHostOrActive) {
-      setShowClaim(false);
-    }
-  }
-
-  useEffect(() => {
-    if (isHost || hostPresent) {
-      return;
-    }
-    const t = setTimeout(() => setShowClaim(true), 10_000);
-    return () => clearTimeout(t);
-  }, [isHost, hostPresent]);
-
-  return showClaim;
-}
 
 interface SourceChangeDialogProps {
   open: boolean;
@@ -191,20 +167,7 @@ function SourceChangeDialog({
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label className="type-label">Nguồn video</Label>
-            <Tabs
-              value={newSourceType}
-              onValueChange={(val) => setNewSourceType(val as 'youtube' | 'url')}
-              className="w-full"
-            >
-              <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
-                <TabsTrigger value="youtube" className="text-xs h-7">
-                  YouTube
-                </TabsTrigger>
-                <TabsTrigger value="url" className="text-xs h-7">
-                  Direct URL (MP4/HLS)
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <VideoSourceTabs value={newSourceType} onChange={setNewSourceType} />
           </div>
 
           <div className="flex flex-col gap-1.5">

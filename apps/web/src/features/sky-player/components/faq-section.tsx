@@ -12,7 +12,71 @@ import {
   CardContent,
 } from '@pumni/ui';
 
-import { FAQ_ITEMS } from '../content';
+import { FAQ_ITEMS, type FaqItem as FaqItemType } from '../content';
+
+function FaqCard({
+  faq,
+  idx,
+  isOpen,
+  shouldReduce,
+  onToggle,
+}: {
+  faq: FaqItemType;
+  idx: number;
+  isOpen: boolean;
+  shouldReduce: boolean | null;
+  onToggle: (idx: number) => void;
+}) {
+  const cardClass = cn(
+    'overflow-hidden gap-0 py-0 transition-colors duration-(--duration-base) ease-fluid',
+    isOpen ? 'border-primary/30' : '',
+  );
+  const badgeClass = cn(
+    'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors',
+    isOpen ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
+  );
+  const initial = shouldReduce ? false : { height: 0, opacity: 0 };
+  const exit = shouldReduce ? undefined : { height: 0, opacity: 0 };
+  const transition = shouldReduce
+    ? { duration: 0 }
+    : { duration: 0.2, ease: 'easeOut' as const };
+
+  return (
+    <Card key={faq.question} className={cardClass}>
+      <button
+        type="button"
+        onClick={() => onToggle(idx)}
+        aria-expanded={isOpen}
+        className="flex w-full items-start justify-between gap-4 px-6 py-4 text-left transition-colors hover:bg-muted/50 cursor-pointer focus-visible:outline-ring"
+      >
+        <div className="flex items-start gap-3 min-w-0">
+          <span className={badgeClass}>{idx + 1}</span>
+          <span className="type-label font-semibold text-foreground">{faq.question}</span>
+        </div>
+        <span className="mt-0.5 shrink-0 text-muted-foreground">
+          {isOpen ? <Minus className="size-4" /> : <Plus className="size-4" />}
+        </span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isOpen ? (
+          <motion.div
+            key="content"
+            initial={initial}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={exit}
+            transition={transition}
+            className="overflow-hidden"
+          >
+            <CardContent className="border-t border-border pb-5 pt-4">
+              <p className="type-body ps-8 text-muted-foreground leading-relaxed">{faq.answer}</p>
+            </CardContent>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </Card>
+  );
+}
 
 export function FaqSection() {
   const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
@@ -24,67 +88,16 @@ export function FaqSection() {
 
   return (
     <div className="grid gap-3 lg:grid-cols-2 lg:items-start">
-      {FAQ_ITEMS.map((faq, idx) => {
-        const isOpen = activeIndex === idx;
-
-        return (
-          <Card
-            key={faq.question}
-            className={cn(
-              'overflow-hidden gap-0 py-0 transition-colors duration-(--duration-base) ease-fluid',
-              isOpen ? 'border-primary/30' : '',
-            )}
-          >
-            <button
-              type="button"
-              onClick={() => toggle(idx)}
-              aria-expanded={isOpen}
-              className="flex w-full items-start justify-between gap-4 px-6 py-4 text-left transition-colors hover:bg-muted/50 cursor-pointer focus-visible:outline-ring"
-            >
-              <div className="flex items-start gap-3 min-w-0">
-                {/* Question number */}
-                <span
-                  className={cn(
-                    'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors',
-                    isOpen
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground',
-                  )}
-                >
-                  {idx + 1}
-                </span>
-                <span className="type-label font-semibold text-foreground">{faq.question}</span>
-              </div>
-              <span className="mt-0.5 shrink-0 text-muted-foreground">
-                {isOpen ? (
-                  <Minus className="size-4" />
-                ) : (
-                  <Plus className="size-4" />
-                )}
-              </span>
-            </button>
-
-            <AnimatePresence initial={false}>
-              {isOpen ? (
-                <motion.div
-                  key="content"
-                  initial={shouldReduce ? false : { height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={shouldReduce ? undefined : { height: 0, opacity: 0 }}
-                  transition={shouldReduce ? { duration: 0 } : { duration: 0.2, ease: 'easeOut' }}
-                  className="overflow-hidden"
-                >
-                  <CardContent className="border-t border-border pb-5 pt-4">
-                    <p className="type-body ps-8 text-muted-foreground leading-relaxed">
-                      {faq.answer}
-                    </p>
-                  </CardContent>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
-          </Card>
-        );
-      })}
+      {FAQ_ITEMS.map((faq, idx) => (
+        <FaqCard
+          key={faq.question}
+          faq={faq}
+          idx={idx}
+          isOpen={activeIndex === idx}
+          shouldReduce={shouldReduce}
+          onToggle={toggle}
+        />
+      ))}
     </div>
   );
 }

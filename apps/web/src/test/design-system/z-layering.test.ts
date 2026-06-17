@@ -1,8 +1,6 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
 import { describe, expect, it } from 'vitest';
+
+import { readZIndex, tokenCss } from './token-test-utils';
 
 /**
  * Z-index layering guard.
@@ -16,15 +14,6 @@ import { describe, expect, it } from 'vitest';
  * Without this test the §1 bug (menus hidden behind dialogs) could silently
  * regress — it was not caught for exactly this reason.
  */
-const testDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(testDir, '../../../../..');
-const tokenCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/tokens.css'), 'utf8');
-
-function readZIndex(name: string): number {
-  const match = tokenCss.match(new RegExp(`${name}:\\s*(-?\\d+)`));
-  if (!match?.[1]) throw new Error(`Missing z-index token: ${name}`);
-  return Number(match[1]);
-}
 
 describe('z-index layering scale — semantic ordering', () => {
   it('reads all required tokens without throwing', () => {

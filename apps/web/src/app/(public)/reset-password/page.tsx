@@ -25,6 +25,7 @@ export default function ResetPasswordPage() {
           error={state.errors?.password}
         />
 
+        {/* fallow-ignore-next-line code-duplication */}
         <AuthField
           id="confirmPassword"
           label="Confirm Password"

@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 import { apcaContrast } from '@pumni/ui';
+import { repoRoot, tokenCss } from './token-test-utils';
 
 type Color = {
   l: number;
@@ -14,9 +14,6 @@ type Color = {
 
 type Rgb = [number, number, number];
 
-const testDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(testDir, '../../../../..');
-const tokenCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/tokens.css'), 'utf8');
 const themeCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/theme.css'), 'utf8');
 const personalizationCss = readFileSync(
   path.join(repoRoot, 'packages/ui/src/styles/personalization.css'),
@@ -380,43 +377,21 @@ describe('Semantic surface contrast', () => {
     },
   );
 
-  it.each(['light', 'dark'] as const)(
-    'secondary-foreground is readable on secondary background in %s mode',
-    (mode) => {
+  describe.each(['light', 'dark'] as const)('%s mode', (mode) => {
+    it.each([
+      { fg: '--secondary-foreground', bg: '--secondary', label: 'secondary-foreground on secondary' },
+      { fg: '--card-foreground', bg: '--card', label: 'card-foreground on card' },
+      { fg: '--foreground', bg: '--background', label: 'foreground on background' },
+    ] as const)('$label is readable', ({ fg, bg, label }) => {
       const tokenMap = buildTokenMap(mode);
-      const foreground = oklchToSrgb(resolveColor('--secondary-foreground', tokenMap));
-      const background = oklchToSrgb(resolveColor('--secondary', tokenMap));
+      const foreground = oklchToSrgb(resolveColor(fg, tokenMap));
+      const background = oklchToSrgb(resolveColor(bg, tokenMap));
 
       expect(
         Math.abs(apcaContrast(foreground, background)),
-        `${mode} secondary text contrast (APCA)`,
+        `${mode} ${label} (APCA)`,
       ).toBeGreaterThanOrEqual(60);
-    },
-  );
-
-  it.each(['light', 'dark'] as const)(
-    'card-foreground is readable on card background in %s mode',
-    (mode) => {
-      const tokenMap = buildTokenMap(mode);
-      const foreground = oklchToSrgb(resolveColor('--card-foreground', tokenMap));
-      const background = oklchToSrgb(resolveColor('--card', tokenMap));
-
-      expect(
-        Math.abs(apcaContrast(foreground, background)),
-        `${mode} card text contrast (APCA)`,
-      ).toBeGreaterThanOrEqual(60);
-    },
-  );
-
-  it.each(['light', 'dark'] as const)('foreground is readable on background in %s mode', (mode) => {
-    const tokenMap = buildTokenMap(mode);
-    const foreground = oklchToSrgb(resolveColor('--foreground', tokenMap));
-    const background = oklchToSrgb(resolveColor('--background', tokenMap));
-
-    expect(
-      Math.abs(apcaContrast(foreground, background)),
-      `${mode} page text contrast (APCA)`,
-    ).toBeGreaterThanOrEqual(60);
+    });
   });
 
   it.each(['light', 'dark'] as const)(

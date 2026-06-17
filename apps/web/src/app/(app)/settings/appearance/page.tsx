@@ -14,7 +14,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-  GLASS_LEVELS,
+  GlassLevelPicker,
   usePersonalization,
 } from '@pumni/ui';
 
@@ -132,21 +132,7 @@ export default function AppearanceSettingsPage() {
             </p>
           </div>
 
-          <div className="inline-flex rounded-md border border-border bg-card p-1">
-            {GLASS_LEVELS.map((value) => (
-              <Button
-                key={value}
-                type="button"
-                size="sm"
-                variant={glass === value ? 'secondary' : 'ghost'}
-                aria-pressed={glass === value}
-                onClick={() => setGlass(value)}
-                className="capitalize"
-              >
-                {value}
-              </Button>
-            ))}
-          </div>
+          <GlassLevelPicker value={glass} onChange={setGlass} />
         </CardContent>
       </Card>
     </div>

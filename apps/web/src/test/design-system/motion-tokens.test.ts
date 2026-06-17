@@ -1,31 +1,13 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
 import { describe, expect, it } from 'vitest';
 
 import { duration, easing, pressScale, staggerBase } from '@pumni/ui';
+import { readDurationSeconds, readUnitless, tokenCss } from './token-test-utils';
 
 /**
  * Motion bridge guard. `lib/motion.ts` is a hand-kept mirror of the `--duration-*`
  * / `--ease-*` CSS primitives in `tokens.css` (JS animations and CSS transitions
  * must share one source of truth). This test fails if the two drift apart.
  */
-const testDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(testDir, '../../../../..');
-const tokenCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/tokens.css'), 'utf8');
-
-function readDurationSeconds(name: string): number {
-  const match = tokenCss.match(new RegExp(`${name}:\\s*(\\d+)ms`));
-  if (!match?.[1]) throw new Error(`Missing duration token: ${name}`);
-  return Number(match[1]) / 1000;
-}
-
-function readUnitless(name: string): number {
-  const match = tokenCss.match(new RegExp(`${name}:\\s*([\\d.]+)`));
-  if (!match?.[1]) throw new Error(`Missing token: ${name}`);
-  return Number(match[1]);
-}
 
 function readCubicBezier(name: string): [number, number, number, number] {
   const match = tokenCss.match(new RegExp(`${name}:\\s*cubic-bezier\\(([^)]+)\\)`));

@@ -2,7 +2,7 @@ import 'server-only';
 
 import { requireUser } from '@pumni/auth';
 import { createSupabaseServerClient } from '@pumni/supabase/server';
-import type { Room, QueueItem } from './types';
+import { type Room, type QueueItem, QUEUE_ITEM_SELECT } from './types';
 
 /**
  * Idempotently register the caller as a member of the room so RLS lets them
@@ -49,7 +49,7 @@ export async function getQueue(roomId: string): Promise<QueueItem[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from('watch_queue_items')
-    .select('id, room_id, position, source_type, source_ref, title, added_by, created_at')
+    .select(QUEUE_ITEM_SELECT)
     .eq('room_id', roomId)
     .order('position', { ascending: true })
     .order('created_at', { ascending: true });

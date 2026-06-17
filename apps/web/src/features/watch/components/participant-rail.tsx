@@ -60,41 +60,39 @@ function ParticipantRow({
   shouldReduceMotion,
 }: ParticipantRowProps) {
   const { displayName, initials } = getParticipantDisplay(p, profile, isCurrentUser);
+  const isHost = p.isHost;
+
+  const rowClass = cn(
+    'flex items-center justify-between p-2 rounded-md border text-xs transition-colors duration-(--duration-fast)',
+    isHost
+      ? 'border-primary/20 bg-primary/10'
+      : 'border-border bg-muted motion-safe:hover:bg-muted/80',
+  );
+  const avatarClass = cn(
+    'size-7 border shrink-0',
+    isHost ? 'border-primary/40 ring-2 ring-primary/20' : 'border-border',
+  );
+  const fallbackClass = cn(
+    'text-[10px] font-bold uppercase select-none',
+    isHost ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground',
+  );
+  const label = isCurrentUser && profile?.username ? `${displayName} (Bạn)` : displayName;
 
   return (
     <motion.div
       {...(shouldReduceMotion ? {} : recipes.staggerItem)}
-      className={cn(
-        'flex items-center justify-between p-2 rounded-md border text-xs transition-colors duration-(--duration-fast)',
-        p.isHost
-          ? 'border-primary/20 bg-primary/10'
-          : 'border-border bg-muted motion-safe:hover:bg-muted/80',
-      )}
+      className={rowClass}
     >
       <div className="flex items-center gap-2 min-w-0">
-        <Avatar
-          className={cn(
-            'size-7 border shrink-0',
-            p.isHost ? 'border-primary/40 ring-2 ring-primary/20' : 'border-border',
-          )}
-        >
+        <Avatar className={avatarClass}>
           {profile?.avatar_url && (
             <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
           )}
-          <AvatarFallback
-            className={cn(
-              'text-[10px] font-bold uppercase select-none',
-              p.isHost ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground',
-            )}
-          >
-            {initials}
-          </AvatarFallback>
+          <AvatarFallback className={fallbackClass}>{initials}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col min-w-0">
-          <span className="truncate font-medium text-foreground">
-            {isCurrentUser && profile?.username ? `${displayName} (Bạn)` : displayName}
-          </span>
-          {p.isHost && (
+          <span className="truncate font-medium text-foreground">{label}</span>
+          {isHost && (
             <span className="type-caption flex items-center gap-0.5 mt-0.5 text-primary font-medium">
               <Crown className="size-2.5 fill-current" />
               Chủ phòng

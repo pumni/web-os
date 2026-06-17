@@ -312,18 +312,29 @@ function SortableItem({
   const isCurrent = item.id === currentQueueItemId;
   const isYoutube = item.source_type === 'youtube';
 
+  const rowClass = cn(
+    'group flex items-center gap-2 px-2 py-1.5 rounded-md border text-xs transition-all duration-(--duration-fast) ease-snappy',
+    isCurrent
+      ? 'border-primary/20 bg-primary/10 text-primary'
+      : 'border-border bg-muted text-foreground motion-safe:hover:bg-muted/80',
+    isDragging && 'opacity-60 shadow-sm scale-[1.02] border-primary/20',
+  );
+  const titleClass = cn(
+    'truncate font-medium text-left leading-tight',
+    isCurrent ? 'text-primary' : 'text-foreground',
+  );
+  const badgeClass = cn(
+    'inline-flex w-fit items-center px-1 py-px rounded text-[10px] font-medium leading-none',
+    isYoutube ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground',
+  );
+  const deleteClass = cn(
+    'size-5 p-0 motion-safe:hover:bg-destructive/10 motion-safe:hover:text-destructive shrink-0 transition-opacity duration-(--duration-fast)',
+    isCurrent ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+    'text-muted-foreground',
+  );
+
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={cn(
-        'group flex items-center gap-2 px-2 py-1.5 rounded-md border text-xs transition-all duration-(--duration-fast) ease-snappy',
-        isCurrent
-          ? 'border-primary/20 bg-primary/10 text-primary'
-          : 'border-border bg-muted text-foreground motion-safe:hover:bg-muted/80',
-        isDragging && 'opacity-60 shadow-sm scale-[1.02] border-primary/20',
-      )}
-    >
+    <div ref={setNodeRef} style={style} className={rowClass}>
       {/* Index / Playing indicator */}
       <div className="size-5 flex items-center justify-center shrink-0">
         {isCurrent ? (
@@ -351,22 +362,8 @@ function SortableItem({
 
       {/* Title + source type */}
       <div className="flex flex-col gap-0.5 min-w-0 flex-1 select-none">
-        <span
-          className={cn(
-            'truncate font-medium text-left leading-tight',
-            isCurrent ? 'text-primary' : 'text-foreground',
-          )}
-        >
-          {item.title || item.source_ref}
-        </span>
-        <span
-          className={cn(
-            'inline-flex w-fit items-center px-1 py-px rounded text-[10px] font-medium leading-none',
-            isYoutube ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground',
-          )}
-        >
-          {isYoutube ? 'YouTube' : 'URL'}
-        </span>
+        <span className={titleClass}>{item.title || item.source_ref}</span>
+        <span className={badgeClass}>{isYoutube ? 'YouTube' : 'URL'}</span>
       </div>
 
       {/* Delete — visible on hover or always on current */}
@@ -375,11 +372,7 @@ function SortableItem({
         size="icon"
         onClick={() => handleRemoveItem(item.id)}
         disabled={isPending}
-        className={cn(
-          'size-5 p-0 motion-safe:hover:bg-destructive/10 motion-safe:hover:text-destructive shrink-0 transition-opacity duration-(--duration-fast)',
-          isCurrent ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
-          'text-muted-foreground',
-        )}
+        className={deleteClass}
         aria-label="Xóa"
       >
         <Trash2 className="size-3" />
