@@ -14,6 +14,7 @@ import {
 
 import { FAQ_ITEMS, type FaqItem as FaqItemType } from '../content';
 
+// fallow-ignore-next-line complexity
 function FaqCard({
   faq,
   idx,

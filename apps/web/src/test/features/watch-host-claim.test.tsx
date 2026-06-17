@@ -17,6 +17,16 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+/** Renders a non-host Probe without a host present and advances timers past the 10s grace period. */
+function renderAndTriggerBanner() {
+  const utils = render(<Probe isHost={false} hostPresent={false} />);
+  act(() => {
+    vi.advanceTimersByTime(10_000);
+  });
+  expect(screen.getByTestId('claim')).toHaveTextContent('visible');
+  return utils;
+}
+
 describe('useHostClaimState', () => {
   it('hides the banner on initial render, even when no host is present', () => {
     render(<Probe isHost={false} hostPresent={false} />);
@@ -55,23 +65,13 @@ describe('useHostClaimState', () => {
   });
 
   it('hides the banner immediately when a host reappears', () => {
-    const { rerender } = render(<Probe isHost={false} hostPresent={false} />);
-    act(() => {
-      vi.advanceTimersByTime(10_000);
-    });
-    expect(screen.getByTestId('claim')).toHaveTextContent('visible');
-
+    const { rerender } = renderAndTriggerBanner();
     rerender(<Probe isHost={false} hostPresent />);
     expect(screen.getByTestId('claim')).toHaveTextContent('hidden');
   });
 
   it('hides the banner immediately when the local user becomes host', () => {
-    const { rerender } = render(<Probe isHost={false} hostPresent={false} />);
-    act(() => {
-      vi.advanceTimersByTime(10_000);
-    });
-    expect(screen.getByTestId('claim')).toHaveTextContent('visible');
-
+    const { rerender } = renderAndTriggerBanner();
     rerender(<Probe isHost hostPresent={false} />);
     expect(screen.getByTestId('claim')).toHaveTextContent('hidden');
   });

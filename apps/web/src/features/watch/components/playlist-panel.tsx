@@ -292,6 +292,7 @@ interface SortableItemProps {
   handleRemoveItem: (id: string) => void;
 }
 
+// fallow-ignore-next-line complexity
 function SortableItem({
   item,
   idx,

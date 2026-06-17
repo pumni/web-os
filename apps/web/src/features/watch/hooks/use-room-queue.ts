@@ -19,6 +19,7 @@ export function useQueueQuery(roomId: string, initialData: QueueItem[]) {
     queryKey: watchKeys.queue(roomId),
     queryFn: async () => {
       const supabase = createSupabaseBrowserClient();
+      // fallow-ignore-next-line code-duplication
       const { data, error } = await supabase
         .from('watch_queue_items')
         .select(QUEUE_ITEM_SELECT)

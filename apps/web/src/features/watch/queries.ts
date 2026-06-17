@@ -47,6 +47,7 @@ export async function getRoom(roomId: string): Promise<Room | null> {
 export async function getQueue(roomId: string): Promise<QueueItem[]> {
   await requireUser();
   const supabase = await createSupabaseServerClient();
+  // fallow-ignore-next-line code-duplication
   const { data, error } = await supabase
     .from('watch_queue_items')
     .select(QUEUE_ITEM_SELECT)

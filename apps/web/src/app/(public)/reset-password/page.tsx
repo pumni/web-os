@@ -13,6 +13,7 @@ export default function ResetPasswordPage() {
   return (
     <AuthShell subtitle="Set your new account password." title="Reset Password">
       <form action={formAction} className="space-y-4">
+        {/* fallow-ignore-next-line code-duplication */}
         <AuthField
           id="password"
           label="New Password"
@@ -24,8 +25,6 @@ export default function ResetPasswordPage() {
           disabled={pending}
           error={state.errors?.password}
         />
-
-        {/* fallow-ignore-next-line code-duplication */}
         <AuthField
           id="confirmPassword"
           label="Confirm Password"

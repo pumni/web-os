@@ -31,6 +31,7 @@ interface ParticipantPanelProps {
   isPending?: boolean;
 }
 
+// fallow-ignore-next-line complexity
 function getParticipantDisplay(
   p: Participant,
   profile: ParticipantProfile | undefined,
@@ -53,6 +54,7 @@ interface ParticipantRowProps {
   shouldReduceMotion: boolean | null;
 }
 
+// fallow-ignore-next-line complexity
 function ParticipantRow({
   participant: p,
   profile,

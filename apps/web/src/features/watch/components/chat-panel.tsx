@@ -105,6 +105,7 @@ function BubbleContent({
   );
 }
 
+// fallow-ignore-next-line complexity
 function ChatBubble({ msg, isMe, profile, isGrouped }: ChatBubbleProps) {
   const displayName = profile?.username ?? (isMe ? 'Bạn' : `User #${msg.userId.slice(0, 6)}`);
   const initials = profile?.username

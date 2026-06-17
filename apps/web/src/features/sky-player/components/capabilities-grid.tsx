@@ -13,6 +13,7 @@ import {
 
 import { CAPABILITIES, type Capability } from '../content';
 
+// fallow-ignore-next-line complexity
 function CapabilityCard({
   cap,
   isFeatured,

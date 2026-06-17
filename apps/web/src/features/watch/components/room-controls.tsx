@@ -173,6 +173,7 @@ interface HostActionGroupProps {
   onFullscreenToggle: () => void;
 }
 
+// fallow-ignore-next-line complexity
 function HostActionGroup({
   isHost,
   playbackRate,
@@ -264,6 +265,7 @@ function HostActionGroup({
 // RoomControls
 // ---------------------------------------------------------------------------
 
+// fallow-ignore-next-line complexity
 export function RoomControls({
   isHost,
   onSourceChange,

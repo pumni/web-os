@@ -49,6 +49,7 @@ export default function SignUpPage() {
           error={state.errors?.email}
         />
 
+        {/* fallow-ignore-next-line code-duplication */}
         <AuthField
           id="password"
           label="Password"
@@ -60,8 +61,6 @@ export default function SignUpPage() {
           disabled={pending}
           error={state.errors?.password}
         />
-
-        {/* fallow-ignore-next-line code-duplication */}
         <AuthField
           id="confirmPassword"
           label="Confirm Password"

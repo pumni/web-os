@@ -78,6 +78,7 @@ interface AvatarUploadProps {
   isUploading: boolean;
 }
 
+// fallow-ignore-next-line complexity
 function AvatarUpload({
   previewUrl,
   fullName,

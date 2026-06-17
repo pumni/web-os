@@ -125,57 +125,27 @@ interface BentoGridItemProps extends Omit<React.ComponentProps<typeof Card>, 'ti
   minHeight?: number;
 }
 
-export function BentoGridItem({
-  className,
-  children,
+/** Skeleton placeholder rendered when `loading` is true. Preserves tile height to prevent CLS. */
+function BentoGridItemSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 flex-1">
+      <Skeleton className="h-full min-h-20 w-full rounded-lg" />
+      <Skeleton className="h-4 w-2/3" />
+      <Skeleton className="h-3 w-1/2" />
+    </div>
+  );
+}
+
+/** Inner content rendered when the tile is not in loading state. */
+function BentoGridItemContent({
   header,
   icon,
   title,
   description,
-  tier = 'metric',
-  ariaLabel,
-  loading = false,
-  minHeight,
-  interactive = true,
-  ...props
-}: BentoGridItemProps) {
-  if (loading) {
-    return (
-      <Card
-        interactive={interactive}
-        aria-label={ariaLabel}
-        className={cn(
-          'relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container',
-          'rounded-xl',
-          bentoTierVariants({ tier }),
-          className,
-        )}
-        style={minHeight !== undefined ? { minHeight } : undefined}
-        {...props}
-      >
-        {/* Skeleton preserves tile height to prevent CLS during data fetch. */}
-        <div className="flex flex-col gap-3 flex-1">
-          <Skeleton className="h-full min-h-20 w-full rounded-lg" />
-          <Skeleton className="h-4 w-2/3" />
-          <Skeleton className="h-3 w-1/2" />
-        </div>
-      </Card>
-    );
-  }
-
+  children,
+}: Pick<BentoGridItemProps, 'header' | 'icon' | 'title' | 'description' | 'children'>) {
   return (
-    <Card
-      interactive={interactive}
-      aria-label={ariaLabel}
-      className={cn(
-        'relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container',
-        'rounded-xl',
-        bentoTierVariants({ tier }),
-        className,
-      )}
-      style={minHeight !== undefined ? { minHeight } : undefined}
-      {...props}
-    >
+    <>
       {header && (
         // Inset well — opaque muted surface (rule 3: no bg-muted/NN on content)
         <div className="flex w-full items-center justify-center rounded-lg bg-muted overflow-hidden min-h-30 max-h-40 border border-border">
@@ -203,6 +173,47 @@ export function BentoGridItem({
           </div>
         )}
       </div>
+    </>
+  );
+}
+
+export function BentoGridItem({
+  className,
+  children,
+  header,
+  icon,
+  title,
+  description,
+  tier = 'metric',
+  ariaLabel,
+  loading = false,
+  minHeight,
+  interactive = true,
+  ...props
+}: BentoGridItemProps) {
+  const cardStyle = minHeight !== undefined ? { minHeight } : undefined;
+  const cardClass = cn(
+    'relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container',
+    'rounded-xl',
+    bentoTierVariants({ tier }),
+    className,
+  );
+
+  return (
+    <Card
+      interactive={interactive}
+      aria-label={ariaLabel}
+      className={cardClass}
+      style={cardStyle}
+      {...props}
+    >
+      {loading ? (
+        <BentoGridItemSkeleton />
+      ) : (
+        <BentoGridItemContent header={header} icon={icon} title={title} description={description}>
+          {children}
+        </BentoGridItemContent>
+      )}
     </Card>
   );
 }
