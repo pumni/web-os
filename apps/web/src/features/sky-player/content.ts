@@ -128,7 +128,7 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = [
 ];
 
 /** Flat list derived from groups — useful for search or docs export. */
-export const KEYBOARD_SHORTCUTS: Shortcut[] = SHORTCUT_GROUPS.flatMap((g) => g.shortcuts);
+const KEYBOARD_SHORTCUTS: Shortcut[] = SHORTCUT_GROUPS.flatMap((g) => g.shortcuts);
 
 export const SUPPORTED_FORMATS = [
   { ext: '.json', note: 'Structured key lists with timestamp offsets from Sky Music editors.' },

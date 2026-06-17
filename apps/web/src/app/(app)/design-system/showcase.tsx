@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { useActiveSection } from '@/hooks/use-active-section';
 import {
   BellIcon,
   CheckCircle2Icon,
@@ -171,31 +172,7 @@ const SHOWCASE_SECTIONS = [
   { id: 'card-states', label: 'Card States & Spotlight' },
 ] as const;
 
-function useActiveSection() {
-  const [activeId, setActiveId] = React.useState<string>('foundations');
-
-  React.useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
-        }
-      },
-      { rootMargin: '-20% 0px -70% 0px' },
-    );
-
-    const elements = SHOWCASE_SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean);
-    for (const el of elements) observer.observe(el!);
-
-    return () => observer.disconnect();
-  }, []);
-
-  return activeId;
-}
+const SHOWCASE_SECTION_IDS = SHOWCASE_SECTIONS.map((s) => s.id);
 
 export function DesignSystemShowcase() {
   const [dialogOpen, setDialogOpen] = React.useState(false);
@@ -228,7 +205,7 @@ export function DesignSystemShowcase() {
     },
   });
 
-  const activeSection = useActiveSection();
+  const activeSection = useActiveSection(SHOWCASE_SECTION_IDS);
 
   return (
     <div className="flex gap-10 pb-16">

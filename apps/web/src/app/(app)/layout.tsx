@@ -4,16 +4,6 @@ import { getCurrentUser } from '@pumni/auth';
 import { redirect } from 'next/navigation';
 import { AppShell } from '@/components/app-shell/app-shell';
 
-export const unstable_instant = {
-  prefetch: 'static',
-  samples: [
-    {
-      params: { itemId: '00000000000000000000000000000000' },
-      cookies: [{ name: 'pumni-sidebar', value: null }],
-    },
-  ],
-};
-
 export default function ProtectedLayout({
   children,
 }: Readonly<{

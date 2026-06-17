@@ -50,6 +50,19 @@ type ProfileFormProps = {
 };
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024; // 5 MB
+
+/** Returns an error message if the file is invalid, or `null` if OK. */
+function validateAvatarFile(file: File): string | null {
+  if (file.size > MAX_AVATAR_BYTES) return 'File size must be less than 5MB.';
+  if (!file.type.startsWith('image/')) return 'File must be an image.';
+  return null;
+}
+
+// ---------------------------------------------------------------------------
 // AvatarUpload — isolated avatar section with drag/drop + crop flow
 // ---------------------------------------------------------------------------
 
@@ -81,12 +94,9 @@ function AvatarUpload({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('File size must be less than 5MB.');
-      return;
-    }
-    if (!file.type.startsWith('image/')) {
-      toast.error('File must be an image.');
+    const err = validateAvatarFile(file);
+    if (err) {
+      toast.error(err);
       return;
     }
     onFileSelected(file);
@@ -106,12 +116,9 @@ function AvatarUpload({
     if (isPending) return;
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('File size must be less than 5MB.');
-      return;
-    }
-    if (!file.type.startsWith('image/')) {
-      toast.error('File must be an image.');
+    const err = validateAvatarFile(file);
+    if (err) {
+      toast.error(err);
       return;
     }
     onFileSelected(file);

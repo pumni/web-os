@@ -30,6 +30,163 @@ function formatTime(seconds: number): string {
   return `${m}:${pad(s)}`;
 }
 
+// ---------------------------------------------------------------------------
+// Sub-components — presentational, receive all state as props
+// ---------------------------------------------------------------------------
+
+function SoftLockBanner({ onResync }: { onResync: () => void }) {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex items-center justify-between w-full px-3 py-1.5 rounded-md border border-warning/20 bg-warning/10 text-warning text-xs select-none"
+    >
+      <span className="leading-snug">Bạn đang xem lệch tiến trình của phòng.</span>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onResync}
+        className="h-6 text-xs px-2.5 font-semibold motion-safe:hover:bg-warning/10 text-warning border border-warning/20 shrink-0 ml-2"
+      >
+        Đồng bộ lại
+      </Button>
+    </div>
+  );
+}
+
+interface TimelineScrubberProps {
+  currentTime: number;
+  duration: number;
+  onSeek: (values: number[]) => void;
+  onSeekCommit: (values: number[]) => void;
+}
+
+function TimelineScrubber({ currentTime, duration, onSeek, onSeekCommit }: TimelineScrubberProps) {
+  return (
+    <div className="flex items-center gap-3 w-full">
+      <span className="text-xs font-mono text-foreground select-none tabular-nums min-w-9 text-right">
+        {formatTime(currentTime)}
+      </span>
+      <Slider
+        value={[currentTime]}
+        min={0}
+        max={duration || 100}
+        step={0.1}
+        onValueChange={onSeek}
+        onValueCommit={onSeekCommit}
+        className="flex-1 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-foreground/30"
+        aria-label="Seek progress"
+      />
+      <span className="text-xs font-mono text-muted-foreground select-none tabular-nums min-w-9">
+        {formatTime(duration)}
+      </span>
+    </div>
+  );
+}
+
+interface HostActionGroupProps {
+  isHost: boolean;
+  playbackRate: number;
+  fullscreen: boolean;
+  autoPlay?: boolean;
+  onSourceChange?: () => void;
+  onAutoPlayToggle?: () => void;
+  onAdvance?: () => void;
+  onSpeedChange: (value: string) => void;
+  onFullscreenToggle: () => void;
+}
+
+function HostActionGroup({
+  isHost,
+  playbackRate,
+  fullscreen,
+  autoPlay,
+  onSourceChange,
+  onAutoPlayToggle,
+  onAdvance,
+  onSpeedChange,
+  onFullscreenToggle,
+}: HostActionGroupProps) {
+  return (
+    <div className="flex items-center gap-1.5">
+      {/* Source Change Button (Host only) */}
+      {isHost && onSourceChange && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onSourceChange}
+          aria-label="Đổi nguồn phát"
+          className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
+        >
+          <Clapperboard className="size-4" />
+        </Button>
+      )}
+
+      {/* Playback Rate / Speed Selector — host only authoritative */}
+      <Select
+        value={playbackRate.toString()}
+        onValueChange={onSpeedChange}
+        disabled={!isHost}
+      >
+        <SelectTrigger className="h-7 w-14 text-xs px-1.5 bg-transparent border-foreground/20 text-foreground focus:ring-foreground/30">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="0.5">0.5×</SelectItem>
+          <SelectItem value="0.75">0.75×</SelectItem>
+          <SelectItem value="1">1×</SelectItem>
+          <SelectItem value="1.25">1.25×</SelectItem>
+          <SelectItem value="1.5">1.5×</SelectItem>
+          <SelectItem value="2">2×</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Auto-play Toggle */}
+      {isHost && onAutoPlayToggle && (
+        <div className="flex items-center gap-1.5">
+          <span className="type-caption text-muted-foreground select-none whitespace-nowrap">
+            Tự động phát
+          </span>
+          <Switch
+            checked={autoPlay}
+            onCheckedChange={onAutoPlayToggle}
+            aria-label="Tự động phát video tiếp theo"
+          />
+        </div>
+      )}
+
+      {/* Skip to next video (host only) */}
+      {isHost && onAdvance && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onAdvance}
+          aria-label="Phát video tiếp theo"
+          className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
+          title="Video tiếp theo"
+        >
+          <SkipForward className="size-4" />
+        </Button>
+      )}
+
+      {/* Fullscreen */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onFullscreenToggle}
+        aria-label={fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'}
+        className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
+      >
+        {fullscreen ? <Minimize className="size-4" /> : <Maximize className="size-4" />}
+      </Button>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// RoomControls
+// ---------------------------------------------------------------------------
+
 export function RoomControls({
   isHost,
   onSourceChange,
@@ -53,7 +210,6 @@ export function RoomControls({
   const { visible, controlsBind } = useControlsVisibility({ paused, stageRef });
 
   const handlePlayPause = () => {
-    // Both host and follower can interact. Manual changes will soft-lock sync.
     if (paused) {
       remote.play();
     } else {
@@ -90,7 +246,7 @@ export function RoomControls({
   };
 
   const handleSpeedChange = (value: string) => {
-    if (!isHost) return; // Playback rate remains host-only authoritative
+    if (!isHost) return;
     const speed = parseFloat(value);
     if (!isNaN(speed)) {
       remote.changePlaybackRate(speed);
@@ -122,43 +278,16 @@ export function RoomControls({
         )}
       >
         {/* Soft-lock alert banner for follower */}
-        {!isHost && !isFollowingHost && resync && (
-          <div
-            role="status"
-            aria-live="polite"
-            className="flex items-center justify-between w-full px-3 py-1.5 rounded-md border border-warning/20 bg-warning/10 text-warning text-xs select-none"
-          >
-            <span className="leading-snug">Bạn đang xem lệch tiến trình của phòng.</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={resync}
-              className="h-6 text-xs px-2.5 font-semibold motion-safe:hover:bg-warning/10 text-warning border border-warning/20 shrink-0 ml-2"
-            >
-              Đồng bộ lại
-            </Button>
-          </div>
-        )}
+        {!isHost && !isFollowingHost && resync ? (
+          <SoftLockBanner onResync={resync} />
+        ) : null}
 
-        {/* Timeline progress slider */}
-        <div className="flex items-center gap-3 w-full">
-          <span className="text-xs font-mono text-foreground select-none tabular-nums min-w-9 text-right">
-            {formatTime(currentTime)}
-          </span>
-          <Slider
-            value={[currentTime]}
-            min={0}
-            max={duration || 100}
-            step={0.1}
-            onValueChange={handleSeek}
-            onValueCommit={handleSeekCommit}
-            className="flex-1 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-foreground/30"
-            aria-label="Seek progress"
-          />
-          <span className="text-xs font-mono text-muted-foreground select-none tabular-nums min-w-9">
-            {formatTime(duration)}
-          </span>
-        </div>
+        <TimelineScrubber
+          currentTime={currentTime}
+          duration={duration}
+          onSeek={handleSeek}
+          onSeekCommit={handleSeekCommit}
+        />
 
         {/* Control buttons */}
         <div className="flex items-center justify-between w-full">
@@ -202,101 +331,27 @@ export function RoomControls({
               aria-label="Volume level"
             />
 
-            {!isHost && isFollowingHost && (
+            {!isHost && isFollowingHost ? (
               <span className="type-caption text-muted-foreground ml-2 select-none">&bull; Đồng bộ</span>
-            )}
-            {!isHost && !isFollowingHost && (
+            ) : null}
+            {!isHost && !isFollowingHost ? (
               <span className="type-caption text-warning ml-2 select-none font-medium">
                 &bull; Lệch sync
               </span>
-            )}
+            ) : null}
           </div>
 
-          <div className="flex items-center gap-1.5">
-            {/* Source Change Button (Host only) */}
-            {isHost && onSourceChange && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onSourceChange}
-                aria-label="Đổi nguồn phát"
-                className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
-              >
-                <Clapperboard className="size-4" />
-              </Button>
-            )}
-
-            {/* Playback Rate / Speed Selector — host only authoritative */}
-            <Select
-              value={playbackRate.toString()}
-              onValueChange={handleSpeedChange}
-              disabled={!isHost}
-            >
-              <SelectTrigger className="h-7 w-14 text-xs px-1.5 bg-transparent border-foreground/20 text-foreground focus:ring-foreground/30">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0.5">0.5×</SelectItem>
-                <SelectItem value="0.75">0.75×</SelectItem>
-                <SelectItem value="1">1×</SelectItem>
-                <SelectItem value="1.25">1.25×</SelectItem>
-                <SelectItem value="1.5">1.5×</SelectItem>
-                <SelectItem value="2">2×</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Auto-play Toggle */}
-            {isHost && onAutoPlayToggle && (
-              <div className="flex items-center gap-1.5">
-                <span className="type-caption text-muted-foreground select-none whitespace-nowrap">
-                  Tự động phát
-                </span>
-                <Switch
-                  checked={autoPlay}
-                  onCheckedChange={onAutoPlayToggle}
-                  aria-label="Tự động phát video tiếp theo"
-                />
-              </div>
-            )}
-
-            {/* Skip to next video (host only) */}
-            {isHost && onAdvance && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onAdvance}
-                aria-label="Phát video tiếp theo"
-                className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
-                title="Video tiếp theo"
-              >
-                <SkipForward className="size-4" />
-              </Button>
-            )}
-
-            {/* Source Change Button (Host only) */}
-            {isHost && onSourceChange && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onSourceChange}
-                aria-label="Đổi nguồn phát"
-                className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
-              >
-                <Clapperboard className="size-4" />
-              </Button>
-            )}
-
-            {/* Fullscreen */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleFullscreenToggle}
-              aria-label={fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình'}
-              className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
-            >
-              {fullscreen ? <Minimize className="size-4" /> : <Maximize className="size-4" />}
-            </Button>
-          </div>
+          <HostActionGroup
+            isHost={isHost}
+            playbackRate={playbackRate}
+            fullscreen={fullscreen}
+            autoPlay={autoPlay}
+            onSourceChange={onSourceChange}
+            onAutoPlayToggle={onAutoPlayToggle}
+            onAdvance={onAdvance}
+            onSpeedChange={handleSpeedChange}
+            onFullscreenToggle={handleFullscreenToggle}
+          />
         </div>
       </GlassSurface>
     </>

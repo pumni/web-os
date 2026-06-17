@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import { RULES } from './review-gate-rules.mjs';
+import { parseFrontmatter } from './frontmatter.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -33,35 +34,6 @@ function runScript(label, scriptName, extraArgs = []) {
   }
 }
 
-function parseFrontmatter(relativePath) {
-  const content = fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
-  if (!content.startsWith('---\n') && !content.startsWith('---\r\n')) return {};
-  const end = content.indexOf('\n---', 4);
-  if (end === -1) return {};
-
-  const frontmatter = {};
-  for (const rawLine of content.slice(4, end).split(/\r?\n/)) {
-    const match = /^([A-Za-z0-9_-]+):\s*(.*)$/.exec(rawLine);
-    if (!match) continue;
-    const [, key, rawValue] = match;
-    const value = rawValue.trim();
-    if (value === 'true') {
-      frontmatter[key] = true;
-    } else if (value === 'false') {
-      frontmatter[key] = false;
-    } else if (value.startsWith('[') && value.endsWith(']')) {
-      frontmatter[key] = value
-        .slice(1, -1)
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean);
-    } else {
-      frontmatter[key] = value;
-    }
-  }
-  return frontmatter;
-}
-
 function printEvalCoverageReport() {
   console.log('\n=== Eval coverage ===');
   const evalDir = path.join(ROOT, '.agents', 'evals');
@@ -77,6 +49,7 @@ function printEvalCoverageReport() {
 
   for (const relativePath of evalFiles) {
     const frontmatter = parseFrontmatter(relativePath);
+    if (!frontmatter) continue;
     if (frontmatter.manual === true) manual++;
     if (frontmatter['automated-rule']) automated++;
 

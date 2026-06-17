@@ -20,13 +20,90 @@ import {
 import { Crown } from 'lucide-react';
 import type { Participant } from '../types';
 
+type ParticipantProfile = { username: string | null; avatar_url: string | null };
+
 interface ParticipantPanelProps {
   participants: Participant[];
-  profiles?: Record<string, { username: string | null; avatar_url: string | null }>;
+  profiles?: Record<string, ParticipantProfile>;
   isHost?: boolean;
   userId?: string;
   onTransferHost?: (newHostId: string) => void;
   isPending?: boolean;
+}
+
+function getParticipantDisplay(
+  p: Participant,
+  profile: ParticipantProfile | undefined,
+  isCurrentUser: boolean,
+): { displayName: string; initials: string } {
+  const displayName =
+    profile?.username ?? (isCurrentUser ? 'Bạn' : `User: ${p.userId.slice(0, 8)}`);
+  const initials = profile?.username
+    ? profile.username.slice(0, 2)
+    : p.isHost
+      ? 'Ho'
+      : p.userId.slice(0, 2);
+  return { displayName, initials };
+}
+
+interface ParticipantRowProps {
+  participant: Participant;
+  profile?: ParticipantProfile;
+  isCurrentUser: boolean;
+  shouldReduceMotion: boolean | null;
+}
+
+function ParticipantRow({
+  participant: p,
+  profile,
+  isCurrentUser,
+  shouldReduceMotion,
+}: ParticipantRowProps) {
+  const { displayName, initials } = getParticipantDisplay(p, profile, isCurrentUser);
+
+  return (
+    <motion.div
+      {...(shouldReduceMotion ? {} : recipes.staggerItem)}
+      className={cn(
+        'flex items-center justify-between p-2 rounded-md border text-xs transition-colors duration-(--duration-fast)',
+        p.isHost
+          ? 'border-primary/20 bg-primary/10'
+          : 'border-border bg-muted motion-safe:hover:bg-muted/80',
+      )}
+    >
+      <div className="flex items-center gap-2 min-w-0">
+        <Avatar
+          className={cn(
+            'size-7 border shrink-0',
+            p.isHost ? 'border-primary/40 ring-2 ring-primary/20' : 'border-border',
+          )}
+        >
+          {profile?.avatar_url && (
+            <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
+          )}
+          <AvatarFallback
+            className={cn(
+              'text-[10px] font-bold uppercase select-none',
+              p.isHost ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground',
+            )}
+          >
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col min-w-0">
+          <span className="truncate font-medium text-foreground">
+            {isCurrentUser && profile?.username ? `${displayName} (Bạn)` : displayName}
+          </span>
+          {p.isHost && (
+            <span className="type-caption flex items-center gap-0.5 mt-0.5 text-primary font-medium">
+              <Crown className="size-2.5 fill-current" />
+              Chủ phòng
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
 }
 
 export function ParticipantRail({
@@ -47,64 +124,22 @@ export function ParticipantRail({
       {participants.map((p) => {
         const profile = profiles[p.userId];
         const isCurrentUser = p.userId === userId;
-        const displayName =
-          profile?.username ?? (isCurrentUser ? 'Bạn' : `User: ${p.userId.slice(0, 8)}`);
-        const initials = profile?.username
-          ? profile.username.slice(0, 2)
-          : p.isHost
-            ? 'Ho'
-            : p.userId.slice(0, 2);
-
+        const { displayName } = getParticipantDisplay(p, profile, isCurrentUser);
         const canTransfer = isHost && !p.isHost;
 
-        const participantRow = (
-          <motion.div
-            {...(shouldReduceMotion ? {} : recipes.staggerItem)}
-            className={cn(
-              'flex items-center justify-between p-2 rounded-md border text-xs transition-colors duration-(--duration-fast)',
-              p.isHost
-                ? 'border-primary/20 bg-primary/10'
-                : 'border-border bg-muted motion-safe:hover:bg-muted/80',
-            )}
-          >
-            <div className="flex items-center gap-2 min-w-0">
-              <Avatar
-                className={cn(
-                  'size-7 border shrink-0',
-                  p.isHost ? 'border-primary/40 ring-2 ring-primary/20' : 'border-border',
-                )}
-              >
-                {profile?.avatar_url && (
-                  <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
-                )}
-                <AvatarFallback
-                  className={cn(
-                    'text-[10px] font-bold uppercase select-none',
-                    p.isHost ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground',
-                  )}
-                >
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col min-w-0">
-                <span className="truncate font-medium text-foreground">
-                  {isCurrentUser && profile?.username ? `${displayName} (Bạn)` : displayName}
-                </span>
-                {p.isHost && (
-                  <span className="type-caption flex items-center gap-0.5 mt-0.5 text-primary font-medium">
-                    <Crown className="size-2.5 fill-current" />
-                    Chủ phòng
-                  </span>
-                )}
-              </div>
-            </div>
-          </motion.div>
+        const row = (
+          <ParticipantRow
+            participant={p}
+            profile={profile}
+            isCurrentUser={isCurrentUser}
+            shouldReduceMotion={shouldReduceMotion}
+          />
         );
 
         if (canTransfer && onTransferHost) {
           return (
             <ContextMenu key={p.userId}>
-              <ContextMenuTrigger asChild>{participantRow}</ContextMenuTrigger>
+              <ContextMenuTrigger asChild>{row}</ContextMenuTrigger>
               <ContextMenuContent className="w-48">
                 <ContextMenuItem
                   disabled={isPending}
@@ -122,7 +157,7 @@ export function ParticipantRail({
         return (
           <Tooltip key={p.userId}>
             <TooltipTrigger asChild>
-              <div className="contents">{participantRow}</div>
+              <div className="contents">{row}</div>
             </TooltipTrigger>
             <TooltipContent>
               {p.isHost ? `Chủ phòng (${displayName})` : displayName}

@@ -5,7 +5,7 @@ import { BookOpen, Cpu, Zap, ShieldAlert, Globe } from 'lucide-react';
 import { cn } from '@pumni/ui';
 import { useActiveSection } from '@/hooks/use-active-section';
 
-export const ECOSYSTEM_SECTIONS = [
+const ECOSYSTEM_SECTIONS = [
   { id: 'overview', label: 'Tổng Quan', icon: BookOpen },
   { id: 'architecture', label: 'Kiến Trúc Lõi', icon: Cpu },
   { id: 'performance', label: 'Hiệu Năng', icon: Zap },

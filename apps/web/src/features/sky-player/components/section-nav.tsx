@@ -4,36 +4,13 @@ import * as React from 'react';
 
 import { cn, withViewTransition } from '@pumni/ui';
 
+import { useActiveSection } from '@/hooks/use-active-section';
 import { PAGE_SECTIONS } from '../content';
 
-function useActiveSection() {
-  const [activeId, setActiveId] = React.useState<string>(PAGE_SECTIONS[0]?.id ?? 'capabilities');
-
-  React.useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
-        }
-      },
-      { rootMargin: '-20% 0px -70% 0px' },
-    );
-
-    const elements = PAGE_SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean);
-    for (const el of elements) observer.observe(el!);
-
-    return () => observer.disconnect();
-  }, []);
-
-  return activeId;
-}
+const PAGE_SECTION_IDS = PAGE_SECTIONS.map((s) => s.id);
 
 export function SectionNav() {
-  const activeSection = useActiveSection();
+  const activeSection = useActiveSection(PAGE_SECTION_IDS);
 
   return (
     <div className="sticky top-16 z-[60] border-b border-border bg-background">

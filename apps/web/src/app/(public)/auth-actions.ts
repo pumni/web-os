@@ -14,6 +14,7 @@ import { redirect } from 'next/navigation';
 type AuthFieldErrors = {
   email?: string[];
   password?: string[];
+  confirmPassword?: string[];
   fullName?: string[];
 };
 
@@ -62,6 +63,7 @@ export async function signUpAction(
   const parsed = signUpSchema.safeParse({
     email: getStringValue(formData, 'email'),
     password: getStringValue(formData, 'password'),
+    confirmPassword: getStringValue(formData, 'confirmPassword'),
     fullName: getStringValue(formData, 'fullName'),
   });
 
@@ -122,6 +124,7 @@ export async function resetPasswordAction(
 
   const parsed = resetPasswordSchema.safeParse({
     password: getStringValue(formData, 'password'),
+    confirmPassword: getStringValue(formData, 'confirmPassword'),
   });
 
   if (!parsed.success) {

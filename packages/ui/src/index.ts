@@ -93,6 +93,7 @@ export {
   FormMessage,
   useFormField,
 } from './components/form';
+export { AuthField } from './components/auth-field';
 export { GlassSurface, glassSurfaceVariants } from './components/glass-surface';
 export { Highlight } from './components/highlight';
 export { Input, inputVariants } from './components/input';

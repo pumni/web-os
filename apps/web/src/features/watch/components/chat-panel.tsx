@@ -21,6 +21,83 @@ function formatChatTime(ts: number): string {
   return `${hours}:${mins}`;
 }
 
+type ChatProfile = { username: string | null; avatar_url: string | null };
+
+interface ChatBubbleProps {
+  msg: ChatMessage;
+  isMe: boolean;
+  profile?: ChatProfile;
+  isGrouped: boolean;
+}
+
+function ChatBubble({ msg, isMe, profile, isGrouped }: ChatBubbleProps) {
+  const displayName = profile?.username ?? (isMe ? 'Bạn' : `User #${msg.userId.slice(0, 6)}`);
+  const initials = profile?.username
+    ? profile.username.slice(0, 2).toUpperCase()
+    : msg.userId.slice(0, 2).toUpperCase();
+
+  return (
+    <div
+      className={`flex gap-1.5 text-xs ${
+        isMe ? 'self-end flex-row-reverse items-end' : 'self-start items-end'
+      } max-w-[88%] ${isGrouped ? 'mt-0.5' : 'mt-2'}`}
+    >
+      {!isMe && (
+        <div className="shrink-0 mb-0.5">
+          {!isGrouped ? (
+            <Avatar className="size-6 border border-border">
+              {profile?.avatar_url && (
+                <AvatarImage
+                  src={profile.avatar_url}
+                  alt={displayName}
+                  className="object-cover"
+                />
+              )}
+              <AvatarFallback className="text-[9px] font-bold bg-primary/10 text-primary">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          ) : (
+            <div className="size-6" />
+          )}
+        </div>
+      )}
+
+      <div className={`flex flex-col gap-0.5 min-w-0 ${isMe ? 'items-end' : 'items-start'}`}>
+        {!isMe && !isGrouped && (
+          <span className="type-caption text-muted-foreground px-1 truncate max-w-30">
+            {displayName}
+          </span>
+        )}
+
+        <div className="flex items-end gap-1.5">
+          {isMe && (
+            <span className="type-caption text-muted-foreground shrink-0 mb-0.5">
+              {formatChatTime(msg.sentAt)}
+            </span>
+          )}
+          <div
+            className={`px-3 py-1.5 wrap-break-word max-w-full ${
+              isMe
+                ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-sm'
+                : 'bg-muted text-foreground rounded-2xl rounded-bl-sm'
+            }`}
+          >
+            <p className="leading-relaxed whitespace-pre-wrap text-xs select-text">
+              {msg.text}
+            </p>
+          </div>
+          {!isMe && (
+            <span className="type-caption text-muted-foreground shrink-0 mb-0.5">
+              {formatChatTime(msg.sentAt)}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ChatPanel({
   messages,
   sendChat,
@@ -64,77 +141,17 @@ export function ChatPanel({
           messages.map((msg, idx) => {
             const isMe = msg.userId === userId;
             const profile = profiles[msg.userId];
-            const displayName =
-              profile?.username ?? (isMe ? 'Bạn' : `User #${msg.userId.slice(0, 6)}`);
-            const initials = profile?.username
-              ? profile.username.slice(0, 2).toUpperCase()
-              : msg.userId.slice(0, 2).toUpperCase();
-
             const prevMsg = idx > 0 ? messages[idx - 1] : null;
             const isGrouped = prevMsg != null && prevMsg.userId === msg.userId;
 
             return (
-              <div
+              <ChatBubble
                 key={msg.id}
-                className={`flex gap-1.5 text-xs ${
-                  isMe ? 'self-end flex-row-reverse items-end' : 'self-start items-end'
-                } max-w-[88%] ${isGrouped ? 'mt-0.5' : 'mt-2'}`}
-              >
-                {!isMe && (
-                  <div className="shrink-0 mb-0.5">
-                    {!isGrouped ? (
-                      <Avatar className="size-6 border border-border">
-                        {profile?.avatar_url && (
-                          <AvatarImage
-                            src={profile.avatar_url}
-                            alt={displayName}
-                            className="object-cover"
-                          />
-                        )}
-                        <AvatarFallback className="text-[9px] font-bold bg-primary/10 text-primary">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
-                    ) : (
-                      <div className="size-6" />
-                    )}
-                  </div>
-                )}
-
-                <div
-                  className={`flex flex-col gap-0.5 min-w-0 ${isMe ? 'items-end' : 'items-start'}`}
-                >
-                  {!isMe && !isGrouped && (
-                    <span className="type-caption text-muted-foreground px-1 truncate max-w-30">
-                      {displayName}
-                    </span>
-                  )}
-
-                  <div className="flex items-end gap-1.5">
-                    {isMe && (
-                      <span className="type-caption text-muted-foreground shrink-0 mb-0.5">
-                        {formatChatTime(msg.sentAt)}
-                      </span>
-                    )}
-                    <div
-                      className={`px-3 py-1.5 wrap-break-word max-w-full ${
-                        isMe
-                          ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-sm'
-                          : 'bg-muted text-foreground rounded-2xl rounded-bl-sm'
-                      }`}
-                    >
-                      <p className="leading-relaxed whitespace-pre-wrap text-xs select-text">
-                        {msg.text}
-                      </p>
-                    </div>
-                    {!isMe && (
-                      <span className="type-caption text-muted-foreground shrink-0 mb-0.5">
-                        {formatChatTime(msg.sentAt)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
+                msg={msg}
+                isMe={isMe}
+                profile={profile}
+                isGrouped={isGrouped}
+              />
             );
           })
         )}

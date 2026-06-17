@@ -56,41 +56,27 @@ interface WatchRoomProps {
   initialQueueItems: QueueItem[];
 }
 
-export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const playerRef = useRef<MediaPlayerInstance>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
+// ---------------------------------------------------------------------------
+// Extracted hooks & components
+// ---------------------------------------------------------------------------
 
-  // Mobile Side Dock Sheet state
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-  // Desktop Side Dock collapsed state
-  const [isDockOpen, setIsDockOpen] = useState(true);
-
-  // Auto-play toggle (host-only — when on, video auto-advances after ending)
-  const [autoPlay, setAutoPlay] = useState(true);
-
-  // Source change modal state (Host only)
-  const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
-  const [newSourceType, setNewSourceType] = useState<'youtube' | 'url'>('youtube');
-  const [newSourceRef, setNewSourceRef] = useState('');
-
-  const queryClient = useQueryClient();
-
-  // 1. Join room membership on mount, then refetch member-gated data.
-  // RSC render cannot INSERT, so membership is registered client-side; the
-  // queue is RLS-gated on membership, so we MUST invalidate after joining or a
-  // link-joiner sees an empty queue until staleTime expires.
+/**
+ * Joins room membership on mount, then refetches member-gated data.
+ *
+ * RSC render cannot INSERT, so membership is registered client-side; the queue
+ * is RLS-gated on membership, so we MUST invalidate after joining or a
+ * link-joiner sees an empty queue until staleTime expires.
+ */
+function useRoomJoinEffect(roomId: string, queryClient: ReturnType<typeof useQueryClient>) {
   useEffect(() => {
     let cancelled = false;
     async function join(attempt = 0) {
       try {
-        const res = await fetch(`/api/watch/${room.id}/join`, { method: 'POST' });
+        const res = await fetch(`/api/watch/${roomId}/join`, { method: 'POST' });
         if (!res.ok) throw new Error(`join failed: ${res.status}`);
         if (cancelled) return;
-        await queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
-        await queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
+        await queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });
+        await queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });
       } catch (err) {
         if (cancelled) return;
         if (attempt < 3) {
@@ -107,7 +93,186 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     return () => {
       cancelled = true;
     };
-  }, [room.id, queryClient]);
+  }, [roomId, queryClient]);
+}
+
+/**
+ * Tracks whether the host-claim banner should be shown.
+ *
+ * Hides the banner whenever a host is present (local user or a remote host in
+ * presence); surfaces it after a 10s grace period once no host is detected.
+ */
+function useHostClaimState(isHost: boolean, hostPresent: boolean) {
+  const [showClaim, setShowClaim] = useState(false);
+
+  // Hide the banner immediately when a host reappears.
+  const [prevHostOrActive, setPrevHostOrActive] = useState(isHost || hostPresent);
+  const currentHostOrActive = isHost || hostPresent;
+  if (currentHostOrActive !== prevHostOrActive) {
+    setPrevHostOrActive(currentHostOrActive);
+    if (currentHostOrActive) {
+      setShowClaim(false);
+    }
+  }
+
+  useEffect(() => {
+    if (isHost || hostPresent) {
+      return;
+    }
+    const t = setTimeout(() => setShowClaim(true), 10_000);
+    return () => clearTimeout(t);
+  }, [isHost, hostPresent]);
+
+  return showClaim;
+}
+
+interface SourceChangeDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  newSourceType: 'youtube' | 'url';
+  setNewSourceType: (type: 'youtube' | 'url') => void;
+  newSourceRef: string;
+  setNewSourceRef: (ref: string) => void;
+  roomId: string;
+  queryClient: ReturnType<typeof useQueryClient>;
+}
+
+function SourceChangeDialog({
+  open,
+  onOpenChange,
+  newSourceType,
+  setNewSourceType,
+  newSourceRef,
+  setNewSourceRef,
+  roomId,
+  queryClient,
+}: SourceChangeDialogProps) {
+  const [isPending, startTransition] = useTransition();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSourceRef.trim()) {
+      toast.error('Vui lòng nhập link hoặc ID video.');
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        const res = await setRoomSource({
+          roomId,
+          sourceType: newSourceType,
+          sourceRef: newSourceRef,
+        });
+
+        if (res.ok) {
+          toast.success('Đổi nguồn phát thành công!');
+          onOpenChange(false);
+          setNewSourceRef('');
+          void queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });
+        } else {
+          toast.error(res.message || 'Đổi nguồn phát thất bại.');
+        }
+      } catch (err) {
+        toast.error('Có lỗi xảy ra.');
+        console.error(err);
+      }
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="type-heading text-base">Đổi nguồn phát video</DialogTitle>
+          <DialogDescription className="type-caption">
+            Thay đổi nguồn phát video cho tất cả mọi người trong phòng.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Label className="type-label">Nguồn video</Label>
+            <Tabs
+              value={newSourceType}
+              onValueChange={(val) => setNewSourceType(val as 'youtube' | 'url')}
+              className="w-full"
+            >
+              <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
+                <TabsTrigger value="youtube" className="text-xs h-7">
+                  YouTube
+                </TabsTrigger>
+                <TabsTrigger value="url" className="text-xs h-7">
+                  Direct URL (MP4/HLS)
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="new-source-ref" className="type-label">
+              {newSourceType === 'youtube'
+                ? 'Link hoặc ID video YouTube'
+                : 'Link video trực tiếp'}
+            </Label>
+            <Input
+              id="new-source-ref"
+              placeholder={
+                newSourceType === 'youtube'
+                  ? 'https://www.youtube.com/watch?v=...'
+                  : 'https://example.com/video.mp4'
+              }
+              value={newSourceRef}
+              onChange={(e) => setNewSourceRef(e.target.value)}
+              disabled={isPending}
+              required
+            />
+          </div>
+
+          <DialogFooter className="mt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => onOpenChange(false)}
+              disabled={isPending}
+            >
+              Hủy
+            </Button>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? 'Đang cập nhật...' : 'Cập nhật'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// WatchRoom
+// ---------------------------------------------------------------------------
+
+export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
+  const router = useRouter();
+  const playerRef = useRef<MediaPlayerInstance>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  // Mobile Side Dock sheet state
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Desktop Side Dock collapsed state
+  const [isDockOpen, setIsDockOpen] = useState(true);
+
+  // Auto-play toggle (host-only — when on, video auto-advances after ending)
+  const [autoPlay, setAutoPlay] = useState(true);
+
+  // Source change modal state (Host only)
+  const [isSourceModalOpen, setIsSourceModalOpen] = useState(false);
+  const [newSourceType, setNewSourceType] = useState<'youtube' | 'url'>('youtube');
+  const [newSourceRef, setNewSourceRef] = useState('');
+
+  const queryClient = useQueryClient();
+
+  // 1. Join room membership on mount, then refetch member-gated data.
+  useRoomJoinEffect(room.id, queryClient);
 
   // 2. Sync clock
   const { ready: clockReady, serverClock } = useServerClock();
@@ -193,24 +358,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   }, [handleReceiveAnchor]);
 
   const hostPresent = participants.some((p) => p.isHost);
-  const [showClaim, setShowClaim] = useState(false);
-
-  const [prevHostOrActive, setPrevHostOrActive] = useState(isHost || hostPresent);
-  const currentHostOrActive = isHost || hostPresent;
-  if (currentHostOrActive !== prevHostOrActive) {
-    setPrevHostOrActive(currentHostOrActive);
-    if (currentHostOrActive) {
-      setShowClaim(false);
-    }
-  }
-
-  useEffect(() => {
-    if (isHost || hostPresent) {
-      return;
-    }
-    const t = setTimeout(() => setShowClaim(true), 10_000);
-    return () => clearTimeout(t);
-  }, [isHost, hostPresent]);
+  const showClaim = useHostClaimState(isHost, hostPresent);
 
   // Leaving is a DELIBERATE user action — never an effect teardown or
   // `beforeunload`. Those fire on React StrictMode's dev double-mount and on
@@ -231,36 +379,6 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     const link = `${window.location.origin}/watch/${currentRoom.id}`;
     navigator.clipboard.writeText(link);
     toast.success('Đã sao chép liên kết phòng!');
-  };
-
-  const handleSourceChangeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newSourceRef.trim()) {
-      toast.error('Vui lòng nhập link hoặc ID video.');
-      return;
-    }
-
-    startTransition(async () => {
-      try {
-        const res = await setRoomSource({
-          roomId: currentRoom.id,
-          sourceType: newSourceType,
-          sourceRef: newSourceRef,
-        });
-
-        if (res.ok) {
-          toast.success('Đổi nguồn phát thành công!');
-          setIsSourceModalOpen(false);
-          setNewSourceRef('');
-          void queryClient.invalidateQueries({ queryKey: watchKeys.room(currentRoom.id) });
-        } else {
-          toast.error(res.message || 'Đổi nguồn phát thất bại.');
-        }
-      } catch (err) {
-        toast.error('Có lỗi xảy ra.');
-        console.error(err);
-      }
-    });
   };
 
   if (!clockReady) {
@@ -444,71 +562,18 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
       </Sheet>
 
       {/* Source Change Dialog (Host only) */}
-      {isHost && (
-        <Dialog open={isSourceModalOpen} onOpenChange={setIsSourceModalOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="type-heading text-base">Đổi nguồn phát video</DialogTitle>
-              <DialogDescription className="type-caption">
-                Thay đổi nguồn phát video cho tất cả mọi người trong phòng.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSourceChangeSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                <Label className="type-label">Nguồn video</Label>
-                <Tabs
-                  value={newSourceType}
-                  onValueChange={(val) => setNewSourceType(val as 'youtube' | 'url')}
-                  className="w-full"
-                >
-                  <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
-                    <TabsTrigger value="youtube" className="text-xs h-7">
-                      YouTube
-                    </TabsTrigger>
-                    <TabsTrigger value="url" className="text-xs h-7">
-                      Direct URL (MP4/HLS)
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="new-source-ref" className="type-label">
-                  {newSourceType === 'youtube'
-                    ? 'Link hoặc ID video YouTube'
-                    : 'Link video trực tiếp'}
-                </Label>
-                <Input
-                  id="new-source-ref"
-                  placeholder={
-                    newSourceType === 'youtube'
-                      ? 'https://www.youtube.com/watch?v=...'
-                      : 'https://example.com/video.mp4'
-                  }
-                  value={newSourceRef}
-                  onChange={(e) => setNewSourceRef(e.target.value)}
-                  disabled={isPending}
-                  required
-                />
-              </div>
-
-              <DialogFooter className="mt-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setIsSourceModalOpen(false)}
-                  disabled={isPending}
-                >
-                  Hủy
-                </Button>
-                <Button type="submit" disabled={isPending}>
-                  {isPending ? 'Đang cập nhật...' : 'Cập nhật'}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      )}
+      {isHost ? (
+        <SourceChangeDialog
+          open={isSourceModalOpen}
+          onOpenChange={setIsSourceModalOpen}
+          newSourceType={newSourceType}
+          setNewSourceType={setNewSourceType}
+          newSourceRef={newSourceRef}
+          setNewSourceRef={setNewSourceRef}
+          roomId={currentRoom.id}
+          queryClient={queryClient}
+        />
+      ) : null}
     </div>
   );
 }

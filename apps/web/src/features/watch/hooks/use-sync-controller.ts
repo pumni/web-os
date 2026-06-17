@@ -11,6 +11,51 @@ import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 import type { PlaybackAnchor, Room } from '../types';
 import { calculateExpectedPosition } from '../sync-math';
 
+// ---------------------------------------------------------------------------
+// Pure helpers — no side-effects, no refs
+// ---------------------------------------------------------------------------
+
+type DriftThresholds = {
+  deadband: number;
+  hardSeek: number;
+  nudge: number;
+};
+
+function getDriftThresholds(sourceType: string): DriftThresholds {
+  const isYouTube = sourceType === 'youtube';
+  return {
+    deadband: isYouTube ? 1.0 : 0.3,
+    hardSeek: isYouTube ? 2.0 : 1.5,
+    nudge: isYouTube ? 0.07 : 0.05,
+  };
+}
+
+type DriftAction = 'in-sync' | 'nudge' | 'seek';
+
+function classifyDrift(absDrift: number, thresholds: DriftThresholds): DriftAction {
+  if (absDrift < thresholds.deadband) return 'in-sync';
+  if (absDrift < thresholds.hardSeek) return 'nudge';
+  return 'seek';
+}
+
+function matchTransportState(
+  player: MediaPlayerInstance,
+  anchor: PlaybackAnchor,
+  tryPlay: (p: MediaPlayerInstance) => void,
+  markProgrammatic: () => void,
+) {
+  if (anchor.isPlaying && player.paused) {
+    tryPlay(player);
+  } else if (!anchor.isPlaying && !player.paused) {
+    markProgrammatic();
+    player.pause().catch(() => {});
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Hook
+// ---------------------------------------------------------------------------
+
 export function useSyncController(
   playerRef: React.RefObject<MediaPlayerInstance | null>,
   room: Room,
@@ -171,41 +216,35 @@ export function useSyncController(
     const expected = calculateExpectedPosition(anchor, now);
 
     // 1) Match play/pause state
-    if (anchor.isPlaying && player.paused) {
-      tryPlay(player);
-    } else if (!anchor.isPlaying && !player.paused) {
-      markProgrammatic();
-      player.pause().catch(() => {});
-    }
+    matchTransportState(player, anchor, tryPlay, markProgrammatic);
 
     // 2) Match position according to drift tolerance thresholds
-    const current = player.currentTime;
-    const drift = expected - current;
+    const drift = expected - player.currentTime;
     const absDrift = Math.abs(drift);
+    const thresholds = getDriftThresholds(room.source_type);
+    const action = classifyDrift(absDrift, thresholds);
 
-    const isYouTube = room.source_type === 'youtube';
-    const DEADBAND = isYouTube ? 1.0 : 0.3;
-    const HARD_SEEK = isYouTube ? 2.0 : 1.5;
-    const NUDGE = isYouTube ? 0.07 : 0.05;
-
-    if (absDrift < DEADBAND) {
-      if (player.playbackRate !== anchor.playbackRate) {
+    switch (action) {
+      case 'in-sync':
+        if (player.playbackRate !== anchor.playbackRate) {
+          player.playbackRate = anchor.playbackRate;
+        }
+        setSyncStatus('in-sync');
+        break;
+      case 'nudge': {
+        const adjustedRate = anchor.playbackRate + Math.sign(drift) * thresholds.nudge;
+        player.playbackRate = Math.max(0.5, Math.min(2.0, adjustedRate));
+        setSyncStatus('catching-up');
+        break;
+      }
+      case 'seek':
+        if (Math.abs(player.currentTime - expected) > 0.01) {
+          markProgrammatic();
+          player.currentTime = expected;
+        }
         player.playbackRate = anchor.playbackRate;
-      }
-      setSyncStatus('in-sync');
-    } else if (absDrift < HARD_SEEK) {
-      // Smoothly nudge the speed to catch up or wait
-      const adjustedRate = anchor.playbackRate + Math.sign(drift) * NUDGE;
-      player.playbackRate = Math.max(0.5, Math.min(2.0, adjustedRate));
-      setSyncStatus('catching-up');
-    } else {
-      // Hard jump to the expected position
-      if (Math.abs(player.currentTime - expected) > 0.01) {
-        markProgrammatic();
-        player.currentTime = expected;
-      }
-      player.playbackRate = anchor.playbackRate;
-      setSyncStatus('catching-up');
+        setSyncStatus('catching-up');
+        break;
     }
   };
 
@@ -239,12 +278,7 @@ export function useSyncController(
     }
     player.playbackRate = anchor.playbackRate;
 
-    if (anchor.isPlaying && player.paused) {
-      tryPlay(player);
-    } else if (!anchor.isPlaying && !player.paused) {
-      markProgrammatic();
-      player.pause().catch(() => {});
-    }
+    matchTransportState(player, anchor, tryPlay, markProgrammatic);
   };
 
   // Called from the tap-to-play overlay (a real user gesture).

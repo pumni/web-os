@@ -10,7 +10,7 @@ export type Density = 'comfortable' | 'compact';
 // previous brand hue, now a selectable accent.
 export const ACCENTS: readonly Accent[] = ['cyan', 'indigo', 'violet', 'rose'];
 export const GLASS_LEVELS: readonly GlassLevel[] = ['soft', 'default', 'strong'];
-export const DENSITIES: readonly Density[] = ['comfortable', 'compact'];
+const DENSITIES: readonly Density[] = ['comfortable', 'compact'];
 
 type PersonalizationContextValue = {
   accent: Accent;
@@ -23,9 +23,9 @@ type PersonalizationContextValue = {
 
 const PersonalizationContext = React.createContext<PersonalizationContextValue | null>(null);
 
-export const ACCENT_KEY = 'pumni-accent';
-export const GLASS_KEY = 'pumni-glass';
-export const DENSITY_KEY = 'pumni-density';
+const ACCENT_KEY = 'pumni-accent';
+const GLASS_KEY = 'pumni-glass';
+const DENSITY_KEY = 'pumni-density';
 
 // Accent/glass values that set a root attribute (the defaults — cyan / default —
 // are represented by the ABSENCE of the attribute, matching the provider effects).

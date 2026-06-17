@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 
-export interface MemberProfile {
+interface MemberProfile {
   id: string;
   username: string | null;
   avatar_url: string | null;

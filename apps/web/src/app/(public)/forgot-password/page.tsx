@@ -4,7 +4,7 @@ import { useActionState } from 'react';
 import Link from 'next/link';
 import { forgotPasswordAction, type AuthFormState } from '../auth-actions';
 import { AuthShell } from '../auth-shell';
-import { Input, Label, SubmitButton } from '@pumni/ui';
+import { AuthField, SubmitButton } from '@pumni/ui';
 
 const initialState: AuthFormState = {};
 
@@ -23,24 +23,18 @@ export default function ForgotPasswordPage() {
       }
     >
       <form action={formAction} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            placeholder="name@example.com"
-            type="email"
-            autoCapitalize="none"
-            autoComplete="email"
-            autoCorrect="off"
-            required
-            disabled={pending}
-            aria-invalid={state.errors?.email ? true : undefined}
-          />
-          {state.errors?.email?.[0] ? (
-            <p className="text-sm text-destructive">{state.errors.email[0]}</p>
-          ) : null}
-        </div>
+        <AuthField
+          id="email"
+          label="Email"
+          type="email"
+          placeholder="name@example.com"
+          autoCapitalize="none"
+          autoComplete="email"
+          autoCorrect="off"
+          required
+          disabled={pending}
+          error={state.errors?.email}
+        />
 
         {state.message ? (
           <p className="text-sm text-muted-foreground" aria-live="polite">

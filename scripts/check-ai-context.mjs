@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { RULES } from './review-gate-rules.mjs';
+import { parseFrontmatter } from './frontmatter.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,36 +47,6 @@ function resolveRel(relativePath) {
 
 function readFile(relativePath) {
   return fs.readFileSync(resolveRel(relativePath), 'utf8');
-}
-
-function parseFrontmatter(relativePath) {
-  const content = readFile(relativePath);
-  if (!content.startsWith('---\n') && !content.startsWith('---\r\n')) return null;
-  const end = content.indexOf('\n---', 4);
-  if (end === -1) return null;
-
-  const frontmatter = {};
-  for (const rawLine of content.slice(4, end).split(/\r?\n/)) {
-    const match = /^([A-Za-z0-9_-]+):\s*(.*)$/.exec(rawLine);
-    if (!match) continue;
-    const [, key, rawValue] = match;
-    const value = rawValue.trim();
-    if (value === 'true') {
-      frontmatter[key] = true;
-    } else if (value === 'false') {
-      frontmatter[key] = false;
-    } else if (value.startsWith('[') && value.endsWith(']')) {
-      frontmatter[key] = value
-        .slice(1, -1)
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean);
-    } else {
-      frontmatter[key] = value;
-    }
-  }
-
-  return frontmatter;
 }
 
 function reportError(message) {
