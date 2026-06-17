@@ -15,3 +15,6 @@ coverage/
 
 # Noise
 *.log
+
+# AI session scratchpad (ephemeral, see docs/ai/memory-layer.md)
+.agents/scratchpad/

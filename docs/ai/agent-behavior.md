@@ -69,6 +69,14 @@ Refresh context when any of these happens:
 When refreshing, reread the route, the touched file, and the highest-priority
 canonical doc that owns the failure.
 
+## Memory & Compaction
+
+For long or resumed tasks, use the file-based memory system in
+`docs/ai/memory-layer.md`: read `docs/ai/MEMORY.md` for settled facts, keep
+session notes in `.agents/scratchpad/` (gitignored), and compact the scratchpad
+into MEMORY.md (or a canonical doc) when a task grows past ~15 substantial turns
+or wraps up. Compaction never overrides `AGENTS.md` or enforced config.
+
 ## Verification Rules
 
 Always prefer deterministic repo commands over confidence statements:
