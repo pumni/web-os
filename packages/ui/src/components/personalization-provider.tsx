@@ -10,7 +10,7 @@ export type Density = 'comfortable' | 'compact';
 // previous brand hue, now a selectable accent.
 export const ACCENTS: readonly Accent[] = ['cyan', 'indigo', 'violet', 'rose'];
 export const GLASS_LEVELS: readonly GlassLevel[] = ['soft', 'default', 'strong'];
-const DENSITIES: readonly Density[] = ['comfortable', 'compact'];
+export const DENSITIES: readonly Density[] = ['comfortable', 'compact'];
 
 type PersonalizationContextValue = {
   accent: Accent;

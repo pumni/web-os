@@ -1,15 +1,19 @@
 ---
-description: How AI agents connect to the Next.js dev-server runtime via MCP (next-devtools-mcp) for live errors, routes, and browser verification.
+description: How AI agents connect to the Next.js dev-server runtime via MCP (next-devtools-mcp) for live errors, routes, and browser verification. The second server (postgres) is covered in docs/ai/mcp-postgres.md.
 when-to-load: When debugging a runtime/build error, verifying a route change, or closing a build-then-verify loop against the running Next.js dev server.
 last-reviewed: 2026-06-19
 ---
 
 # MCP Runtime Integration
 
-The repo declares an MCP server in `.mcp.json` named `next-devtools`
-(`next-devtools-mcp`, spawned with `npx`). It is a **bridge** between an MCP
-client and a running Next.js dev server, turning the runtime into a context
-source instead of a black box.
+The repo declares two MCP servers in `.mcp.json`:
+
+- `next-devtools` (`next-devtools-mcp`, spawned with `npx`) — a **bridge**
+  between an MCP client and a running Next.js dev server, turning the runtime
+  into a context source instead of a black box. Covered below.
+- `postgres` (`@modelcontextprotocol/server-postgres`) — a read-only
+  schema-introspection aid with a hard security boundary. Covered in
+  `docs/ai/mcp-postgres.md`.
 
 ## When to use it
 
@@ -87,13 +91,12 @@ This eliminates reliance on stale training-data knowledge. Never assume Next.js 
 
 ## Limits and rules
 
-- MCP reads dev-server state; it is **not** a substitute for RLS, secrets, or
-  static gate enforcement. P0–P4 in `AGENTS.md` still win.
+- MCP reads runtime/dev-server state; it is **not** a substitute for RLS,
+  secrets, or static gate enforcement. P0–P4 in `AGENTS.md` still win.
 - Runtime tool names are discovered, not hard-coded. Always list the dev-server
   capabilities through `nextjs_runtime` first; do not assume a tool exists
   because an older doc mentioned it.
-- `NEXT_TELEMETRY_DISABLED=1` is set in `.mcp.json` to opt out of the package's
-  anonymous telemetry. Do not remove it without a reason.
+- `NEXT_TELEMETRY_DISABLED=1` opts out of the package's anonymous telemetry.
 - Never change `.mcp.json` to disable validation or to bypass a gate.
-- Keep `.mcp.json` minimal. Add new servers only when they provide real runtime
-  context — not to broaden tool surface for its own sake.
+- Keep `.mcp.json` minimal — add servers only for real runtime context, not to
+  broaden tool surface.

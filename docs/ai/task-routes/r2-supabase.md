@@ -28,6 +28,8 @@ May read:
 - `docs/ai/prompt-structure.md` for multi-constraint R2 tasks (RLS + auth +
   migrations together).
 - `.agents/workflows/review-gate.md` before reporting done.
+- `docs/ai/agent-behavior.md` → "Subagent delegation" when exploration fans out
+  across many files (delegate) vs. a single known file (read directly).
 
 Must not do:
 

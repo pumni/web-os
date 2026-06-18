@@ -70,3 +70,10 @@ link still fails the gate.
 - `0001-structured-prompting-and-model-routing.md` — added structured prompting
   (XML/`<thinking>`) and model routing guidance; declined wholesale adoption of
   the Enterprise AI Context blueprint.
+- `0002-nextjs-cache-static-rules.md` — scoped the Next.js cache-API static
+  rules to the two regex can catch cleanly; documented the two left for human
+  review pending an AST-based analyzer.
+- `0003-cursor-claude-settings-permissions.md` — deferred adoption of Cursor
+  `.mdc` and Claude `settings.json` permission allow-deny; the glob-scoped
+  `.claude/rules/` layer + static analyzer cover the observed surface, with an
+  explicit re-open trigger.

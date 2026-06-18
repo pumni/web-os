@@ -78,6 +78,23 @@ session notes in `.agents/scratchpad/` (gitignored), and compact the scratchpad
 into MEMORY.md (or a canonical doc) when a task grows past ~15 substantial turns
 or wraps up. Compaction never overrides `AGENTS.md` or enforced config.
 
+## Subagent delegation
+
+The harness exposes an `Agent` (Explore) tool. Decide deliberately when to use
+it — the default of reading files directly burns the main context window, while
+over-delegating loses raw detail.
+
+- **Delegate to Explore when** the work is broad fan-out where only the
+  conclusion matters: "where is X configured", "list every Server Action that
+  touches RLS", "which files import this symbol". The subagent reads excerpts
+  and returns a summary, keeping the main context clean.
+- **Read directly when** a single fact is needed, the path is already known, or
+  the exact code text matters (e.g. editing one function).
+- **Never delegate** security-sensitive reads (a summary can drop a P0 detail),
+  one-file edits, or anything that needs the raw code text.
+- **Budget rule**: if a task route's "Must read" + "May read" sums to more than
+  ~8 files, delegate the exploration and keep the editing in the main thread.
+
 ## Verification Rules
 
 Always prefer deterministic repo commands over confidence statements:

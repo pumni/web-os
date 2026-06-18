@@ -28,6 +28,8 @@ May read:
 - `docs/ai/common-mistakes.md` sections 1, 6, 7, 8, 9, 10, and 11.
 - `docs/ai/prompt-structure.md` for multi-constraint or multi-package R1 tasks.
 - `.agents/workflows/review-gate.md` before reporting done.
+- `docs/ai/agent-behavior.md` → "Subagent delegation" when exploration fans out
+  across many files (delegate) vs. a single known file (read directly).
 
 Must not read by default:
 

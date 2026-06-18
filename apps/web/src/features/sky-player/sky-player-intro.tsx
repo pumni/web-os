@@ -22,7 +22,7 @@ export function SkyPlayerIntro() {
   return (
     <div className="min-h-screen">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[80vh] flex-col justify-center overflow-hidden pb-20 pt-14 md:pb-28 md:pt-20 lg:pb-32 lg:pt-24">
+      <section className="relative flex flex-col justify-center overflow-hidden pb-16 pt-14 md:pb-20 md:pt-20 lg:pb-24 lg:pt-24">
         {/* Ambient background blobs */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute left-1/4 top-0 size-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/8 blur-[100px]" />
@@ -30,7 +30,7 @@ export function SkyPlayerIntro() {
           <div className="absolute bottom-0 left-1/3 size-80 rounded-full bg-(--brand-gradient-to)/8 blur-[80px]" />
         </div>
 
-        <div className="grid items-stretch gap-12 lg:grid-cols-12 lg:gap-8">
+        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
           {/* Left: Text + CTA */}
           <motion.div
             {...(shouldReduce ? {} : recipes.fadeRise)}
@@ -82,14 +82,14 @@ export function SkyPlayerIntro() {
 
           <motion.div
             {...(shouldReduce ? {} : { ...recipes.fadeRise, transition: { ...recipes.fadeRise.transition, delay: 0.15 } })}
-            className="relative flex items-stretch justify-center lg:col-span-6 h-full"
+            className="relative flex justify-center lg:col-span-6 lg:sticky lg:top-24 lg:self-start"
           >
             {/* Glow halo behind window */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 mx-auto h-80 w-full max-w-xl -translate-y-1/2 rounded-full bg-primary/12 blur-3xl"
+              className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 mx-auto h-72 w-full max-w-xl -translate-y-1/2 rounded-full bg-primary/12 blur-3xl"
             />
-            <PreviewWindow className="w-full max-w-xl h-full" />
+            <PreviewWindow className="w-full max-w-xl" />
           </motion.div>
         </div>
       </section>
@@ -100,7 +100,7 @@ export function SkyPlayerIntro() {
       {/* ── Main content ─────────────────────────────────────────────────── */}
       <motion.div
         {...(shouldReduce ? {} : recipes.staggerContainer)}
-        className="space-y-24 py-16"
+        className="space-y-16 py-12 md:space-y-20 md:py-16"
       >
         {/* Capabilities */}
         <motion.div {...(shouldReduce ? {} : recipes.staggerItem)}>

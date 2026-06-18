@@ -31,3 +31,7 @@ pointers-first. See `docs/ai/memory-layer.md` for the compaction workflow.
 ## Decisions log
 
 <!-- Append one-line settled decisions here: YYYY-MM-DD — decision — owner doc. -->
+- 2026-06-19 — Phase 5 of the 2026 context roadmap deferred; no trigger fired
+  (8 packages < 10, no onboarding/structured-output/memory-loss/cache-cost
+  signal). Revisit when packages > 10 or a documented signal appears. Owner:
+  `docs/plans/ai-context-2026-phase4-5-handoff.md`.

@@ -9,7 +9,7 @@
 An "Enterprise AI Context System Blueprint" was proposed for this repo. Its
 enforcement, security, static-analysis, and untrusted-content layers were
 already present and stronger than the blueprint described (see
-`docs/ai/ai-context-audit.md`). Two capabilities the blueprint covers were
+`docs/plans/ai-context-audit.md`). Two capabilities the blueprint covers were
 genuinely missing from this repo:
 
 1. **Structured prompting** — XML tagging (`<context>`, `<requirements>`,
@@ -109,7 +109,7 @@ drifting documentation structure.
 ## References
 
 - `AGENTS.md` — P0–P6 priority stack; P3 = ADRs.
-- `docs/ai/ai-context-audit.md` — audit that identified the two gaps and
+- `docs/plans/ai-context-audit.md` — audit that identified the two gaps and
   recommended this work.
 - `docs/ai/prompt-playbook.md` — risk classification (R0/R1/R2); this ADR's
   prompting decision complements, not replaces, the Mini-PRD there.

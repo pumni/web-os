@@ -43,6 +43,35 @@
     animation: none;
     opacity: 0;
   }
+  .note-hit-glow {
+    animation: none;
+  }
+}
+
+/* Sky Player — note hit glow ring (GPU-friendly: opacity + transform only) */
+@keyframes note-hit-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+
+.note-hit-glow::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  box-shadow: 0 0 12px var(--color-primary), 0 0 24px var(--color-primary);
+  animation: note-hit-pulse 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));

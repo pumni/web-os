@@ -6,6 +6,13 @@
       "env": {
         "NEXT_TELEMETRY_DISABLED": "1"
       }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres@latest"],
+      "env": {
+        "POSTGRESQL_CONNECTION_URI": "${SUPABASE_DEV_DB_READONLY}"
+      }
     }
   }
 }

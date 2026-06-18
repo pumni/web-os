@@ -30,6 +30,7 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | AI context system map | `docs/ai/context-system-overview.md` |
 | AI context maintenance | `docs/ai/context-maintenance.md` |
 | MCP runtime integration (Next.js dev server) | `docs/ai/mcp-runtime.md` |
+| MCP Postgres schema introspection (read-only) | `docs/ai/mcp-postgres.md` |
 | Memory & compaction (long sessions) | `docs/ai/memory-layer.md` |
 | Real local implementation examples | `docs/ai/golden-examples.md` |
 | Common mistakes (❌/✅ pairs) | `docs/ai/common-mistakes.md` |

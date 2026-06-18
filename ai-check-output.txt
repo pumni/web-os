@@ -1,0 +1,22 @@
+$ bun scripts/check-ai-context.mjs
+Running AI context validation...
+[WARN] AI context file is large (5965 bytes): docs/ai/common-mistakes.md
+[WARN] AI context file is large (6012 bytes): docs/ai/context-system-overview.md
+[ERROR] Doc path reference does not exist in docs/plans/context-layer-2026-overhaul.md:211 -> docs/ai/context-system.md
+[ERROR] Doc path reference does not exist in docs/plans/context-layer-2026-overhaul.md:511 -> docs/adr/0004-memory-layer-harness-managed.md
+[ERROR] Doc path reference does not exist in docs/plans/context-layer-2026-overhaul.md:546 -> docs/adr/0005-context-layer-2026-overhaul.md
+
+[1] .env files committed to git
+  ok PASS  No .env files tracked by git
+
+[2] Secret pattern scan
+  ok PASS  No secret patterns detected in tracked files
+
+------------------------------------------------------------
+
+ai:secrets PASSED
+
+[sync-project-graph] Graph in sync.
+
+Validation failed with 3 error(s) and 2 warning(s).
+error: script "ai:check" exited with code 1

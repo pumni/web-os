@@ -9,6 +9,7 @@ import {
   Card,
   CardContent,
   cn,
+  DensityPicker,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
@@ -38,7 +39,7 @@ function getServerReadySnapshot() {
 
 export default function AppearanceSettingsPage() {
   const { theme = 'system', setTheme } = useTheme();
-  const { accent, glass, setAccent, setGlass } = usePersonalization();
+  const { accent, density, glass, setAccent, setDensity, setGlass } = usePersonalization();
   const mounted = React.useSyncExternalStore(
     subscribeToClientReady,
     getClientReadySnapshot,
@@ -133,6 +134,19 @@ export default function AppearanceSettingsPage() {
           </div>
 
           <GlassLevelPicker value={glass} onChange={setGlass} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h2 className="text-base font-medium text-card-foreground">Density</h2>
+            <p className="text-sm text-muted-foreground">
+              Control spacing and height of interactive elements.
+            </p>
+          </div>
+
+          <DensityPicker value={density} onChange={setDensity} />
         </CardContent>
       </Card>
     </div>

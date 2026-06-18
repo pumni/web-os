@@ -94,6 +94,7 @@ export {
   useFormField,
 } from './components/form';
 export { AuthField } from './components/auth-field';
+export { DensityPicker } from './components/density-picker';
 export { GlassLevelPicker } from './components/glass-level-picker';
 export { GlassSurface, glassSurfaceVariants } from './components/glass-surface';
 export { Highlight } from './components/highlight';
@@ -102,6 +103,8 @@ export { Label } from './components/label';
 export {
   ACCENTS,
   type Accent,
+  type Density,
+  DENSITIES,
   type GlassLevel,
   GLASS_LEVELS,
   PersonalizationProvider,
