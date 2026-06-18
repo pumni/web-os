@@ -17,6 +17,8 @@ prerequisite-reads:
 
 # Context Layer 2026 Overhaul
 
+> Extended by `docs/plans/context -layer-2026-overhaul-v2.md` (ADR-0006) — bổ sung efficacy metric, meta-inversion cut tiếp, và tỷ lệ check CI thật. Không xoá (tài liệu lịch sử).
+
 > Đây là tài liệu kế hoạch (plan doc) trong `docs/plans/` — KHÔNG bị manifest
 > enforce, không chịu size cap, không cần frontmatter `last-reviewed`. Nó tham
 > chiếu file bằng **tên gốc** (không backtick path đầy đủ cho các file sẽ bị

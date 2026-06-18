@@ -79,3 +79,4 @@ link still fails the gate.
   explicit re-open trigger.
 - `0004-memory-layer-harness-managed.md` — adopted a hybrid memory model using harness-managed session memory as primary and MEMORY.md as durable long-term storage.
 - `0005-context-layer-2026-overhaul.md` — performed a comprehensive refactoring of the AI context layer to trim ceremony, automate freshness tracking, introduce behavioral prompt-injection evaluations, and consolidate core documentation.
+- `0006-context-efficacy-overhaul.md` — introduced a static rule-efficacy metric, pruned unproven meta-about-meta files, thinned CLAUDE.md wrapper, and wired behavioral evaluations in CI via a deterministic stub agent.
