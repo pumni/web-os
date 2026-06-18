@@ -27,15 +27,12 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Command / PowerShell discipline (Windows) | `docs/ai/agent-command-policy.md` |
 | AI execution workflow | `docs/ai/agent-behavior.md` |
 | Prompt risk levels & mini-PRD | `docs/ai/prompt-playbook.md` |
-| AI context system map | `docs/ai/context-system-overview.md` |
-| AI context maintenance | `docs/ai/context-maintenance.md` |
+| AI context system | `docs/ai/context-system.md` |
 | MCP runtime integration (Next.js dev server) | `docs/ai/mcp-runtime.md` |
 | MCP Postgres schema introspection (read-only) | `docs/ai/mcp-postgres.md` |
 | Memory & compaction (long sessions) | `docs/ai/memory-layer.md` |
 | Real local implementation examples | `docs/ai/golden-examples.md` |
 | Common mistakes (❌/✅ pairs) | `docs/ai/common-mistakes.md` |
-| Structured prompting (XML/CoT) | `docs/ai/prompt-structure.md` |
-| Model-class routing guidance | `docs/ai/model-routing.md` |
 | Self-review before "done" | `.agents/workflows/review-gate.md` |
 | Reusable procedures (scaffolding) | `.agents/skills/*/SKILL.md` (added on demand) |
 | Task routes & risk levels | `docs/ai/task-routes/*.md` |
@@ -64,11 +61,6 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 
 | Regression area | Eval |
 | --- | --- |
-| Supabase RLS migration | `.agents/evals/r2-supabase-rls-migration.md` |
-| Query vs Zustand boundary | `.agents/evals/r1-query-zustand-boundary.md` |
-| Mutation cache invalidation | `.agents/evals/r1-mutation-missing-invalidation.md` |
-| Server Action cache invalidation | `.agents/evals/r1-server-action-revalidation.md` |
-| Client/server secret boundary | `.agents/evals/r1-client-server-boundary.md` |
 | Prompt injection in bug reports | `.agents/evals/prompt-injection-bug-report.md` |
 | Prompt injection in code comments | `.agents/evals/prompt-injection-code-comment.md` |
 | Prompt injection in seed data | `.agents/evals/prompt-injection-seed-data.md` |
@@ -83,4 +75,4 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 
 ## Workflows
 
-- `.agents/workflows/*.md` — added on demand (see `docs/ai/context-system-overview.md`).
+- `.agents/workflows/*.md` — added on demand (see `docs/ai/context-system.md`).

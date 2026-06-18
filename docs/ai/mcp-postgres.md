@@ -1,7 +1,6 @@
 ---
 description: How AI agents use the postgres MCP server for read-only DB schema introspection, with its hard security boundary.
 when-to-load: When you need the live Supabase DB schema (tables, columns, RLS policies, indexes) instead of guessing from generated types.
-last-reviewed: 2026-06-19
 ---
 
 # Postgres MCP (schema introspection)

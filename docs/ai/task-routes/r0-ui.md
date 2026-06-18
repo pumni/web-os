@@ -1,7 +1,6 @@
 ---
 description: Context budget for cosmetic UI, copy, and low-risk docs-only tasks.
 when-to-load: When a task is local, cosmetic, or documentation-only and does not touch data/auth/security behavior.
-last-reviewed: 2026-06-19
 ---
 
 # R0 UI Route

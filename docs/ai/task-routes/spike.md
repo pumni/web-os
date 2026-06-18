@@ -1,7 +1,6 @@
 ---
 description: Context budget for time-boxed technical investigation before implementation.
 when-to-load: When the task is exploratory, asks for a plan, or requires comparing implementation options before editing.
-last-reviewed: 2026-06-19
 ---
 
 # Spike Route

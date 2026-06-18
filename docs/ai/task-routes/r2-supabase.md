@@ -1,7 +1,6 @@
 ---
 description: Context budget for Supabase migrations, RLS, auth, keys, RPCs, and privileged server access.
 when-to-load: When a task touches Supabase schema, policies, grants, auth helpers, service-role keys, or RLS behavior.
-last-reviewed: 2026-06-19
 ---
 
 # R2 Supabase Route
@@ -25,7 +24,7 @@ May read:
 - `docs/architecture/overview.md` when package ownership is unclear.
 - `docs/conventions/data-fetching.md` when the DB change affects reads,
   mutations, cache invalidation, or generated types.
-- `docs/ai/prompt-structure.md` for multi-constraint R2 tasks (RLS + auth +
+- `docs/ai/prompt-playbook.md` for multi-constraint R2 tasks (RLS + auth +
   migrations together).
 - `.agents/workflows/review-gate.md` before reporting done.
 - `docs/ai/agent-behavior.md` → "Subagent delegation" when exploration fans out

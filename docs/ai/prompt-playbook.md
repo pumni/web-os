@@ -1,7 +1,6 @@
 ---
 description: Risk levels, context budgets, mini-PRD template, and recovery patterns for AI tasks.
 when-to-load: When classifying a user prompt, planning a feature, or deciding validation depth.
-last-reviewed: 2026-06-19
 ---
 
 # Prompt Playbook
@@ -40,6 +39,8 @@ Default route: `docs/ai/task-routes/r2-supabase.md`.
 
 Minimum validation: `bun run ai:check`, `bun run ai:eval`, `bun run typecheck`,
 and any migration/type generation command required by the change.
+
+R2 / multi-package: có thể bọc yêu cầu cứng trong `<requirements>` để không sót ràng buộc — không bắt buộc, không lạm dụng cho R0/R1.
 
 ## Quick Workflows
 

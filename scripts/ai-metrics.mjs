@@ -92,19 +92,17 @@ function measureCoverage() {
 
 // --- Metric 2: Freshness ---------------------------------------------------
 
-function parseDateSafe(value) {
-  if (typeof value !== 'string') return null;
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!m) return null;
-  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  if (
-    d.getFullYear() !== Number(m[1]) ||
-    d.getMonth() + 1 !== Number(m[2]) ||
-    d.getDate() !== Number(m[3])
-  ) {
+function getGitCommitDate(rel) {
+  try {
+    const stdout = execSync(`git log -1 --format=%cI -- "${rel}"`, {
+      cwd: ROOT,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    return stdout ? new Date(stdout) : null;
+  } catch {
     return null;
   }
-  return d;
 }
 
 function measureFreshness(frontmatterRequired) {
@@ -115,25 +113,15 @@ function measureFreshness(frontmatterRequired) {
   const stale = [];
 
   for (const rel of frontmatterRequired) {
-    const fm = parseFrontmatter(rel);
-    if (!fm) {
+    const commitDate = getGitCommitDate(rel);
+    if (!commitDate) {
       missing++;
       continue;
     }
-    const raw = fm['last-reviewed'];
-    if (!raw) {
-      missing++;
-      continue;
-    }
-    const reviewed = parseDateSafe(raw);
-    if (!reviewed) {
-      invalid++;
-      continue;
-    }
-    const ageDays = Math.floor((today.getTime() - reviewed.getTime()) / MS_PER_DAY);
+    const ageDays = Math.floor((today.getTime() - commitDate.getTime()) / MS_PER_DAY);
     ages.push(ageDays);
     if (ageDays > FRESHNESS_WARN_DAYS) {
-      stale.push({ file: rel, ageDays, reviewed: raw });
+      stale.push({ file: rel, ageDays, reviewed: commitDate.toISOString().split('T')[0] });
     }
   }
 

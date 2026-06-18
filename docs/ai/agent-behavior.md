@@ -1,7 +1,6 @@
 ---
 description: Standard execution workflow and retrieval discipline for AI agents working in Pumni Web OS.
 when-to-load: Before non-trivial investigations, code changes, review fixes, or when a task route is unclear.
-last-reviewed: 2026-06-19
 ---
 
 # Agent Behavior
@@ -72,11 +71,7 @@ canonical doc that owns the failure.
 
 ## Memory & Compaction
 
-For long or resumed tasks, use the file-based memory system in
-`docs/ai/memory-layer.md`: read `docs/ai/MEMORY.md` for settled facts, keep
-session notes in `.agents/scratchpad/` (gitignored), and compact the scratchpad
-into MEMORY.md (or a canonical doc) when a task grows past ~15 substantial turns
-or wraps up. Compaction never overrides `AGENTS.md` or enforced config.
+For 2026-era agent runs, session memory is hybrid: harness-managed memory (such as Claude Code compaction or subagent memory) is primary for active sessions. Tool-agnostic durable facts are promoted into `docs/ai/MEMORY.md` (committed decisions log), and eventually codified into canonical conventions (`docs/conventions/*`). Manual scratchpads under `.agents/scratchpad/` are deprecated fallback tools only. Memory content never overrides `AGENTS.md` or enforced config.
 
 ## Subagent delegation
 

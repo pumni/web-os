@@ -1,7 +1,6 @@
 ---
 description: Common AI mistakes in this codebase as ❌/✅ pairs, cross-referenced to the static rules that catch them.
 when-to-load: Before writing feature code, Supabase access, or state logic — and when a review-gate rule fires.
-last-reviewed: 2026-06-19
 ---
 
 # Common Mistakes
@@ -90,63 +89,19 @@ or `actions.ts`/`queries.ts` (`docs/conventions/feature-module.md`).
 ❌ `try { await save(); } catch (e) {}` in `actions.ts`/`queries.ts`.
 ✅ Throw, return an explicit failure, or log before continuing.
 
-## 10. Next.js 16 cache invalidation
+## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`)
 
-❌ `revalidateTag('profile')`
-✅ `revalidateTag('profile', 'max')` for stale-while-revalidate, or
-`updateTag('profile')` inside Server Actions when users must read their own
-writes immediately.
+All Next.js 16 caching patterns, lifecycles, and invalidations must follow the rules in [apps/web/AGENTS.md](file:///d:/Dev/web-os/apps/web/AGENTS.md).
 
-## 11. Instant navigation exports
+❌ `revalidateTag('profile')` (missing second argument).
+✅ `revalidateTag('profile', 'max')` for stale-while-revalidate, or `updateTag('profile')` inside Server Actions.
 
-❌ Adding `export const unstable_instant` to a `"use client"` route file.
-✅ Export it only from Server Component route segments that should be validated
-for instant navigation. Protected layouts should either put auth behind a local
-Suspense boundary with a static fallback shell, or use
-`export const unstable_instant = false` if they intentionally cannot be instant.
-Never render protected children in the fallback shell before auth resolves.
+❌ `cacheLife('seconds')` (punches dynamic hole in PPR static shell).
+✅ `cacheLife('minutes')` (minimum safe tier), `'hours'`, or `'days'`.
 
-## 12. Sync access to async request APIs (`async-request-api`)
+❌ `cacheTag('profile')` (causes cross-user cache collisions).
+✅ `cacheTag(\`profile:${userId}\`)` (parameterized tag).
 
-All request-time APIs are async in Next.js 16. Sync access **compiles but throws at runtime**.
+❌ `'use cache'` inside wrapper functions (silently becomes dynamic), or `updateTag()` in Route Handlers (throws at runtime).
+✅ `'use cache';` at file/function level, and `updateTag()` in Server Actions only.
 
-❌ `const { id } = params;` / `cookies().get('token')`
-✅ `const { id } = await params;` / `(await cookies()).get('token')`
-
-Applies to: `params`, `searchParams`, `cookies()`, `headers()`, `draftMode()`.
-Run `npx next typegen` for correct `PageProps`/`RouteContext` types — do not handcraft them.
-
-## 13. `'use cache'` in a wrapper function (`use-cache-placement`)
-
-`'use cache'` inside a wrapper silently becomes a dynamic boundary — the cache is ignored without any warning.
-
-❌ `function withCache() { return async () => { 'use cache'; ... }; }`
-✅ `'use cache';` at file level, or directly inside the function body that fetches data.
-
-> **Doc-only:** no static rule — detecting wrapper placement needs lexical-scope
-> analysis the regex analyzer can't do reliably. Caught by review. See
-> `docs/adr/0002-nextjs-cache-static-rules.md`.
-
-See full examples: `apps/web/AGENTS.md` → Cache Components section.
-
-## 14. `cacheLife('seconds')` breaks PPR static shell (`cache-life-too-short`)
-
-❌ `cacheLife('seconds')` — silently creates a dynamic hole in the PPR static shell.
-✅ Minimum safe: `cacheLife('minutes')`. Use `'hours'` or `'days'` for stable data.
-
-> Caught by `bun run ai:eval` static rule `cache-life-too-short` (B2).
-
-## 15. `updateTag()` outside Server Actions (`update-tag-scope`)
-
-❌ Calling `updateTag()` inside a Route Handler — throws at runtime.
-✅ `updateTag()` is **Server Actions only**. It provides read-your-writes semantics.
-
-> **Doc-only:** no static rule — scope detection needs lexical analysis. See
-> `docs/adr/0002-nextjs-cache-static-rules.md`.
-
-## 16. Non-parameterized `cacheTag()` causes cross-user collisions (`cache-tag-unparameterized`)
-
-❌ `cacheTag('profile')` — all users share one cache entry.
-✅ `cacheTag(\`profile:${userId}\`)` — always pass an identifying parameter.
-
-> Caught by `bun run ai:eval` static rule `cache-tag-unparameterized` (B1).

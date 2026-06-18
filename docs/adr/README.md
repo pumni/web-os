@@ -77,3 +77,5 @@ link still fails the gate.
   `.mdc` and Claude `settings.json` permission allow-deny; the glob-scoped
   `.claude/rules/` layer + static analyzer cover the observed surface, with an
   explicit re-open trigger.
+- `0004-memory-layer-harness-managed.md` — adopted a hybrid memory model using harness-managed session memory as primary and MEMORY.md as durable long-term storage.
+- `0005-context-layer-2026-overhaul.md` — performed a comprehensive refactoring of the AI context layer to trim ceremony, automate freshness tracking, introduce behavioral prompt-injection evaluations, and consolidate core documentation.

@@ -1,7 +1,6 @@
 ---
 description: Monorepo dependency graph, foundational blocks vs leaves, and how to reason about blast radius before cross-package changes.
 when-to-load: When a change spans more than one package, or before editing a package that many others depend on.
-last-reviewed: 2026-06-19
 ---
 
 # Project Graph

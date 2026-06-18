@@ -57,21 +57,21 @@ If any **P0** item fails, stop and fix before doing anything else.
 
 ## Static Rule Inventory
 
-| id                                   | severity | summary                                                                              |
-| ------------------------------------ | -------- | ------------------------------------------------------------------------------------ |
-| `supabase-select-star`               | B1       | Supabase reads must use explicit projection columns.                                 |
-| `service-role-client`                | P0       | Service-role and secret Supabase credentials must never enter client bundles.        |
-| `trusted-client-user-id-write`       | B1       | Client writes must not trust client-supplied user_id values.                         |
-| `swallowed-error`                    | B1       | Server I/O errors must be propagated, returned, or logged.                           |
-| `missing-auth-uid-policy`            | B1       | User-owned RLS policies must include an auth.uid() owner predicate.                  |
-| `rpc-user-id-without-auth-check`     | B1       | RPC functions accepting p_user_id must compare it to auth.uid().                     |
-| `mutation-without-invalidation`      | B2       | TanStack Query mutations must refresh or update affected cached data.                |
-| `query-result-in-zustand`            | B1       | TanStack Query result data must not be mirrored into Zustand stores.                 |
-| `missing-loading-state`              | B2       | Client components using useQuery must render a loading or pending state.             |
-| `route-business-logic`               | B2       | App Router route files should compose UI, not own mutations or ad-hoc network logic. |
-| `server-action-missing-auth`         | B1       | Server Actions that write through Supabase must derive the user server-side first.   |
-| `server-action-missing-revalidation` | B2       | Mutating Server Actions must invalidate or update Next.js cache state.               |
-| `client-secret-env`                  | B1       | Client files must only read NEXT*PUBLIC*\* environment variables.                    |
-| `server-only-in-client`              | B1       | Client files must not import server-only auth, env, or Supabase server modules.      |
-| `cache-life-too-short`               | B2       | `cacheLife('seconds')` punches a dynamic hole in the PPR static shell.               |
-| `cache-tag-unparameterized`          | B1       | `cacheTag('literal')` with no parameter collides across users/scopes.                |
+| id                                   | severity | summary                                                                              | Scenario                                                                             |
+| ------------------------------------ | -------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `supabase-select-star`               | B1       | Supabase reads must use explicit projection columns.                                 | Retrieve specific columns to survive schema drift.                                   |
+| `service-role-client`                | P0       | Service-role and secret Supabase credentials must never enter client bundles.        | Add interactive UI without leaking server secrets/clients.                           |
+| `trusted-client-user-id-write`       | B1       | Client writes must not trust client-supplied user_id values.                         | Ensure client-side mutations do not spoof user_id.                                   |
+| `swallowed-error`                    | B1       | Server I/O errors must be propagated, returned, or logged.                           | Prevent silent server-side database failures.                                        |
+| `missing-auth-uid-policy`            | B1       | User-owned RLS policies must include an auth.uid() owner predicate.                  | Add user-owned table protected by owner RLS policies.                                |
+| `rpc-user-id-without-auth-check`     | B1       | RPC functions accepting p_user_id must compare it to auth.uid().                     | Secure RPC endpoints against user ID spoofing.                                       |
+| `mutation-without-invalidation`      | B2       | TanStack Query mutations must refresh or update affected cached data.                | Invalidate or update query cache after data mutations.                               |
+| `query-result-in-zustand`            | B1       | TanStack Query result data must not be mirrored into Zustand stores.                 | Keep query cache and Zustand stores separated.                                       |
+| `missing-loading-state`              | B2       | Client components using useQuery must render a loading or pending state.             | Render skeleton/spinner while data is pending.                                       |
+| `route-business-logic`               | B2       | App Router route files should compose UI, not own mutations or ad-hoc network logic. | Keep route files thin, delegate logic to features.                                   |
+| `server-action-missing-auth`         | B1       | Server Actions that write through Supabase must derive the user server-side first.   | Authorize Server Action writes via server-side session checks.                       |
+| `server-action-missing-revalidation` | B2       | Mutating Server Actions must invalidate or update Next.js cache state.               | Invalidate cached tag/path in Next.js Server Actions.                                |
+| `client-secret-env`                  | B1       | Client files must only read NEXT_PUBLIC_* environment variables.                    | Prevent reading backend-only env vars on client.                                     |
+| `server-only-in-client`              | B1       | Client files must not import server-only auth, env, or Supabase server modules.      | Keep server-only packages out of client bundles.                                     |
+| `cache-life-too-short`               | B2       | `cacheLife('seconds')` punches a dynamic hole in the PPR static shell.               | Keep static cache duration above dynamic threshold.                                  |
+| `cache-tag-unparameterized`          | B1       | `cacheTag('literal')` with no parameter collides across users/scopes.                | Parameterize cache tags to avoid cross-user collisions.                              |

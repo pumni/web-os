@@ -35,3 +35,5 @@ pointers-first. See `docs/ai/memory-layer.md` for the compaction workflow.
   (8 packages < 10, no onboarding/structured-output/memory-loss/cache-cost
   signal). Revisit when packages > 10 or a documented signal appears. Owner:
   `docs/plans/ai-context-2026-phase4-5-handoff.md`.
+- 2026-06-19 — Memory layer chuyển hybrid: harness-managed primary (Claude Code compaction/memory tool), MEMORY.md = durable promoted-from-compaction. Owner: docs/ai/memory-layer.md, docs/adr/0004.
+- 2026-06-19 — Context layer 2026 overhaul: trim ceremony + behavioral runner + hybrid memory + git freshness. Owner: docs/adr/0005.

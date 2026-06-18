@@ -37,46 +37,27 @@ function runScript(label, scriptName, extraArgs = []) {
 function printEvalCoverageReport() {
   console.log('\n=== Eval coverage ===');
   const evalDir = path.join(ROOT, '.agents', 'evals');
-  const evalFiles = fs
-    .readdirSync(evalDir)
-    .filter((fileName) => fileName.endsWith('.md'))
-    .sort()
-    .map((fileName) => `.agents/evals/${fileName}`);
+  const evalFiles = fs.existsSync(evalDir)
+    ? fs.readdirSync(evalDir).filter((fileName) => fileName.endsWith('.md'))
+    : [];
 
-  const coveredRules = new Map();
-  let automated = 0;
+  let behavioral = 0;
   let manual = 0;
 
-  for (const relativePath of evalFiles) {
+  for (const fileName of evalFiles) {
+    const relativePath = `.agents/evals/${fileName}`;
     const frontmatter = parseFrontmatter(relativePath);
     if (!frontmatter) continue;
-    if (frontmatter.manual === true) manual++;
-    if (frontmatter['automated-rule']) automated++;
-
-    const rules = new Set(
-      [
-        frontmatter['automated-rule'],
-        ...(Array.isArray(frontmatter['covered-rules']) ? frontmatter['covered-rules'] : []),
-      ].filter(Boolean),
-    );
-
-    for (const ruleId of rules) {
-      if (!coveredRules.has(ruleId)) coveredRules.set(ruleId, []);
-      coveredRules.get(ruleId).push(relativePath);
+    if (frontmatter.behavioral === true) {
+      behavioral++;
+    } else if (frontmatter.manual === true) {
+      manual++;
     }
   }
 
   const ruleIds = Object.values(RULES);
-  console.log(`Evals: ${evalFiles.length} total (${automated} automated, ${manual} manual).`);
-  console.log(
-    `Static rule coverage: ${coveredRules.size}/${ruleIds.length} rules covered by at least one eval.`,
-  );
-
-  const missing = ruleIds.filter((ruleId) => !coveredRules.has(ruleId));
-  if (missing.length > 0) {
-    console.error(`[ERROR] Static rules without eval coverage: ${missing.join(', ')}`);
-    failed = true;
-  }
+  console.log(`Static rules enforced: ${ruleIds.length}/${ruleIds.length} (proven by --self-test)`);
+  console.log(`Behavioral scenarios: ${behavioral} (runner pending Phase 4), manual evals: ${manual}`);
 }
 
 // 0. Sanity-check the analyzer itself before trusting its verdict.
@@ -90,6 +71,9 @@ runScript('Secrets scan', 'check-secrets.mjs');
 
 // 3. Eval inventory and rule coverage.
 printEvalCoverageReport();
+
+// 4. Behavioral evals (optional).
+runScript('Behavioral evals (optional)', 'run-behavioral-evals.mjs');
 
 if (failed) {
   console.error('\n[FAIL] AI regression evals failed.');

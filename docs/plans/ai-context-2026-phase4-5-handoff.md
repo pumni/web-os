@@ -6,6 +6,9 @@ last-updated: 2026-06-19
 purpose: Detailed, self-contained implementation guide for a NEW session to continue Phase 4 (Maturity) and Phase 5 (Scale) of the 2026 context-layer upgrade. Read this top-to-bottom before starting.
 ---
 
+> [!NOTE]
+> Superseded by [context-layer-2026-overhaul.md](file:///d:/Dev/web-os/docs/plans/context-layer-2026-overhaul.md) (2026-06-19)
+
 # AI Context 2026 Roadmap — Phase 4 & 5 Handoff
 
 This document hands off the remaining two phases of the 2026 context-layer

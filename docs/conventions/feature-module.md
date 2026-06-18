@@ -1,7 +1,6 @@
 ---
 description: Where feature code lives (actions.ts, queries.ts, components) and when to promote to packages.
 when-to-load: When creating or extending a feature under apps/web/src/features.
-last-reviewed: 2026-06-19
 ---
 
 # Feature Module Convention

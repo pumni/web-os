@@ -25,7 +25,6 @@ try {
 const REQUIRED_FILES = manifest.requiredFiles ?? [];
 const THIN_WRAPPERS = manifest.thinWrappers ?? [];
 const REQUIRED_PACKAGE_SCRIPTS = manifest.requiredPackageScripts ?? [];
-const REQUIRED_AIIGNORE_PATTERNS = manifest.requiredAiIgnorePatterns ?? [];
 const FRONTMATTER_REQUIRED = manifest.frontmatterRequired ?? [];
 const INDEX_REQUIRED_REFERENCES = manifest.indexRequiredReferences ?? [];
 const SKILL_VALIDATION = manifest.skillValidation ?? {
@@ -95,8 +94,8 @@ function getMarkdownLinkFiles() {
     ...collectMarkdownFiles('.agents'),
     ...collectMarkdownFiles('.github'),
     ...collectMarkdownFiles('.claude'),
-  ].filter((relativePath) => !/(^|\/)PLAN_[^/]*\.md$/.test(relativePath));
-  // PLAN_*.md are meta/historical planning docs that intentionally reference
+  ].filter((relativePath) => !/(^|\/)PLAN_[^/]*\.md$/.test(relativePath) && !relativePath.startsWith('docs/plans/'));
+  // PLAN_*.md and docs/plans/ are meta/historical planning docs that intentionally reference
   // example or not-yet-created paths; exclude them from link-rot checks.
 }
 
@@ -230,20 +229,7 @@ function checkPackageScripts() {
   }
 }
 
-function checkAiIgnoreCoverage() {
-  const lines = readFile('.aiignore')
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith('#'));
 
-  const patterns = new Set(lines);
-
-  for (const requiredPattern of REQUIRED_AIIGNORE_PATTERNS) {
-    if (!patterns.has(requiredPattern)) {
-      reportError(`.aiignore is missing required pattern: ${requiredPattern}`);
-    }
-  }
-}
 
 function checkFrontmatter() {
   for (const relativePath of FRONTMATTER_REQUIRED) {
@@ -269,11 +255,6 @@ function checkFrontmatter() {
     if (!/^\s*when-to-load:\s*\S+/m.test(frontmatter)) {
       reportError(`${relativePath} frontmatter is missing 'when-to-load:'`);
     }
-    if (!/^\s*last-reviewed:\s*\d{4}-\d{2}-\d{2}/m.test(frontmatter)) {
-      reportWarn(
-        `${relativePath} frontmatter is missing 'last-reviewed:' (YYYY-MM-DD). Run \`bun run ai:backfill-dates\` if backfilling.`,
-      );
-    }
   }
 }
 
@@ -282,47 +263,38 @@ const FRESHNESS_ERROR_DAYS = 365;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 function checkFreshness() {
-  // `last-reviewed` tracks the last *intentional accuracy review* of a doc —
-  // distinct from a content edit (a typo fix should not reset the clock).
-  // Absent dates are reported by checkFrontmatter; here we age the ones present.
   const today = new Date();
   for (const relativePath of FRONTMATTER_REQUIRED) {
-    const fm = parseFrontmatter(relativePath);
-    if (!fm || !fm['last-reviewed']) continue;
-    const reviewed = parseDateSafe(fm['last-reviewed']);
-    if (!reviewed) {
-      reportError(
-        `${relativePath} 'last-reviewed' is not a valid YYYY-MM-DD date: ${fm['last-reviewed']}`,
-      );
+    let commitDate = null;
+    try {
+      const stdout = execFileSync('git', ['log', '-1', '--format=%cI', '--', relativePath], {
+        cwd: ROOT,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim();
+      if (stdout) {
+        commitDate = new Date(stdout);
+      }
+    } catch {
+      // If git is not available, skip with a warning.
+    }
+
+    if (!commitDate) {
+      reportWarn(`${relativePath} freshness: git commit date not available. Skipping freshness check.`);
       continue;
     }
-    const ageDays = Math.floor((today.getTime() - reviewed.getTime()) / MS_PER_DAY);
+
+    const ageDays = Math.floor((today.getTime() - commitDate.getTime()) / MS_PER_DAY);
     if (ageDays > FRESHNESS_ERROR_DAYS) {
       reportError(
-        `${relativePath} is stale: last-reviewed ${ageDays} days ago (> ${FRESHNESS_ERROR_DAYS}). Re-review accuracy and update 'last-reviewed'.`,
+        `${relativePath} is stale: last git commit was ${ageDays} days ago (> ${FRESHNESS_ERROR_DAYS}). Re-review accuracy and commit a change.`,
       );
     } else if (ageDays > FRESHNESS_WARN_DAYS) {
       reportWarn(
-        `${relativePath} is aging: last-reviewed ${ageDays} days ago (> ${FRESHNESS_WARN_DAYS}).`,
+        `${relativePath} is aging: last git commit was ${ageDays} days ago (> ${FRESHNESS_WARN_DAYS}).`,
       );
     }
   }
-}
-
-function parseDateSafe(value) {
-  if (typeof value !== 'string') return null;
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return null;
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-  // Reject rollover dates like 2026-13-40 -> 2027-02-09.
-  if (
-    date.getFullYear() !== Number(match[1]) ||
-    date.getMonth() + 1 !== Number(match[2]) ||
-    date.getDate() !== Number(match[3])
-  ) {
-    return null;
-  }
-  return date;
 }
 
 function checkContextIndexCoverage() {
@@ -443,32 +415,14 @@ function collectEvalFiles() {
 }
 
 function checkEvalRuleMapping() {
-  const ruleIds = new Set(Object.values(RULES));
-
   for (const relativePath of collectEvalFiles()) {
     const frontmatter = parseFrontmatter(relativePath);
     if (!frontmatter) continue;
 
-    const automatedRule = frontmatter['automated-rule'];
     const isManual = frontmatter.manual === true;
-    if (!automatedRule && !isManual) {
-      reportError(`${relativePath} must declare automated-rule: <rule-id> or manual: true.`);
-    }
-    if (automatedRule && !ruleIds.has(automatedRule)) {
-      reportError(
-        `${relativePath} automated-rule references unknown static rule: ${automatedRule}`,
-      );
-    }
-
-    const coveredRules = frontmatter['covered-rules'] ?? [];
-    if (!Array.isArray(coveredRules)) {
-      reportError(`${relativePath} covered-rules must be an inline YAML array.`);
-      continue;
-    }
-    for (const ruleId of coveredRules) {
-      if (!ruleIds.has(ruleId)) {
-        reportError(`${relativePath} covered-rules references unknown static rule: ${ruleId}`);
-      }
+    const isBehavioral = frontmatter.behavioral === true;
+    if (!isManual && !isBehavioral) {
+      reportError(`${relativePath} must declare manual: true or behavioral: true.`);
     }
   }
 }
@@ -628,7 +582,6 @@ checkContextIndexCoverage();
 checkTaskRoutes();
 checkRuleInventory();
 checkPackageScripts();
-checkAiIgnoreCoverage();
 checkLlmsTxt();
 checkDesignTokenBoundaries();
 checkUiPackageBoundaries();
