@@ -1,0 +1,34 @@
+# 0007. Refined Command Policy
+
+- **Status:** Accepted
+- **Date:** 2026-06-19
+- **Owner:** AI command execution (see `docs/ai/agent-command-policy.md`)
+
+## Context
+
+Following evaluations of agent execution on Windows host environments, several core gaps and contradictions were identified:
+1. **Internal Contradiction:** `AGENTS.md` instructed agents to avoid the `&&` operator on Windows, while `docs/ai/agent-command-policy.md` explicitly recommended using it. In reality, `&&` is fully supported in PowerShell 7 (`pwsh`) and Git Bash, but is a parser error in Windows PowerShell 5.1.
+2. **Harness Host Shell Pre-Evaluation:** AI agents execute shell commands via the harness's host environment (e.g. Windows PowerShell 5.1 or Git Bash), which pre-evaluates or strips variables and special symbols like `$` (e.g., `$env:NAME` or `$null`) before they are executed. This makes complex commands that rely on PowerShell variable syntax extremely brittle and prone to failure.
+3. **Inappropriate Translation Table:** The Unix-to-PowerShell translation tutorial instructed agents to write complex PowerShell cmdlets rather than relying on native harness tools (`view_file`, `grep_search`, `list_dir`) or standard cross-platform Node/Bun scripts, leading to higher complexity and higher failure rates.
+
+## Decision
+
+Refine the command execution guidelines to align with actual harness behavior:
+1. **Resolve `&&` Contradiction:** Update `AGENTS.md` and `docs/ai/agent-command-policy.md` to clarify that `&&` works in pwsh 7 and Git Bash but fails in Windows PowerShell 5.1, recommending sequential execution or `;` for safety when the shell is uncertain.
+2. **Document Host Shell Risks:** Explicitly warn agents about variable pre-evaluation/stripping issues with `$` in the host shell, instructing them to avoid inline environment variables or `$null` redirections where possible.
+3. **Prefer Harness Tools and Node/Bun Scripts:** Replace the Unix-to-PowerShell cmdlets translation table with guidelines that prioritize harness tools (`view_file`, `grep_search`, etc.) for query/search, and cross-shell scripts (Node/Bun) or Git Bash native utilities for terminal operations.
+
+## Consequences
+
+**Positive:**
+- AI agent commands are safer, more robust, and more portable across different harness environments.
+- Eliminated internal rule contradictions that could confuse agents during execution or evaluations.
+- Reduced shell-code complexity by encouraging the use of harness-provided tools rather than raw shell commands.
+
+**Negative / costs:**
+- Removal of the detailed PowerShell syntax tutorial (which was largely a source of errors rather than utility for the agent).
+
+## References
+
+- `docs/ai/agent-command-policy.md` - Command Policy.
+- `AGENTS.md` - AI Instructions.

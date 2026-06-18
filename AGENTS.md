@@ -61,8 +61,8 @@ State ownership: server state stays in Server Components or TanStack Query cache
 
 ## Command Discipline
 
-Environment is `win32` + PowerShell 7 (sandbox bash); prefer `bun run <script>` and `;`-separated commands; avoid bash-only `&&` or Unix-only utilities (`head`, `tail`) in Windows commands.
-- Use PowerShell 7 (`pwsh`) on Windows by default. Reference the detailed discipline in `docs/ai/agent-command-policy.md`.
+Environment is `win32` host shell (varies between Windows PowerShell 5.1, where `&&` is a parser error, and Git Bash). Prefer `;`-separated commands or running commands individually. Avoid complex chaining or `$`-prefixed variables (e.g. `$env:NAME`, `$null`) which can be pre-evaluated or stripped by the host.
+- Prefer using harness tools (Read, Grep, Glob) instead of shell commands. Reference the detailed discipline in `docs/ai/agent-command-policy.md`.
 - Use deterministic, non-interactive commands with plain-text output.
 - Keep commands narrow, explicit, and scoped to the current task.
 - Use repo-relative paths.

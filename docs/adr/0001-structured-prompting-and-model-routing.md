@@ -29,7 +29,7 @@ drifting documentation structure.
 
 ## Decision
 
-32: 1. **Add structured prompting as optional, scoped guidance.** (Note: docs/ai/prompt-structure.md has been merged into docs/ai/prompt-playbook.md).
+32: 1. **Add structured prompting as optional, scoped guidance.** (Note: docs/ai/prompt-structure.md has been merged into docs/ai/agent-behavior.md; prompt-playbook.md was merged there in the 2026 efficiency overhaul).
 33:    The guidance covered XML tagging and `<thinking>`. Scope it
 34:    to multi-constraint tasks (R2 Supabase/RLS, multi-package, architecture- or
 35:    cache-boundary work). Explicitly recommend **against** it for R0 and small R1,
@@ -111,6 +111,7 @@ drifting documentation structure.
 111: - `AGENTS.md` — P0–P6 priority stack; P3 = ADRs.
 112: - `docs/plans/ai-context-audit.md` — audit that identified the two gaps and
 113:   recommended this work.
-114: - `docs/ai/prompt-playbook.md` — risk classification (R0/R1/R2); this ADR's
-115:   prompting decision complements, not replaces, the Mini-PRD there.
+114: - `docs/ai/agent-behavior.md` — risk classification (R0/R1/R2) and Mini-PRD
+115:   (merged from prompt-playbook.md in the 2026 efficiency overhaul); this ADR's
+116:   prompting decision complements, not replaces, that guidance.
 116: - docs/ai/prompt-structure.md (merged), docs/ai/model-routing.md (deleted) — the deliverables.

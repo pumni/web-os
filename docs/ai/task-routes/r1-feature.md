@@ -25,7 +25,7 @@ May read:
 - `docs/architecture/overview.md` when moving logic between `apps/web` and
   `packages`.
 - `docs/ai/common-mistakes.md` sections 1, 6, 7, 8, 9, 10, and 11.
-- `docs/ai/prompt-playbook.md` for multi-constraint or multi-package R1 tasks.
+- `docs/ai/agent-behavior.md` for risk levels, mini-PRD, and recovery.
 - `.agents/workflows/review-gate.md` before reporting done.
 - `docs/ai/agent-behavior.md` → "Subagent delegation" when exploration fans out
   across many files (delegate) vs. a single known file (read directly).

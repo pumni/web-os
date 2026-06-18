@@ -25,8 +25,7 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | transpilePackages (monorepo Next.js) | `docs/conventions/transpile-packages.md` |
 | Quality gates (verification commands) | `docs/quality-gates.md` |
 | Command / PowerShell discipline (Windows) | `docs/ai/agent-command-policy.md` |
-| AI execution workflow | `docs/ai/agent-behavior.md` |
-| Prompt risk levels & mini-PRD | `docs/ai/prompt-playbook.md` |
+| AI execution workflow, risk levels, mini-PRD | `docs/ai/agent-behavior.md` |
 | MCP runtime integration (Next.js dev server) | `docs/ai/mcp-runtime.md` |
 | MCP Postgres schema introspection (read-only) | `docs/ai/mcp-postgres.md` |
 | Real local implementation examples | `docs/ai/golden-examples.md` |
@@ -50,6 +49,7 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Repeated task | Skill |
 | --- | --- |
 | Next.js Server Action | `.agents/skills/server-action/SKILL.md` |
+| @pumni/ui styling / tokens / surfaces | `.agents/skills/ui-styling/SKILL.md` |
 | Supabase migration / RLS / grants | `.agents/skills/supabase-migration/SKILL.md` |
 | TanStack Query hook or mutation | `.agents/skills/tanstack-query-hook/SKILL.md` |
 | Zustand client UI store | `.agents/skills/zustand-store/SKILL.md` |

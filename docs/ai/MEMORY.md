@@ -38,3 +38,4 @@ pointers-first. See `docs/ai/agent-behavior.md` (Memory & Compaction) for the hy
 - 2026-06-19 — Memory layer chuyển hybrid: harness-managed primary (Claude Code compaction/memory tool), MEMORY.md = durable promoted-from-compaction. Owner: `docs/ai/agent-behavior.md` (Memory & Compaction), `docs/adr/0004`.
 - 2026-06-19 — Context layer 2026 overhaul: trim ceremony + behavioral runner + hybrid memory + git freshness. Owner: `docs/adr/0005`.
 - 2026-06-19 — Context efficacy overhaul v2: rule-efficacy metric + meta-inversion cut (context-system, memory-layer) + behavioral CI wired via stub-agent + thin CLAUDE.md + pwsh metadata alignment. Owner: `docs/adr/0006`.
+- 2026-06-19 — Context efficiency 2026: design-system split to skill, risk playbook merged into agent-behavior, 5 package AGENTS.md added. Owner: `docs/adr/0007`.

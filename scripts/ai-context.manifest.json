@@ -25,7 +25,6 @@
     "docs/ai/index.md",
     "docs/ai/agent-command-policy.md",
     "docs/ai/agent-behavior.md",
-    "docs/ai/prompt-playbook.md",
     "docs/ai/mcp-runtime.md",
     "docs/ai/mcp-postgres.md",
     "docs/ai/MEMORY.md",
@@ -83,7 +82,6 @@
   "frontmatterRequired": [
     "docs/ai/agent-command-policy.md",
     "docs/ai/agent-behavior.md",
-    "docs/ai/prompt-playbook.md",
     "docs/ai/mcp-runtime.md",
     "docs/ai/mcp-postgres.md",
     "docs/ai/golden-examples.md",
@@ -114,7 +112,6 @@
     "docs/conventions/transpile-packages.md",
     "docs/quality-gates.md",
     "docs/ai/agent-behavior.md",
-    "docs/ai/prompt-playbook.md",
     "docs/ai/mcp-runtime.md",
     "docs/ai/mcp-postgres.md",
     "docs/ai/golden-examples.md",

@@ -5,7 +5,6 @@
 /docs/ai/index.md
 /apps/web/AGENTS.md
 /docs/ai/agent-behavior.md
-/docs/ai/prompt-playbook.md
 /docs/ai/golden-examples.md
 /docs/architecture/overview.md
 /docs/conventions/server-client-boundary.md

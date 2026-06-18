@@ -10,31 +10,28 @@ Keeps AI agent command execution safe, deterministic, and reviewable in this
 Windows + PowerShell 7 + Bun + Turborepo workspace. This policy does not override
 security mandates, enforced config, architecture docs, or explicit user instructions.
 
+> [!WARNING]
+> **Harness Host Shell Constraints:** AI agents execute shell commands via the harness's host environment (which varies between Windows PowerShell 5.1 and Git Bash).
+> - **Pre-evaluation & Stripping:** Variables/symbols (like `$`, e.g. `$env:NAME`, `$null`) are pre-evaluated or stripped by the host shell before the command is run, or when calling a sub-process like `pwsh -Command`.
+> - **Operator Support:** Operators like `&&` are not supported in Windows PowerShell 5.1 and will cause parser errors.
+> - **Best Practice:** Prefer using harness tools (`view_file`, `grep_search`, `list_dir`) over shell commands to read or search the repository.
+
 ## Baseline
 
-- Use PowerShell 7 (`pwsh`) on Windows by default. Use `cmd.exe`, Bash, or WSL only
-  when a task explicitly requires that environment.
+- Understand the host shell (Windows PowerShell 5.1, Git Bash) before running scripts.
 - Prefer deterministic, non-interactive commands with plain-text output.
 - Keep commands narrow, explicit, and scoped to the current task.
 - Use repo-relative paths; quote any Windows path that may contain spaces.
 - Avoid shell-state dependencies (aliases, prompt customization, pagers, interactive pickers).
-- Check optional tools first: `Get-Command <tool> -ErrorAction SilentlyContinue`.
 
-## PowerShell 7 syntax (this is pwsh, not bash)
+## Host Shell Compatibility & Chaining
 
-- Pipeline chaining works: `cmd1 && cmd2`, `cmd1 || cmd2`. Prefer `&&` when the
-  second command should only run on success.
-- Null handling: `$null` (not `/dev/null`); redirect with `2>$null`.
-- Env vars: read `$env:NAME`, set `$env:NAME = "value"` (no inline `VAR=x cmd` prefix).
-- Line continuation is the backtick `` ` ``, not `\`.
-- Unix commands that do NOT exist in pwsh — use the equivalent:
-  - `head`/`tail` -> `Get-Content f -TotalCount N` / `-Tail N`, or `| Select-Object -First/-Last N`
-  - `which` -> `(Get-Command name).Source`
-  - `wc -l` -> `(Get-Content f | Measure-Object -Line).Lines`
-  - `mkdir -p` -> `New-Item -ItemType Directory -Force <path>`
-  - `rm -rf` -> `Remove-Item -Recurse -Force <path>`
-- Do not call interactive/blocking commands (`Read-Host`, `Get-Credential`,
-  `Out-GridView`, `git rebase -i`, `git add -i`).
+- Chaining commands: `&&` and `||` work in Git Bash and `pwsh 7`, but cause parser errors in Windows PowerShell 5.1. For safety across platforms, run commands sequentially or use `;` as a separator.
+- Variable/Null handling: Avoid using `$null` or `$env:NAME` in shell commands unless absolutely necessary. The host shell may pre-evaluate or strip the `$` character, causing failures. Instead, use cross-shell Node/Bun scripts to manage complex logic or environments.
+- Unix utilities vs PowerShell cmdlets: Prefer harness tools. If shell commands are necessary:
+  - In Git Bash: standard Unix utilities (`head`, `tail`, `wc`, `mkdir -p`, `rm -rf`) work natively.
+  - In Windows PowerShell: use basic cross-shell equivalents or run specific cmdlets only if required.
+- Do not call interactive/blocking commands (e.g. `Read-Host`, `git rebase -i`, `git add -i`).
 
 ## Search and read
 

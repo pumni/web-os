@@ -24,8 +24,7 @@ May read:
 - `docs/architecture/overview.md` when package ownership is unclear.
 - `docs/conventions/data-fetching.md` when the DB change affects reads,
   mutations, cache invalidation, or generated types.
-- `docs/ai/prompt-playbook.md` for multi-constraint R2 tasks (RLS + auth +
-  migrations together).
+- `docs/ai/agent-behavior.md` for risk levels, mini-PRD, and recovery.
 - `.agents/workflows/review-gate.md` before reporting done.
 - `docs/ai/agent-behavior.md` → "Subagent delegation" when exploration fans out
   across many files (delegate) vs. a single known file (read directly).
