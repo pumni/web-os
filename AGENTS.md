@@ -59,9 +59,14 @@ Pumni Web OS is a Next.js 16 (App Router, React Compiler) web app in a Bun + Tur
 
 State ownership: server state stays in Server Components or TanStack Query cache; never mirror server data into Zustand. See `docs/conventions/data-fetching.md`.
 
-## Key Commands
+## Command Discipline
 
-`bun run ai:check`, `bun run ai:eval`, `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`. E2E (separate): `cd apps/web && bunx playwright test`. Full gate ownership: `docs/quality-gates.md`. PowerShell rules & command discipline (Windows): `docs/ai/agent-command-policy.md`.
+Environment is `win32` + `cmd.exe`/bash; prefer `bun run <script>` and `;`-separated commands; avoid bash-only `&&`, `head`, `tail` in committed scripts.
+- Use deterministic, non-interactive commands with plain-text output.
+- Keep commands narrow, explicit, and scoped to the current task.
+- Use repo-relative paths.
+- Avoid interactive/blocking commands (e.g. `git rebase -i`).
+- Standard validation scripts: `bun run ai:check`, `bun run ai:eval`, `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`. E2E: `cd apps/web && bunx playwright test`.
 
 ## Read Routing
 
@@ -75,6 +80,14 @@ Start with `docs/ai/index.md`, then load only task-relevant canonical files:
 - Supabase / RLS / keys: `docs/conventions/supabase-security.md`
 - Testing scope & commands: `docs/conventions/testing.md`
 - Quality gates: `docs/quality-gates.md`
+
+## Context System
+
+The AI context system organizes project intelligence across three planes for the Next.js 16 App Router monorepo:
+- **Planes:** Instruction Plane (`AGENTS.md`, `apps/web/AGENTS.md`, `.claude/rules/`, `index.md`, `docs/conventions/*`), Recipe Plane (skills and `review-gate.md`), and Enforcement Plane (manifest, `ai:check`, and `ai:eval`).
+- **Control Flow:** Prompt -> Orient (`AGENTS.md` -> `index.md`) -> Route -> Apply -> Edit -> Validate (`ai:check` / `ai:eval`) -> Report.
+- **Prompt-Cache Layout:** Keep instruction files stable and size caps under limits (`AGENTS.md` < 6500B, `docs/ai/*.md` < 5000B). Keep volatile state out of static files.
+- **Drift Risks:** Next.js cache APIs (`cacheLife`/`cacheTag`), server-only modules in client bundles, Zustand stores mirroring server data, and async request APIs without `await`.
 
 ## Response Format
 

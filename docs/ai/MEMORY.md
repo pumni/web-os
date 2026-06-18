@@ -2,7 +2,7 @@
 
 Long-term index of settled facts that are not yet (or not best) captured in a
 canonical doc. Start here on long or resumed tasks. Keep entries short and
-pointers-first. See `docs/ai/memory-layer.md` for the compaction workflow.
+pointers-first. See `docs/ai/agent-behavior.md` (Memory & Compaction) for the hybrid memory model.
 
 ## How to use
 
@@ -35,5 +35,6 @@ pointers-first. See `docs/ai/memory-layer.md` for the compaction workflow.
   (8 packages < 10, no onboarding/structured-output/memory-loss/cache-cost
   signal). Revisit when packages > 10 or a documented signal appears. Owner:
   `docs/plans/ai-context-2026-phase4-5-handoff.md`.
-- 2026-06-19 — Memory layer chuyển hybrid: harness-managed primary (Claude Code compaction/memory tool), MEMORY.md = durable promoted-from-compaction. Owner: docs/ai/memory-layer.md, docs/adr/0004.
-- 2026-06-19 — Context layer 2026 overhaul: trim ceremony + behavioral runner + hybrid memory + git freshness. Owner: docs/adr/0005.
+- 2026-06-19 — Memory layer chuyển hybrid: harness-managed primary (Claude Code compaction/memory tool), MEMORY.md = durable promoted-from-compaction. Owner: `docs/ai/agent-behavior.md` (Memory & Compaction), `docs/adr/0004`.
+- 2026-06-19 — Context layer 2026 overhaul: trim ceremony + behavioral runner + hybrid memory + git freshness. Owner: `docs/adr/0005`.
+- 2026-06-19 — Context efficacy overhaul v2: rule-efficacy metric + meta-inversion cut (context-system, memory-layer, agent-command-policy) + behavioral CI wired via stub-agent + thin CLAUDE.md + pwsh/cmd drift fix. Owner: `docs/adr/0006`.

@@ -41,6 +41,6 @@ However, completely discarding the manual memory file would lose the tool-agnost
 
 ## References
 
-- `docs/ai/memory-layer.md` — memory-layer convention.
+- the memory-layer convention doc (removed during context efficacy overhaul v2) — memory-layer convention.
 - `docs/ai/MEMORY.md` — committed durable log.
 - `docs/adr/0001-structured-prompting-and-model-routing.md` — prompt-playbook decision.

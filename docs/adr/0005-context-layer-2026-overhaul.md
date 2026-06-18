@@ -15,7 +15,7 @@ We need a leaner context layer that optimizes prompt cache reuse, provides actua
 **Perform a major refactor (overhaul) of the context layer:**
 
 1. **Remove ceremony docs:** Delete `model-routing.md` and `prompt-structure.md`. Incorporate essential instructions directly into `prompt-playbook.md`.
-2. **Merge redundant system docs:** Combine `context-system-overview.md` and `context-maintenance.md` into `docs/ai/context-system.md` (under 5000 bytes).
+2. **Merge redundant system docs:** Combine `context-system-overview.md` and `context-maintenance.md` into docs/ai/context-system.md (under 5000 bytes).
 3. **Automate freshness:** Remove `last-reviewed` frontmatter. Derive file freshness automatically via `git log -1 --format=%cI`.
 4. **Behavioral Eval Runner:** Consolidate eval files by deleting 5 static rule descriptions (since they are already self-tested and static-checked). Change prompt-injection evals to `behavioral: true` and introduce a real, deterministic behavioral runner (`run-behavioral-evals.mjs`).
 5. **Modernize memory:** Adopt a hybrid harness-managed memory model (ADR-0004).

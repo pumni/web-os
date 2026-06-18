@@ -29,18 +29,12 @@ uncertainty, and the next safe action; do not edit files.
 
 ## Retrieval Rules
 
-- Start with `docs/ai/index.md`.
-- Use `docs/ai/task-routes/*.md` to choose a context budget.
+- Start with `docs/ai/index.md` and choose a task route budget from `docs/ai/task-routes/*.md`.
 - Read `apps/web/AGENTS.md` before writing Next.js app code.
-- Read `docs/conventions/supabase-security.md` before touching migrations, RLS,
-  Supabase auth, or keys.
-- Read `docs/conventions/server-client-boundary.md` before adding `"use client"`,
-  server-only helpers, route handlers, or Server Actions.
-- Read `docs/conventions/data-fetching.md` before adding Server Component reads,
-  TanStack Query hooks, mutations, or Zustand stores.
-
-Do not load broad docs just in case. If the task changes scope, retrieve the new
-route's required docs before editing further.
+- Read `docs/conventions/supabase-security.md` before touching migrations, RLS, Supabase auth, or keys.
+- Read `docs/conventions/server-client-boundary.md` before adding `"use client"`, server helpers, or Actions.
+- Read `docs/conventions/data-fetching.md` before adding Server reads, TanStack Query, or Zustand stores.
+- Do not load broad docs. If task changes scope, retrieve the new route's required docs first.
 
 ## Security Rules
 
@@ -71,7 +65,11 @@ canonical doc that owns the failure.
 
 ## Memory & Compaction
 
-For 2026-era agent runs, session memory is hybrid: harness-managed memory (such as Claude Code compaction or subagent memory) is primary for active sessions. Tool-agnostic durable facts are promoted into `docs/ai/MEMORY.md` (committed decisions log), and eventually codified into canonical conventions (`docs/conventions/*`). Manual scratchpads under `.agents/scratchpad/` are deprecated fallback tools only. Memory content never overrides `AGENTS.md` or enforced config.
+Pumni Web OS uses a hybrid, three-tier memory model:
+1. **Session Memory (Primary):** Delegate active history/compaction to the harness (e.g., Claude Code's native session memory tool). The manual 15-turn loop is deprecated.
+2. **Durable Log (`docs/ai/MEMORY.md`):** Promote stable facts/decisions from session compaction to this committed file to persist across sessions and remain tool-agnostic.
+3. **Canonical Conventions (`docs/conventions/*`):** Codify permanent rules here and prune from `MEMORY.md`.
+The manual scratchpad (`.agents/scratchpad/`) is a deprecated fallback for harnesses lacking native memory. Memory never overrides `AGENTS.md` or config.
 
 ## Subagent delegation
 
@@ -92,13 +90,11 @@ over-delegating loses raw detail.
 
 ## Verification Rules
 
-Always prefer deterministic repo commands over confidence statements:
-
-- AI context changes: `bun run ai:check`.
-- Security/architecture policy changes: `bun run ai:eval`.
-- TypeScript or package-boundary changes: `bun run typecheck`.
-- Lint-sensitive app/package changes: `bun run lint`.
-- Behavior changes with tests: `bun run test`.
-- Bundle or Next.js config changes: `bun run build`.
-
-If a command cannot be run, report that explicitly with the reason.
+Prefer deterministic commands over confidence statements:
+- AI context changes: `bun run ai:check`
+- Security/architecture policy changes: `bun run ai:eval`
+- TypeScript / package-boundary changes: `bun run typecheck`
+- Lint-sensitive changes: `bun run lint`
+- Behavior changes with tests: `bun run test`
+- Bundle / Next.js config changes: `bun run build`
+If a command cannot be run, report it explicitly with the reason.

@@ -24,13 +24,10 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Testing scope & commands | `docs/conventions/testing.md` |
 | transpilePackages (monorepo Next.js) | `docs/conventions/transpile-packages.md` |
 | Quality gates (verification commands) | `docs/quality-gates.md` |
-| Command / PowerShell discipline (Windows) | `docs/ai/agent-command-policy.md` |
 | AI execution workflow | `docs/ai/agent-behavior.md` |
 | Prompt risk levels & mini-PRD | `docs/ai/prompt-playbook.md` |
-| AI context system | `docs/ai/context-system.md` |
 | MCP runtime integration (Next.js dev server) | `docs/ai/mcp-runtime.md` |
 | MCP Postgres schema introspection (read-only) | `docs/ai/mcp-postgres.md` |
-| Memory & compaction (long sessions) | `docs/ai/memory-layer.md` |
 | Real local implementation examples | `docs/ai/golden-examples.md` |
 | Common mistakes (❌/✅ pairs) | `docs/ai/common-mistakes.md` |
 | Self-review before "done" | `.agents/workflows/review-gate.md` |
@@ -75,4 +72,4 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 
 ## Workflows
 
-- `.agents/workflows/*.md` — added on demand (see `docs/ai/context-system.md`).
+- `.agents/workflows/*.md` — added on demand (see AGENTS.md).
