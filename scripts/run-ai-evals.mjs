@@ -57,7 +57,7 @@ function printEvalCoverageReport() {
 
   const ruleIds = Object.values(RULES);
   console.log(`Static rules enforced: ${ruleIds.length}/${ruleIds.length} (proven by --self-test)`);
-  console.log(`Behavioral scenarios: ${behavioral} (runner pending Phase 4), manual evals: ${manual}`);
+  console.log(`Behavioral scenarios: ${behavioral} (run by run-behavioral-evals.mjs), manual evals: ${manual}`);
 }
 
 // 0. Sanity-check the analyzer itself before trusting its verdict.

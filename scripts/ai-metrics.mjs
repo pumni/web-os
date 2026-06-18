@@ -109,7 +109,6 @@ function measureFreshness(frontmatterRequired) {
   const today = new Date();
   const ages = [];
   let missing = 0;
-  let invalid = 0;
   const stale = [];
 
   for (const rel of frontmatterRequired) {
@@ -121,7 +120,7 @@ function measureFreshness(frontmatterRequired) {
     const ageDays = Math.floor((today.getTime() - commitDate.getTime()) / MS_PER_DAY);
     ages.push(ageDays);
     if (ageDays > FRESHNESS_WARN_DAYS) {
-      stale.push({ file: rel, ageDays, reviewed: commitDate.toISOString().split('T')[0] });
+      stale.push({ file: rel, ageDays, lastCommit: commitDate.toISOString().split('T')[0] });
     }
   }
 
@@ -130,8 +129,7 @@ function measureFreshness(frontmatterRequired) {
 
   return {
     filesChecked: frontmatterRequired.length,
-    missingDate: missing,
-    invalidDate: invalid,
+    noGitHistory: missing,
     ageDaysMin: ages.length ? ages[0] : null,
     ageDaysP50: ages.length ? pct(50) : null,
     ageDaysMax: ages.length ? ages[ages.length - 1] : null,
@@ -229,7 +227,10 @@ function evalCoverage() {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],
     });
-    const m = out.match(/Static rule coverage:\s*(\d+)\/(\d+)/);
+    // Match the current message shape from run-ai-evals.mjs
+    // ("Static rules enforced: N/N (proven by --self-test)"), with a fallback to
+    // the legacy "Static rule coverage: N/N" wording for robustness.
+    const m = out.match(/Static rules? (?:enforced|coverage):\s*(\d+)\/(\d+)/);
     return m
       ? { ran: true, covered: Number(m[1]), total: Number(m[2]) }
       : { ran: true, covered: null, total: null };
@@ -261,17 +262,16 @@ function humanReport(metrics) {
 
   const f = metrics.freshness;
   lines.push('');
-  lines.push('## Freshness (last-reviewed age, days)');
+  lines.push('## Freshness (git commit age, days)');
   lines.push(`  files checked:            ${f.filesChecked}`);
-  lines.push(`  missing date:             ${f.missingDate}`);
-  lines.push(`  invalid date:             ${f.invalidDate}`);
+  lines.push(`  no git history:           ${f.noGitHistory}`);
   lines.push(`  age min / p50 / max:      ${f.ageDaysMin} / ${f.ageDaysP50} / ${f.ageDaysMax} days`);
   lines.push(`  older than ${FRESHNESS_WARN_DAYS}d (warn):   ${f.olderThanWarnDays}`);
   lines.push(`  older than ${FRESHNESS_ERROR_DAYS}d (error):  ${f.olderThanErrorDays}`);
   if (f.stale.length) {
     lines.push('  stale files:');
     for (const s of f.stale.slice(0, 10)) {
-      lines.push(`    - ${s.file}  (${s.ageDays}d, reviewed ${s.reviewed})`);
+      lines.push(`    - ${s.file}  (${s.ageDays}d, last commit ${s.lastCommit})`);
     }
     if (f.stale.length > 10) lines.push(`    ... and ${f.stale.length - 10} more`);
   }
