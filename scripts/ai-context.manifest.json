@@ -23,6 +23,7 @@
     "packages/supabase/AGENTS.md",
     "packages/auth/AGENTS.md",
     "docs/ai/index.md",
+    "docs/ai/agent-command-policy.md",
     "docs/ai/agent-behavior.md",
     "docs/ai/prompt-playbook.md",
     "docs/ai/mcp-runtime.md",
@@ -80,6 +81,7 @@
   ],
 
   "frontmatterRequired": [
+    "docs/ai/agent-command-policy.md",
     "docs/ai/agent-behavior.md",
     "docs/ai/prompt-playbook.md",
     "docs/ai/mcp-runtime.md",

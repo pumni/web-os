@@ -24,6 +24,7 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Testing scope & commands | `docs/conventions/testing.md` |
 | transpilePackages (monorepo Next.js) | `docs/conventions/transpile-packages.md` |
 | Quality gates (verification commands) | `docs/quality-gates.md` |
+| Command / PowerShell discipline (Windows) | `docs/ai/agent-command-policy.md` |
 | AI execution workflow | `docs/ai/agent-behavior.md` |
 | Prompt risk levels & mini-PRD | `docs/ai/prompt-playbook.md` |
 | MCP runtime integration (Next.js dev server) | `docs/ai/mcp-runtime.md` |
