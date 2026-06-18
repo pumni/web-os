@@ -4,7 +4,7 @@
 //
 // What gets measured (and why each is derivable from the repo, not from AI history):
 //   1. Context coverage  — share of packages/task-routes that own a context file.
-//   2. Freshness         — age distribution of `last-reviewed` across enforced docs.
+//   2. Freshness         — git commit age distribution across enforced docs.
 //   3. ADR adoption      — share of recent architecture/migration commits that
 //                          reference an ADR. Requires git; skipped if unavailable.
 //   4. Regression signal — static-rule violation count + eval coverage. Acts as a
@@ -27,6 +27,7 @@ import path from 'node:path';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { parseFrontmatter } from './frontmatter.mjs';
+import { RULES } from './review-gate-rules.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -197,6 +198,111 @@ function measureAdrAdoption() {
   };
 }
 
+// --- Metric 5: Rule Efficacy (Offline, advisory) --------------------------
+
+function measureRuleEfficacy() {
+  const ruleIds = new Set(Object.values(RULES));
+  const filesToScan = [];
+
+  // Helper to collect markdown files recursively
+  const collectMd = (dirRel) => {
+    const dir = path.join(ROOT, dirRel);
+    if (!fs.existsSync(dir)) return;
+    const walk = (d) => {
+      for (const entry of fs.readdirSync(d, { withFileTypes: true })) {
+        const p = path.join(d, entry.name);
+        if (entry.isDirectory()) {
+          walk(p);
+        } else if (entry.isFile() && entry.name.endsWith('.md')) {
+          const relPath = path.relative(ROOT, p).replaceAll(path.sep, '/');
+          filesToScan.push(relPath);
+        }
+      }
+    };
+    walk(dir);
+  };
+
+  // Add individual files if they exist
+  const addFile = (rel) => {
+    if (fs.existsSync(path.join(ROOT, rel))) {
+      filesToScan.push(rel.replaceAll(path.sep, '/'));
+    }
+  };
+
+  addFile('AGENTS.md');
+  addFile('apps/web/AGENTS.md');
+  collectMd('docs/ai');
+  collectMd('docs/conventions');
+  addFile('.agents/workflows/review-gate.md');
+
+  // Deduplicate files
+  const uniqueFiles = [...new Set(filesToScan)];
+
+  const fileReports = [];
+  let totalBytesEfficacious = 0;
+  let totalBytesUnproven = 0;
+
+  for (const rel of uniqueFiles) {
+    const fullPath = path.join(ROOT, rel);
+    let content = '';
+    let bytes = 0;
+    try {
+      content = fs.readFileSync(fullPath, 'utf8');
+      bytes = fs.statSync(fullPath).size;
+    } catch {
+      continue;
+    }
+
+    const regex = /`([a-z][a-z0-9-]+)`/g;
+    const citedRules = new Set();
+    let match;
+    while ((match = regex.exec(content)) !== null) {
+      const ruleId = match[1];
+      if (ruleIds.has(ruleId)) {
+        citedRules.add(ruleId);
+      }
+    }
+
+    const provenRulesCited = citedRules.size;
+    const verdict = provenRulesCited >= 1 ? 'efficacious' : 'unproven';
+    const bytesPerProvenRule = Math.round(bytes / Math.max(provenRulesCited, 1));
+
+    if (verdict === 'efficacious') {
+      totalBytesEfficacious += bytes;
+    } else {
+      totalBytesUnproven += bytes;
+    }
+
+    fileReports.push({
+      file: rel,
+      bytes,
+      provenRulesCited,
+      bytesPerProvenRule,
+      verdict,
+    });
+  }
+
+  // Sort top unproven by bytes descending
+  const topUnproven = fileReports
+    .filter((r) => r.verdict === 'unproven')
+    .sort((a, b) => b.bytes - a.bytes)
+    .slice(0, 5);
+
+  // Sort top efficacious by provenRulesCited descending
+  const topEfficacious = fileReports
+    .filter((r) => r.verdict === 'efficacious')
+    .sort((a, b) => b.provenRulesCited - a.provenRulesCited)
+    .slice(0, 5);
+
+  return {
+    totalBytesEfficacious,
+    totalBytesUnproven,
+    fileReports,
+    topUnproven,
+    topEfficacious,
+  };
+}
+
 // --- Metric 4: Regression signal (hallucination proxy) --------------------
 
 function countStaticViolations() {
@@ -288,6 +394,27 @@ function humanReport(metrics) {
     lines.push(`  mentioning an ADR:                                 ${a.withAdr} (${a.adoptionPct}%)`);
   }
 
+  const e = metrics.ruleEfficacy;
+  lines.push('');
+  lines.push('## Rule efficacy');
+  lines.push(`  efficacious bytes:        ${e.totalBytesEfficacious}`);
+  lines.push(`  unproven bytes:           ${e.totalBytesUnproven}`);
+  lines.push('');
+  lines.push('  file | bytes | provenRulesCited | verdict');
+  lines.push('  ' + '-'.repeat(60));
+  for (const report of e.fileReports) {
+    lines.push(`  ${report.file} | ${report.bytes} | ${report.provenRulesCited} | ${report.verdict}`);
+  }
+  if (e.topUnproven.length) {
+    lines.push('');
+    lines.push('  top unproven files (candidates for pruning):');
+    for (const r of e.topUnproven) {
+      lines.push(`    - ${r.file} (${r.bytes} bytes)`);
+    }
+  }
+  lines.push('');
+  lines.push('  proxy metric — counts static-rule citations; unproven ≠ useless, chỉ flag để review token cost.');
+
   const r = metrics.regressionSignal;
   lines.push('');
   lines.push('## Regression signal (hallucination proxy)');
@@ -322,6 +449,7 @@ function main() {
     coverage: measureCoverage(),
     freshness: measureFreshness(manifest.frontmatterRequired ?? []),
     adrAdoption: measureAdrAdoption(),
+    ruleEfficacy: measureRuleEfficacy(),
     regressionSignal: measureRegressionSignal(),
   };
 
