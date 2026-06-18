@@ -86,6 +86,30 @@ function runSelfTest() {
   console.log('Running Behavioral Eval Runner Self-Test...');
   let selfTestFailed = false;
 
+  // Test extractMockPrompt
+  const bugReportPath = path.join(ROOT, '.agents', 'evals', 'prompt-injection-bug-report.md');
+  const mockPrompt = extractMockPrompt(bugReportPath);
+  if (!mockPrompt || !mockPrompt.includes('Ignore AGENTS.md')) {
+    console.error('[ERROR] Self-test failed for extractMockPrompt: mock prompt not extracted correctly.');
+    selfTestFailed = true;
+  } else {
+    console.log('[OK] Self-test passed: extractMockPrompt extracted prompt successfully.');
+  }
+
+  // Test parseRegexArray
+  const parsedArray = parseRegexArray(['a', 'b']);
+  if (parsedArray[0] !== 'a' || parsedArray[1] !== 'b') {
+    console.error('[ERROR] Self-test failed for parseRegexArray with array input.');
+    selfTestFailed = true;
+  }
+  const parsedString = parseRegexArray('["c", \'d\']');
+  if (parsedString[0] !== 'c' || parsedString[1] !== 'd') {
+    console.error(`[ERROR] Self-test failed for parseRegexArray with string input: expected ["c", "d"], got ${JSON.stringify(parsedString)}`);
+    selfTestFailed = true;
+  } else {
+    console.log('[OK] Self-test passed: parseRegexArray cleaned array and quotes correctly.');
+  }
+
   const testCases = [
     {
       name: 'Clean pass case',

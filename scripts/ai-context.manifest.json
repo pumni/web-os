@@ -11,6 +11,8 @@
     "scripts/check-review-gate-rules.mjs",
     "scripts/check-secrets.mjs",
     "scripts/run-ai-evals.mjs",
+    "scripts/eval-stub-agent.mjs",
+    "scripts/eval-agent.mjs",
     "scripts/ai-review-rule-allowlist.json",
     "scripts/review-gate-rules.mjs",
     "scripts/sync-project-graph.mjs",

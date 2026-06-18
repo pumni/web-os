@@ -18,7 +18,12 @@ function parseValue(rawValue) {
     return value
       .slice(1, -1)
       .split(',')
-      .map((item) => item.trim())
+      .map((item) => {
+        let cleaned = item.trim();
+        if (cleaned.startsWith('"') && cleaned.endsWith('"')) cleaned = cleaned.slice(1, -1);
+        if (cleaned.startsWith("'") && cleaned.endsWith("'")) cleaned = cleaned.slice(1, -1);
+        return cleaned;
+      })
       .filter(Boolean);
   }
   return value;
