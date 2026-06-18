@@ -73,3 +73,5 @@ If any **P0** item fails, stop and fix before doing anything else.
 | `server-action-missing-revalidation` | B2       | Mutating Server Actions must invalidate or update Next.js cache state.               |
 | `client-secret-env`                  | B1       | Client files must only read NEXT*PUBLIC*\* environment variables.                    |
 | `server-only-in-client`              | B1       | Client files must not import server-only auth, env, or Supabase server modules.      |
+| `cache-life-too-short`               | B2       | `cacheLife('seconds')` punches a dynamic hole in the PPR static shell.               |
+| `cache-tag-unparameterized`          | B1       | `cacheTag('literal')` with no parameter collides across users/scopes.                |

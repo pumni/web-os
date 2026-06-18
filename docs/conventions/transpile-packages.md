@@ -1,6 +1,7 @@
 ---
 description: When a workspace package needs transpilePackages in next.config.ts, and the current repo status.
 when-to-load: When adding a package under packages/, changing a package export shape, or debugging a SyntaxError from a workspace import.
+last-reviewed: 2026-06-19
 ---
 
 # transpilePackages Convention

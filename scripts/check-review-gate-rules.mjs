@@ -20,6 +20,8 @@
  *   server-action-missing-revalidation action write w/o cache    B2
  *   client-secret-env               private env in client        B1
  *   server-only-in-client           server module in client      B1
+ *   cache-life-too-short            cacheLife('seconds')         B2
+ *   cache-tag-unparameterized       cacheTag('literal')          B1
  *
  * Note: a direct-env-access rule was considered but dropped — the project's
  * convention (docs/conventions/supabase-security.md, a P2 source) states that
@@ -447,6 +449,61 @@ function analyzeServerOnlyImportsInClient(files, findings) {
   }
 }
 
+function analyzeCacheLifeTooShort(files, findings) {
+  // Narrow regex: only `cacheLife('seconds')` with single/double quotes is a
+  // guaranteed silent bug per apps/web/AGENTS.md. Other short profiles are
+  // opinion, not bugs. Template literals are skipped (cannot statically resolve).
+  const re = /\bcacheLife\(\s*(['"])seconds\1\s*\)/g;
+  for (const file of files) {
+    const rel = relPath(file);
+    if (!CODE_EXTENSIONS.has(path.extname(file))) continue;
+    const content = readText(file);
+    let m;
+    while ((m = re.exec(content)) !== null) {
+      addFinding(
+        findings,
+        RULES.CACHE_LIFE_TOO_SHORT,
+        rel,
+        content,
+        m.index,
+        m[0],
+        "cacheLife('seconds') punches a dynamic hole in the PPR static shell with no compiler warning.",
+      );
+    }
+  }
+}
+
+function analyzeCacheTagUnparameterized(files, findings) {
+  // Flag cacheTag('literal') / cacheTag("literal") where the literal has no
+  // parameterizing separator and is not a template literal. Parameterized tags
+  // use template literals (cacheTag(`profile:${id}`)) or string concatenation;
+  // a bare single-arg literal is the cross-user collision pattern.
+  // Skip tagged-template calls cacheTag(`...`) and calls passing a variable.
+  const re = /\bcacheTag\(\s*(['"])([A-Za-z0-9_-]+)\1\s*\)/g;
+  for (const file of files) {
+    const rel = relPath(file);
+    if (!CODE_EXTENSIONS.has(path.extname(file))) continue;
+    const content = readText(file);
+    let m;
+    while ((m = re.exec(content)) !== null) {
+      // A bare identifier without a `:` (or other namespace separator) is the
+      // collision risk. Namespaced literals like cacheTag('posts:featured')
+      // are acceptable as static, shared tags.
+      const tagValue = m[2];
+      if (tagValue.includes(':')) continue;
+      addFinding(
+        findings,
+        RULES.CACHE_TAG_UNPARAMETERIZED,
+        rel,
+        content,
+        m.index,
+        m[0],
+        `cacheTag('${tagValue}') with a non-parameterized literal collides across users/scopes.`,
+      );
+    }
+  }
+}
+
 function analyzeTrustedUserIdWrites(files, findings, sqlEvidence) {
   const fromRegex = /\.from\(\s*['"`]([^'"`]+)['"`]\s*\)/g;
   for (const file of files) {
@@ -757,6 +814,8 @@ function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
   analyzeServiceRoleClient(files, findings);
   analyzeClientSecretEnv(files, findings);
   analyzeServerOnlyImportsInClient(files, findings);
+  analyzeCacheLifeTooShort(files, findings);
+  analyzeCacheTagUnparameterized(files, findings);
   analyzeTrustedUserIdWrites(files, findings, sqlEvidence);
   analyzeSwallowedErrors(files, findings);
   analyzeMissingAuthUidPolicies(sqlFiles, findings);
@@ -802,6 +861,11 @@ function runSelfTest() {
     export async function unsafeWrite(input) {
       const supabase = createSupabaseServerClient();
       return supabase.from('profiles').update({ username: input.username }).eq('id', input.id);
+    }
+    export async function cachedShort() {
+      'use cache';
+      cacheLife('seconds');
+      cacheTag('profile');
     }
   `;
   const clientFixture = `

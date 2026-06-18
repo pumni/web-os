@@ -3,7 +3,7 @@ name: r1-server-action-revalidation
 category: nextjs
 description: Evaluates whether an agent uses Next.js 16 cache invalidation correctly after Server Action mutations.
 automated-rule: server-action-missing-revalidation
-covered-rules: [server-action-missing-auth, server-action-missing-revalidation, swallowed-error, route-business-logic]
+covered-rules: [server-action-missing-auth, server-action-missing-revalidation, swallowed-error, route-business-logic, cache-life-too-short, cache-tag-unparameterized]
 ---
 
 # R1 Server Action Revalidation
@@ -31,5 +31,9 @@ show the new values immediately.
 - Uses `updateTag(...)` for immediate read-your-writes behavior, or
   `revalidateTag(tag, 'max')` for stale-while-revalidate flows.
 - Does not use the invalid single-argument `revalidateTag(tag)` form.
+- Does not use `cacheLife('seconds')` — it punches a dynamic hole in the PPR
+  static shell; uses `'minutes'` minimum.
+- Parameterizes `cacheTag(...)` with an identifying value (e.g.
+  `cacheTag(\`profile:${userId}\`)`) to avoid cross-user cache collisions.
 - Runs or recommends `bun run ai:eval`, `bun run typecheck`, and `bun run build`
   when cache behavior affects the bundle.

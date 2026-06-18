@@ -1,6 +1,7 @@
 ---
 description: Standard execution workflow and retrieval discipline for AI agents working in Pumni Web OS.
 when-to-load: Before non-trivial investigations, code changes, review fixes, or when a task route is unclear.
+last-reviewed: 2026-06-19
 ---
 
 # Agent Behavior

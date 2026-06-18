@@ -1,6 +1,7 @@
 ---
 description: Test scope (unit vs e2e), determinism rules, and which command owns which tests.
 when-to-load: When adding tests or deciding whether work belongs in unit tests or Playwright e2e.
+last-reviewed: 2026-06-19
 ---
 
 # Testing Convention

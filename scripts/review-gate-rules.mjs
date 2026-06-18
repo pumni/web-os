@@ -13,6 +13,8 @@ export const RULES = {
   SERVER_ACTION_MISSING_REVALIDATION: 'server-action-missing-revalidation',
   CLIENT_SECRET_ENV: 'client-secret-env',
   SERVER_ONLY_IN_CLIENT: 'server-only-in-client',
+  CACHE_LIFE_TOO_SHORT: 'cache-life-too-short',
+  CACHE_TAG_UNPARAMETERIZED: 'cache-tag-unparameterized',
 };
 
 export const RULE_INFO = {
@@ -85,5 +87,15 @@ export const RULE_INFO = {
     severity: 'B1',
     summary: 'Client files must not import server-only auth, env, or Supabase server modules.',
     fix: 'Move the import behind a Server Component, Server Action, or server-only helper boundary.',
+  },
+  [RULES.CACHE_LIFE_TOO_SHORT]: {
+    severity: 'B2',
+    summary: "cacheLife('seconds') creates a dynamic hole in the PPR static shell with no warning.",
+    fix: "Use cacheLife('minutes') at minimum; prefer 'hours' or 'days' for stable reference data.",
+  },
+  [RULES.CACHE_TAG_UNPARAMETERIZED]: {
+    severity: 'B1',
+    summary: 'cacheTag() with a non-parameterized literal collides across users.',
+    fix: 'Pass an identifying parameter: cacheTag(`profile:${userId}`) instead of cacheTag(\'profile\').',
   },
 };

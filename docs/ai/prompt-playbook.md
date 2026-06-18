@@ -1,6 +1,7 @@
 ---
 description: Risk levels, context budgets, mini-PRD template, and recovery patterns for AI tasks.
 when-to-load: When classifying a user prompt, planning a feature, or deciding validation depth.
+last-reviewed: 2026-06-19
 ---
 
 # Prompt Playbook

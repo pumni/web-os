@@ -154,21 +154,23 @@ function BentoGridItemContent({
       )}
       <div className="flex flex-col gap-2 flex-1">
         {(icon || title || description) && (
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 min-w-0">
             {icon && (
               // Status-tint pattern: /10 fill + semantic text (hợp lệ)
               <div className="inline-flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 {icon}
               </div>
             )}
-            {title && <h3 className="type-heading text-foreground">{title}</h3>}
-            {description && <p className="type-label text-muted-foreground">{description}</p>}
+            {title && (
+              <h3 className="type-heading text-foreground break-words">{title}</h3>
+            )}
+            {description && (
+              <p className="type-label text-muted-foreground break-words">{description}</p>
+            )}
           </div>
         )}
         {children && (
-          // Container-query reflow: content switches orientation based on
-          // tile width rather than viewport (e.g. @max-[28rem]:flex-col).
-          <div className="mt-2 flex-1 flex flex-col @min-[28rem]:flex-row @max-[28rem]:flex-col">
+          <div className="mt-2 flex-1 flex flex-col">
             {children}
           </div>
         )}

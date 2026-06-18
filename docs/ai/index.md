@@ -8,7 +8,8 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | --- | --- |
 | Tool-agnostic project rules | `AGENTS.md` |
 | Claude Code entry point (inherits AGENTS.md) | `CLAUDE.md` |
-| Claude Code scoped rules (lazy-loaded by glob) | `.claude/rules/*.md` |
+| Next.js 16 async request APIs (glob-scoped) | `.claude/rules/nextjs-async-apis.md` |
+| Next.js 16 cache components (glob-scoped) | `.claude/rules/nextjs-cache-components.md` |
 | Next.js v16 scoped rules | `apps/web/AGENTS.md` |
 | `@pumni/ui` package rules | `packages/ui/AGENTS.md` |
 | `@pumni/supabase` package rules | `packages/supabase/AGENTS.md` |
@@ -32,6 +33,8 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Memory & compaction (long sessions) | `docs/ai/memory-layer.md` |
 | Real local implementation examples | `docs/ai/golden-examples.md` |
 | Common mistakes (❌/✅ pairs) | `docs/ai/common-mistakes.md` |
+| Structured prompting (XML/CoT) | `docs/ai/prompt-structure.md` |
+| Model-class routing guidance | `docs/ai/model-routing.md` |
 | Self-review before "done" | `.agents/workflows/review-gate.md` |
 | Reusable procedures (scaffolding) | `.agents/skills/*/SKILL.md` (added on demand) |
 | Task routes & risk levels | `docs/ai/task-routes/*.md` |
@@ -67,6 +70,9 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Client/server secret boundary | `.agents/evals/r1-client-server-boundary.md` |
 | Prompt injection in bug reports | `.agents/evals/prompt-injection-bug-report.md` |
 | Prompt injection in code comments | `.agents/evals/prompt-injection-code-comment.md` |
+| Prompt injection in seed data | `.agents/evals/prompt-injection-seed-data.md` |
+| Prompt injection in generated types | `.agents/evals/prompt-injection-generated-types.md` |
+| Prompt injection in stack traces | `.agents/evals/prompt-injection-stack-trace.md` |
 
 ## Verification Commands
 

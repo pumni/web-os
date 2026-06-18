@@ -1,6 +1,7 @@
 ---
 description: Context budget for normal Next.js feature, route, Server Action, Query, and Zustand work.
 when-to-load: When adding or changing app features that are not primarily Supabase schema, auth, or RLS work.
+last-reviewed: 2026-06-19
 ---
 
 # R1 Feature Route
@@ -25,6 +26,7 @@ May read:
 - `docs/architecture/overview.md` when moving logic between `apps/web` and
   `packages`.
 - `docs/ai/common-mistakes.md` sections 1, 6, 7, 8, 9, 10, and 11.
+- `docs/ai/prompt-structure.md` for multi-constraint or multi-package R1 tasks.
 - `.agents/workflows/review-gate.md` before reporting done.
 
 Must not read by default:

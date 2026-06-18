@@ -1,6 +1,7 @@
 ---
 description: Map of the Pumni Web OS AI context system and how instruction, recipe, and enforcement layers fit together.
 when-to-load: When maintaining AI context, adding routes/skills/evals, or onboarding an agent to the context system.
+last-reviewed: 2026-06-19
 ---
 
 # Context System Overview
@@ -61,6 +62,15 @@ Enforcement files make the context deterministic.
   checks for web roots, with a self-test fixture for every static rule.
 - `scripts/run-ai-evals.mjs`: deterministic AI policy gate with static rule
   coverage reporting.
+- `scripts/sync-project-graph.mjs`: regenerates the dependency graph in
+  `docs/architecture/project-graph.md` from real `workspace:*` edges; `ai:check`
+  fails if the committed graph drifts (run `bun run ai:graph:sync` to fix).
+
+Enforcement also covers **freshness**: every file in `frontmatterRequired`
+carries `last-reviewed: YYYY-MM-DD`. `checkFreshness` warns past 180 days and
+fails past 365. Ownership of every enforced path is declared in
+`.github/CODEOWNERS`, so a PR touching a doc auto-requests its owner. See
+`docs/ai/context-maintenance.md` → Freshness Policy for the full rule.
 
 Current scan roots are web monorepo roots: `apps/web/src`, `packages`, and
 `supabase/migrations`. Do not replace them with mobile roots like `src` or

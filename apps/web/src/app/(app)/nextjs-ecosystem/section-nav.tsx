@@ -1,16 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import { BookOpen, Cpu, Zap, ShieldAlert, Globe } from 'lucide-react';
+import { BookOpen, Layers, Zap, ShieldAlert, FlaskConical, Database } from 'lucide-react';
 import { cn } from '@pumni/ui';
 import { useActiveSection } from '@/hooks/use-active-section';
 
 const ECOSYSTEM_SECTIONS = [
   { id: 'overview', label: 'Tổng Quan', icon: BookOpen },
-  { id: 'architecture', label: 'Kiến Trúc Lõi', icon: Cpu },
+  { id: 'architecture', label: 'Kiến Trúc Cốt Lõi', icon: Layers },
+  { id: 'caching', label: 'Bộ Nhớ Đệm', icon: Database },
   { id: 'performance', label: 'Hiệu Năng', icon: Zap },
   { id: 'security', label: 'Bảo Mật & Vận Hành', icon: ShieldAlert },
-  { id: 'ecosystem', label: 'Hệ Sinh Thái', icon: Globe },
+  { id: 'ai-strategy', label: 'AI & Tooling', icon: FlaskConical },
 ] as const;
 
 export function SectionNav() {

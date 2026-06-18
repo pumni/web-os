@@ -1,6 +1,7 @@
 ---
 description: Monorepo structure, package boundaries, and module responsibilities for Pumni Web OS.
 when-to-load: When adding packages, moving code across the app/package boundary, or reasoning about import direction.
+last-reviewed: 2026-06-19
 ---
 
 # Architecture Overview

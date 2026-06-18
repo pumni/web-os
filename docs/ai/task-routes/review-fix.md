@@ -1,6 +1,7 @@
 ---
 description: Context budget for fixing review-gate, CI, lint, typecheck, test, or build findings.
 when-to-load: When the prompt asks to fix a validation failure, review finding, or CI failure.
+last-reviewed: 2026-06-19
 ---
 
 # Review Fix Route

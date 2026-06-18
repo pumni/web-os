@@ -1,6 +1,7 @@
 ---
 description: How AI agents connect to the Next.js dev-server runtime via MCP (next-devtools-mcp) for live errors, routes, and browser verification.
 when-to-load: When debugging a runtime/build error, verifying a route change, or closing a build-then-verify loop against the running Next.js dev server.
+last-reviewed: 2026-06-19
 ---
 
 # MCP Runtime Integration

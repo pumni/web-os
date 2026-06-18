@@ -1,6 +1,7 @@
 ---
 description: Maintenance triggers and checklist for keeping the AI context system aligned with the web codebase.
 when-to-load: When changing AI context files, adding rules/skills/evals, or updating architecture conventions.
+last-reviewed: 2026-06-19
 ---
 
 # Context Maintenance
@@ -36,6 +37,8 @@ Review AI context when any of these changes:
       and `supabase/migrations`.
 - [ ] `bun run ai:check` passes.
 - [ ] `bun run ai:eval` passes.
+- [ ] No `last-reviewed` date is older than the warn threshold (180 days) —
+      re-review accuracy and bump the date when you review.
 
 ## Ownership Rules
 
@@ -49,6 +52,28 @@ Use canonical docs for durable rules:
 
 If a convention doc and enforced config disagree, follow the config and update
 the doc in the same maintenance pass.
+
+## Freshness Policy
+
+Every file in `scripts/ai-context.manifest.json` → `frontmatterRequired` carries
+a `last-reviewed: YYYY-MM-DD` field. This is the date of the last **intentional
+accuracy review**, not the last content edit — a typo fix must not reset the
+staleness clock. Use `last-updated:` for plan-doc content edits (see
+`docs/plans/`); the two fields are deliberately distinct.
+
+`bun run ai:check` enforces two thresholds (in `checkFreshness`):
+
+- **> 180 days**: warning. Re-review accuracy when convenient.
+- **> 365 days**: error, fails the gate. Re-review and bump the date before merging.
+
+Nightly `docs-health.yml` runs the same check on a schedule, so staleness
+surfaces even when no PR is in flight. Ownership of each path is declared in
+`.github/CODEOWNERS` so a PR touching a doc auto-requests its owner.
+
+When reviewing a stale doc: confirm every claim still matches enforced config
+and production code (do not just bump the date), then set `last-reviewed` to
+today. If the doc is no longer accurate and you cannot fix it in this pass,
+leave the stale date — do not backdate to silence the warning.
 
 ## Drift Risks
 

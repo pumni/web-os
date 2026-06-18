@@ -1,0 +1,47 @@
+# CODEOWNERS — Pumni Web OS
+#
+# GitHub auto-requests review from the owners of any path touched by a PR.
+# This protects the AI-context layer (instruction + recipe + enforcement planes)
+# from silent drift, and the security boundary from accidental weakening.
+#
+# Keep owners in sync with the human ownership notes in
+# `docs/ai/context-maintenance.md`. When more contributors arrive, replace the
+# single handle below with team handles (@pumni/<team>) or per-area owners.
+#
+# Syntax: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# --- Security boundary (P0): never drift silently ---
+# Supabase migrations carry RLS, policies, grants — the real data boundary.
+/.github/workflows/                            @pumz
+/supabase/migrations/                          @pumz
+
+# --- Instruction plane: AI reads these to know the rules ---
+/AGENTS.md                                     @pumz
+/apps/web/AGENTS.md                            @pumz
+/packages/*/AGENTS.md                          @pumz
+/.claude/rules/                                @pumz
+/.github/copilot-instructions.md               @pumz
+/CLAUDE.md                                     @pumz
+/CODEX.md                                      @pumz
+/GEMINI.md                                     @pumz
+/llms.txt                                      @pumz
+/.aiignore                                     @pumz
+/docs/ai/                                      @pumz
+/docs/architecture/                            @pumz
+/docs/conventions/                             @pumz
+/docs/adr/                                     @pumz
+
+# --- Recipe plane: reusable procedures + regression scenarios ---
+/.agents/skills/                               @pumz
+/.agents/workflows/                            @pumz
+/.agents/evals/                                @pumz
+
+# --- Enforcement plane: deterministic gates ---
+/scripts/ai-context.manifest.json              @pumz
+/scripts/check-ai-context.mjs                  @pumz
+/scripts/check-review-gate-rules.mjs           @pumz
+/scripts/review-gate-rules.mjs                 @pumz
+/scripts/check-secrets.mjs                     @pumz
+/scripts/run-ai-evals.mjs                      @pumz
+/scripts/sync-project-graph.mjs                @pumz
+/scripts/frontmatter.mjs                       @pumz

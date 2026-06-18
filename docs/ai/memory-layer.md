@@ -1,6 +1,7 @@
 ---
 description: Long-term memory and session scratchpad conventions to keep multi-turn work stable without bloating the context window.
 when-to-load: When a task spans many turns, when resuming work across sessions, or before compacting a long conversation.
+last-reviewed: 2026-06-19
 ---
 
 # Memory Layer

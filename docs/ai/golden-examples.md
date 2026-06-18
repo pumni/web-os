@@ -1,6 +1,7 @@
 ---
 description: Real repository examples to inspect before implementing common web-os patterns.
 when-to-load: When looking for a local production pattern to copy for feature, Supabase, route, or validation work.
+last-reviewed: 2026-06-19
 ---
 
 # Golden Examples

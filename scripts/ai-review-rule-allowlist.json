@@ -1,1 +1,9 @@
-{}
+{
+  "cache-life-too-short": [
+    {
+      "file": "apps/web/src/app/(app)/nextjs-ecosystem/page.tsx",
+      "evidence": "cacheLife('seconds')",
+      "reason": "Inside a <CodeBlock> demo string illustrating conditional cache profiles for draft vs published posts; not executed code."
+    }
+  ]
+}
