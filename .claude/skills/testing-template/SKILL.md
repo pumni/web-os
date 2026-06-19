@@ -1,6 +1,6 @@
 ---
 name: testing-template
-description: Add focused deterministic tests for web feature behavior without external service dependencies.
+description: Add focused deterministic unit and component tests through stable public interfaces with no live services. Use when adding or updating tests for web feature behavior, or running a red-green-refactor loop.
 ---
 
 # Testing Template (pointer)

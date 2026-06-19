@@ -427,6 +427,33 @@ function checkStructuredMarkdown({ dir, kind, validation, isFileEntry }) {
   }
 }
 
+function checkSkillDescriptionTriggers() {
+  // Skill descriptions are the model's invocation surface. Per the authoring
+  // standard (.agents/skills/README.md) each must end with an explicit trigger
+  // clause so the model fires the skill at the right moment. Warn, not error,
+  // so the heuristic never blocks a legitimate phrasing.
+  const baseDir = resolveRel('.agents/skills');
+  if (!fs.existsSync(baseDir)) return;
+  const triggerCue = /\buse when\b|\bwhen (?:adding|changing|the user|terminology|shaping|styling|building|working|running)\b/i;
+
+  for (const entry of fs.readdirSync(baseDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const filePath = path.join(baseDir, entry.name, 'SKILL.md');
+    if (!fs.existsSync(filePath)) continue;
+    const content = fs.readFileSync(filePath, 'utf8');
+    const end = content.indexOf('\n---', 4);
+    if (end === -1) continue;
+    const frontmatter = content.slice(4, end);
+    const match = frontmatter.match(/^\s*description:\s*([\s\S]*?)(?:\n\w|$)/m);
+    const description = match ? match[1].replace(/\s+/g, ' ').trim() : '';
+    if (description && !triggerCue.test(description)) {
+      reportWarn(
+        `${relPath(filePath)} description has no trigger clause ("Use when …"). See .agents/skills/README.md.`,
+      );
+    }
+  }
+}
+
 function checkRuleInventory() {
   const inventoryPath = '.agents/workflows/review-gate.md';
   const content = readFile(inventoryPath);
@@ -565,6 +592,7 @@ checkStructuredMarkdown({
   validation: SKILL_VALIDATION,
   isFileEntry: false,
 });
+checkSkillDescriptionTriggers();
 checkAiDocSizes();
 checkEntrypointSizes();
 checkThinWrappers();

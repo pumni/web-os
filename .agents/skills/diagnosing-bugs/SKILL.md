@@ -29,7 +29,9 @@ apply.
 ## 1. Build The Loop
 
 Create a red-capable command or harness before guessing at causes. A useful loop
-drives the actual bug path and can fail on the user's exact symptom.
+drives the actual bug path and can fail on the user's exact symptom. Copy
+[scripts/repro-loop.template.sh](/.agents/skills/diagnosing-bugs/scripts/repro-loop.template.sh)
+as a starting scaffold.
 
 Prefer, in order:
 

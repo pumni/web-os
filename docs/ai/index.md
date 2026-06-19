@@ -42,10 +42,12 @@ need to the canonical doc that owns it.
 
 Claude Code auto-surfaces these by description via thin shims in
 `.claude/skills/<name>/SKILL.md`; the canonical, tool-agnostic content lives in
-`.agents/skills` (the shims just point back to it).
+`.agents/skills` (the shims just point back to it). How to write or change a
+skill: `.agents/skills/README.md` (authoring standard).
 
 | Repeated task | Skill |
 | --- | --- |
+| Scope a vague request before coding | `.agents/skills/grill-requirements/SKILL.md` |
 | Next.js Server Action | `.agents/skills/server-action/SKILL.md` |
 | @pumni/ui styling / tokens / surfaces | `.agents/skills/ui-styling/SKILL.md` |
 | Supabase migration / RLS / grants | `.agents/skills/supabase-migration/SKILL.md` |

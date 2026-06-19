@@ -1,6 +1,6 @@
 ---
 name: supabase-migration
-description: Create Supabase migrations with schema, RLS, policies, grants, and function safety in one place.
+description: Author Supabase migrations bundling schema, RLS, policies, grants, and function safety together. Use when adding or changing files under supabase/migrations, enabling RLS, writing owner policies, or hardening an RPC.
 ---
 
 # Supabase Migration

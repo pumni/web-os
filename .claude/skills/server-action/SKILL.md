@@ -1,6 +1,6 @@
 ---
 name: server-action
-description: Build Next.js Server Actions with validation, auth boundaries, and cache invalidation.
+description: Build Next.js Server Actions with Zod validation, server-derived auth, and cache invalidation. Use when adding or changing an action in features/<feature>/actions.ts, handling a form mutation, or wiring updateTag/revalidateTag.
 ---
 
 # Server Action (pointer)
