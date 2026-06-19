@@ -62,7 +62,7 @@ State ownership: server state stays in Server Components or TanStack Query cache
 ## Command Discipline
 
 Environment is `win32` host shell (varies between Windows PowerShell 5.1, where `&&` is a parser error, and Git Bash). Prefer `;`-separated commands or running commands individually. Avoid complex chaining or `$`-prefixed variables (e.g. `$env:NAME`, `$null`) which can be pre-evaluated or stripped by the host.
-- Prefer using harness tools (Read, Grep, Glob) instead of shell commands. Reference the detailed discipline in `docs/ai/agent-command-policy.md`.
+- Command preference order: repo-preferred CLIs (`rg`, `fd`, `bat --plain --paging=never`, `jq`); harness Read/Grep/Glob when cleaner or shell access is limited; shell-native fallbacks only when preferred tools are unavailable or unsuitable. Reference the detailed discipline in `docs/ai/agent-command-policy.md`.
 - Use deterministic, non-interactive commands with plain-text output.
 - Keep commands narrow, explicit, and scoped to the current task.
 - Use repo-relative paths.

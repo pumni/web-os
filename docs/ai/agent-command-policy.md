@@ -6,61 +6,80 @@ canonical-owner: docs/ai/agent-command-policy.md
 
 # Agent Command Policy
 
-Keeps AI agent command execution safe, deterministic, and reviewable in this
-Windows + PowerShell 7 + Bun + Turborepo workspace. This policy does not override
-security mandates, enforced config, architecture docs, or explicit user instructions.
+Keeps AI command execution safe, deterministic, and reviewable in this Windows +
+Bun + Turborepo workspace. This policy does not override higher-priority rules.
 
 > [!WARNING]
-> **Harness Host Shell Constraints:** commands may run through Windows
-> PowerShell 5.1 or Git Bash. Avoid host-sensitive `$` expansion, `&&`/`||`,
-> and long `pwsh -Command` strings. Prefer harness read/search tools.
+> **Host Shell Constraints:** commands may run through Windows PowerShell 5.1 or
+> Git Bash. Avoid host-sensitive `$` expansion, `&&`/`||`, and long
+> `pwsh -Command` strings.
 
 ## Baseline
 
 - Understand the host shell before running scripts.
 - Prefer deterministic, non-interactive commands with plain-text output.
 - Keep commands narrow, explicit, and scoped to the current task.
-- Use repo-relative paths; quote any Windows path that may contain spaces.
-- Avoid shell-state dependencies (aliases, prompt customization, pagers, interactive pickers).
+- Use repo-relative paths; quote Windows paths with spaces.
+- Avoid aliases, pagers, prompt state, and interactive pickers.
 
 ## Host Shell Compatibility & Chaining
 
-- Chaining: `&&` and `||` work in Git Bash and `pwsh 7`, but fail in Windows PowerShell 5.1. Run commands sequentially or use `;`.
-- Variables/nulls: Avoid `$null` or `$env:NAME` inline. Use Node/Bun scripts or `.ps1` files for complex logic.
-- Unix utilities vs PowerShell cmdlets: Prefer harness tools. If shell commands are necessary:
-  - In Git Bash: standard Unix utilities (`head`, `tail`, `wc`, `mkdir -p`, `rm -rf`) work natively.
-  - In Windows PowerShell: use basic cross-shell equivalents or run specific cmdlets only if required.
+- Chaining: `&&` and `||` fail in Windows PowerShell 5.1. Run commands
+  sequentially or use `;`.
+- Variables/nulls: Avoid `$null` or `$env:NAME` inline. Use Bun/Node scripts or
+  `.ps1` files for complex logic.
+- Prefer the CLI tools below. Use shell-native commands only when needed.
 - Do not call interactive/blocking commands (e.g. `Read-Host`, `git rebase -i`, `git add -i`).
+
+## CLI Preference Order
+
+Use this order for reads, search, inspection, and validation:
+
+1. Repo-preferred CLIs: `rg`, `fd`, `bat`, and `jq`.
+2. Native harness read/search tools when they are cleaner or shell access is
+   limited.
+3. Narrow shell-native fallbacks only when the preferred CLI is unavailable or
+   unsuitable.
+
+Do not default to broad PowerShell recursion when `rg` or `fd` can answer the
+question. If a preferred CLI is unavailable, use the narrowest fallback and say
+why when it affects the work.
+
+| Task | Prefer | Avoid unless needed |
+| --- | --- | --- |
+| Find files | `fd`, `rg --files`; harness Glob when cleaner | `Get-ChildItem -Recurse`, `dir /s` |
+| Search text | `rg -n -C 3 "pattern" <paths>`; harness Grep when cleaner | `Select-String`, `findstr`, broad recursive scans |
+| Read files | `bat --plain --paging=never <path>`; harness Read when cleaner | pagers, noisy shell output |
+| Inspect JSON | `jq` | regex/string parsing JSON |
+| Run project scripts | `bun run <script>` | manually reproducing script internals |
 
 ## PowerShell 7 Workflow
 
-Use PowerShell 7 as a script runtime, not as long inline `pwsh -Command`
-through a host shell that may be Windows PowerShell 5.1.
+Use PowerShell 7 as a script runtime, not as long inline `pwsh -Command`.
 
-- Simple commands: `rg -n "pattern" apps`, `fd "\.tsx$" apps/web/src`,
-  `bun run typecheck`.
+- Simple commands: `rg -n "pattern" apps`, `fd "\.tsx$" apps/web/src`.
 - Multi-step automation: prefer `pwsh -NoLogo -NoProfile -NonInteractive
   -ExecutionPolicy Bypass -File scripts/check.ps1`.
 - Validation wrappers: `bun run ps:check` for the local gate,
   `bun run ps:premerge` for the broader gate.
 - Put `$env:*`, `$LASTEXITCODE`, `try`/`catch`, and `ForEach-Object -Parallel`
   inside `.ps1` files.
-- Use `rg` for content, `fd` for files, `jq` for JSON, and
-  `bat --plain --paging=never` for human-readable output.
 
 ## Search and read
 
-- Prefer harness Glob/Grep/Read tools for search and reads.
-- In the shell, prefer `rg -n -C 3 "pattern" <paths>` and `rg --files`
-  over `Get-ChildItem -Recurse` / `Select-String`.
-- Use `jq` for JSON when available; otherwise `ConvertFrom-Json`.
+- Prefer `rg -n -C 3 "pattern" <paths>`, `rg --files`, `fd`,
+  `bat --plain --paging=never`, and `jq`.
+- Use native harness Glob/Grep/Read tools when they are cleaner or shell access
+  is limited.
+- Use `Get-Content` or `ConvertFrom-Json` only when simpler or when preferred
+  tools are unavailable.
 - Avoid broad recursive scans when a narrower path answers the question.
 
 ## Filesystem and Git
 
-- Use native patch/edit tools for file changes; keep edits minimal and scoped.
+- Use native patch/edit tools; keep edits minimal and scoped.
 - Do not run repo-wide replacements unless explicitly requested.
-- Before recursive delete/move, verify the target resolves inside the intended directory.
+- Before recursive delete/move, verify the resolved target.
 - Do not run destructive Git commands (`git reset --hard`, `git clean`, force-push,
   branch rewrites) unless the user explicitly asks.
 - Preserve unrelated changes already in the working tree.
@@ -69,7 +88,7 @@ through a host shell that may be Windows PowerShell 5.1.
 
 ## Validation
 
-This repo uses Bun + Turborepo. Run the narrowest relevant gate first:
+Run the narrowest relevant gate first:
 
 | Change scope            | Command                                               |
 | ----------------------- | ----------------------------------------------------- |
@@ -79,7 +98,7 @@ This repo uses Bun + Turborepo. Run the narrowest relevant gate first:
 | Broader code change     | `bun run lint` + `bun run typecheck` + `bun run test` |
 | Full confidence pass    | `bun run lint`, `typecheck`, `test`, `build`          |
 
-End-to-end tests are separate and may need a running app / local Supabase:
+E2E is separate and may need a running app/local Supabase:
 `cd apps/web; bunx playwright test`.
 
 Do not start persistent dev servers (`bun run dev`, `next dev`) as validation
@@ -87,6 +106,5 @@ unless the user explicitly asks to run the app.
 
 ## Final reporting
 
-After code or docs changes, conclude with the format defined in `AGENTS.md`
-(`## Summary` / `## Files changed` / `## Validation run` / `## Risks / follow-up`).
-If validation was not run, say so explicitly and explain why.
+After code or docs changes, use the final format in `AGENTS.md`. If validation
+was not run, say why.
