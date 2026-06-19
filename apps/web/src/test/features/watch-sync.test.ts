@@ -4,6 +4,8 @@ import {
   extractYouTubeId,
   isValidHttpUrl,
   getStructuralSignature,
+  shouldAcceptPlaybackAnchor,
+  shouldAcceptPersistedAnchorSnapshot,
 } from '../../features/watch/sync-math';
 import {
   classifyDrift,
@@ -47,6 +49,110 @@ describe('Watch synced playback math & helpers', () => {
       // 10 seconds pass (10000ms) -> should advance by 10 * 1.5 = 15 seconds
       const expected = calculateExpectedPosition(anchor, 110000);
       expect(expected).toBe(35.0);
+    });
+  });
+
+  describe('shouldAcceptPlaybackAnchor', () => {
+    const current = {
+      isPlaying: true,
+      anchorPosition: 12,
+      anchorServerTs: 1000,
+      playbackRate: 1,
+      originSessionId: 'host-session-1',
+      sequence: 3,
+    };
+
+    it('accepts newer anchors from the same host session', () => {
+      expect(
+        shouldAcceptPlaybackAnchor(current, {
+          ...current,
+          anchorPosition: 15,
+          sequence: 4,
+        }),
+      ).toBe(true);
+    });
+
+    it('rejects stale anchors from the same host session', () => {
+      expect(
+        shouldAcceptPlaybackAnchor(current, {
+          ...current,
+          anchorPosition: 10,
+          sequence: 2,
+        }),
+      ).toBe(false);
+    });
+
+    it('accepts anchors from a new host session', () => {
+      expect(
+        shouldAcceptPlaybackAnchor(current, {
+          ...current,
+          originSessionId: 'host-session-2',
+          sequence: 1,
+        }),
+      ).toBe(true);
+    });
+
+    it('accepts unversioned anchors for persisted room snapshots', () => {
+      expect(
+        shouldAcceptPlaybackAnchor(current, {
+          isPlaying: false,
+          anchorPosition: 20,
+          anchorServerTs: 2000,
+          playbackRate: 1,
+        }),
+      ).toBe(true);
+    });
+  });
+
+  describe('shouldAcceptPersistedAnchorSnapshot', () => {
+    const liveAnchor = {
+      isPlaying: true,
+      anchorPosition: 30,
+      anchorServerTs: 5000,
+      playbackRate: 1,
+      originSessionId: 'host-session-1',
+      sequence: 5,
+    };
+
+    it('rejects older DB snapshots after a live anchor was received', () => {
+      expect(
+        shouldAcceptPersistedAnchorSnapshot(liveAnchor, {
+          isPlaying: true,
+          anchorPosition: 20,
+          anchorServerTs: 4000,
+          playbackRate: 1,
+        }),
+      ).toBe(false);
+    });
+
+    it('accepts DB snapshots that are at least as new as the live anchor', () => {
+      expect(
+        shouldAcceptPersistedAnchorSnapshot(liveAnchor, {
+          isPlaying: true,
+          anchorPosition: 30,
+          anchorServerTs: 5000,
+          playbackRate: 1,
+        }),
+      ).toBe(true);
+    });
+
+    it('accepts DB snapshots before any live versioned anchor exists', () => {
+      expect(
+        shouldAcceptPersistedAnchorSnapshot(
+          {
+            isPlaying: false,
+            anchorPosition: 0,
+            anchorServerTs: 1000,
+            playbackRate: 1,
+          },
+          {
+            isPlaying: false,
+            anchorPosition: 3,
+            anchorServerTs: 900,
+            playbackRate: 1,
+          },
+        ),
+      ).toBe(true);
     });
   });
 

@@ -13,6 +13,7 @@ import {
 } from '../actions';
 import { type QueueItem, QUEUE_ITEM_SELECT } from '../types';
 import { fractionalPosition } from '../sync-math';
+import { WATCH_ROOM_RECOVERY_REFETCH_MS, WATCH_ROOM_STALE_MS } from './use-room-query';
 
 export function useQueueQuery(roomId: string, initialData: QueueItem[]) {
   return useQuery({
@@ -34,7 +35,11 @@ export function useQueueQuery(roomId: string, initialData: QueueItem[]) {
       return (data || []) as QueueItem[];
     },
     initialData,
-    staleTime: 30_000,
+    staleTime: WATCH_ROOM_STALE_MS,
+    refetchInterval: WATCH_ROOM_RECOVERY_REFETCH_MS,
+    refetchIntervalInBackground: false,
+    refetchOnReconnect: 'always',
+    refetchOnWindowFocus: 'always',
   });
 }
 

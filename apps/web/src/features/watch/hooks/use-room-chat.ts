@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { chatMessageSchema } from '@pumni/validators';
-import type { ChatMessage, ReactionEvent } from '../types';
+import type { ChatMessage, ReactionEvent, RoomRealtimeEvents } from '../types';
 
 const MAX_MESSAGES = 100;
 
@@ -10,17 +10,33 @@ export function useRoomChat(
   userId: string,
   broadcastChat: (m: ChatMessage) => void,
   broadcastReaction: (r: ReactionEvent) => void,
+  roomEvents: Pick<RoomRealtimeEvents, 'onChat' | 'onReaction'>,
   onLocalReaction?: (r: ReactionEvent) => void,
 ) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const onLocalReactionRef = useRef(onLocalReaction);
+
+  useEffect(() => {
+    onLocalReactionRef.current = onLocalReaction;
+  }, [onLocalReaction]);
 
   // Nhận từ người khác — lọc trùng theo id (resilience nếu self-echo/đổi config sau này)
-  const receiveChat = (m: ChatMessage) => {
+  const receiveChat = useCallback((m: ChatMessage) => {
     setMessages((prev) => {
       if (prev.some((x) => x.id === m.id)) return prev;
       return [...prev, m].slice(-MAX_MESSAGES);
     });
-  };
+  }, []);
+
+  useEffect(() => {
+    return roomEvents.onChat(receiveChat);
+  }, [receiveChat, roomEvents]);
+
+  useEffect(() => {
+    return roomEvents.onReaction((reaction) => {
+      onLocalReactionRef.current?.(reaction);
+    });
+  }, [roomEvents]);
 
   const sendChat = (text: string) => {
     const parsed = chatMessageSchema.safeParse({ text });

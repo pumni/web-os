@@ -7,6 +7,8 @@ export type PlaybackAnchor = {
   anchorPosition: number; // in seconds
   anchorServerTs: number; // in epoch ms server time
   playbackRate: number;
+  sequence?: number;
+  originSessionId?: string;
 };
 
 export type Participant = {
@@ -25,6 +27,16 @@ export const QUEUE_ITEM_SELECT =
 export interface QueueBroadcastEvent {
   action: 'add' | 'remove' | 'reorder' | 'advance';
   title?: string | null;
+}
+
+export interface RoomBroadcastEvent {
+  action: 'source' | 'advance' | 'host-transfer' | 'host-claim' | 'queue-current-cleared';
+}
+
+export interface RoomRealtimeEvents {
+  onAnchor: (handler: (anchor: PlaybackAnchor) => void) => () => void;
+  onChat: (handler: (message: ChatMessage) => void) => () => void;
+  onReaction: (handler: (reaction: ReactionEvent) => void) => () => void;
 }
 
 export interface ChatMessage {

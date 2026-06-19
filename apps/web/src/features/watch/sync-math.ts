@@ -11,6 +11,21 @@ export function calculateExpectedPosition(anchor: PlaybackAnchor, serverNowMs: n
   return expected;
 }
 
+export function shouldAcceptPlaybackAnchor(current: PlaybackAnchor, incoming: PlaybackAnchor) {
+  if (!incoming.originSessionId || incoming.sequence === undefined) return true;
+  if (current.originSessionId !== incoming.originSessionId) return true;
+  if (current.sequence === undefined) return true;
+  return incoming.sequence > current.sequence;
+}
+
+export function shouldAcceptPersistedAnchorSnapshot(
+  current: PlaybackAnchor,
+  incoming: PlaybackAnchor,
+) {
+  if (!current.originSessionId || current.sequence === undefined) return true;
+  return incoming.anchorServerTs >= current.anchorServerTs;
+}
+
 /**
  * Extracts the 11-character video ID from a YouTube link or ID.
  */

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { Participant } from '../types';
 import { useClaimHost } from './use-room-queue';
 
@@ -11,8 +11,20 @@ export function useHostAutopromote(
   userId: string,
   isHost: boolean,
   participants: Participant[],
+  onClaimed?: () => void,
 ) {
   const claim = useClaimHost(roomId);
+  const onClaimedRef = useRef(onClaimed);
+  const mutateRef = useRef(claim.mutate);
+  const pendingRef = useRef(false);
+
+  useEffect(() => {
+    onClaimedRef.current = onClaimed;
+  }, [onClaimed]);
+
+  useEffect(() => {
+    mutateRef.current = claim.mutate;
+  }, [claim.mutate]);
 
   // Ứng viên = member không phải host, joinedAt nhỏ nhất trong số đang present.
   const hostPresent = participants.some((p) => p.isHost);
@@ -26,8 +38,15 @@ export function useHostAutopromote(
 
     let stopped = false;
     const attempt = () => {
-      if (stopped) return;
-      claim.mutate(undefined, { onError: () => {} }); // DB từ chối êm tới khi >30s
+      if (stopped || pendingRef.current) return;
+      pendingRef.current = true;
+      mutateRef.current(undefined, {
+        onSuccess: () => onClaimedRef.current?.(),
+        onError: () => {},
+        onSettled: () => {
+          pendingRef.current = false;
+        },
+      }); // DB từ chối êm tới khi >30s
     };
     // Thử ngay (thường bị từ chối nếu chưa đủ 30s) rồi retry tới khi thành công.
     // Khi claim thành công → host_id đổi → isHost=true → effect cleanup dừng interval.
@@ -35,7 +54,8 @@ export function useHostAutopromote(
     const interval = setInterval(attempt, RETRY_MS);
     return () => {
       stopped = true;
+      pendingRef.current = false;
       clearInterval(interval);
     };
-  }, [isHost, hostPresent, iAmCandidate, claim]);
+  }, [isHost, hostPresent, iAmCandidate]);
 }

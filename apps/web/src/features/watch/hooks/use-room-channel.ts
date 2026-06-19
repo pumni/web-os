@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -10,19 +10,17 @@ import type {
   Participant,
   Room,
   QueueBroadcastEvent,
+  RoomBroadcastEvent,
+  RoomRealtimeEvents,
   ChatMessage,
   ReactionEvent,
 } from '../types';
 import { watchKeys } from '../query-keys';
-import { getStructuralSignature } from '../sync-math';
 
 export function useRoomChannel(
   room: Room,
   userId: string,
   isHost: boolean,
-  onAnchor: (anchor: PlaybackAnchor) => void,
-  onChat?: (m: ChatMessage) => void,
-  onReaction?: (r: ReactionEvent) => void,
 ) {
   const queryClient = useQueryClient();
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -30,6 +28,9 @@ export function useRoomChannel(
     'connecting',
   );
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const anchorHandlersRef = useRef(new Set<(anchor: PlaybackAnchor) => void>());
+  const chatHandlersRef = useRef(new Set<(message: ChatMessage) => void>());
+  const reactionHandlersRef = useRef(new Set<(reaction: ReactionEvent) => void>());
 
   const isHostRef = useRef(isHost);
   const joinedAtRef = useRef(0);
@@ -42,27 +43,35 @@ export function useRoomChannel(
     joinedAtRef.current = Date.now();
   }, []);
 
-  const lastSigRef = useRef<string>(getStructuralSignature(room));
+  const onAnchor = useCallback((handler: (anchor: PlaybackAnchor) => void) => {
+    anchorHandlersRef.current.add(handler);
+    return () => {
+      anchorHandlersRef.current.delete(handler);
+    };
+  }, []);
 
-  // Keep lastSigRef in sync when room data changes (e.g. from TanStack Query refetch)
-  useEffect(() => {
-    lastSigRef.current = getStructuralSignature(room);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room.source_type, room.source_ref, room.host_id, room.current_queue_item_id]);
+  const onChat = useCallback((handler: (message: ChatMessage) => void) => {
+    chatHandlersRef.current.add(handler);
+    return () => {
+      chatHandlersRef.current.delete(handler);
+    };
+  }, []);
 
-  const onAnchorLatestRef = useRef(onAnchor);
-  useEffect(() => {
-    onAnchorLatestRef.current = onAnchor;
-  });
+  const onReaction = useCallback((handler: (reaction: ReactionEvent) => void) => {
+    reactionHandlersRef.current.add(handler);
+    return () => {
+      reactionHandlersRef.current.delete(handler);
+    };
+  }, []);
 
-  const onChatLatestRef = useRef(onChat);
-  const onReactionLatestRef = useRef(onReaction);
-  useEffect(() => {
-    onChatLatestRef.current = onChat;
-  });
-  useEffect(() => {
-    onReactionLatestRef.current = onReaction;
-  });
+  const events: RoomRealtimeEvents = useMemo(
+    () => ({
+      onAnchor,
+      onChat,
+      onReaction,
+    }),
+    [onAnchor, onChat, onReaction],
+  );
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
@@ -81,32 +90,16 @@ export function useRoomChannel(
     // 1. Listen to broadcast event (low-latency playback sync)
     activeChannel.on('broadcast', { event: 'playback' }, (payload: { payload: PlaybackAnchor }) => {
       if (payload.payload) {
-        onAnchorLatestRef.current(payload.payload);
+        anchorHandlersRef.current.forEach((handler) => handler(payload.payload));
       }
     });
 
-    // 2. Listen to postgres_changes for watch_rooms (structural signature change)
-    activeChannel.on(
-      'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'watch_rooms',
-        filter: `id=eq.${room.id}`,
-      },
-      (payload) => {
-        const newRoom = payload.new as Room;
-        if (newRoom) {
-          const newSig = getStructuralSignature(newRoom);
-          if (newSig !== lastSigRef.current) {
-            lastSigRef.current = newSig;
-            void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
-          }
-        }
-      },
-    );
+    // 2. Listen to broadcast event for structural room changes.
+    activeChannel.on('broadcast', { event: 'room' }, () => {
+      void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
+    });
 
-    // 3. Listen to broadcast event for queue changes
+    // 3. Listen to broadcast event for queue changes.
     activeChannel.on('broadcast', { event: 'queue' }, (msg: { payload: QueueBroadcastEvent }) => {
       void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
       const { action, title } = msg.payload ?? {};
@@ -121,11 +114,11 @@ export function useRoomChannel(
     });
 
     activeChannel.on('broadcast', { event: 'chat' }, (p: { payload: ChatMessage }) => {
-      if (p.payload) onChatLatestRef.current?.(p.payload);
+      if (p.payload) chatHandlersRef.current.forEach((handler) => handler(p.payload));
     });
 
     activeChannel.on('broadcast', { event: 'reaction' }, (p: { payload: ReactionEvent }) => {
-      if (p.payload) onReactionLatestRef.current?.(p.payload);
+      if (p.payload) reactionHandlersRef.current.forEach((handler) => handler(p.payload));
     });
 
     // 4. Listen to presence events
@@ -187,7 +180,7 @@ export function useRoomChannel(
     }
   }, [isHost, userId]);
 
-  const broadcastAnchor = (anchor: PlaybackAnchor) => {
+  const broadcastAnchor = useCallback((anchor: PlaybackAnchor) => {
     if (channelRef.current) {
       channelRef.current.send({
         type: 'broadcast',
@@ -195,9 +188,9 @@ export function useRoomChannel(
         payload: anchor,
       });
     }
-  };
+  }, []);
 
-  const broadcastQueueEvent = (event: QueueBroadcastEvent) => {
+  const broadcastQueueEvent = useCallback((event: QueueBroadcastEvent) => {
     if (channelRef.current) {
       channelRef.current.send({
         type: 'broadcast',
@@ -205,9 +198,19 @@ export function useRoomChannel(
         payload: event,
       });
     }
-  };
+  }, []);
 
-  const broadcastChat = (m: ChatMessage) => {
+  const broadcastRoomEvent = useCallback((event: RoomBroadcastEvent) => {
+    if (channelRef.current) {
+      channelRef.current.send({
+        type: 'broadcast',
+        event: 'room',
+        payload: event,
+      });
+    }
+  }, []);
+
+  const broadcastChat = useCallback((m: ChatMessage) => {
     if (channelRef.current) {
       channelRef.current.send({
         type: 'broadcast',
@@ -215,9 +218,9 @@ export function useRoomChannel(
         payload: m,
       });
     }
-  };
+  }, []);
 
-  const broadcastReaction = (r: ReactionEvent) => {
+  const broadcastReaction = useCallback((r: ReactionEvent) => {
     if (channelRef.current) {
       channelRef.current.send({
         type: 'broadcast',
@@ -225,12 +228,14 @@ export function useRoomChannel(
         payload: r,
       });
     }
-  };
+  }, []);
 
   return {
     participants,
+    events,
     broadcastAnchor,
     broadcastQueueEvent,
+    broadcastRoomEvent,
     channelStatus,
     broadcastChat,
     broadcastReaction,

@@ -9,7 +9,13 @@ import { PlaylistPanel } from './playlist-panel';
 import { ChatPanel } from './chat-panel';
 import type { ReactionOverlayRef } from './reaction-overlay';
 import { useTransferHost } from '../hooks/use-room-queue';
-import type { Participant, QueueItem, QueueBroadcastEvent, ChatMessage } from '../types';
+import type {
+  Participant,
+  QueueItem,
+  QueueBroadcastEvent,
+  RoomBroadcastEvent,
+  ChatMessage,
+} from '../types';
 
 interface SideDockProps {
   roomId: string;
@@ -20,6 +26,7 @@ interface SideDockProps {
   currentQueueItemId: string | null;
   profiles?: Record<string, { username: string | null; avatar_url: string | null }>;
   broadcastQueueEvent: (e: QueueBroadcastEvent) => void;
+  broadcastRoomEvent: (e: RoomBroadcastEvent) => void;
   messages: ChatMessage[];
   sendChat: (text: string) => boolean;
   onReact?: (emoji: string) => void;
@@ -35,6 +42,7 @@ export function SideDock({
   currentQueueItemId,
   profiles = {},
   broadcastQueueEvent,
+  broadcastRoomEvent,
   messages,
   sendChat,
   onReact,
@@ -47,6 +55,7 @@ export function SideDock({
     transferHostMutation.mutate(newHostId, {
       onSuccess: () => {
         toast.success('Đã chuyển quyền chủ phòng thành công!');
+        broadcastRoomEvent({ action: 'host-transfer' });
       },
       onError: (err) => {
         toast.error(err.message || 'Chuyển quyền thất bại.');
@@ -91,6 +100,7 @@ export function SideDock({
               currentQueueItemId={currentQueueItemId}
               isHost={isHost}
               broadcastQueueEvent={broadcastQueueEvent}
+              broadcastRoomEvent={broadcastRoomEvent}
             />
           </TabsContent>
 

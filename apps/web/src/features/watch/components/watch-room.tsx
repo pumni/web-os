@@ -39,7 +39,11 @@ import { setRoomSource, leaveRoom } from '../actions';
 import { useRoomQuery } from '../hooks/use-room-query';
 import { useQueueQuery, useAdvanceQueue } from '../hooks/use-room-queue';
 import { watchKeys } from '../query-keys';
-import type { Room, PlaybackAnchor, QueueItem, ChatMessage, ReactionEvent } from '../types';
+import type {
+  Room,
+  QueueItem,
+  RoomBroadcastEvent,
+} from '../types';
 import { TapToPlayOverlay } from './tap-to-play-overlay';
 import { HostClaimBanner } from './host-claim-banner';
 import { useHostHeartbeat } from '../hooks/use-host-heartbeat';
@@ -112,6 +116,7 @@ interface SourceChangeDialogProps {
   setNewSourceRef: (ref: string) => void;
   roomId: string;
   queryClient: ReturnType<typeof useQueryClient>;
+  broadcastRoomEvent: (event: RoomBroadcastEvent) => void;
 }
 
 function SourceChangeDialog({
@@ -123,6 +128,7 @@ function SourceChangeDialog({
   setNewSourceRef,
   roomId,
   queryClient,
+  broadcastRoomEvent,
 }: SourceChangeDialogProps) {
   const [isPending, startTransition] = useTransition();
 
@@ -146,6 +152,7 @@ function SourceChangeDialog({
           onOpenChange(false);
           setNewSourceRef('');
           void queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });
+          broadcastRoomEvent({ action: 'source' });
         } else {
           toast.error(res.message || 'Đổi nguồn phát thất bại.');
         }
@@ -256,54 +263,41 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     if (!autoPlay) return; // User has auto-play off — just stop
     if (queueItems.length === 0) return;
     advanceQueueMutation.mutate(undefined, {
-      onSuccess: () => broadcastQueueEvent({ action: 'advance' }),
+      onSuccess: () => {
+        broadcastQueueEvent({ action: 'advance' });
+        broadcastRoomEvent({ action: 'advance' });
+      },
     });
   };
 
   useHostHeartbeat(currentRoom.id, isHost);
 
-  // We use refs to sever the circular hook dependency
-  const onAnchorRef = useRef<(anchor: PlaybackAnchor) => void>(() => {});
-  const onChatRef = useRef<(m: ChatMessage) => void>(() => {});
-  const onReactionRef = useRef<(r: ReactionEvent) => void>(() => {});
   const reactionOverlayRef = useRef<ReactionOverlayRef>(null);
 
-  // 4. Realtime channel (Broadcast anchor + Presence + postgres_changes + Chat + Reactions).
+  // 4. Realtime channel (Broadcast anchor/room/queue + Presence + Chat + Reactions).
   const {
     participants,
+    events: roomEvents,
     broadcastAnchor,
     broadcastQueueEvent,
+    broadcastRoomEvent,
     channelStatus,
     broadcastChat,
     broadcastReaction,
-  } = useRoomChannel(
-    currentRoom,
-    userId,
-    isHost,
-    (anchor) => onAnchorRef.current(anchor),
-    (m) => onChatRef.current(m),
-    (r) => onReactionRef.current(r),
-  );
+  } = useRoomChannel(currentRoom, userId, isHost);
 
   // 4.5 Chat & Reactions & Host Auto-promote
-  const { messages, receiveChat, sendChat, sendReaction } = useRoomChat(
+  const { messages, sendChat, sendReaction } = useRoomChat(
     userId,
     broadcastChat,
     broadcastReaction,
+    roomEvents,
     (r) => reactionOverlayRef.current?.pushReaction(r),
   );
 
-  useEffect(() => {
-    onChatRef.current = receiveChat;
-  }, [receiveChat]);
-
-  useEffect(() => {
-    onReactionRef.current = (r) => {
-      reactionOverlayRef.current?.pushReaction(r);
-    };
-  }, []);
-
-  useHostAutopromote(currentRoom.id, userId, isHost, participants);
+  useHostAutopromote(currentRoom.id, userId, isHost, participants, () =>
+    broadcastRoomEvent({ action: 'host-claim' }),
+  );
 
   // 5. Sync Controller (Soft-lock + Resync)
   const {
@@ -312,16 +306,11 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     needsGesture,
     resync,
     resumeFromGesture,
-    handleReceiveAnchor,
     playerHandlers,
-  } = useSyncController(playerRef, currentRoom, isHost, serverClock, broadcastAnchor);
+    controlHandlers,
+  } = useSyncController(playerRef, currentRoom, isHost, serverClock, broadcastAnchor, roomEvents);
 
   const { data: profiles = {} } = useMemberProfiles(participants.map((p) => p.userId));
-
-  // Wire up the ref inside useEffect to comply with render purity rules
-  useEffect(() => {
-    onAnchorRef.current = handleReceiveAnchor;
-  }, [handleReceiveAnchor]);
 
   const hostPresent = participants.some((p) => p.isHost);
   const showClaim = useHostClaimState(isHost, hostPresent);
@@ -447,7 +436,12 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         </div>
       </GlassSurface>
 
-      {showClaim && !isHost && <HostClaimBanner roomId={currentRoom.id} />}
+      {showClaim && !isHost && (
+        <HostClaimBanner
+          roomId={currentRoom.id}
+          broadcastRoomEvent={() => broadcastRoomEvent({ action: 'host-claim' })}
+        />
+      )}
 
       {/* Main Zones Layout */}
       <div className="flex flex-col lg:flex-row gap-4 flex-1 items-stretch min-h-0">
@@ -472,6 +466,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               autoPlay={autoPlay}
               onAutoPlayToggle={() => setAutoPlay((prev) => !prev)}
               onVolumePreferenceChange={setWatchPlayerVolume}
+              {...controlHandlers}
             />
             {needsGesture && <TapToPlayOverlay onResume={resumeFromGesture} />}
           </SyncPlayer>
@@ -494,6 +489,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               currentQueueItemId={currentRoom.current_queue_item_id}
               profiles={profiles}
               broadcastQueueEvent={broadcastQueueEvent}
+              broadcastRoomEvent={broadcastRoomEvent}
               messages={messages}
               sendChat={sendChat}
               onReact={sendReaction}
@@ -522,6 +518,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               currentQueueItemId={currentRoom.current_queue_item_id}
               profiles={profiles}
               broadcastQueueEvent={broadcastQueueEvent}
+              broadcastRoomEvent={broadcastRoomEvent}
               messages={messages}
               sendChat={sendChat}
               onReact={sendReaction}
@@ -542,6 +539,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
           setNewSourceRef={setNewSourceRef}
           roomId={currentRoom.id}
           queryClient={queryClient}
+          broadcastRoomEvent={broadcastRoomEvent}
         />
       ) : null}
     </div>

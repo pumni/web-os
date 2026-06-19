@@ -18,6 +18,8 @@ interface RoomControlsProps {
   onAutoPlayToggle?: () => void;
   onAdvance?: () => void;
   onVolumePreferenceChange?: (volume: number) => void;
+  onPlayPauseIntent?: () => void;
+  onSeekCommitIntent?: (time: number) => void;
 }
 
 function formatTime(seconds: number): string {
@@ -355,6 +357,8 @@ export function RoomControls({
   onAutoPlayToggle,
   onAdvance,
   onVolumePreferenceChange,
+  onPlayPauseIntent,
+  onSeekCommitIntent,
 }: RoomControlsProps) {
   const paused = useMediaState('paused');
   const muted = useMediaState('muted');
@@ -378,6 +382,7 @@ export function RoomControls({
   const { visible, controlsBind } = useControlsVisibility({ paused, stageRef });
 
   const handlePlayPause = () => {
+    onPlayPauseIntent?.();
     if (paused) {
       remote.play();
     } else {
@@ -405,6 +410,7 @@ export function RoomControls({
     if (nextTime === undefined) return;
     setSeekPreview(null);
     seekTo(nextTime);
+    onSeekCommitIntent?.(nextTime);
   };
 
   const handleVolumeChange = (values: number[]) => {

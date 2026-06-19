@@ -7,9 +7,13 @@ import type {
   MediaPauseEvent,
   MediaSeekedEvent,
 } from '@vidstack/react';
-import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
-import type { PlaybackAnchor, Room } from '../types';
-import { calculateExpectedPosition } from '../sync-math';
+import type { PlaybackAnchor, Room, RoomRealtimeEvents } from '../types';
+import {
+  calculateExpectedPosition,
+  shouldAcceptPersistedAnchorSnapshot,
+  shouldAcceptPlaybackAnchor,
+} from '../sync-math';
+import { useHostAnchorEmitter } from './use-host-anchor-emitter';
 
 // ---------------------------------------------------------------------------
 // Pure helpers — no side-effects, no refs
@@ -62,6 +66,7 @@ export function useSyncController(
   isHost: boolean,
   serverClock: () => number,
   broadcastAnchor: (anchor: PlaybackAnchor) => void,
+  roomEvents: Pick<RoomRealtimeEvents, 'onAnchor'>,
 ) {
   const [syncStatus, setSyncStatus] = useState<'host' | 'in-sync' | 'catching-up'>(
     isHost ? 'host' : 'in-sync',
@@ -92,88 +97,28 @@ export function useSyncController(
     playbackRate: room.playback_rate,
   });
 
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   // Sync anchorRef when room prop updates from server
   useEffect(() => {
-    anchorRef.current = {
+    const persistedAnchor = {
       isPlaying: room.is_playing,
       anchorPosition: room.anchor_position,
       anchorServerTs: new Date(room.anchor_server_ts).getTime(),
       playbackRate: room.playback_rate,
     };
+
+    if (shouldAcceptPersistedAnchorSnapshot(anchorRef.current, persistedAnchor)) {
+      anchorRef.current = persistedAnchor;
+    }
   }, [room.is_playing, room.anchor_position, room.anchor_server_ts, room.playback_rate]);
 
-  // Cleanup DB update debounce timer
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
-
-  // Persist playback state to database
-  const persistAnchor = (anchor: PlaybackAnchor) => {
-    if (!isHost) return;
-    const supabase = createSupabaseBrowserClient();
-    supabase
-      .from('watch_rooms')
-      .update({
-        is_playing: anchor.isPlaying,
-        anchor_position: anchor.anchorPosition,
-        anchor_server_ts: new Date(anchor.anchorServerTs).toISOString(),
-        playback_rate: anchor.playbackRate,
-        last_active_at: new Date().toISOString(), // Keep-alive heartbeat update on state change
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', room.id)
-      .then(({ error }) => {
-        if (error) {
-          console.error('Failed to update watch room database anchor', error);
-        }
-      });
-  };
-
-  const persistAnchorRef = useRef(persistAnchor);
-  useEffect(() => {
-    persistAnchorRef.current = persistAnchor;
+  const emitAnchor = useHostAnchorEmitter({
+    anchorRef,
+    playerRef,
+    roomId: room.id,
+    isHost,
+    serverClock,
+    broadcastAnchor,
   });
-
-  // Flush the latest anchor immediately when the host leaves, bypassing the
-  // 2s debounce, so a late-joiner doesn't inherit a stale anchor.
-  useEffect(() => {
-    if (!isHost) return;
-    const flush = () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      persistAnchorRef.current(anchorRef.current);
-    };
-    window.addEventListener('pagehide', flush);
-    return () => window.removeEventListener('pagehide', flush);
-  }, [isHost]);
-
-  // Debounced database updates to avoid overloading the DB
-  const debouncedPersist = (anchor: PlaybackAnchor) => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      persistAnchor(anchor);
-    }, 2000);
-  };
-
-  // Host broadcasts playback status and triggers DB sync
-  const emitAnchor = () => {
-    const player = playerRef.current;
-    if (!player) return;
-
-    const newAnchor: PlaybackAnchor = {
-      isPlaying: !player.paused,
-      anchorPosition: player.currentTime,
-      anchorServerTs: serverClock(),
-      playbackRate: player.playbackRate,
-    };
-
-    anchorRef.current = newAnchor;
-    broadcastAnchor(newAnchor);
-    debouncedPersist(newAnchor);
-  };
 
   // Robust play: browsers block unmuted autoplay without a user gesture.
   // Fall back to muted autoplay (always allowed); if even that fails, surface
@@ -290,19 +235,26 @@ export function useSyncController(
     resync();
   };
 
-  // Handle incoming broadcast updates
-  const handleReceiveAnchor = (newAnchor: PlaybackAnchor) => {
-    anchorRef.current = newAnchor;
-    if (isHost) return;
+  const receiveAnchorRef = useRef<(anchor: PlaybackAnchor) => void>(() => {});
+  useEffect(() => {
+    receiveAnchorRef.current = (newAnchor: PlaybackAnchor) => {
+      if (!shouldAcceptPlaybackAnchor(anchorRef.current, newAnchor)) return;
+      anchorRef.current = newAnchor;
+      if (isHost) return;
 
-    // Mỗi anchor nhận được là MỘT lệnh transport có chủ đích của host (host không
-    // broadcast theo nhịp). → Tự gom follower về đồng bộ kể cả khi đang lệch.
-    if (!isFollowingHostRef.current) {
-      isFollowingHostRef.current = true;
-      setIsFollowingHost(true);
-    }
-    reconcile();
-  };
+      // Mỗi anchor nhận được là MỘT lệnh transport có chủ đích của host (host không
+      // broadcast theo nhịp). → Tự gom follower về đồng bộ kể cả khi đang lệch.
+      if (!isFollowingHostRef.current) {
+        isFollowingHostRef.current = true;
+        setIsFollowingHost(true);
+      }
+      reconcileRef.current();
+    };
+  }, [isHost]);
+
+  useEffect(() => {
+    return roomEvents.onAnchor((anchor) => receiveAnchorRef.current(anchor));
+  }, [roomEvents]);
 
   // Periodically check sync for followers
   useEffect(() => {
@@ -341,8 +293,22 @@ export function useSyncController(
 
   const handleSeeked = (detail?: number, e?: MediaSeekedEvent) => {
     if (isHost) {
-      emitAnchor();
+      emitAnchor({ flush: true });
     } else if (isFollowerManualEvent(e)) {
+      handleFollowerManualInteraction();
+    }
+  };
+
+  const handleControlPlayPauseIntent = () => {
+    if (!isHost) {
+      handleFollowerManualInteraction();
+    }
+  };
+
+  const handleControlSeekCommitIntent = () => {
+    if (isHost) {
+      emitAnchor({ flush: true });
+    } else {
       handleFollowerManualInteraction();
     }
   };
@@ -353,12 +319,15 @@ export function useSyncController(
     needsGesture,
     resync,
     resumeFromGesture,
-    handleReceiveAnchor,
     playerHandlers: {
       onPlay: handlePlay,
       onPause: handlePause,
       onRateChange: handleRateChange,
       onSeeked: handleSeeked,
+    },
+    controlHandlers: {
+      onPlayPauseIntent: handleControlPlayPauseIntent,
+      onSeekCommitIntent: handleControlSeekCommitIntent,
     },
   };
 }

@@ -10,7 +10,7 @@ import {
   useReorderQueue,
   useAdvanceQueue,
 } from '../hooks/use-room-queue';
-import type { QueueItem, QueueBroadcastEvent } from '../types';
+import type { QueueItem, QueueBroadcastEvent, RoomBroadcastEvent } from '../types';
 
 import {
   DndContext,
@@ -35,6 +35,7 @@ interface PlaylistPanelProps {
   currentQueueItemId: string | null;
   isHost: boolean;
   broadcastQueueEvent: (e: QueueBroadcastEvent) => void;
+  broadcastRoomEvent: (e: RoomBroadcastEvent) => void;
 }
 
 export function PlaylistPanel({
@@ -43,6 +44,7 @@ export function PlaylistPanel({
   currentQueueItemId,
   isHost,
   broadcastQueueEvent,
+  broadcastRoomEvent,
 }: PlaylistPanelProps) {
   const [sourceType, setSourceType] = useState<'youtube' | 'url'>('youtube');
   const [sourceRef, setSourceRef] = useState('');
@@ -98,6 +100,9 @@ export function PlaylistPanel({
       onSuccess: () => {
         toast.success('Đã xóa khỏi hàng chờ!');
         broadcastQueueEvent({ action: 'remove', title: removed?.title ?? removed?.source_ref });
+        if (removed?.id === currentQueueItemId) {
+          broadcastRoomEvent({ action: 'queue-current-cleared' });
+        }
       },
       onError: (err) => {
         toast.error(err.message || 'Xóa thất bại.');
@@ -110,6 +115,7 @@ export function PlaylistPanel({
       onSuccess: () => {
         toast.success('Đã chuyển sang video tiếp theo!');
         broadcastQueueEvent({ action: 'advance' });
+        broadcastRoomEvent({ action: 'advance' });
       },
       onError: (err) => {
         toast.error(err.message || 'Chuyển video thất bại.');
