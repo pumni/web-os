@@ -33,25 +33,26 @@ Bun + Turborepo workspace. This policy does not override higher-priority rules.
 
 ## CLI Preference Order
 
-Use this order for reads, search, inspection, and validation:
+**Default to PowerShell 7 + the repo CLIs** for every read, search, inspection,
+and validation. The AI's native harness tools (Read/Grep/Glob) are a **fallback
+only** — use them when a CLI genuinely cannot do the job: the CLI is missing,
+there is no shell access, or the output is too large/binary for the terminal.
+Say why when you fall back and it affects the work.
 
-1. Repo-preferred CLIs: `rg`, `fd`, `bat`, and `jq`.
-2. Native harness read/search tools when they are cleaner or shell access is
-   limited.
-3. Narrow shell-native fallbacks only when the preferred CLI is unavailable or
-   unsuitable.
+1. **First — repo CLIs in PowerShell 7:** `rg`, `fd`, `bat --plain --paging=never`, `jq`.
+2. **Fallback — native harness tools** only when (1) is unavailable or unsuitable.
+3. **Last — narrow shell-native commands** when neither fits.
 
-Do not default to broad PowerShell recursion when `rg` or `fd` can answer the
-question. If a preferred CLI is unavailable, use the narrowest fallback and say
-why when it affects the work.
+Do not default to broad recursion (`Get-ChildItem -Recurse`, `Select-String`,
+`findstr`) when `rg`/`fd` answer the question.
 
-| Task                | Prefer                                                         | Avoid unless needed                               |
-| ------------------- | -------------------------------------------------------------- | ------------------------------------------------- |
-| Find files          | `fd`, `rg --files`; harness Glob when cleaner                  | `Get-ChildItem -Recurse`, `dir /s`                |
-| Search text         | `rg -n -C 3 "pattern" <paths>`; harness Grep when cleaner      | `Select-String`, `findstr`, broad recursive scans |
-| Read files          | `bat --plain --paging=never <path>`; harness Read when cleaner | pagers, noisy shell output                        |
-| Inspect JSON        | `jq`                                                           | regex/string parsing JSON                         |
-| Run project scripts | `bun run <script>`                                             | manually reproducing script internals             |
+| Task                | Use first (PowerShell 7)            | Fallback (only if CLI can't) |
+| ------------------- | ----------------------------------- | ---------------------------- |
+| Find files          | `fd`, `rg --files`                  | harness Glob                 |
+| Search text         | `rg -n -C 3 "pattern" <paths>`      | harness Grep                 |
+| Read files          | `bat --plain --paging=never <path>` | harness Read                 |
+| Inspect JSON        | `jq`                                | —                            |
+| Run project scripts | `bun run <script>`                  | —                            |
 
 ## PowerShell 7 Workflow
 
@@ -64,16 +65,6 @@ Use PowerShell 7 as a script runtime, not as long inline `pwsh -Command`.
   `bun run ps:premerge` for the broader gate.
 - Put `$env:*`, `$LASTEXITCODE`, `try`/`catch`, and `ForEach-Object -Parallel`
   inside `.ps1` files.
-
-## Search and read
-
-- Prefer `rg -n -C 3 "pattern" <paths>`, `rg --files`, `fd`,
-  `bat --plain --paging=never`, and `jq`.
-- Use native harness Glob/Grep/Read tools when they are cleaner or shell access
-  is limited.
-- Use `Get-Content` or `ConvertFrom-Json` only when simpler or when preferred
-  tools are unavailable.
-- Avoid broad recursive scans when a narrower path answers the question.
 
 ## Filesystem and Git
 
@@ -106,5 +97,5 @@ unless the user explicitly asks to run the app.
 
 ## Final reporting
 
-After code or docs changes, use the final format in `AGENTS.md`. If validation
-was not run, say why.
+After code or docs changes, report what changed, which files, and which
+validation gates you ran (and their result). If validation was not run, say why.

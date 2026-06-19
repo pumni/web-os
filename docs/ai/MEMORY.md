@@ -2,7 +2,9 @@
 
 Long-term index of settled facts that are not yet (or not best) captured in a
 canonical doc. Start here on long or resumed tasks. Keep entries short and
-pointers-first. See `docs/ai/agent-behavior.md` (Memory & Compaction) for the hybrid memory model.
+pointers-first. Hybrid memory model: harness-managed session memory/compaction is
+primary; this file is the durable log for decisions promoted out of compaction.
+Owner: `docs/adr/0004-memory-layer-harness-managed.md`.
 
 ## How to use
 
@@ -35,7 +37,8 @@ pointers-first. See `docs/ai/agent-behavior.md` (Memory & Compaction) for the hy
   (8 packages < 10, no onboarding/structured-output/memory-loss/cache-cost
   signal). Revisit when packages > 10 or a documented signal appears. Owner:
   `docs/plans/ai-context-2026-phase4-5-handoff.md`.
-- 2026-06-19 — Memory layer chuyển hybrid: harness-managed primary (Claude Code compaction/memory tool), MEMORY.md = durable promoted-from-compaction. Owner: `docs/ai/agent-behavior.md` (Memory & Compaction), `docs/adr/0004`.
+- 2026-06-19 — Memory layer chuyển hybrid: harness-managed primary (Claude Code compaction/memory tool), MEMORY.md = durable promoted-from-compaction. Owner: `docs/adr/0004-memory-layer-harness-managed.md`.
 - 2026-06-19 — Context layer 2026 overhaul: trim ceremony + behavioral runner + hybrid memory + git freshness. Owner: `docs/adr/0005`.
 - 2026-06-19 — Context efficacy overhaul v2: rule-efficacy metric + meta-inversion cut (context-system, memory-layer) + behavioral CI wired via stub-agent + thin CLAUDE.md + pwsh metadata alignment. Owner: `docs/adr/0006`.
-- 2026-06-19 — Context efficiency 2026: design-system split to skill, risk playbook merged into agent-behavior, 5 package AGENTS.md added. Owner: `docs/adr/0007`.
+- 2026-06-19 — Context efficiency 2026: design-system split to skill, risk playbook merged into agent-behavior, 5 package AGENTS.md added. Owner: `docs/adr/0007-context-efficiency-2026.md`.
+- 2026-06-20 — Context layer lean 2026: cut hand-rolled router (flow-router/context-map/agent-behavior/task-routes) + harness-duplicating workflows + behavioral-eval/ai-metrics machinery; single-file router `docs/ai/index.md`; tool-agnostic `.agents/` kept; validation altitude fixed (code gates vs context gates); ADR 0007 collision renumbered to 0008. Owner: `docs/adr/0009-context-layer-lean-2026.md`.

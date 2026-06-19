@@ -1,4 +1,6 @@
-# 0007. Refined Command Policy
+# 0008. Refined Command Policy
+
+> Renumbered from 0007 (collided with `0007-context-efficiency-2026.md`); see ADR-0009.
 
 - **Status:** Accepted
 - **Date:** 2026-06-19

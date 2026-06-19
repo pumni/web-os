@@ -3,7 +3,6 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { RULES } from './review-gate-rules.mjs';
-import { parseFrontmatter } from './frontmatter.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,10 +27,6 @@ const REQUIRED_PACKAGE_SCRIPTS = manifest.requiredPackageScripts ?? [];
 const FRONTMATTER_REQUIRED = manifest.frontmatterRequired ?? [];
 const INDEX_REQUIRED_REFERENCES = manifest.indexRequiredReferences ?? [];
 const SKILL_VALIDATION = manifest.skillValidation ?? {
-  yamlRequiredFields: [],
-  markdownRequiredSections: [],
-};
-const EVAL_VALIDATION = manifest.evalValidation ?? {
   yamlRequiredFields: [],
   markdownRequiredSections: [],
 };
@@ -94,9 +89,14 @@ function getMarkdownLinkFiles() {
     ...collectMarkdownFiles('.agents'),
     ...collectMarkdownFiles('.github'),
     ...collectMarkdownFiles('.claude'),
-  ].filter((relativePath) => !/(^|\/)PLAN_[^/]*\.md$/.test(relativePath) && !relativePath.startsWith('docs/plans/'));
-  // PLAN_*.md and docs/plans/ are meta/historical planning docs that intentionally reference
-  // example or not-yet-created paths; exclude them from link-rot checks.
+  ].filter(
+    (relativePath) =>
+      !/(^|\/)PLAN_[^/]*\.md$/.test(relativePath) &&
+      !relativePath.startsWith('docs/plans/') &&
+      !relativePath.startsWith('docs/adr/'),
+  );
+  // PLAN_*.md, docs/plans/, and docs/adr/ are historical/append-only records that
+  // intentionally reference example or since-removed paths; exclude them from link-rot checks.
 }
 
 function checkRequiredFiles() {
@@ -309,40 +309,15 @@ function checkFreshness() {
 
 function checkContextIndexCoverage() {
   const index = readFile('docs/ai/index.md');
-  const contextMap = fs.existsSync(resolveRel('docs/ai/context-map.md'))
-    ? readFile('docs/ai/context-map.md')
-    : '';
-  const searchableContext = `${index}\n${contextMap}`;
   for (const reference of INDEX_REQUIRED_REFERENCES) {
-    if (!searchableContext.includes(reference)) {
+    if (!index.includes(reference)) {
       reportError(`AI context catalog is missing canonical reference: ${reference}`);
     }
   }
 }
 
-function checkTaskRoutes() {
-  // Task routes are optional (added on demand). Validate only those that exist.
-  const routesDir = resolveRel('docs/ai/task-routes');
-  if (!fs.existsSync(routesDir)) return;
-
-  const index = readFile('docs/ai/index.md');
-  for (const fileName of fs.readdirSync(routesDir)) {
-    if (!fileName.endsWith('.md')) continue;
-    const route = `docs/ai/task-routes/${fileName}`;
-    if (!index.includes('docs/ai/task-routes')) {
-      reportError(`docs/ai/index.md must reference docs/ai/task-routes when routes exist.`);
-    }
-    const content = readFile(route);
-    if (content.length > 4000) {
-      reportError(`${route} is too large; route to canonical docs instead of duplicating them.`);
-    }
-  }
-}
-
 function checkWorkflowIndexNames() {
-  const relativePath = fs.existsSync(resolveRel('docs/ai/context-map.md'))
-    ? 'docs/ai/context-map.md'
-    : 'docs/ai/index.md';
+  const relativePath = 'docs/ai/index.md';
   const content = readFile(relativePath);
   const workflowsHeading = content.indexOf('## Workflows');
   if (workflowsHeading < 0) {
@@ -403,19 +378,6 @@ function checkProjectGraphSync() {
   }
 }
 
-function checkFrameworkFreshness() {
-  const freshnessScript = path.join(__dirname, 'check-framework-freshness.mjs');
-  if (!fs.existsSync(freshnessScript)) {
-    reportWarn('check-framework-freshness.mjs not found — skipping framework freshness check.');
-    return;
-  }
-  try {
-    execFileSync(process.execPath, [freshnessScript], { stdio: 'inherit', cwd: ROOT });
-  } catch {
-    reportError('check-framework-freshness.mjs reported one or more findings — update framework-freshness.md.');
-  }
-}
-
 function checkStructuredMarkdown({ dir, kind, validation, isFileEntry }) {
   const baseDir = resolveRel(dir);
   if (!fs.existsSync(baseDir)) return;
@@ -461,29 +423,6 @@ function checkStructuredMarkdown({ dir, kind, validation, isFileEntry }) {
       if (!new RegExp(`^\\s*##\\s+${section}\\b`, 'm').test(content)) {
         reportError(`${relativePath} is missing required section '## ${section}'`);
       }
-    }
-  }
-}
-
-function collectEvalFiles() {
-  const evalDir = resolveRel('.agents/evals');
-  if (!fs.existsSync(evalDir)) return [];
-  return fs
-    .readdirSync(evalDir)
-    .filter((fileName) => fileName.endsWith('.md'))
-    .map((fileName) => `.agents/evals/${fileName}`)
-    .sort();
-}
-
-function checkEvalRuleMapping() {
-  for (const relativePath of collectEvalFiles()) {
-    const frontmatter = parseFrontmatter(relativePath);
-    if (!frontmatter) continue;
-
-    const isManual = frontmatter.manual === true;
-    const isBehavioral = frontmatter.behavioral === true;
-    if (!isManual && !isBehavioral) {
-      reportError(`${relativePath} must declare manual: true or behavioral: true.`);
     }
   }
 }
@@ -626,13 +565,6 @@ checkStructuredMarkdown({
   validation: SKILL_VALIDATION,
   isFileEntry: false,
 });
-checkStructuredMarkdown({
-  dir: '.agents/evals',
-  kind: 'Eval',
-  validation: EVAL_VALIDATION,
-  isFileEntry: true,
-});
-checkEvalRuleMapping();
 checkAiDocSizes();
 checkEntrypointSizes();
 checkThinWrappers();
@@ -640,7 +572,6 @@ checkMarkdownLinks();
 checkDocPathReferences();
 checkGoldenExamplePaths();
 checkContextIndexCoverage();
-checkTaskRoutes();
 checkWorkflowIndexNames();
 checkRuleInventory();
 checkPackageScripts();
@@ -649,7 +580,6 @@ checkDesignTokenBoundaries();
 checkUiPackageBoundaries();
 checkSecretsIntegration();
 checkProjectGraphSync();
-checkFrameworkFreshness();
 
 if (errors > 0) {
   console.error(`\nValidation failed with ${errors} error(s) and ${warnings} warning(s).`);

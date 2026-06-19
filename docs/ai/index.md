@@ -1,40 +1,67 @@
 # Pumni Web OS — AI Knowledge Index
 
-Canonical owner: `docs/ai/index.md`. Keep this file as the compact router after
-`AGENTS.md`; load `docs/ai/context-map.md` only when maintaining or auditing the
-context system itself.
+The single router after `AGENTS.md`. Start at `AGENTS.md` (security + priority +
+command discipline), then load **only** the rows below that match the task. The
+harness handles task routing, planning, and delegation — this file just maps a
+need to the canonical doc that owns it.
 
-## Start Here
+## Conventions (the actual engineering rules)
 
 | Need | Load |
 | --- | --- |
-| Session startup / any shell command | `docs/ai/agent-command-policy.md` |
-| Task routing / risk level | `docs/ai/agent-behavior.md`, then the matching `docs/ai/task-routes/*.md` |
-| Route, skill, or workflow selection | `docs/ai/flow-router.md` |
-| Stack/API freshness | `docs/ai/framework-freshness.md` |
-| Full context catalog | `docs/ai/context-map.md` |
-| Local implementation examples | `docs/ai/golden-examples.md` |
-| Known bad/good patterns | `docs/ai/common-mistakes.md` |
+| Architecture & package boundaries | `docs/architecture/overview.md` |
+| Dependency graph & blast radius | `docs/architecture/project-graph.md` |
+| Server / Client boundary | `docs/conventions/server-client-boundary.md` |
+| Data fetching (Server Components / Query / Zustand) | `docs/conventions/data-fetching.md` |
+| Feature module layout | `docs/conventions/feature-module.md` |
+| Design system (OKLCH tokens, surfaces, motion) | `docs/conventions/design-system.md` |
+| Supabase / RLS / keys | `docs/conventions/supabase-security.md` |
+| Testing scope & commands | `docs/conventions/testing.md` |
+| transpilePackages (monorepo Next.js) | `docs/conventions/transpile-packages.md` |
+| Quality gates | `docs/quality-gates.md` |
 
-## Task Routes
+## Next.js 16 (auto-loaded by glob; read directly when editing app code)
 
-| Task type | Route |
+| Need | Load |
 | --- | --- |
-| Cosmetic UI, copy, docs-only | `docs/ai/task-routes/r0-ui.md` |
-| Normal Next.js feature work | `docs/ai/task-routes/r1-feature.md` |
-| Supabase, Auth, RLS, keys | `docs/ai/task-routes/r2-supabase.md` |
-| Fix review/CI/gate finding | `docs/ai/task-routes/review-fix.md` |
-| Read-only investigation / plan | `docs/ai/task-routes/spike.md` |
+| Async request APIs (`params`/`cookies`/`headers`) | `.claude/rules/nextjs-async-apis.md` |
+| Cache components (`'use cache'`, `cacheLife`, tags) | `.claude/rules/nextjs-cache-components.md` |
 
-## Verification Commands
+## Reference (load on demand)
 
-- `bun run ai:check` — AI context structure (required files, links, frontmatter, wrappers, secrets).
-- `bun run ai:eval` — regression evals (review-gate static rules + secrets scan).
-- `bun run ai:eval:behavioral` — agent-backed prompt-injection behavior evals.
-- `bun run ai:eval:behavioral:stub` — deterministic local behavioral smoke.
-- Code gates: `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`.
+| Need | Load |
+| --- | --- |
+| Shell command discipline (PowerShell 7 / rg-fd-bat) | `docs/ai/agent-command-policy.md` |
+| Domain glossary | `docs/ai/domain-language.md` |
+| Local production patterns to copy | `docs/ai/golden-examples.md` |
+| Known ❌/✅ mistake pairs | `docs/ai/common-mistakes.md` |
+| MCP runtime (Next.js dev server) | `docs/ai/mcp-runtime.md` |
+| MCP Postgres schema introspection (read-only) | `docs/ai/mcp-postgres.md` |
 
-## Extended Catalog
+## Skills (reusable procedures in `.agents/skills`)
 
-For the full list of canonical docs, package AGENTS files, skills, workflows,
-and evals, load `docs/ai/context-map.md`.
+Claude Code auto-surfaces these by description via thin shims in
+`.claude/skills/<name>/SKILL.md`; the canonical, tool-agnostic content lives in
+`.agents/skills` (the shims just point back to it).
+
+| Repeated task | Skill |
+| --- | --- |
+| Next.js Server Action | `.agents/skills/server-action/SKILL.md` |
+| @pumni/ui styling / tokens / surfaces | `.agents/skills/ui-styling/SKILL.md` |
+| Supabase migration / RLS / grants | `.agents/skills/supabase-migration/SKILL.md` |
+| TanStack Query hook or mutation | `.agents/skills/tanstack-query-hook/SKILL.md` |
+| Zustand client UI store | `.agents/skills/zustand-store/SKILL.md` |
+| Deterministic unit/component testing | `.agents/skills/testing-template/SKILL.md` |
+| Disciplined bug diagnosis / repro loops | `.agents/skills/diagnosing-bugs/SKILL.md` |
+| Deep modules / testable interfaces | `.agents/skills/codebase-design/SKILL.md` |
+| Glossary & domain term discipline | `.agents/skills/domain-modeling/SKILL.md` |
+
+## Verification
+
+- Code changes (`apps/`, `packages/` source): `bun run lint`, `bun run typecheck`, `bun run test` (+ `bun run build` for config/bundle).
+- Context-layer changes (`AGENTS.md`, `docs/`, `.claude/rules`, `.agents`, `scripts/check-*`, manifest): `bun run ai:check`, `bun run ai:eval`.
+
+## Workflows
+
+On-demand procedures live in `.agents/workflows`. The only standing one is the
+self-review gate: `review-gate`.

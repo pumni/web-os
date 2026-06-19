@@ -135,16 +135,37 @@ function TasksMetricContent() {
   );
 }
 
+function subscribeToClientReady() {
+  return () => {};
+}
+
+function getClientReadySnapshot() {
+  return true;
+}
+
+function getServerReadySnapshot() {
+  return false;
+}
+
 function PersonalizeMetric() {
   const { accent } = usePersonalization();
-  const accentValue: string = accent ?? 'indigo';
+  const mounted = React.useSyncExternalStore(
+    subscribeToClientReady,
+    getClientReadySnapshot,
+    getServerReadySnapshot,
+  );
+
+  const accentValue: string = mounted ? (accent ?? 'indigo') : 'cyan';
   const swatch: Record<string, string> = {
+    cyan: 'CY',
     indigo: 'IN',
     violet: 'VI',
     rose: 'RO',
   };
-  const titleValue = swatch[accentValue] ?? 'IN';
-  const accentLabel = accentValue.charAt(0).toUpperCase() + accentValue.slice(1);
+  const titleValue = mounted ? (swatch[accentValue] ?? 'CY') : '--';
+  const accentLabel = mounted ? (accentValue.charAt(0).toUpperCase() + accentValue.slice(1)) : 'Loading';
+  const description = mounted ? `${accentLabel} accent` : 'Loading accent...';
+  const ariaLabel = mounted ? `Current theme accent: ${accentLabel}` : 'Loading accent';
 
   return (
     <BentoGridItem
@@ -152,8 +173,8 @@ function PersonalizeMetric() {
       interactive={false}
       icon={<Palette className="size-4" />}
       title={titleValue}
-      description={`${accentLabel} accent`}
-      ariaLabel={`Current theme accent: ${accentLabel}`}
+      description={description}
+      ariaLabel={ariaLabel}
     >
       <div className="mt-auto flex items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground border border-border">
@@ -169,6 +190,7 @@ function PersonalizeMetric() {
     </BentoGridItem>
   );
 }
+
 
 export function DashboardBento({ recentRooms }: DashboardBentoProps) {
   const mostRecent = recentRooms[0];

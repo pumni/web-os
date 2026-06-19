@@ -4,8 +4,7 @@
 /AGENTS.md
 /docs/ai/index.md
 /apps/web/AGENTS.md
-/docs/ai/agent-behavior.md
-/docs/ai/framework-freshness.md
+/docs/ai/agent-command-policy.md
 /docs/ai/golden-examples.md
 /docs/architecture/overview.md
 /docs/conventions/server-client-boundary.md
