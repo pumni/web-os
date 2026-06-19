@@ -44,11 +44,12 @@ import { TapToPlayOverlay } from './tap-to-play-overlay';
 import { HostClaimBanner } from './host-claim-banner';
 import { useHostHeartbeat } from '../hooks/use-host-heartbeat';
 import { useMemberProfiles } from '../hooks/use-room-members';
+import { useAppUiStore } from '@/stores/app-ui-store';
 
 // Phase 6 imports
 import { useRoomChat } from '../hooks/use-room-chat';
 import { useHostAutopromote } from '../hooks/use-host-autopromote';
-import { ReactionOverlay, type ReactionOverlayRef } from './reaction-overlay';
+import type { ReactionOverlayRef } from './reaction-overlay';
 
 interface WatchRoomProps {
   room: Room;
@@ -233,6 +234,8 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   const [newSourceRef, setNewSourceRef] = useState('');
 
   const queryClient = useQueryClient();
+  const watchPlayerVolume = useAppUiStore((state) => state.watchPlayerVolume);
+  const setWatchPlayerVolume = useAppUiStore((state) => state.setWatchPlayerVolume);
 
   // 1. Join room membership on mount, then refetch member-gated data.
   useRoomJoinEffect(room.id, queryClient);
@@ -454,19 +457,21 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             sourceType={currentRoom.source_type}
             sourceRef={currentRoom.source_ref}
             playerRef={playerRef}
+            volume={watchPlayerVolume}
             onEnded={handleEnded}
             stageRef={stageRef}
             {...playerHandlers}
           >
-            <ReactionOverlay ref={reactionOverlayRef} />
             <RoomControls
               isHost={isHost}
+              playerRef={playerRef}
               onSourceChange={() => setIsSourceModalOpen(true)}
               isFollowingHost={isFollowingHost}
               resync={resync}
               stageRef={stageRef}
               autoPlay={autoPlay}
               onAutoPlayToggle={() => setAutoPlay((prev) => !prev)}
+              onVolumePreferenceChange={setWatchPlayerVolume}
             />
             {needsGesture && <TapToPlayOverlay onResume={resumeFromGesture} />}
           </SyncPlayer>
@@ -492,6 +497,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               messages={messages}
               sendChat={sendChat}
               onReact={sendReaction}
+              reactionOverlayRef={reactionOverlayRef}
             />
           </div>
         </div>
@@ -519,6 +525,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               messages={messages}
               sendChat={sendChat}
               onReact={sendReaction}
+              reactionOverlayRef={reactionOverlayRef}
             />
           </div>
         </SheetContent>

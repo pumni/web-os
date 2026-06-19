@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useMediaState, useMediaRemote } from '@vidstack/react';
+import { useMediaState, useMediaRemote, type MediaPlayerInstance } from '@vidstack/react';
 import { Button, Slider, GlassSurface, Switch, cn } from '@pumni/ui';
 import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Clapperboard, SkipForward } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@pumni/ui';
@@ -9,6 +9,7 @@ import { useControlsVisibility } from '../hooks/use-controls-visibility';
 
 interface RoomControlsProps {
   isHost: boolean;
+  playerRef?: React.RefObject<MediaPlayerInstance | null>;
   onSourceChange?: () => void;
   isFollowingHost?: boolean;
   resync?: () => void;
@@ -16,6 +17,7 @@ interface RoomControlsProps {
   autoPlay?: boolean;
   onAutoPlayToggle?: () => void;
   onAdvance?: () => void;
+  onVolumePreferenceChange?: (volume: number) => void;
 }
 
 function formatTime(seconds: number): string {
@@ -28,6 +30,72 @@ function formatTime(seconds: number): string {
     return `${h}:${pad(m)}:${pad(s)}`;
   }
   return `${m}:${pad(s)}`;
+}
+
+function clampTime(time: number, duration: number): number {
+  if (!Number.isFinite(time) || time < 0) return 0;
+  if (!Number.isFinite(duration) || duration <= 0) return time;
+  return Math.min(time, duration);
+}
+
+function useSmoothTimelineTime({
+  currentTime,
+  duration,
+  paused,
+  playbackRate,
+  playerRef,
+  isScrubbing,
+}: {
+  currentTime: number;
+  duration: number;
+  paused: boolean;
+  playbackRate: number;
+  playerRef?: React.RefObject<MediaPlayerInstance | null>;
+  isScrubbing: boolean;
+}) {
+  const [displayTime, setDisplayTime] = React.useState(() => clampTime(currentTime, duration));
+  const anchorRef = React.useRef({ mediaTime: currentTime, timestamp: 0 });
+
+  React.useEffect(() => {
+    const nextTime = clampTime(currentTime, duration);
+    anchorRef.current = { mediaTime: nextTime, timestamp: performance.now() };
+    if (isScrubbing) return;
+
+    const frameId = requestAnimationFrame(() => setDisplayTime(nextTime));
+    return () => cancelAnimationFrame(frameId);
+  }, [currentTime, duration, isScrubbing]);
+
+  React.useEffect(() => {
+    if (isScrubbing || paused || playbackRate <= 0) return;
+
+    let frameId = 0;
+    const tick = (timestamp: number) => {
+      const anchor = anchorRef.current;
+      const elapsedSeconds = Math.max(0, (timestamp - anchor.timestamp) / 1000);
+      const playerTime = playerRef?.current?.currentTime;
+      const interpolatedTime = anchor.mediaTime + elapsedSeconds * playbackRate;
+      const hasStablePlayerTime =
+        playerTime !== undefined &&
+        Number.isFinite(playerTime) &&
+        Math.abs(playerTime - interpolatedTime) < 1;
+      const nextTime = clampTime(
+        hasStablePlayerTime
+          ? Math.max(playerTime, interpolatedTime)
+          : interpolatedTime,
+        duration,
+      );
+
+      setDisplayTime((previousTime) =>
+        Math.abs(previousTime - nextTime) >= 0.01 ? nextTime : previousTime,
+      );
+      frameId = requestAnimationFrame(tick);
+    };
+
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
+  }, [duration, isScrubbing, paused, playbackRate, playerRef]);
+
+  return displayTime;
 }
 
 // ---------------------------------------------------------------------------
@@ -135,24 +203,33 @@ function SoftLockBanner({ onResync }: { onResync: () => void }) {
 interface TimelineScrubberProps {
   currentTime: number;
   duration: number;
-  onSeek: (values: number[]) => void;
+  seekPreview: number | null;
+  onSeekPreview: (values: number[]) => void;
   onSeekCommit: (values: number[]) => void;
 }
 
-function TimelineScrubber({ currentTime, duration, onSeek, onSeekCommit }: TimelineScrubberProps) {
+function TimelineScrubber({
+  currentTime,
+  duration,
+  seekPreview,
+  onSeekPreview,
+  onSeekCommit,
+}: TimelineScrubberProps) {
+  const sliderValue = seekPreview ?? currentTime;
+
   return (
     <div className="flex items-center gap-3 w-full">
       <span className="text-xs font-mono text-foreground select-none tabular-nums min-w-9 text-right">
-        {formatTime(currentTime)}
+        {formatTime(sliderValue)}
       </span>
       <Slider
-        value={[currentTime]}
+        value={[sliderValue]}
         min={0}
         max={duration || 100}
         step={0.1}
-        onValueChange={onSeek}
+        onValueChange={onSeekPreview}
         onValueCommit={onSeekCommit}
-        className="flex-1 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-foreground/30"
+        className="flex-1 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-border"
         aria-label="Seek progress"
       />
       <span className="text-xs font-mono text-muted-foreground select-none tabular-nums min-w-9">
@@ -269,6 +346,7 @@ function HostActionGroup({
 // fallow-ignore-next-line complexity
 export function RoomControls({
   isHost,
+  playerRef,
   onSourceChange,
   isFollowingHost = true,
   resync,
@@ -276,6 +354,7 @@ export function RoomControls({
   autoPlay,
   onAutoPlayToggle,
   onAdvance,
+  onVolumePreferenceChange,
 }: RoomControlsProps) {
   const paused = useMediaState('paused');
   const muted = useMediaState('muted');
@@ -285,6 +364,15 @@ export function RoomControls({
   const duration = useMediaState('duration');
   const playbackRate = useMediaState('playbackRate');
   const remote = useMediaRemote();
+  const [seekPreview, setSeekPreview] = React.useState<number | null>(null);
+  const timelineTime = useSmoothTimelineTime({
+    currentTime,
+    duration,
+    paused,
+    playbackRate,
+    playerRef,
+    isScrubbing: seekPreview !== null,
+  });
 
   // Controls Visibility auto-hide hook
   const { visible, controlsBind } = useControlsVisibility({ paused, stageRef });
@@ -297,16 +385,33 @@ export function RoomControls({
     }
   };
 
-  const handleSeek = (values: number[]) => {
-    if (values[0] !== undefined) remote.seeking(values[0]);
+  const seekTo = (time: number) => {
+    remote.seeking(time);
+    remote.seek(time);
+    if (playerRef?.current) {
+      playerRef.current.currentTime = time;
+    }
+  };
+
+  const handleSeekPreview = (values: number[]) => {
+    const nextTime = values[0];
+    if (nextTime === undefined) return;
+    setSeekPreview(nextTime);
+    remote.seeking(nextTime);
   };
 
   const handleSeekCommit = (values: number[]) => {
-    if (values[0] !== undefined) remote.seek(values[0]);
+    const nextTime = values[0];
+    if (nextTime === undefined) return;
+    setSeekPreview(null);
+    seekTo(nextTime);
   };
 
   const handleVolumeChange = (values: number[]) => {
-    if (values[0] !== undefined) remote.changeVolume(values[0]);
+    const nextVolume = values[0];
+    if (nextVolume === undefined) return;
+    remote.changeVolume(nextVolume);
+    onVolumePreferenceChange?.(nextVolume);
   };
 
   const handleMuteToggle = () => {
@@ -363,9 +468,10 @@ export function RoomControls({
         ) : null}
 
         <TimelineScrubber
-          currentTime={currentTime}
+          currentTime={timelineTime}
           duration={duration}
-          onSeek={handleSeek}
+          seekPreview={seekPreview}
+          onSeekPreview={handleSeekPreview}
           onSeekCommit={handleSeekCommit}
         />
 

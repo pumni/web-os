@@ -1,10 +1,13 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   MediaPlayer,
   MediaProvider,
   isHLSProvider,
+  sortVideoQualities,
+  useMediaRemote,
+  useMediaState,
   type MediaPlayerInstance,
   type MediaProviderAdapter,
   type MediaPlayEvent,
@@ -24,8 +27,56 @@ interface SyncPlayerProps {
   onSeeked?: (detail: number, e: MediaSeekedEvent) => void;
   onRateChange?: (detail: number, e: MediaRateChangeEvent) => void;
   onEnded?: (e: MediaEndedEvent) => void;
+  volume?: number;
   stageRef?: React.RefObject<HTMLDivElement | null>;
   children?: React.ReactNode;
+}
+
+function PreferHighestQuality({ enabled }: { enabled: boolean }) {
+  const qualities = useMediaState('qualities');
+  const quality = useMediaState('quality');
+  const canSetQuality = useMediaState('canSetQuality');
+  const remote = useMediaRemote();
+
+  useEffect(() => {
+    if (!enabled || !canSetQuality || qualities.length < 2) return;
+
+    const [highest] = sortVideoQualities(qualities, true);
+    if (!highest || quality?.id === highest.id) return;
+
+    const index = qualities.indexOf(highest);
+    if (index >= 0) remote.changeQuality(index);
+  }, [canSetQuality, enabled, qualities, quality?.id, remote]);
+
+  return null;
+}
+
+function PlayerVolumePreferenceSync({
+  playerRef,
+  volume,
+  sourceKey,
+}: {
+  playerRef: React.RefObject<MediaPlayerInstance | null>;
+  volume: number | undefined;
+  sourceKey: string;
+}) {
+  const canPlay = useMediaState('canPlay');
+
+  useEffect(() => {
+    if (volume === undefined) return;
+
+    const applyVolume = () => {
+      const player = playerRef.current;
+      if (!player || Math.abs(player.volume - volume) < 0.01) return;
+      player.volume = volume;
+    };
+
+    applyVolume();
+    const timeout = setTimeout(applyVolume, 250);
+    return () => clearTimeout(timeout);
+  }, [canPlay, playerRef, sourceKey, volume]);
+
+  return null;
 }
 
 export function SyncPlayer({
@@ -37,6 +88,7 @@ export function SyncPlayer({
   onSeeked,
   onRateChange,
   onEnded,
+  volume,
   stageRef,
   children,
 }: SyncPlayerProps) {
@@ -79,6 +131,7 @@ export function SyncPlayer({
         keyTarget="document"
         load="eager"
         controls={false} // We build our own control bar
+        volume={volume}
         onProviderChange={onProviderChange}
         onPlay={onPlay}
         onPause={onPause}
@@ -88,6 +141,12 @@ export function SyncPlayer({
         className="w-full h-full"
       >
         <MediaProvider className="w-full h-full" />
+        <PreferHighestQuality enabled={sourceType === 'youtube'} />
+        <PlayerVolumePreferenceSync
+          playerRef={playerRef}
+          volume={volume}
+          sourceKey={`${sourceType}:${sourceRef}`}
+        />
         {children}
       </MediaPlayer>
     </div>

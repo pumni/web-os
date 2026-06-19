@@ -1,6 +1,6 @@
 ---
 description: PowerShell-first command discipline for the Windows + Bun + Turborepo workspace.
-when-to-load: Immediately after docs/ai/index.md during session startup, before any shell command.
+when-to-load: When running shell commands or validating code/docs changes.
 canonical-owner: docs/ai/agent-command-policy.md
 ---
 
@@ -45,13 +45,13 @@ Do not default to broad PowerShell recursion when `rg` or `fd` can answer the
 question. If a preferred CLI is unavailable, use the narrowest fallback and say
 why when it affects the work.
 
-| Task | Prefer | Avoid unless needed |
-| --- | --- | --- |
-| Find files | `fd`, `rg --files`; harness Glob when cleaner | `Get-ChildItem -Recurse`, `dir /s` |
-| Search text | `rg -n -C 3 "pattern" <paths>`; harness Grep when cleaner | `Select-String`, `findstr`, broad recursive scans |
-| Read files | `bat --plain --paging=never <path>`; harness Read when cleaner | pagers, noisy shell output |
-| Inspect JSON | `jq` | regex/string parsing JSON |
-| Run project scripts | `bun run <script>` | manually reproducing script internals |
+| Task                | Prefer                                                         | Avoid unless needed                               |
+| ------------------- | -------------------------------------------------------------- | ------------------------------------------------- |
+| Find files          | `fd`, `rg --files`; harness Glob when cleaner                  | `Get-ChildItem -Recurse`, `dir /s`                |
+| Search text         | `rg -n -C 3 "pattern" <paths>`; harness Grep when cleaner      | `Select-String`, `findstr`, broad recursive scans |
+| Read files          | `bat --plain --paging=never <path>`; harness Read when cleaner | pagers, noisy shell output                        |
+| Inspect JSON        | `jq`                                                           | regex/string parsing JSON                         |
+| Run project scripts | `bun run <script>`                                             | manually reproducing script internals             |
 
 ## PowerShell 7 Workflow
 
@@ -59,7 +59,7 @@ Use PowerShell 7 as a script runtime, not as long inline `pwsh -Command`.
 
 - Simple commands: `rg -n "pattern" apps`, `fd "\.tsx$" apps/web/src`.
 - Multi-step automation: prefer `pwsh -NoLogo -NoProfile -NonInteractive
-  -ExecutionPolicy Bypass -File scripts/check.ps1`.
+-ExecutionPolicy Bypass -File scripts/check.ps1`.
 - Validation wrappers: `bun run ps:check` for the local gate,
   `bun run ps:premerge` for the broader gate.
 - Put `$env:*`, `$LASTEXITCODE`, `try`/`catch`, and `ForEach-Object -Parallel`

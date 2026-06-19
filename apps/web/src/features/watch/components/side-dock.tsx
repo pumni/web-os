@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { ParticipantRail } from './participant-rail';
 import { PlaylistPanel } from './playlist-panel';
 import { ChatPanel } from './chat-panel';
+import type { ReactionOverlayRef } from './reaction-overlay';
 import { useTransferHost } from '../hooks/use-room-queue';
 import type { Participant, QueueItem, QueueBroadcastEvent, ChatMessage } from '../types';
 
@@ -28,6 +29,7 @@ interface SideDockProps {
   messages: ChatMessage[];
   sendChat: (text: string) => boolean;
   onReact?: (emoji: string) => void;
+  reactionOverlayRef?: React.Ref<ReactionOverlayRef>;
 }
 
 export function SideDock({
@@ -42,6 +44,7 @@ export function SideDock({
   messages,
   sendChat,
   onReact,
+  reactionOverlayRef,
 }: SideDockProps) {
   const transferHostMutation = useTransferHost(roomId);
   const isPending = transferHostMutation.isPending;
@@ -109,6 +112,7 @@ export function SideDock({
               profiles={profiles}
               userId={userId}
               onReact={onReact}
+              reactionOverlayRef={reactionOverlayRef}
             />
           </TabsContent>
 

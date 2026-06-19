@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Button, GlassSurface, recipes, motion, useReducedMotion } from '@pumni/ui';
+import { Button } from '@pumni/ui';
+import { SmilePlus } from 'lucide-react';
 
 interface ReactionBarProps {
   onReact: (emoji: string) => void;
@@ -10,32 +11,54 @@ interface ReactionBarProps {
 const EMOJIS = ['❤️', '😂', '😮', '👍', '🎉'];
 
 export function ReactionBar({ onReact }: ReactionBarProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleReact = (emoji: string) => {
+    onReact(emoji);
+    setIsOpen(false);
+  };
 
   return (
-    <GlassSurface
-      variant="panel"
-      radius="full"
-      className="flex items-center gap-1.5 px-3 py-1.5 select-none w-fit"
+    <div
+      className="group relative flex justify-end select-none"
+      data-open={isOpen}
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+      onFocus={() => setIsOpen(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setIsOpen(false);
+        }
+      }}
     >
-      {EMOJIS.map((emoji) => (
-        <Button
-          key={emoji}
-          variant="ghost"
-          size="sm"
-          onClick={() => onReact(emoji)}
-          className="size-8 p-0 text-lg motion-safe:hover:bg-muted/80 rounded-full"
-          aria-label={`Thả cảm xúc ${emoji}`}
-          asChild
-        >
-          <motion.button
-            {...(shouldReduceMotion ? {} : recipes.pressScale)}
-            className="size-8 flex items-center justify-center rounded-full"
+      <div className="absolute right-0 bottom-full z-popover mb-2 flex origin-bottom flex-col-reverse items-center gap-1 rounded-full border border-border bg-popover p-1 text-popover-foreground opacity-0 translate-y-2 scale-95 pointer-events-none shadow-raised motion-safe:will-change-[opacity,transform] transition-[opacity,transform] duration-(--duration-fast) ease-snappy group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:scale-100 group-focus-within:pointer-events-auto group-data-[open=true]:opacity-100 group-data-[open=true]:translate-y-0 group-data-[open=true]:scale-100 group-data-[open=true]:pointer-events-auto">
+        {EMOJIS.map((emoji) => (
+          <Button
+            key={emoji}
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => handleReact(emoji)}
+            className="rounded-full text-lg motion-safe:transition-transform motion-safe:duration-(--duration-fast) motion-safe:ease-snappy motion-safe:hover:-translate-y-0.5"
+            aria-label={`Thả cảm xúc ${emoji}`}
           >
             {emoji}
-          </motion.button>
-        </Button>
-      ))}
-    </GlassSurface>
+          </Button>
+        ))}
+      </div>
+
+      <Button
+        type="button"
+        variant="secondary"
+        size="icon"
+        pressable={false}
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-label="Mở cảm xúc"
+        aria-expanded={isOpen}
+        className="size-9 rounded-full"
+      >
+        <SmilePlus className="size-4" />
+      </Button>
+    </div>
   );
 }
