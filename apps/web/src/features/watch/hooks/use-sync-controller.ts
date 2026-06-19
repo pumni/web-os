@@ -65,7 +65,6 @@ export function useSyncController(
   room: Room,
   isHost: boolean,
   serverClock: () => number,
-  broadcastAnchor: (anchor: PlaybackAnchor) => void,
   roomEvents: Pick<RoomRealtimeEvents, 'onAnchor'>,
 ) {
   const [syncStatus, setSyncStatus] = useState<'host' | 'in-sync' | 'catching-up'>(
@@ -117,7 +116,6 @@ export function useSyncController(
     roomId: room.id,
     isHost,
     serverClock,
-    broadcastAnchor,
   });
 
   // Robust play: browsers block unmuted autoplay without a user gesture.

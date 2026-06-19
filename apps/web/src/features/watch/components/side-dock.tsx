@@ -24,6 +24,7 @@ interface SideDockProps {
   participants: Participant[];
   queueItems: QueueItem[];
   currentQueueItemId: string | null;
+  isMemberReady: boolean;
   profiles?: Record<string, { username: string | null; avatar_url: string | null }>;
   broadcastQueueEvent: (e: QueueBroadcastEvent) => void;
   broadcastRoomEvent: (e: RoomBroadcastEvent) => void;
@@ -40,6 +41,7 @@ export function SideDock({
   participants,
   queueItems,
   currentQueueItemId,
+  isMemberReady,
   profiles = {},
   broadcastQueueEvent,
   broadcastRoomEvent,
@@ -98,6 +100,7 @@ export function SideDock({
               roomId={roomId}
               items={queueItems}
               currentQueueItemId={currentQueueItemId}
+              isMemberReady={isMemberReady}
               isHost={isHost}
               broadcastQueueEvent={broadcastQueueEvent}
               broadcastRoomEvent={broadcastRoomEvent}

@@ -6,7 +6,6 @@ import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 import type { PlaybackAnchor } from '../types';
 
 const HOST_ANCHOR_COALESCE_MS = 120;
-const DB_ANCHOR_PERSIST_DEBOUNCE_MS = 2_000;
 
 type EmitAnchorOptions = {
   flush?: boolean;
@@ -18,7 +17,6 @@ interface UseHostAnchorEmitterOptions {
   roomId: string;
   isHost: boolean;
   serverClock: () => number;
-  broadcastAnchor: (anchor: PlaybackAnchor) => void;
 }
 
 export function useHostAnchorEmitter({
@@ -27,9 +25,7 @@ export function useHostAnchorEmitter({
   roomId,
   isHost,
   serverClock,
-  broadcastAnchor,
 }: UseHostAnchorEmitterOptions) {
-  const persistTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingEmitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingAnchorRef = useRef<PlaybackAnchor | null>(null);
   const sequenceRef = useRef(0);
@@ -71,17 +67,9 @@ export function useHostAnchorEmitter({
     persistAnchorRef.current = persistAnchor;
   });
 
-  const debouncedPersist = (anchor: PlaybackAnchor) => {
-    if (persistTimerRef.current) clearTimeout(persistTimerRef.current);
-    persistTimerRef.current = setTimeout(() => {
-      persistAnchorRef.current(anchor);
-    }, DB_ANCHOR_PERSIST_DEBOUNCE_MS);
-  };
-
   const sendAnchor = (anchor: PlaybackAnchor) => {
     anchorRef.current = anchor;
-    broadcastAnchor(anchor);
-    debouncedPersist(anchor);
+    persistAnchorRef.current(anchor);
   };
 
   const flushPendingAnchor = () => {
@@ -126,7 +114,6 @@ export function useHostAnchorEmitter({
 
   useEffect(() => {
     return () => {
-      if (persistTimerRef.current) clearTimeout(persistTimerRef.current);
       if (pendingEmitTimerRef.current) clearTimeout(pendingEmitTimerRef.current);
     };
   }, []);
@@ -137,7 +124,6 @@ export function useHostAnchorEmitter({
       if (pendingEmitTimerRef.current) clearTimeout(pendingEmitTimerRef.current);
       pendingEmitTimerRef.current = null;
       pendingAnchorRef.current = null;
-      if (persistTimerRef.current) clearTimeout(persistTimerRef.current);
       persistAnchorRef.current(anchorRef.current);
     };
     window.addEventListener('pagehide', flushForPageExit);

@@ -16,6 +16,11 @@ import type {
   ReactionEvent,
 } from '../types';
 import { watchKeys } from '../query-keys';
+import { getStructuralSignature } from '../sync-math';
+
+function getPlaybackSignature(room: Room): string {
+  return `${room.is_playing}|${room.anchor_position}|${room.anchor_server_ts}|${room.playback_rate}`;
+}
 
 export function useRoomChannel(
   room: Room,
@@ -28,6 +33,8 @@ export function useRoomChannel(
     'connecting',
   );
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const structuralSignatureRef = useRef(getStructuralSignature(room));
+  const playbackSignatureRef = useRef(getPlaybackSignature(room));
   const anchorHandlersRef = useRef(new Set<(anchor: PlaybackAnchor) => void>());
   const chatHandlersRef = useRef(new Set<(message: ChatMessage) => void>());
   const reactionHandlersRef = useRef(new Set<(reaction: ReactionEvent) => void>());
@@ -38,6 +45,11 @@ export function useRoomChannel(
   useEffect(() => {
     isHostRef.current = isHost;
   }, [isHost]);
+
+  useEffect(() => {
+    structuralSignatureRef.current = getStructuralSignature(room);
+    playbackSignatureRef.current = getPlaybackSignature(room);
+  }, [room]);
 
   useEffect(() => {
     joinedAtRef.current = Date.now();
@@ -87,12 +99,40 @@ export function useRoomChannel(
 
     channelRef.current = activeChannel;
 
-    // 1. Listen to broadcast event (low-latency playback sync)
-    activeChannel.on('broadcast', { event: 'playback' }, (payload: { payload: PlaybackAnchor }) => {
-      if (payload.payload) {
-        anchorHandlersRef.current.forEach((handler) => handler(payload.payload));
-      }
-    });
+    // 1. Listen to authoritative room row changes. Playback state comes from
+    // `watch_rooms`, so RLS remains the real host/follower boundary.
+    activeChannel.on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'watch_rooms',
+        filter: `id=eq.${room.id}`,
+      },
+      (payload: { new: Room }) => {
+        const nextRoom = payload.new;
+        if (!nextRoom) return;
+
+        const nextSignature = getStructuralSignature(nextRoom);
+        if (nextSignature !== structuralSignatureRef.current) {
+          structuralSignatureRef.current = nextSignature;
+          void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
+        }
+
+        const nextPlaybackSignature = getPlaybackSignature(nextRoom);
+        if (nextPlaybackSignature !== playbackSignatureRef.current) {
+          playbackSignatureRef.current = nextPlaybackSignature;
+          anchorHandlersRef.current.forEach((handler) =>
+            handler({
+              isPlaying: nextRoom.is_playing,
+              anchorPosition: nextRoom.anchor_position,
+              anchorServerTs: new Date(nextRoom.anchor_server_ts).getTime(),
+              playbackRate: nextRoom.playback_rate,
+            }),
+          );
+        }
+      },
+    );
 
     // 2. Listen to broadcast event for structural room changes.
     activeChannel.on('broadcast', { event: 'room' }, () => {
@@ -180,16 +220,6 @@ export function useRoomChannel(
     }
   }, [isHost, userId]);
 
-  const broadcastAnchor = useCallback((anchor: PlaybackAnchor) => {
-    if (channelRef.current) {
-      channelRef.current.send({
-        type: 'broadcast',
-        event: 'playback',
-        payload: anchor,
-      });
-    }
-  }, []);
-
   const broadcastQueueEvent = useCallback((event: QueueBroadcastEvent) => {
     if (channelRef.current) {
       channelRef.current.send({
@@ -233,7 +263,6 @@ export function useRoomChannel(
   return {
     participants,
     events,
-    broadcastAnchor,
     broadcastQueueEvent,
     broadcastRoomEvent,
     channelStatus,

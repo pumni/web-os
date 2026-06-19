@@ -33,6 +33,7 @@ interface PlaylistPanelProps {
   roomId: string;
   items: QueueItem[];
   currentQueueItemId: string | null;
+  isMemberReady: boolean;
   isHost: boolean;
   broadcastQueueEvent: (e: QueueBroadcastEvent) => void;
   broadcastRoomEvent: (e: RoomBroadcastEvent) => void;
@@ -42,6 +43,7 @@ export function PlaylistPanel({
   roomId,
   items,
   currentQueueItemId,
+  isMemberReady,
   isHost,
   broadcastQueueEvent,
   broadcastRoomEvent,
@@ -61,11 +63,13 @@ export function PlaylistPanel({
     removeMutation.isPending ||
     reorderMutation.isPending ||
     advanceMutation.isPending;
+  const isActionDisabled = isPending || !isMemberReady;
 
   const currentItem = items.find((i) => i.id === currentQueueItemId);
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isMemberReady) return;
     if (!sourceRef.trim()) {
       toast.error('Vui lòng nhập link hoặc ID video.');
       return;
@@ -95,6 +99,7 @@ export function PlaylistPanel({
   };
 
   const handleRemoveItem = (itemId: string) => {
+    if (!isMemberReady) return;
     const removed = items.find((i) => i.id === itemId);
     removeMutation.mutate(itemId, {
       onSuccess: () => {
@@ -111,6 +116,7 @@ export function PlaylistPanel({
   };
 
   const handleAdvance = () => {
+    if (!isMemberReady) return;
     advanceMutation.mutate(undefined, {
       onSuccess: () => {
         toast.success('Đã chuyển sang video tiếp theo!');
@@ -133,6 +139,7 @@ export function PlaylistPanel({
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (!isMemberReady) return;
     const { active, over } = event;
     if (!over) return;
     if (active.id === over.id) return;
@@ -182,7 +189,7 @@ export function PlaylistPanel({
               size="sm"
               variant="ghost"
               onClick={handleAdvance}
-              disabled={items.length === 0 || isPending}
+              disabled={items.length === 0 || isActionDisabled}
               className="h-7 shrink-0 gap-1 rounded-full px-2 text-xs text-primary motion-safe:hover:bg-primary/10"
             >
               <Play className="size-3 fill-current" />
@@ -197,6 +204,7 @@ export function PlaylistPanel({
         <Button
           variant="ghost"
           onClick={() => setIsAddOpen((prev) => !prev)}
+          disabled={!isMemberReady}
           className={cn(
             'flex h-9 w-full items-center gap-2 rounded-md border border-border bg-muted px-3 text-xs transition-colors duration-(--duration-fast) motion-safe:hover:bg-muted/80',
             isAddOpen ? 'text-foreground' : 'text-muted-foreground',
@@ -220,10 +228,18 @@ export function PlaylistPanel({
                 onValueChange={(val) => setSourceType(val as 'youtube' | 'url')}
               >
                 <TabsList className="h-6 gap-0.5 rounded-md border border-border bg-muted p-0.5">
-                  <TabsTrigger value="youtube" className="h-5 px-2 py-0 text-xs">
+                  <TabsTrigger
+                    value="youtube"
+                    disabled={!isMemberReady}
+                    className="h-5 px-2 py-0 text-xs"
+                  >
                     YT
                   </TabsTrigger>
-                  <TabsTrigger value="url" className="h-5 px-2 py-0 text-xs">
+                  <TabsTrigger
+                    value="url"
+                    disabled={!isMemberReady}
+                    className="h-5 px-2 py-0 text-xs"
+                  >
                     URL
                   </TabsTrigger>
                 </TabsList>
@@ -236,19 +252,19 @@ export function PlaylistPanel({
               }
               value={sourceRef}
               onChange={(e) => setSourceRef(e.target.value)}
-              disabled={isPending}
+              disabled={isActionDisabled}
               className="h-9 rounded-full border border-border bg-muted px-3 text-xs"
             />
             <Input
               placeholder="Tiêu đề gợi nhớ (tùy chọn)"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              disabled={isPending}
+              disabled={isActionDisabled}
               className="h-9 rounded-full border border-border bg-muted px-3 text-xs"
             />
             <Button
               type="submit"
-              disabled={isPending}
+              disabled={isActionDisabled}
               size="sm"
               className="h-9 w-full rounded-full text-xs"
             >
@@ -288,6 +304,7 @@ export function PlaylistPanel({
                     idx={idx}
                     currentQueueItemId={currentQueueItemId}
                     isPending={isPending}
+                    isMemberReady={isMemberReady}
                     handleRemoveItem={handleRemoveItem}
                   />
                 ))}
@@ -305,6 +322,7 @@ interface SortableItemProps {
   idx: number;
   currentQueueItemId: string | null;
   isPending: boolean;
+  isMemberReady: boolean;
   handleRemoveItem: (id: string) => void;
 }
 
@@ -314,6 +332,7 @@ function SortableItem({
   idx,
   currentQueueItemId,
   isPending,
+  isMemberReady,
   handleRemoveItem,
 }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -386,7 +405,7 @@ function SortableItem({
         variant="ghost"
         size="icon"
         onClick={() => handleRemoveItem(item.id)}
-        disabled={isPending}
+        disabled={isPending || !isMemberReady}
         className={deleteClass}
         aria-label="Xóa"
       >

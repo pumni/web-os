@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState, useTransition, useEffect } from 'react';
+import React, { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import type { MediaPlayerInstance } from '@vidstack/react';
@@ -49,6 +49,7 @@ import { HostClaimBanner } from './host-claim-banner';
 import { useHostHeartbeat } from '../hooks/use-host-heartbeat';
 import { useMemberProfiles } from '../hooks/use-room-members';
 import { useAppUiStore } from '@/stores/app-ui-store';
+import { useRoomMembership } from '../hooks/use-room-membership';
 
 // Phase 6 imports
 import { useRoomChat } from '../hooks/use-room-chat';
@@ -64,48 +65,6 @@ interface WatchRoomProps {
 // ---------------------------------------------------------------------------
 // Extracted hooks & components
 // ---------------------------------------------------------------------------
-
-/**
- * Joins room membership on mount, then refetches member-gated data.
- *
- * RSC render cannot INSERT, so membership is registered client-side; the queue
- * is RLS-gated on membership, so we MUST invalidate after joining or a
- * link-joiner sees an empty queue until staleTime expires.
- */
-function useRoomJoinEffect(roomId: string, queryClient: ReturnType<typeof useQueryClient>) {
-  useEffect(() => {
-    let cancelled = false;
-    async function join(attempt = 0) {
-      try {
-        const res = await fetch(`/api/watch/${roomId}/join`, { method: 'POST' });
-        if (!res.ok) throw new Error(`join failed: ${res.status}`);
-        if (cancelled) return;
-        await queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });
-        await queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });
-      } catch (err) {
-        if (cancelled) return;
-        if (attempt < 3) {
-          setTimeout(() => void join(attempt + 1), 1000 * (attempt + 1));
-        } else {
-          console.error('Failed to join room after retries', err);
-          toast.error(
-            'Không thể tham gia phòng. Một số thao tác có thể bị hạn chế — hãy tải lại trang.',
-          );
-        }
-      }
-    }
-    void join();
-    return () => {
-      cancelled = true;
-    };
-  }, [roomId, queryClient]);
-}
-
-/**
- * Tracks whether the host-claim banner should be shown.
- *
- * @see {@link ../hooks/use-host-claim-state}
- */
 
 interface SourceChangeDialogProps {
   open: boolean;
@@ -245,7 +204,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   const setWatchPlayerVolume = useAppUiStore((state) => state.setWatchPlayerVolume);
 
   // 1. Join room membership on mount, then refetch member-gated data.
-  useRoomJoinEffect(room.id, queryClient);
+  const membership = useRoomMembership(room.id, queryClient);
 
   // 2. Sync clock
   const { ready: clockReady, serverClock } = useServerClock();
@@ -278,7 +237,6 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   const {
     participants,
     events: roomEvents,
-    broadcastAnchor,
     broadcastQueueEvent,
     broadcastRoomEvent,
     channelStatus,
@@ -308,7 +266,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     resumeFromGesture,
     playerHandlers,
     controlHandlers,
-  } = useSyncController(playerRef, currentRoom, isHost, serverClock, broadcastAnchor, roomEvents);
+  } = useSyncController(playerRef, currentRoom, isHost, serverClock, roomEvents);
 
   const { data: profiles = {} } = useMemberProfiles(participants.map((p) => p.userId));
 
@@ -487,6 +445,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               participants={participants}
               queueItems={queueItems}
               currentQueueItemId={currentRoom.current_queue_item_id}
+              isMemberReady={membership.isMemberReady}
               profiles={profiles}
               broadcastQueueEvent={broadcastQueueEvent}
               broadcastRoomEvent={broadcastRoomEvent}
@@ -516,6 +475,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               participants={participants}
               queueItems={queueItems}
               currentQueueItemId={currentRoom.current_queue_item_id}
+              isMemberReady={membership.isMemberReady}
               profiles={profiles}
               broadcastQueueEvent={broadcastQueueEvent}
               broadcastRoomEvent={broadcastRoomEvent}
