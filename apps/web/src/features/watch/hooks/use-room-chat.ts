@@ -20,7 +20,7 @@ export function useRoomChat(
     onLocalReactionRef.current = onLocalReaction;
   }, [onLocalReaction]);
 
-  // Nhận từ người khác — lọc trùng theo id (resilience nếu self-echo/đổi config sau này)
+  // Received from others — filter duplicates by id (resilience against self-echo or configuration changes)
   const receiveChat = useCallback((m: ChatMessage) => {
     setMessages((prev) => {
       if (prev.some((x) => x.id === m.id)) return prev;
@@ -48,7 +48,7 @@ export function useRoomChat(
       sentAt: Date.now(),
     };
     broadcastChat(msg);
-    receiveChat(msg); // tự append (self:false) — đi qua bộ lọc trùng
+    receiveChat(msg); // Append locally — filtered for duplicates
     return true;
   };
 

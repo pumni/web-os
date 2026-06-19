@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import type { Participant } from '../types';
 import { useClaimHost } from './use-room-queue';
 
-const RETRY_MS = 5_000; // DB cổng staleness 30s là nguồn chân lý; cứ thử tới khi qua
+const RETRY_MS = 5_000; // DB 30s staleness grace is the source of truth; retry until it succeeds
 
 export function useHostAutopromote(
   roomId: string,
@@ -26,7 +26,7 @@ export function useHostAutopromote(
     mutateRef.current = claim.mutate;
   }, [claim.mutate]);
 
-  // Ứng viên = member không phải host, joinedAt nhỏ nhất trong số đang present.
+  // Candidate = non-host member with the earliest join time among currently present participants.
   const hostPresent = participants.some((p) => p.isHost);
   const candidate = participants
     .filter((p) => !p.isHost)
@@ -46,10 +46,10 @@ export function useHostAutopromote(
         onSettled: () => {
           pendingRef.current = false;
         },
-      }); // DB từ chối êm tới khi >30s
+      }); // DB silently rejects until >30s
     };
-    // Thử ngay (thường bị từ chối nếu chưa đủ 30s) rồi retry tới khi thành công.
-    // Khi claim thành công → host_id đổi → isHost=true → effect cleanup dừng interval.
+    // Attempt immediately (usually rejected if <30s elapsed) then retry periodically.
+    // Once claim succeeds -> host_id changes -> isHost becomes true -> effect cleanup clears the interval.
     attempt();
     const interval = setInterval(attempt, RETRY_MS);
     return () => {

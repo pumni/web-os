@@ -118,14 +118,11 @@ export function useSyncController(
     serverClock,
   });
 
-  // Robust play: browsers block unmuted autoplay without a user gesture.
-  // Fall back to muted autoplay (always allowed); if even that fails, surface
-  // a tap-to-play overlay via needsGesture.
-  // Cửa sổ ức chế: bỏ qua event play/pause/seeked do CHÍNH reconcile/resync phát ra
-  // (programmatic). Cần thiết vì isOriginTrusted KHÔNG đáng tin trên provider YouTube
-  // (event tổng hợp từ iframe API) — trước đây gây ngắt đồng bộ nhầm khi host pause.
+  // Programmatic window: ignore play/pause/seeked events emitted by reconcile/resync itself.
+  // This is required because isOriginTrusted is unreliable on YouTube providers (synthetic
+  // events from iframe API) which previously caused incorrect sync breakages when the host paused.
   const programmaticUntilRef = useRef(0);
-  const PROGRAMMATIC_WINDOW_MS = 1500; // YouTube bridge async; tinh chỉnh nếu cần
+  const PROGRAMMATIC_WINDOW_MS = 1500; // YouTube bridge async; adjust if needed
   const markProgrammatic = () => {
     programmaticUntilRef.current = Date.now() + PROGRAMMATIC_WINDOW_MS;
   };
@@ -240,8 +237,8 @@ export function useSyncController(
       anchorRef.current = newAnchor;
       if (isHost) return;
 
-      // Mỗi anchor nhận được là MỘT lệnh transport có chủ đích của host (host không
-      // broadcast theo nhịp). → Tự gom follower về đồng bộ kể cả khi đang lệch.
+      // Each accepted anchor is a deliberate transport command from the host;
+      // re-engage following and reconcile even if the follower had manually broken sync.
       if (!isFollowingHostRef.current) {
         isFollowingHostRef.current = true;
         setIsFollowingHost(true);
@@ -254,7 +251,11 @@ export function useSyncController(
     return roomEvents.onAnchor((anchor) => receiveAnchorRef.current(anchor));
   }, [roomEvents]);
 
-  // Periodically check sync for followers
+  // Periodically check sync for followers.
+  // Note: We deliberately do NOT check document.hidden here to pause the loop. Gating
+  // on visibility would cause audio to drift uncorrected when the user runs the video
+  // in a background tab (a supported use case). Correct background audio alignment
+  // is prioritized over the minor CPU overhead of a 1s timer.
   useEffect(() => {
     if (isHost) return;
 

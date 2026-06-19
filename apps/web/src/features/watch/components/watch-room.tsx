@@ -229,7 +229,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     });
   };
 
-  useHostHeartbeat(currentRoom.id, isHost);
+  useHostHeartbeat(currentRoom.id, userId, isHost);
 
   const reactionOverlayRef = useRef<ReactionOverlayRef>(null);
 

@@ -22,6 +22,8 @@ export function useHostAnchorEmitter({
 }: UseHostAnchorEmitterOptions) {
   const sequenceRef = useRef(0);
   const sessionIdRef = useRef<string | null>(null);
+  const pendingAnchorRef = useRef<PlaybackAnchor | null>(null);
+  const persistTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const getHostSessionId = () => {
     if (!sessionIdRef.current) {
@@ -33,8 +35,8 @@ export function useHostAnchorEmitter({
     return sessionIdRef.current;
   };
 
-  const persistAnchor = (anchor: PlaybackAnchor) => {
-    if (!isHost) return;
+  const persistAnchor = (anchor: PlaybackAnchor, force = false) => {
+    if (!isHost && !force) return;
     const supabase = createSupabaseBrowserClient();
     supabase
       .from('watch_rooms')
@@ -59,11 +61,54 @@ export function useHostAnchorEmitter({
     persistAnchorRef.current = persistAnchor;
   });
 
+  const flushPersist = (force = false) => {
+    if (persistTimerRef.current) {
+      clearTimeout(persistTimerRef.current);
+      persistTimerRef.current = null;
+    }
+    const pending = pendingAnchorRef.current;
+    pendingAnchorRef.current = null;
+    if (pending) {
+      persistAnchorRef.current(pending, force);
+    }
+  };
+
+  const schedulePersist = (anchor: PlaybackAnchor) => {
+    pendingAnchorRef.current = anchor;
+    if (persistTimerRef.current) clearTimeout(persistTimerRef.current);
+    persistTimerRef.current = setTimeout(() => flushPersist(), 250);
+  };
+
+  // Flush on unmount to save any final pending state
+  useEffect(() => {
+    return () => {
+      if (persistTimerRef.current) {
+        clearTimeout(persistTimerRef.current);
+        persistTimerRef.current = null;
+      }
+      const pending = pendingAnchorRef.current;
+      if (pending) {
+        persistAnchorRef.current(pending, true);
+      }
+      pendingAnchorRef.current = null;
+    };
+  }, []);
+
+  // Flush when isHost flips false so the last anchor lands
+  const prevIsHostRef = useRef(isHost);
+  useEffect(() => {
+    if (prevIsHostRef.current && !isHost) {
+      flushPersist(true);
+    }
+    prevIsHostRef.current = isHost;
+  }, [isHost]);
+
   const emitAnchor = (options?: { overridePlaying?: boolean }) => {
     const player = playerRef.current;
     if (!player) return;
 
     const isPlaying = options?.overridePlaying ?? !player.paused;
+    const prevAnchor = anchorRef.current;
 
     const nextAnchor: PlaybackAnchor = {
       isPlaying,
@@ -75,8 +120,19 @@ export function useHostAnchorEmitter({
     };
 
     anchorRef.current = nextAnchor;
-    persistAnchorRef.current(nextAnchor);
+
+    const isTransportEdge =
+      options?.overridePlaying !== undefined ||
+      nextAnchor.isPlaying !== prevAnchor.isPlaying;
+
+    if (isTransportEdge) {
+      flushPersist(); // Clear any pending timers and flush previous anchor if any
+      persistAnchorRef.current(nextAnchor);
+    } else {
+      schedulePersist(nextAnchor);
+    }
   };
 
   return emitAnchor;
 }
+

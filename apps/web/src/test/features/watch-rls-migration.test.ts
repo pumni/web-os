@@ -23,6 +23,14 @@ function readMigration19() {
   );
 }
 
+function readMigration20() {
+  return readFileSync(
+    resolve(process.cwd(), '../../supabase/migrations/020_watch_room_heartbeats.sql'),
+    'utf8',
+  );
+}
+
+
 describe('watch queue RLS hardening migration (017)', () => {
   it('keeps queue reads scoped to room membership', () => {
     const sql = readMigration17();
@@ -108,6 +116,38 @@ describe('watch schema usage grant migration (019)', () => {
   it('grants usage on schema private to authenticated', () => {
     const sql = readMigration19();
     expect(sql).toContain('grant usage on schema private to authenticated;');
+  });
+});
+
+describe('watch room heartbeats migration (020)', () => {
+  const sql = readMigration20();
+
+  it('creates the watch_room_heartbeats table', () => {
+    expect(sql).toContain('create table public.watch_room_heartbeats');
+  });
+
+  it('enforces host boundary for upserts', () => {
+    expect(sql).toContain('create policy "watch_room_heartbeats_upsert_host"');
+    expect(sql).toContain('using ((select auth.uid()) = host_id)');
+    expect(sql).toContain('with check ((select auth.uid()) = host_id)');
+  });
+
+  it('does NOT add the table to supabase_realtime publication', () => {
+    expect(sql).not.toContain('alter publication supabase_realtime add table public.watch_room_heartbeats');
+  });
+
+  it('updates claim_room_host_impl to query watch_room_heartbeats and falls back to watch_rooms', () => {
+    expect(sql).toContain('create or replace function private.claim_room_host_impl');
+    expect(sql).toContain('from public.watch_room_heartbeats hb');
+    expect(sql).toContain('update public.watch_rooms r');
+  });
+
+  it('performs host staleness check atomically inside the UPDATE statement to prevent races', () => {
+    // Ensure we do not select heartbeat into a variable to check it later
+    expect(sql).not.toContain('select hb.heartbeat_at into');
+    expect(sql).not.toContain('select r.host_heartbeat_at into');
+    // Ensure it is checked inside the update where clause
+    expect(sql).toMatch(/update\s+public\.watch_rooms\s+r[\s\S]+?where[\s\S]+?not\s+exists\s*\(\s*select\s+1\s+from\s+public\.watch_room_heartbeats/i);
   });
 });
 

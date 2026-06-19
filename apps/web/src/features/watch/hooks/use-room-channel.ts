@@ -221,8 +221,9 @@ export function useRoomChannel(
   }, [isHost, userId]);
 
   const broadcastQueueEvent = useCallback((event: QueueBroadcastEvent) => {
-    if (channelRef.current) {
-      channelRef.current.send({
+    const ch = channelRef.current;
+    if (ch && ch.state === 'joined') {
+      ch.send({
         type: 'broadcast',
         event: 'queue',
         payload: event,
@@ -231,8 +232,9 @@ export function useRoomChannel(
   }, []);
 
   const broadcastRoomEvent = useCallback((event: RoomBroadcastEvent) => {
-    if (channelRef.current) {
-      channelRef.current.send({
+    const ch = channelRef.current;
+    if (ch && ch.state === 'joined') {
+      ch.send({
         type: 'broadcast',
         event: 'room',
         payload: event,
@@ -241,8 +243,9 @@ export function useRoomChannel(
   }, []);
 
   const broadcastChat = useCallback((m: ChatMessage) => {
-    if (channelRef.current) {
-      channelRef.current.send({
+    const ch = channelRef.current;
+    if (ch && ch.state === 'joined') {
+      ch.send({
         type: 'broadcast',
         event: 'chat',
         payload: m,
@@ -251,8 +254,9 @@ export function useRoomChannel(
   }, []);
 
   const broadcastReaction = useCallback((r: ReactionEvent) => {
-    if (channelRef.current) {
-      channelRef.current.send({
+    const ch = channelRef.current;
+    if (ch && ch.state === 'joined') {
+      ch.send({
         type: 'broadcast',
         event: 'reaction',
         payload: r,

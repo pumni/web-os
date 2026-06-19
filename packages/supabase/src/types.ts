@@ -214,6 +214,24 @@ export type Database = {
         };
         Relationships: [];
       };
+      watch_room_heartbeats: {
+        Row: {
+          room_id: string;
+          host_id: string;
+          heartbeat_at: string;
+        };
+        Insert: {
+          room_id: string;
+          host_id: string;
+          heartbeat_at?: string;
+        };
+        Update: {
+          room_id?: string;
+          host_id?: string;
+          heartbeat_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
