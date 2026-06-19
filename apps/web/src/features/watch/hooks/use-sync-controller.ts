@@ -291,21 +291,28 @@ export function useSyncController(
 
   const handleSeeked = (detail?: number, e?: MediaSeekedEvent) => {
     if (isHost) {
-      emitAnchor({ flush: true });
+      emitAnchor();
     } else if (isFollowerManualEvent(e)) {
       handleFollowerManualInteraction();
     }
   };
 
   const handleControlPlayPauseIntent = () => {
-    if (!isHost) {
+    if (isHost) {
+      const player = playerRef.current;
+      if (player) {
+        // Force the target state immediately based on host intent to enable parallel buffering/play
+        const targetPlaying = player.paused;
+        emitAnchor({ overridePlaying: targetPlaying });
+      }
+    } else {
       handleFollowerManualInteraction();
     }
   };
 
   const handleControlSeekCommitIntent = () => {
     if (isHost) {
-      emitAnchor({ flush: true });
+      emitAnchor();
     } else {
       handleFollowerManualInteraction();
     }

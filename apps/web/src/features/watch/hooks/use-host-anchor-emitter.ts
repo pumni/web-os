@@ -5,12 +5,6 @@ import type { MediaPlayerInstance } from '@vidstack/react';
 import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 import type { PlaybackAnchor } from '../types';
 
-const HOST_ANCHOR_COALESCE_MS = 120;
-
-type EmitAnchorOptions = {
-  flush?: boolean;
-};
-
 interface UseHostAnchorEmitterOptions {
   anchorRef: MutableRefObject<PlaybackAnchor>;
   playerRef: RefObject<MediaPlayerInstance | null>;
@@ -26,8 +20,6 @@ export function useHostAnchorEmitter({
   isHost,
   serverClock,
 }: UseHostAnchorEmitterOptions) {
-  const pendingEmitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingAnchorRef = useRef<PlaybackAnchor | null>(null);
   const sequenceRef = useRef(0);
   const sessionIdRef = useRef<string | null>(null);
 
@@ -67,30 +59,14 @@ export function useHostAnchorEmitter({
     persistAnchorRef.current = persistAnchor;
   });
 
-  const sendAnchor = (anchor: PlaybackAnchor) => {
-    anchorRef.current = anchor;
-    persistAnchorRef.current(anchor);
-  };
-
-  const flushPendingAnchor = () => {
-    if (pendingEmitTimerRef.current) {
-      clearTimeout(pendingEmitTimerRef.current);
-      pendingEmitTimerRef.current = null;
-    }
-
-    const pending = pendingAnchorRef.current;
-    if (!pending) return;
-
-    pendingAnchorRef.current = null;
-    sendAnchor(pending);
-  };
-
-  const emitAnchor = (options?: EmitAnchorOptions) => {
+  const emitAnchor = (options?: { overridePlaying?: boolean }) => {
     const player = playerRef.current;
     if (!player) return;
 
+    const isPlaying = options?.overridePlaying ?? !player.paused;
+
     const nextAnchor: PlaybackAnchor = {
-      isPlaying: !player.paused,
+      isPlaying,
       anchorPosition: player.currentTime,
       anchorServerTs: serverClock(),
       playbackRate: player.playbackRate,
@@ -99,36 +75,8 @@ export function useHostAnchorEmitter({
     };
 
     anchorRef.current = nextAnchor;
-    pendingAnchorRef.current = nextAnchor;
-
-    if (options?.flush) {
-      flushPendingAnchor();
-      return;
-    }
-
-    if (pendingEmitTimerRef.current) clearTimeout(pendingEmitTimerRef.current);
-    pendingEmitTimerRef.current = setTimeout(() => {
-      flushPendingAnchor();
-    }, HOST_ANCHOR_COALESCE_MS);
+    persistAnchorRef.current(nextAnchor);
   };
-
-  useEffect(() => {
-    return () => {
-      if (pendingEmitTimerRef.current) clearTimeout(pendingEmitTimerRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isHost) return;
-    const flushForPageExit = () => {
-      if (pendingEmitTimerRef.current) clearTimeout(pendingEmitTimerRef.current);
-      pendingEmitTimerRef.current = null;
-      pendingAnchorRef.current = null;
-      persistAnchorRef.current(anchorRef.current);
-    };
-    window.addEventListener('pagehide', flushForPageExit);
-    return () => window.removeEventListener('pagehide', flushForPageExit);
-  }, [anchorRef, isHost]);
 
   return emitAnchor;
 }
