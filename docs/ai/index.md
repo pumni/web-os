@@ -1,6 +1,6 @@
 # Pumni Web OS — AI Knowledge Index
 
-Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledge lives in the linked files. Start here after `AGENTS.md`.
+Canonical owner: `docs/ai/index.md`. Compact lookup; details live in linked files. Start here after `AGENTS.md`.
 
 ## Canonical Sources
 
@@ -19,16 +19,19 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | Server / Client boundary | `docs/conventions/server-client-boundary.md` |
 | Data fetching (Server Comp / Query / Zustand) | `docs/conventions/data-fetching.md` |
 | Feature module layout | `docs/conventions/feature-module.md` |
-| Design system (tokens, surfaces, motion, @pumni/ui) | `docs/conventions/design-system.md` |
+| Design system / @pumni/ui | `docs/conventions/design-system.md` |
 | Supabase / RLS / keys | `docs/conventions/supabase-security.md` |
 | Testing scope & commands | `docs/conventions/testing.md` |
 | transpilePackages (monorepo Next.js) | `docs/conventions/transpile-packages.md` |
-| Quality gates (verification commands) | `docs/quality-gates.md` |
+| Quality gates | `docs/quality-gates.md` |
+| Domain glossary | `docs/ai/domain-language.md` |
+| Flow router (task -> skill/workflow) | `docs/ai/flow-router.md` |
+| Subagent delegation limits | `docs/ai/subagent-delegation.md` |
 | Command / PowerShell discipline (Windows) | `docs/ai/agent-command-policy.md` |
-| AI execution workflow, risk levels, mini-PRD | `docs/ai/agent-behavior.md` |
+| AI workflow, risk levels, mini-PRD | `docs/ai/agent-behavior.md` |
 | MCP runtime integration (Next.js dev server) | `docs/ai/mcp-runtime.md` |
 | MCP Postgres schema introspection (read-only) | `docs/ai/mcp-postgres.md` |
-| Real local implementation examples | `docs/ai/golden-examples.md` |
+| Local implementation examples | `docs/ai/golden-examples.md` |
 | Common mistakes (❌/✅ pairs) | `docs/ai/common-mistakes.md` |
 | Self-review before "done" | `.agents/workflows/review-gate.md` |
 | Reusable procedures (scaffolding) | `.agents/skills/*/SKILL.md` (added on demand) |
@@ -54,6 +57,8 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 | TanStack Query hook or mutation | `.agents/skills/tanstack-query-hook/SKILL.md` |
 | Zustand client UI store | `.agents/skills/zustand-store/SKILL.md` |
 | Deterministic unit/component testing | `.agents/skills/testing-template/SKILL.md` |
+| Disciplined bug diagnosis / repro loops | `.agents/skills/diagnosing-bugs/SKILL.md` |
+| Deep modules / seams / testable interfaces | `.agents/skills/codebase-design/SKILL.md` |
 
 ## Evals
 
@@ -73,4 +78,6 @@ Canonical owner: `docs/ai/index.md`. Compact lookup table — long-form knowledg
 
 ## Workflows
 
-- `.agents/workflows/*.md` — added on demand (see AGENTS.md).
+- `.agents/workflows/*.md` — added on demand.
+- `grill-with-docs`, `to-prd`, `to-issues`, `agent-brief`, `handoff`,
+  `prototype`, `improve-codebase-architecture`, `review-gate`.

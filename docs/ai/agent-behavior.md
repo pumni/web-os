@@ -85,12 +85,9 @@ never overrides `AGENTS.md` or config.
 
 ## Subagent delegation
 
-Use the harness `Agent`/Explore tool when fan-out is broad and only conclusions
-matter: config location, import lists, or all files touching one concept. Read
-directly when exact code matters or one file is known. Never delegate
-security-sensitive reads, one-file edits, or anything needing raw code text. If a
-route budget exceeds roughly eight files, delegate exploration and keep editing
-in the main thread.
+See `docs/ai/subagent-delegation.md`. If a route budget exceeds roughly eight
+files, delegate read-only exploration when allowed and keep editing in the main
+thread.
 
 ## Security rules
 
