@@ -11,14 +11,13 @@ Windows + PowerShell 7 + Bun + Turborepo workspace. This policy does not overrid
 security mandates, enforced config, architecture docs, or explicit user instructions.
 
 > [!WARNING]
-> **Harness Host Shell Constraints:** AI agents execute shell commands via the harness's host environment (which varies between Windows PowerShell 5.1 and Git Bash).
-> - **Pre-evaluation & Stripping:** Variables/symbols (like `$`, e.g. `$env:NAME`, `$null`) are pre-evaluated or stripped by the host shell before the command is run, or when calling a sub-process like `pwsh -Command`.
-> - **Operator Support:** Operators like `&&` are not supported in Windows PowerShell 5.1 and will cause parser errors.
-> - **Best Practice:** Prefer using harness tools (`view_file`, `grep_search`, `list_dir`) over shell commands to read or search the repository.
+> **Harness Host Shell Constraints:** commands may run through Windows
+> PowerShell 5.1 or Git Bash. Avoid host-sensitive `$` expansion, `&&`/`||`,
+> and long `pwsh -Command` strings. Prefer harness read/search tools.
 
 ## Baseline
 
-- Understand the host shell (Windows PowerShell 5.1, Git Bash) before running scripts.
+- Understand the host shell before running scripts.
 - Prefer deterministic, non-interactive commands with plain-text output.
 - Keep commands narrow, explicit, and scoped to the current task.
 - Use repo-relative paths; quote any Windows path that may contain spaces.
@@ -26,18 +25,34 @@ security mandates, enforced config, architecture docs, or explicit user instruct
 
 ## Host Shell Compatibility & Chaining
 
-- Chaining commands: `&&` and `||` work in Git Bash and `pwsh 7`, but cause parser errors in Windows PowerShell 5.1. For safety across platforms, run commands sequentially or use `;` as a separator.
-- Variable/Null handling: Avoid using `$null` or `$env:NAME` in shell commands unless absolutely necessary. The host shell may pre-evaluate or strip the `$` character, causing failures. Instead, use cross-shell Node/Bun scripts to manage complex logic or environments.
+- Chaining: `&&` and `||` work in Git Bash and `pwsh 7`, but fail in Windows PowerShell 5.1. Run commands sequentially or use `;`.
+- Variables/nulls: Avoid `$null` or `$env:NAME` inline. Use Node/Bun scripts or `.ps1` files for complex logic.
 - Unix utilities vs PowerShell cmdlets: Prefer harness tools. If shell commands are necessary:
   - In Git Bash: standard Unix utilities (`head`, `tail`, `wc`, `mkdir -p`, `rm -rf`) work natively.
   - In Windows PowerShell: use basic cross-shell equivalents or run specific cmdlets only if required.
 - Do not call interactive/blocking commands (e.g. `Read-Host`, `git rebase -i`, `git add -i`).
 
+## PowerShell 7 Workflow
+
+Use PowerShell 7 as a script runtime, not as long inline `pwsh -Command`
+through a host shell that may be Windows PowerShell 5.1.
+
+- Simple commands: `rg -n "pattern" apps`, `fd "\.tsx$" apps/web/src`,
+  `bun run typecheck`.
+- Multi-step automation: prefer `pwsh -NoLogo -NoProfile -NonInteractive
+  -ExecutionPolicy Bypass -File scripts/check.ps1`.
+- Validation wrappers: `bun run ps:check` for the local gate,
+  `bun run ps:premerge` for the broader gate.
+- Put `$env:*`, `$LASTEXITCODE`, `try`/`catch`, and `ForEach-Object -Parallel`
+  inside `.ps1` files.
+- Use `rg` for content, `fd` for files, `jq` for JSON, and
+  `bat --plain --paging=never` for human-readable output.
+
 ## Search and read
 
-- Prefer the harness Glob/Grep/Read tools for file search, content search, and reads.
-- In the shell, prefer `rg -n -C 3 "pattern" <paths>` and `rg --files` (if available)
-  over `Get-ChildItem -Recurse` / `Select-String` for speed.
+- Prefer harness Glob/Grep/Read tools for search and reads.
+- In the shell, prefer `rg -n -C 3 "pattern" <paths>` and `rg --files`
+  over `Get-ChildItem -Recurse` / `Select-String`.
 - Use `jq` for JSON when available; otherwise `ConvertFrom-Json`.
 - Avoid broad recursive scans when a narrower path answers the question.
 
@@ -45,7 +60,7 @@ security mandates, enforced config, architecture docs, or explicit user instruct
 
 - Use native patch/edit tools for file changes; keep edits minimal and scoped.
 - Do not run repo-wide replacements unless explicitly requested.
-- Before any recursive delete/move, verify the target resolves inside the intended directory.
+- Before recursive delete/move, verify the target resolves inside the intended directory.
 - Do not run destructive Git commands (`git reset --hard`, `git clean`, force-push,
   branch rewrites) unless the user explicitly asks.
 - Preserve unrelated changes already in the working tree.

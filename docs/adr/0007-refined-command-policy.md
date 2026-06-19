@@ -17,6 +17,7 @@ Refine the command execution guidelines to align with actual harness behavior:
 1. **Resolve `&&` Contradiction:** Update `AGENTS.md` and `docs/ai/agent-command-policy.md` to clarify that `&&` works in pwsh 7 and Git Bash but fails in Windows PowerShell 5.1, recommending sequential execution or `;` for safety when the shell is uncertain.
 2. **Document Host Shell Risks:** Explicitly warn agents about variable pre-evaluation/stripping issues with `$` in the host shell, instructing them to avoid inline environment variables or `$null` redirections where possible.
 3. **Prefer Harness Tools and Node/Bun Scripts:** Replace the Unix-to-PowerShell cmdlets translation table with guidelines that prioritize harness tools (`view_file`, `grep_search`, etc.) for query/search, and cross-shell scripts (Node/Bun) or Git Bash native utilities for terminal operations.
+4. **Introduce PowerShell 7 Workflow via Scripts:** Establish a practice where complex or multi-step PowerShell operations are executed by calling `.ps1` script files (e.g. `scripts/check.ps1` for local validation and `scripts/search.ps1` for search wrappers) via `pwsh -File` rather than using long inline `pwsh -Command` strings, bypassing host shell parsing limitations entirely.
 
 ## Consequences
 
@@ -24,11 +25,15 @@ Refine the command execution guidelines to align with actual harness behavior:
 - AI agent commands are safer, more robust, and more portable across different harness environments.
 - Eliminated internal rule contradictions that could confuse agents during execution or evaluations.
 - Reduced shell-code complexity by encouraging the use of harness-provided tools rather than raw shell commands.
+- Leverages full PowerShell 7 performance and safety features natively for multi-step tasks by executing structured `.ps1` files.
 
 **Negative / costs:**
 - Removal of the detailed PowerShell syntax tutorial (which was largely a source of errors rather than utility for the agent).
+- Requires maintaining the script runner files (`scripts/check.ps1`, `scripts/search.ps1`) in the repository.
 
 ## References
 
 - `docs/ai/agent-command-policy.md` - Command Policy.
 - `AGENTS.md` - AI Instructions.
+- `scripts/check.ps1` - PowerShell 7 validator.
+- `scripts/search.ps1` - PowerShell 7 search wrapper.
