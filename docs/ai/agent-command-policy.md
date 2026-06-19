@@ -1,6 +1,6 @@
 ---
 description: PowerShell-first command discipline for the Windows + Bun + Turborepo workspace.
-when-to-load: When running shell commands or validating code/docs changes.
+when-to-load: Immediately after docs/ai/index.md during session startup, before any shell command.
 canonical-owner: docs/ai/agent-command-policy.md
 ---
 

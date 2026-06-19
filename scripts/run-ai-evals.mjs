@@ -4,6 +4,12 @@
  * Runs the deterministic policy gates an AI agent must pass before "done":
  *   1. Review Gate static rules (architecture + RLS + Query/Zustand boundaries)
  *   2. Secrets scan (.env committed, hardcoded keys, service-role literals)
+ *   3. Eval inventory and coverage report
+ *
+ * Agent-backed behavioral evals are intentionally a separate tier:
+ *   bun run ai:eval:behavioral
+ * Local deterministic smoke:
+ *   bun run ai:eval:behavioral:stub
  *
  * The RN-specific raw-console.log scanner is intentionally omitted: console
  * logging is acceptable in a Next.js web app.
@@ -72,8 +78,9 @@ runScript('Secrets scan', 'check-secrets.mjs');
 // 3. Eval inventory and rule coverage.
 printEvalCoverageReport();
 
-// 4. Behavioral evals (optional).
-runScript('Behavioral evals (optional)', 'run-behavioral-evals.mjs');
+console.log('\n=== Behavioral eval tier ===');
+console.log('Agent-backed behavioral evals are separate: bun run ai:eval:behavioral');
+console.log('Local deterministic smoke: bun run ai:eval:behavioral:stub');
 
 if (failed) {
   console.error('\n[FAIL] AI regression evals failed.');

@@ -27,9 +27,11 @@ Use task routes for detailed budgets; do not duplicate their workflows here.
 1. PLAN: identify route, risk, likely files, and smallest proof command set.
 2. RETRIEVE: read `AGENTS.md`, `docs/ai/index.md`, the route, and only relevant
    canonical docs.
-3. VALIDATE: check P0 security, P1 config, and package/feature boundaries.
-4. EXECUTE: make scoped changes; avoid unrelated refactors.
-5. VERIFY: run `ai:check`, `ai:eval`, and the code gate matching the surface.
+3. FRESHNESS: for stack-sensitive APIs, read `docs/ai/framework-freshness.md`
+   and the relevant version-matched docs before coding.
+4. VALIDATE: check P0 security, P1 config, and package/feature boundaries.
+5. EXECUTE: make scoped changes; avoid unrelated refactors.
+6. VERIFY: run `ai:check`, `ai:eval`, and the code gate matching the surface.
 
 For read-only investigations, stop after RETRIEVE/VALIDATE and report evidence,
 uncertainty, next action, and validation commands.
@@ -38,6 +40,8 @@ uncertainty, next action, and validation commands.
 
 - Start with `docs/ai/index.md` and a route in `docs/ai/task-routes/*.md`.
 - Read `apps/web/AGENTS.md` before writing Next.js app code.
+- Read `docs/ai/framework-freshness.md` before changing stack-specific rules or
+  using a framework API whose signature may have changed.
 - Read Supabase, server/client, and data-fetching convention docs before changes
   in those domains.
 - Do not load broad docs. If scope changes, retrieve the new route's required
@@ -112,6 +116,7 @@ and highest-priority owner doc.
 
 - AI context changes: `bun run ai:check`
 - Security/architecture policy changes: `bun run ai:eval`
+- Agent-backed prompt-injection behavior: `bun run ai:eval:behavioral`
 - TypeScript/package-boundary changes: `bun run typecheck`
 - Lint-sensitive changes: `bun run lint`
 - Behavior changes with tests: `bun run test`

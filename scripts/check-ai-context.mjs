@@ -280,6 +280,16 @@ function checkFreshness() {
     }
 
     if (!commitDate) {
+      try {
+        const tracked = execFileSync('git', ['ls-files', '--error-unmatch', relativePath], {
+          cwd: ROOT,
+          encoding: 'utf8',
+          stdio: ['ignore', 'pipe', 'ignore'],
+        }).trim();
+        if (!tracked) continue;
+      } catch {
+        continue;
+      }
       reportWarn(`${relativePath} freshness: git commit date not available. Skipping freshness check.`);
       continue;
     }
@@ -299,9 +309,13 @@ function checkFreshness() {
 
 function checkContextIndexCoverage() {
   const index = readFile('docs/ai/index.md');
+  const contextMap = fs.existsSync(resolveRel('docs/ai/context-map.md'))
+    ? readFile('docs/ai/context-map.md')
+    : '';
+  const searchableContext = `${index}\n${contextMap}`;
   for (const reference of INDEX_REQUIRED_REFERENCES) {
-    if (!index.includes(reference)) {
-      reportError(`docs/ai/index.md is missing canonical reference: ${reference}`);
+    if (!searchableContext.includes(reference)) {
+      reportError(`AI context catalog is missing canonical reference: ${reference}`);
     }
   }
 }
@@ -326,7 +340,9 @@ function checkTaskRoutes() {
 }
 
 function checkWorkflowIndexNames() {
-  const relativePath = 'docs/ai/index.md';
+  const relativePath = fs.existsSync(resolveRel('docs/ai/context-map.md'))
+    ? 'docs/ai/context-map.md'
+    : 'docs/ai/index.md';
   const content = readFile(relativePath);
   const workflowsHeading = content.indexOf('## Workflows');
   if (workflowsHeading < 0) {
@@ -384,6 +400,19 @@ function checkProjectGraphSync() {
     reportError(
       'docs/architecture/project-graph.md graph is out of sync. Run `bun run ai:graph:sync` and commit.',
     );
+  }
+}
+
+function checkFrameworkFreshness() {
+  const freshnessScript = path.join(__dirname, 'check-framework-freshness.mjs');
+  if (!fs.existsSync(freshnessScript)) {
+    reportWarn('check-framework-freshness.mjs not found — skipping framework freshness check.');
+    return;
+  }
+  try {
+    execFileSync(process.execPath, [freshnessScript], { stdio: 'inherit', cwd: ROOT });
+  } catch {
+    reportError('check-framework-freshness.mjs reported one or more findings — update framework-freshness.md.');
   }
 }
 
@@ -620,6 +649,7 @@ checkDesignTokenBoundaries();
 checkUiPackageBoundaries();
 checkSecretsIntegration();
 checkProjectGraphSync();
+checkFrameworkFreshness();
 
 if (errors > 0) {
   console.error(`\nValidation failed with ${errors} error(s) and ${warnings} warning(s).`);
