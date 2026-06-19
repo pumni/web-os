@@ -157,10 +157,10 @@ export function PlaylistPanel({
   };
 
   return (
-    <div className="flex flex-col gap-3 h-full min-h-0">
+    <div className="flex h-full min-h-0 flex-col gap-3">
       {/* Now Playing */}
       {currentItem && (
-        <div className="flex items-center gap-2.5 p-2.5 rounded-lg border border-primary/20 bg-primary/10 shrink-0 select-none">
+        <div className="flex shrink-0 select-none items-center gap-2.5 rounded-lg bg-primary/10 px-2.5 py-2">
           <span className="relative flex size-2.5 shrink-0">
             <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60" />
             <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
@@ -177,7 +177,7 @@ export function PlaylistPanel({
               variant="ghost"
               onClick={handleAdvance}
               disabled={items.length === 0 || isPending}
-              className="h-7 text-xs gap-1 text-primary border border-primary/20 motion-safe:hover:bg-primary/10 shrink-0"
+              className="h-7 shrink-0 gap-1 rounded-full px-2 text-xs text-primary motion-safe:hover:bg-primary/10"
             >
               <Play className="size-3 fill-current" />
               Tiếp
@@ -192,8 +192,8 @@ export function PlaylistPanel({
           variant="ghost"
           onClick={() => setIsAddOpen((prev) => !prev)}
           className={cn(
-            'flex items-center gap-2 w-full rounded-lg border border-border px-3 py-2 h-auto text-xs transition-colors duration-(--duration-fast)',
-            isAddOpen ? 'bg-muted' : 'bg-transparent motion-safe:hover:bg-muted/80',
+            'flex h-9 w-full items-center gap-2 rounded-md border border-border bg-muted px-3 text-xs transition-colors duration-(--duration-fast) motion-safe:hover:bg-muted/80',
+            isAddOpen ? 'text-foreground' : 'text-muted-foreground',
           )}
         >
           <Plus className="size-3.5" />
@@ -203,18 +203,21 @@ export function PlaylistPanel({
         </Button>
 
         {isAddOpen && (
-          <form onSubmit={handleAddItem} className="flex flex-col gap-2 p-3 rounded-lg border border-border bg-muted mt-1.5">
+          <form
+            onSubmit={handleAddItem}
+            className="mt-1 flex flex-col gap-2 border-b border-border pb-3"
+          >
             <div className="flex items-center justify-between">
               <span className="type-caption font-medium text-muted-foreground">Nguồn</span>
               <Tabs
                 value={sourceType}
                 onValueChange={(val) => setSourceType(val as 'youtube' | 'url')}
               >
-                <TabsList className="h-6 p-0.5 bg-muted border border-border rounded-md gap-0.5">
-                  <TabsTrigger value="youtube" className="text-xs h-5 px-2 py-0">
+                <TabsList className="h-6 gap-0.5 rounded-md border border-border bg-muted p-0.5">
+                  <TabsTrigger value="youtube" className="h-5 px-2 py-0 text-xs">
                     YT
                   </TabsTrigger>
-                  <TabsTrigger value="url" className="text-xs h-5 px-2 py-0">
+                  <TabsTrigger value="url" className="h-5 px-2 py-0 text-xs">
                     URL
                   </TabsTrigger>
                 </TabsList>
@@ -222,20 +225,27 @@ export function PlaylistPanel({
             </div>
 
             <Input
-              placeholder={sourceType === 'youtube' ? 'Link hoặc ID YouTube' : 'Link video MP4 / HLS'}
+              placeholder={
+                sourceType === 'youtube' ? 'Link hoặc ID YouTube' : 'Link video MP4 / HLS'
+              }
               value={sourceRef}
               onChange={(e) => setSourceRef(e.target.value)}
               disabled={isPending}
-              className="h-8 text-xs"
+              className="h-9 rounded-full border border-border bg-muted px-3 text-xs"
             />
             <Input
               placeholder="Tiêu đề gợi nhớ (tùy chọn)"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={isPending}
-              className="h-8 text-xs"
+              className="h-9 rounded-full border border-border bg-muted px-3 text-xs"
             />
-            <Button type="submit" disabled={isPending} size="sm" className="h-8 text-xs w-full">
+            <Button
+              type="submit"
+              disabled={isPending}
+              size="sm"
+              className="h-9 w-full rounded-full text-xs"
+            >
               <Plus className="size-3.5 mr-1.5" />
               Thêm vào hàng chờ
             </Button>
@@ -244,7 +254,7 @@ export function PlaylistPanel({
       </div>
 
       {/* Queue List */}
-      <div className="flex flex-col gap-1.5 flex-1 overflow-y-auto min-h-0 pr-0.5">
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-0.5">
         <div className="flex items-center justify-between shrink-0">
           <span className="type-label">Hàng chờ</span>
           <span className="type-caption text-muted-foreground tabular-nums">
@@ -314,11 +324,9 @@ function SortableItem({
   const isYoutube = item.source_type === 'youtube';
 
   const rowClass = cn(
-    'group flex items-center gap-2 px-2 py-1.5 rounded-md border text-xs transition-all duration-(--duration-fast) ease-snappy',
-    isCurrent
-      ? 'border-primary/20 bg-primary/10 text-primary'
-      : 'border-border bg-muted text-foreground motion-safe:hover:bg-muted/80',
-    isDragging && 'opacity-60 shadow-sm scale-[1.02] border-primary/20',
+    'group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-all duration-(--duration-fast) ease-snappy',
+    isCurrent ? 'bg-primary/10 text-primary' : 'text-foreground motion-safe:hover:bg-muted/80',
+    isDragging && 'scale-[1.02] bg-muted opacity-60 shadow-control',
   );
   const titleClass = cn(
     'truncate font-medium text-left leading-tight',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface UseControlsVisibilityProps {
   paused: boolean;
@@ -31,7 +31,7 @@ export function useControlsVisibility({ paused, stageRef }: UseControlsVisibilit
         }
       }
       setVisible(false);
-    }, 3000);
+    }, 1000);
   };
 
   const resetTimerRef = useRef(resetTimer);
@@ -76,7 +76,7 @@ export function useControlsVisibility({ paused, stageRef }: UseControlsVisibilit
           if (mediaQuery.matches) return;
         }
         setVisible(false);
-      }, 3000);
+      }, 1000);
     }
 
     return () => {

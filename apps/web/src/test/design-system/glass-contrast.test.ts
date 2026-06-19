@@ -271,22 +271,22 @@ function splitTopLevelCommas(str: string): string[] {
 }
 
 function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: Set<string>): Color {
-  const trimmed = value.trim();
+  const normalized = value.replace(/\s+/g, ' ').trim();
 
-  if (trimmed === 'transparent') {
+  if (normalized === 'transparent') {
     return { l: 0, c: 0, h: 0, alpha: 0 };
   }
 
-  const varMatch = trimmed.match(/^var\((?<name>--[\w-]+)\)$/);
+  const varMatch = normalized.match(/^var\((?<name>--[\w-]+)\)$/);
   if (varMatch?.groups?.name) {
     return resolveColor(varMatch.groups.name, tokenMap, seen);
   }
 
-  if (trimmed.startsWith('oklch' + '(')) {
-    return parseOklch(trimmed);
+  if (normalized.startsWith('oklch' + '(')) {
+    return parseOklch(normalized);
   }
 
-  const mixMatch = trimmed.match(/^color-mix\(in oklch,\s*(?<inner>.+)\)$/);
+  const mixMatch = normalized.match(/^color-mix\(\s*in\s+oklch\s*,\s*(?<inner>.+)\)$/);
   if (mixMatch?.groups?.inner) {
     const parts = splitTopLevelCommas(mixMatch.groups.inner).map((part) => part.trim());
     const aPart = parts[0] ?? '';
@@ -305,7 +305,7 @@ function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: S
     return mixOklch(a, b, weightA);
   }
 
-  throw new Error(`Unsupported color value: ${trimmed}`);
+  throw new Error(`Unsupported color value: ${normalized}`);
 }
 
 function resolveColor(

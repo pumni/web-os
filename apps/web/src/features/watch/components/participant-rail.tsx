@@ -5,9 +5,6 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuContent,
@@ -81,10 +78,7 @@ function ParticipantRow({
   const label = isCurrentUser && profile?.username ? `${displayName} (Bạn)` : displayName;
 
   return (
-    <motion.div
-      {...(shouldReduceMotion ? {} : recipes.staggerItem)}
-      className={rowClass}
-    >
+    <motion.div {...(shouldReduceMotion ? {} : recipes.staggerItem)} className={rowClass}>
       <div className="flex items-center gap-2 min-w-0">
         <Avatar className={avatarClass}>
           {profile?.avatar_url && (
@@ -124,7 +118,6 @@ export function ParticipantRail({
       {participants.map((p) => {
         const profile = profiles[p.userId];
         const isCurrentUser = p.userId === userId;
-        const { displayName } = getParticipantDisplay(p, profile, isCurrentUser);
         const canTransfer = isHost && !p.isHost;
 
         const row = (
@@ -154,16 +147,7 @@ export function ParticipantRail({
           );
         }
 
-        return (
-          <Tooltip key={p.userId}>
-            <TooltipTrigger asChild>
-              <div className="contents">{row}</div>
-            </TooltipTrigger>
-            <TooltipContent>
-              {p.isHost ? `Chủ phòng (${displayName})` : displayName}
-            </TooltipContent>
-          </Tooltip>
-        );
+        return <React.Fragment key={p.userId}>{row}</React.Fragment>;
       })}
     </motion.div>
   );

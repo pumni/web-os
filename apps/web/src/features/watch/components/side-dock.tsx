@@ -1,13 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  Card,
-} from '@pumni/ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent, Card } from '@pumni/ui';
 import { Users, ListVideo, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { ParticipantRail } from './participant-rail';
@@ -62,31 +56,30 @@ export function SideDock({
 
   return (
     <Card variant="glass" className="h-full flex flex-col overflow-hidden select-none p-0">
-      <div className="p-4 flex flex-col gap-4 flex-1 h-full min-h-0">
+      <div className="flex h-full min-h-0 flex-1 flex-col p-4">
         <Tabs defaultValue="playlist" className="w-full flex-1 flex flex-col h-full min-h-0">
-          <TabsList className="grid grid-cols-3 h-9 p-1 bg-muted border border-border rounded-lg shrink-0">
+          <TabsList className="grid h-9 shrink-0 grid-cols-3 gap-0 border-b border-border bg-transparent p-0 text-muted-foreground">
             <TabsTrigger
               value="playlist"
-              className="text-xs flex items-center justify-center gap-1 h-full"
+              className="h-full rounded-none border-0 border-b-2 border-transparent bg-transparent text-xs shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-primary dark:data-[state=active]:bg-transparent"
             >
               <ListVideo className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Danh sách</span>
             </TabsTrigger>
             <TabsTrigger
               value="chat"
-              className="text-xs flex items-center justify-center gap-1.5 h-full"
+              className="h-full rounded-none border-0 border-b-2 border-transparent bg-transparent text-xs shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-primary dark:data-[state=active]:bg-transparent"
             >
               <MessageSquare className="size-3.5 shrink-0" />
               Chat
             </TabsTrigger>
             <TabsTrigger
               value="participants"
-              className="text-xs flex items-center justify-center gap-1.5 h-full"
+              className="h-full rounded-none border-0 border-b-2 border-transparent bg-transparent text-xs shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-primary dark:data-[state=active]:bg-transparent"
             >
               <Users className="size-3.5 shrink-0" />
-              <span className="inline-flex items-center justify-center size-4 rounded-full bg-muted text-[10px] font-semibold leading-none">
-                {participants.length}
-              </span>
+              <span className="hidden sm:inline">Người</span>
+              <span className="tabular-nums text-[11px] font-semibold">{participants.length}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -116,7 +109,7 @@ export function SideDock({
             />
           </TabsContent>
 
-{/* Participants Tab */}
+          {/* Participants Tab */}
           <TabsContent
             value="participants"
             className="flex-1 mt-3 flex flex-col gap-3 focus-visible:outline-none overflow-hidden min-h-0"

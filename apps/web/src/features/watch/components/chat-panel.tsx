@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Button, Input, Avatar, AvatarFallback, AvatarImage } from '@pumni/ui';
+import { Button, Input, Avatar, AvatarFallback, AvatarImage, Tooltip, TooltipTrigger, TooltipContent } from '@pumni/ui';
 import { Send, MessageSquare } from 'lucide-react';
 import type { ChatMessage } from '../types';
 import { ReactionBar } from './reaction-bar';
@@ -47,14 +47,21 @@ function MessageAvatar({
   return (
     <div className="mb-px shrink-0">
       {!isGrouped ? (
-        <Avatar className="size-6 border border-border">
-          {avatarUrl && (
-            <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
-          )}
-          <AvatarFallback className="bg-primary/10 text-[10px] font-bold text-primary">
-            {initials}
-          </AvatarFallback>
-        </Avatar>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Avatar className="size-6 border border-border cursor-pointer">
+              {avatarUrl && (
+                <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
+              )}
+              <AvatarFallback className="bg-primary/10 text-[10px] font-bold text-primary">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </TooltipTrigger>
+          <TooltipContent side="left" align="center">
+            {displayName}
+          </TooltipContent>
+        </Tooltip>
       ) : (
         <div className="size-6" />
       )}
@@ -66,13 +73,11 @@ function MessageAvatar({
 function BubbleContent({
   isMe,
   groupPosition,
-  displayName,
   sentAt,
   children,
 }: {
   isMe: boolean;
   groupPosition: BubbleGroupPosition;
-  displayName: string;
   sentAt: number;
   children: React.ReactNode;
 }) {
@@ -80,22 +85,10 @@ function BubbleContent({
 
   return (
     <div className={`flex flex-col gap-0.5 min-w-0 ${isMe ? 'items-end' : 'items-start'}`}>
-      {!isMe && groupPosition === 'first' && (
-        <span className="type-caption max-w-32 truncate px-1 text-muted-foreground">
-          {displayName}
-        </span>
-      )}
-
-      {!isMe && groupPosition === 'single' && (
-        <span className="type-caption max-w-32 truncate px-1 text-muted-foreground">
-          {displayName}
-        </span>
-      )}
-
       <div className="relative flex items-end max-w-full">
         <div
           className={`max-w-full wrap-break-word px-3 py-2 text-xs shadow-control ${radiusClass} ${
-            isMe ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground'
+            isMe ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'
           }`}
         >
           <p className="whitespace-pre-wrap leading-snug select-text">{children}</p>
@@ -152,7 +145,6 @@ function ChatBubble({ msg, isMe, profile, groupPosition }: ChatBubbleProps) {
       <BubbleContent
         isMe={isMe}
         groupPosition={groupPosition}
-        displayName={displayName}
         sentAt={msg.sentAt}
       >
         {msg.text}
