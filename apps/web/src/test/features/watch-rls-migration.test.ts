@@ -16,6 +16,13 @@ function readMigration18() {
   );
 }
 
+function readMigration19() {
+  return readFileSync(
+    resolve(process.cwd(), '../../supabase/migrations/019_grant_private_schema_usage.sql'),
+    'utf8',
+  );
+}
+
 describe('watch queue RLS hardening migration (017)', () => {
   it('keeps queue reads scoped to room membership', () => {
     const sql = readMigration17();
@@ -94,6 +101,13 @@ describe('watch RPC hardening migration (018)', () => {
     // Verify grants to authenticated
     expect(sql).toContain('grant execute on function private.is_room_member(uuid) to authenticated;');
     expect(sql).toContain('grant execute on function public.transfer_room_host(uuid, uuid) to authenticated;');
+  });
+});
+
+describe('watch schema usage grant migration (019)', () => {
+  it('grants usage on schema private to authenticated', () => {
+    const sql = readMigration19();
+    expect(sql).toContain('grant usage on schema private to authenticated;');
   });
 });
 

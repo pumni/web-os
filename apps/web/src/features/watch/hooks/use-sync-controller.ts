@@ -125,7 +125,7 @@ export function useSyncController(
   // (programmatic). Cần thiết vì isOriginTrusted KHÔNG đáng tin trên provider YouTube
   // (event tổng hợp từ iframe API) — trước đây gây ngắt đồng bộ nhầm khi host pause.
   const programmaticUntilRef = useRef(0);
-  const PROGRAMMATIC_WINDOW_MS = 800; // YouTube bridge async; tinh chỉnh nếu cần
+  const PROGRAMMATIC_WINDOW_MS = 1500; // YouTube bridge async; tinh chỉnh nếu cần
   const markProgrammatic = () => {
     programmaticUntilRef.current = Date.now() + PROGRAMMATIC_WINDOW_MS;
   };
