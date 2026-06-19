@@ -191,7 +191,7 @@ function checkDocPathReferences() {
   // Catch dangling backtick-quoted repo doc paths in prose (renamed/deleted docs)
   // that the markdown-link checker misses. Globbed paths (containing '*') are skipped.
   const pathRegex =
-    /`((?:\.agents|\.claude|docs\/ai|docs\/adr|docs\/conventions|docs\/architecture)\/[^`]+\.md)`/g;
+    /`((?:\.agents|\.claude|docs\/agents|docs\/ai|docs\/adr|docs\/conventions|docs\/architecture)\/[^`]+\.md)`/g;
   const checked = new Set();
 
   for (const relativePath of getMarkdownLinkFiles()) {
@@ -321,6 +321,38 @@ function checkTaskRoutes() {
     const content = readFile(route);
     if (content.length > 4000) {
       reportError(`${route} is too large; route to canonical docs instead of duplicating them.`);
+    }
+  }
+}
+
+function checkWorkflowIndexNames() {
+  const relativePath = 'docs/ai/index.md';
+  const content = readFile(relativePath);
+  const workflowsHeading = content.indexOf('## Workflows');
+  if (workflowsHeading < 0) {
+    reportError(`${relativePath} is missing ## Workflows.`);
+    return;
+  }
+
+  const workflowSection = content.slice(workflowsHeading);
+  const workflowNameRegex = /`([a-z0-9-]+)`/g;
+  const allowedNonFileEntries = new Set(['agents']);
+  const checked = new Set();
+  let match;
+
+  while ((match = workflowNameRegex.exec(workflowSection)) !== null) {
+    const workflowName = match[1];
+    if (allowedNonFileEntries.has(workflowName) || checked.has(workflowName)) continue;
+    checked.add(workflowName);
+
+    const workflowPath = `.agents/workflows/${workflowName}.md`;
+    if (!fs.existsSync(resolveRel(workflowPath))) {
+      reportError(
+        `docs/ai/index.md lists missing workflow '${workflowName}' at line ${lineNumber(
+          content,
+          workflowsHeading + match.index,
+        )} -> ${workflowPath}`,
+      );
     }
   }
 }
@@ -580,6 +612,7 @@ checkDocPathReferences();
 checkGoldenExamplePaths();
 checkContextIndexCoverage();
 checkTaskRoutes();
+checkWorkflowIndexNames();
 checkRuleInventory();
 checkPackageScripts();
 checkLlmsTxt();

@@ -17,6 +17,7 @@
     "ai:secrets": "bun scripts/check-secrets.mjs",
     "ai:review:static": "bun scripts/check-review-gate-rules.mjs",
     "ai:eval": "bun scripts/run-ai-evals.mjs",
+    "ai:eval:behavioral:stub": "bun scripts/run-behavioral-evals.mjs --stub",
     "ai:graph:sync": "bun scripts/sync-project-graph.mjs",
     "ai:metrics": "bun scripts/ai-metrics.mjs",
     "ps:check": "pwsh -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/check.ps1",

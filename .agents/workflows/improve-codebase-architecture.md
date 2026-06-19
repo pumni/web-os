@@ -19,8 +19,10 @@ health work. It surfaces candidates first; it does not refactor immediately.
    - seams that tests cannot use,
    - duplicated behavior across feature modules,
    - server/client, state, or package boundaries under pressure.
-4. Report candidates before editing. Do not propose a concrete patch until the
-   user selects a candidate.
+4. Report candidates before editing. For broad architecture reviews, optionally
+   write a self-contained HTML report to the OS temp directory with candidate
+   cards and before/after diagrams; keep narrow reviews in markdown.
+5. Do not propose a concrete patch until the user selects a candidate.
 
 ## Candidate Format
 
@@ -34,6 +36,10 @@ Benefits:
 Recommendation strength: Strong | Worth exploring | Speculative
 Validation:
 ```
+
+For an HTML report, include the same fields plus a before/after visualization
+for each candidate. Tell the user the absolute temp-file path. Do not commit
+architecture report artifacts to the repo unless the user explicitly asks.
 
 ## Rules
 

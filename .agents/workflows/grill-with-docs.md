@@ -11,7 +11,9 @@ feature is too ambiguous to implement safely from the current prompt.
    that local code or canonical docs can answer.
 3. Ask one question at a time. Include your recommended answer and why.
 4. Resolve dependencies between decisions before moving deeper.
-5. When a durable term is clarified, update `docs/ai/domain-language.md`.
+5. When a durable term is clarified, use
+   `.agents/skills/domain-modeling/SKILL.md` and update
+   `docs/ai/domain-language.md`.
 6. Offer an ADR only when the decision is hard to reverse, surprising without
    context, and the result of a real trade-off.
 

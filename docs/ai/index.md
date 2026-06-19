@@ -31,9 +31,14 @@ Canonical owner: `docs/ai/index.md`. Compact lookup; details live in linked file
 | AI workflow, risk levels, mini-PRD | `docs/ai/agent-behavior.md` |
 | MCP runtime integration (Next.js dev server) | `docs/ai/mcp-runtime.md` |
 | MCP Postgres schema introspection (read-only) | `docs/ai/mcp-postgres.md` |
+| Writing and maintaining agent skills/workflows | `docs/ai/skill-authoring.md` |
+| Issue tracker configuration for triage | `docs/agents/issue-tracker.md` |
+| Triage label vocabulary | `docs/agents/triage-labels.md` |
 | Local implementation examples | `docs/ai/golden-examples.md` |
 | Common mistakes (❌/✅ pairs) | `docs/ai/common-mistakes.md` |
 | Self-review before "done" | `.agents/workflows/review-gate.md` |
+| Issue, bug report, feature request, or external PR triage | `.agents/workflows/triage.md` |
+| Repo-local issue drafts | `.agents/workflows/local-issue-draft.md`, `.agents/issues/README.md` |
 | Reusable procedures (scaffolding) | `.agents/skills/*/SKILL.md` (added on demand) |
 | Task routes & risk levels | `docs/ai/task-routes/*.md` |
 
@@ -59,6 +64,7 @@ Canonical owner: `docs/ai/index.md`. Compact lookup; details live in linked file
 | Deterministic unit/component testing | `.agents/skills/testing-template/SKILL.md` |
 | Disciplined bug diagnosis / repro loops | `.agents/skills/diagnosing-bugs/SKILL.md` |
 | Deep modules / seams / testable interfaces | `.agents/skills/codebase-design/SKILL.md` |
+| Active glossary and ADR discipline | `.agents/skills/domain-modeling/SKILL.md` |
 
 ## Evals
 
@@ -79,5 +85,6 @@ Canonical owner: `docs/ai/index.md`. Compact lookup; details live in linked file
 ## Workflows
 
 - `.agents/workflows/*.md` — added on demand.
-- `grill-with-docs`, `to-prd`, `to-issues`, `agent-brief`, `handoff`,
-  `prototype`, `improve-codebase-architecture`, `review-gate`.
+- `grill-with-docs`, `to-prd`, `to-issues`, `triage`,
+  `local-issue-draft`, `agent-brief`, `handoff`, `prototype`,
+  `improve-codebase-architecture`, `review-gate`.

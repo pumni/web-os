@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 
 const SELF_TEST_MODE = process.argv.includes('--self-test');
+const STUB_MODE = process.argv.includes('--stub');
 
 function extractMockPrompt(filePath) {
   try {
@@ -157,9 +158,12 @@ function main() {
     return;
   }
 
-  const agentCommand = process.env.BEHAVIORAL_EVAL_AGENT;
+  const agentCommand = STUB_MODE
+    ? `${process.execPath} ${path.join(__dirname, 'eval-stub-agent.mjs')}`
+    : process.env.BEHAVIORAL_EVAL_AGENT;
   if (!agentCommand) {
     console.warn('[WARN] BEHAVIORAL_EVAL_AGENT environment variable not set. Skipping behavioral tests.');
+    console.warn('[WARN] Use `bun scripts/run-behavioral-evals.mjs --stub` for a local deterministic smoke test.');
     process.exit(0);
   }
 
