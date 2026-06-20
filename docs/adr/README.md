@@ -113,3 +113,11 @@ link still fails the gate.
   `will-change` scoped to overlay transitions, stacked glass capped at 2
   layers (CSS soft-guard + `glass-performance.test.ts`). Blur stays
   8–16px. Drift guards: `glass-sheen`, `glass-rim`, `glass-performance`.
+- `0015-glass-card-backdrop-requirement.md` — supplemented ADR-0014 with the
+  usage precondition glass needs to read at all: a `Card variant="glass"` (or
+  `glass-panel`) must float over a colourful backdrop (OS desktop blobs, media,
+  or the `showcase.tsx` 2-blob wrapper), otherwise it must be a `variant="solid"`
+  card. Banned glass for dense content (forms, long text, tables) and flat
+  backgrounds. No token/value/API change — supplements ADR-0014, does not amend
+  it. Migrated the three production sites that violated the rule; promoted
+  `/design-trends` to the gold-reference teaching page.

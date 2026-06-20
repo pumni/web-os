@@ -51,7 +51,7 @@ surface).
 | `rounded-[14px]`, `rounded-2xl` everywhere | Named radius utilities off `--radius-base` | One personalizable knob, not magic px |
 | `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-(--duration-base)` | Brand curves + owned timing |
 | Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
-| Glass on hero / page backgrounds | Glass only on floating layers; opaque shell + raised solid cards | `backdrop-filter` is GPU-heavy; glassmorphism reads only over a backdrop |
+| Glass on hero / page backgrounds, or glass cards on flat surfaces | Glass only on floating layers with a colourful backdrop (ADR-0015); opaque shell + raised solid cards. Dense content (forms/tables) always uses solid | `backdrop-filter` is GPU-heavy; glassmorphism reads only over a backdrop |
 | Eyeballing contrast on glass/accents | Trust gated tokens; verify APCA Lc 60 / Lc 25 | `glass-contrast` test owns the cascade |
 | `backdrop-blur-md` | Glass utility / `GlassSurface` | Reduced-transparency and performance fallbacks |
 | `bg-card/40`, `border-border/20` | Solid surface tokens: opaque, `border-border` | Surfaces are opaque in the unified system |
@@ -95,6 +95,17 @@ Solid cards are NOT glass — they carry real elevation via `surface-raised`
 for floating layers (it earns its `backdrop-filter` cost there). The OS
 `Window`/Dock are presentational chrome (neutral window controls, no macOS
 traffic lights).
+
+**Backdrop requirement (ADR-0015).** A glass surface only reads as
+glassmorphism when it has a colourful backdrop to refract — desktop blobs, media,
+or a scrim overlay. Two valid patterns: (1) *chrome glass* — overlays and system
+shells that sit over whatever is behind them (dialogs, sheets, popovers, topbar,
+dock); (2) *feature/hero glass cards* — decorative glass cards explicitly
+wrapped in a 2-blob container (`--desktop-blob-primary` /
+`--desktop-blob-secondary`, each `opacity-50/55 blur-3xl`, with a `bg-muted/30`
+scrim). On a flat solid background, glass collapses to a grey box and must be
+replaced with `Card variant="solid"`. Dense content (forms, tables, long text)
+always uses solid regardless of backdrop.
 
 Use the closed set from the skill: floating glass, solid card, inset well,
 control fill, status tint. The card layer is **composition-first** — `Card` is

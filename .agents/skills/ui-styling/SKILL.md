@@ -56,6 +56,7 @@ not inline its tables here.
 - [ ] Surface is one of the closed-set roles; no `bg-{card,background,popover}/NN`.
 - [ ] One `border-border`; status tint is the only `/20` border exception.
 - [ ] Floating layer uses `GlassSurface`/`glass-*`; frosted blur 8-16px only.
+- [ ] Glass backdrop (ADR-0015): glass only over colourful backdrop (blobs/media/overlay); dense content always solid; on flat backgrounds → use `Card variant="solid"`.
 - [ ] Glass perf: no `backdrop-filter` in transitions/animations; ≤2 glass layers stacked.
 - [ ] Radius/z-index use named utilities; no `rounded-[Npx]`, no raw `z-40`/`z-50` for cross-component layers.
 - [ ] Motion uses recipes / `motion-safe:` CSS; `useReducedMotion()` on JS motion.

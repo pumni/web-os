@@ -130,7 +130,7 @@ export function WatchLobby() {
         <div style={{ viewTransitionName: 'watch-lobby-card' }}>
           {/* Create Room Tab */}
           <TabsContent value="create">
-            <Card variant="glass">
+            <Card variant="solid">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <span className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
@@ -186,7 +186,7 @@ export function WatchLobby() {
 
           {/* Join Room Tab */}
           <TabsContent value="join">
-            <Card variant="glass">
+            <Card variant="solid">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <span className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
