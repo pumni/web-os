@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/cn';
 import { Card } from '../layout/card';
+import { CardSpotlight } from '../layout/card-spotlight';
 import { CardWell } from '../layout/card-well';
 import { IconBadge } from '../layout/icon-badge';
 import { Skeleton } from '../feedback/skeleton';
@@ -201,9 +202,14 @@ export function BentoGridItem({
   // surface the loading branch here, so let any consumer-supplied `state`
   // pass through untouched and avoid a name clash in our own props.
   state,
+  variant,
+  style,
   ...props
 }: BentoGridItemProps) {
-  const cardStyle = minHeight !== undefined ? { minHeight } : undefined;
+  const cardStyle: React.CSSProperties = {
+    ...(minHeight !== undefined ? { minHeight } : {}),
+    ...style,
+  };
   // `aria-label` on a role-less <div> is ignored by the accessibility tree, so
   // only emit it alongside a `role="group"` — that makes the tile an
   // announced labelled group when a label is provided, and leaves passive
@@ -220,9 +226,31 @@ export function BentoGridItem({
   // overrides a consumer-supplied `state` (e.g. error/success).
   const resolvedState = loading ? 'loading' : state;
 
+  if (variant === 'spotlight') {
+    return (
+      <CardSpotlight
+        interactive={interactive}
+        state={resolvedState}
+        className={cardClass}
+        style={cardStyle}
+        {...a11yProps}
+        {...props}
+      >
+        {loading ? (
+          <BentoGridItemSkeleton />
+        ) : (
+          <BentoGridItemContent header={header} icon={icon} title={title} description={description}>
+            {children}
+          </BentoGridItemContent>
+        )}
+      </CardSpotlight>
+    );
+  }
+
   return (
     <Card
       interactive={interactive}
+      variant={variant}
       state={resolvedState}
       className={cardClass}
       style={cardStyle}
@@ -239,3 +267,4 @@ export function BentoGridItem({
     </Card>
   );
 }
+
