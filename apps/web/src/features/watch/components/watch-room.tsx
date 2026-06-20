@@ -240,6 +240,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     broadcastQueueEvent,
     broadcastRoomEvent,
     channelStatus,
+    broadcastAnchor,
     broadcastChat,
     broadcastReaction,
   } = useRoomChannel(currentRoom, userId, isHost);
@@ -266,7 +267,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     resumeFromGesture,
     playerHandlers,
     controlHandlers,
-  } = useSyncController(playerRef, currentRoom, isHost, serverClock, roomEvents);
+  } = useSyncController(playerRef, currentRoom, isHost, serverClock, roomEvents, broadcastAnchor);
 
   const { data: profiles = {} } = useMemberProfiles(participants.map((p) => p.userId));
 

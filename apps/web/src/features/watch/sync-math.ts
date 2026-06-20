@@ -12,10 +12,33 @@ export function calculateExpectedPosition(anchor: PlaybackAnchor, serverNowMs: n
 }
 
 export function shouldAcceptPlaybackAnchor(current: PlaybackAnchor, incoming: PlaybackAnchor) {
-  if (!incoming.originSessionId || incoming.sequence === undefined) return true;
+  // Unversioned incoming = a persisted (postgres_changes) snapshot. With the
+  // low-latency broadcast path (ADR-0011), a versioned live anchor can already
+  // be current, so accept the snapshot only if it is strictly newer — a delayed
+  // DB event must not clobber a fresher broadcast.
+  if (!incoming.originSessionId || incoming.sequence === undefined) {
+    return incoming.anchorServerTs > current.anchorServerTs;
+  }
   if (current.originSessionId !== incoming.originSessionId) return true;
   if (current.sequence === undefined) return true;
   return incoming.sequence > current.sequence;
+}
+
+export interface ClockSample {
+  /** Estimated (server - local) offset in ms for this probe. */
+  offset: number;
+  /** Round-trip time in ms for this probe. */
+  rtt: number;
+}
+
+/**
+ * Cristian's-algorithm sample selection: the probe with the smallest round-trip
+ * time has the tightest bound on clock-offset error from path asymmetry, so it
+ * is the best estimate. Returns null for an empty set.
+ */
+export function selectBestClockSample(samples: readonly ClockSample[]): ClockSample | null {
+  if (samples.length === 0) return null;
+  return samples.reduce((best, sample) => (sample.rtt < best.rtt ? sample : best));
 }
 
 export function shouldAcceptPersistedAnchorSnapshot(

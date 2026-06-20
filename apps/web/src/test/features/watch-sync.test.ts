@@ -6,6 +6,7 @@ import {
   getStructuralSignature,
   shouldAcceptPlaybackAnchor,
   shouldAcceptPersistedAnchorSnapshot,
+  selectBestClockSample,
 } from '../../features/watch/sync-math';
 import {
   classifyDrift,
@@ -102,6 +103,19 @@ describe('Watch synced playback math & helpers', () => {
         }),
       ).toBe(true);
     });
+
+    it('rejects a stale persisted snapshot once a newer live anchor exists', () => {
+      // current is versioned at ts 1000; a delayed DB snapshot from before it
+      // (ts 500) must not clobber the fresher broadcast anchor.
+      expect(
+        shouldAcceptPlaybackAnchor(current, {
+          isPlaying: false,
+          anchorPosition: 5,
+          anchorServerTs: 500,
+          playbackRate: 1,
+        }),
+      ).toBe(false);
+    });
   });
 
   describe('shouldAcceptPersistedAnchorSnapshot', () => {
@@ -153,6 +167,29 @@ describe('Watch synced playback math & helpers', () => {
           },
         ),
       ).toBe(true);
+    });
+  });
+
+  describe('selectBestClockSample', () => {
+    it('returns null for no samples', () => {
+      expect(selectBestClockSample([])).toBeNull();
+    });
+
+    it('picks the lowest-RTT sample (least asymmetry error)', () => {
+      const best = selectBestClockSample([
+        { offset: 100, rtt: 800 },
+        { offset: 42, rtt: 30 },
+        { offset: -10, rtt: 250 },
+      ]);
+      expect(best).toEqual({ offset: 42, rtt: 30 });
+    });
+
+    it('keeps the first sample on an RTT tie', () => {
+      const best = selectBestClockSample([
+        { offset: 1, rtt: 50 },
+        { offset: 2, rtt: 50 },
+      ]);
+      expect(best).toEqual({ offset: 1, rtt: 50 });
     });
   });
 

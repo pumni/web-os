@@ -155,6 +155,13 @@ export function useRoomChannel(
       }
     });
 
+    // Low-latency host anchor fan-out (ADR-0011). Versioned anchors arrive here
+    // far sooner than the authoritative postgres_changes snapshot; both feed the
+    // same handlers and dedupe via `shouldAcceptPlaybackAnchor`.
+    activeChannel.on('broadcast', { event: 'anchor' }, (p: { payload: PlaybackAnchor }) => {
+      if (p.payload) anchorHandlersRef.current.forEach((handler) => handler(p.payload));
+    });
+
     activeChannel.on('broadcast', { event: 'chat' }, (p: { payload: ChatMessage }) => {
       if (p.payload) chatHandlersRef.current.forEach((handler) => handler(p.payload));
     });
@@ -250,6 +257,17 @@ export function useRoomChannel(
     }
   }, []);
 
+  const broadcastAnchor = useCallback((anchor: PlaybackAnchor) => {
+    const ch = channelRef.current;
+    if (ch && ch.state === 'joined') {
+      ch.send({
+        type: 'broadcast',
+        event: 'anchor',
+        payload: anchor,
+      });
+    }
+  }, []);
+
   const broadcastChat = useCallback((m: ChatMessage) => {
     const ch = channelRef.current;
     if (ch && ch.state === 'joined') {
@@ -278,6 +296,7 @@ export function useRoomChannel(
     broadcastQueueEvent,
     broadcastRoomEvent,
     channelStatus,
+    broadcastAnchor,
     broadcastChat,
     broadcastReaction,
   };

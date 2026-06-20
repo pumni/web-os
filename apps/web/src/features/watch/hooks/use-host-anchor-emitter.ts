@@ -12,6 +12,12 @@ interface UseHostAnchorEmitterOptions {
   roomId: string;
   isHost: boolean;
   serverClock: () => number;
+  /**
+   * Low-latency fan-out for the versioned anchor (ADR-0011). Sent on every emit
+   * in parallel with the debounced DB persist, so followers react in tens of ms
+   * instead of waiting for the DB → postgres_changes round-trip.
+   */
+  broadcastAnchor?: (anchor: PlaybackAnchor) => void;
 }
 
 export function useHostAnchorEmitter({
@@ -20,6 +26,7 @@ export function useHostAnchorEmitter({
   roomId,
   isHost,
   serverClock,
+  broadcastAnchor,
 }: UseHostAnchorEmitterOptions) {
   const sequenceRef = useRef(0);
   const sessionIdRef = useRef<string | null>(null);
@@ -122,6 +129,10 @@ export function useHostAnchorEmitter({
     };
 
     anchorRef.current = nextAnchor;
+
+    // Fast path: fan the versioned anchor out over realtime immediately.
+    // Followers dedupe against the slower persisted snapshot by sequence.
+    if (isHost) broadcastAnchor?.(nextAnchor);
 
     const isTransportEdge =
       options?.overridePlaying !== undefined ||

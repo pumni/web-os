@@ -82,6 +82,7 @@ export function useSyncController(
   isHost: boolean,
   serverClock: () => number,
   roomEvents: Pick<RoomRealtimeEvents, 'onAnchor'>,
+  broadcastAnchor?: (anchor: PlaybackAnchor) => void,
 ) {
   // Single source of truth for the sync lifecycle. `stateRef` mirrors it so the
   // imperative paths read fresh values synchronously after a dispatch — without
@@ -212,6 +213,7 @@ export function useSyncController(
     roomId: room.id,
     isHost,
     serverClock,
+    broadcastAnchor,
   });
 
   // Adopt the persisted room anchor when the server snapshot is newer.
