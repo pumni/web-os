@@ -22,12 +22,12 @@ import { repoRoot } from './token-test-utils';
  *    is reserved for overlays actively animating (`[data-state=open|closed]`)
  *    and reset under `prefers-reduced-transparency`.
  *
- * Stacked-glass depth (≤2 layers) is enforced structurally — a CSS soft-guard
- * drops the sheen on a glass panel nested inside another glass panel/window
- * (`glass.css`), and the rule is documented in the ui-styling skill. It is NOT
- * asserted here: parsing JSX nesting depth with regex is too brittle (siblings
- * read as depth, and the design-system showcase legitimately renders many glass
- * surfaces side-by-side). The CSS + skill combination is the reliable seam.
+ * Stacked-glass depth (≤2 layers) is a doc/skill rule, NOT a CSS or test guard:
+ * each glass element forces a separate backdrop render pass, so a third nested
+ * layer compounds the per-pixel blur cost and tanks FPS on mid-tier mobiles.
+ * It is not asserted here because parsing JSX nesting depth with regex is too
+ * brittle (siblings read as depth, and the design-system showcase legitimately
+ * renders many glass surfaces side-by-side). The skill prose is the seam.
  */
 
 const GLASS_CSS = 'packages/ui/src/styles/glass.css';

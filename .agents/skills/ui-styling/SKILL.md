@@ -1,6 +1,6 @@
 ---
 name: ui-styling
-description: Apply Pumni OS design-system tokens, surface roles, motion, z-index, and personalization when styling UI or building @pumni/ui components.
+description: Apply Pumni OS design-system tokens, surface roles, motion, z-index, and personalization. Use when styling UI, adding or changing a @pumni/ui component, choosing glass vs solid surfaces, or editing design tokens / theme.css.
 ---
 
 # UI Styling (Pumni OS Design System)
@@ -27,7 +27,7 @@ reference detail.
   `apps/web/src/test/design-system/glass-contrast.test.ts`. Do not reintroduce a
   WCAG 2.x ratio gate.
 - Glass performance: never animate `backdrop-filter`; cap stacked glass at 2
-  layers (the CSS soft-guard in `glass.css` drops the sheen on nesting);
+  layers (each layer forces a separate backdrop render pass; doc/skill rule);
   `will-change` is reserved for overlay transitions, not static glass.
 - Radius: named utilities only (`rounded-md/lg/xl`, etc.), never
   `rounded-[Npx]`. All steps derive from `--radius-base` via `calc()`.

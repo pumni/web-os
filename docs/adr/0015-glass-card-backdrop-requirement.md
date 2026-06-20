@@ -7,7 +7,7 @@
 ## Context
 
 ADR-0014 settled the glass *visual treatment* (frosted vibrant fill, luminous edge
-pair, inner sheen, volumetric rim) and ADR-0012 the structural rule that **glass is
+pair, volumetric rim) and ADR-0012 the structural rule that **glass is
 reserved for floating layers**. Neither ADR spelled out the precondition that makes
 the treatment readable at all: a glass surface only reads as glassmorphism when it
 **has a colourful backdrop to refract**. Over a flat opaque page, the same
@@ -91,9 +91,9 @@ with form/chrome content. They are migrated to `variant="solid"` (forms) or give
 backdrop (chrome) in the implementation that lands with this ADR.
 
 **5. Surface rules unchanged.** No new token, no value change, no rename. The
-APCA gate (`glass-contrast.test.ts`), the rim pair (`glass-rim.test.ts`), the
-sheen (`glass-sheen.test.ts`), and the perf guard (`glass-performance.test.ts`)
-all stand exactly as ADR-0014 left them.
+APCA gate (`glass-contrast.test.ts`), the rim pair (`glass-rim.test.ts`), and
+the perf guard (`glass-performance.test.ts`) all stand exactly as ADR-0014
+left them. (Note: `glass-sheen.test.ts` was later removed by ADR-0016.)
 
 ## Consequences
 

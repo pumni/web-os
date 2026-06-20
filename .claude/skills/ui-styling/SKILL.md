@@ -1,6 +1,6 @@
 ---
 name: ui-styling
-description: Apply Pumni OS design-system tokens, surface roles, motion, z-index, and personalization when styling UI or building @pumni/ui components.
+description: Apply Pumni OS design-system tokens, surface roles, motion, z-index, and personalization. Use when styling UI, adding or changing a @pumni/ui component, choosing glass vs solid surfaces, or editing design tokens / theme.css.
 ---
 
 # UI Styling (pointer)

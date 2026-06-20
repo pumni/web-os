@@ -57,7 +57,7 @@
   /* 600 */
   --tracking-body: var(--letter-spacing-normal);
 
-  /* Glassmorphism tokens — 6-element model (ADR-0014):
+  /* Glassmorphism tokens — 5-element model (ADR-0014, amended by ADR-0016):
      1. Tint — base fill, never fully transparent; tuned so --foreground holds
         APCA Lc 60 over the worst desktop blob (glass-contrast.test.ts). Verified
         margin: text Lc 53.3.
@@ -67,10 +67,7 @@
         brighter inset top highlight for dimension. NOT APCA-gated: glassmorphism
         panels are delineated by their drop shadow, so the edge is the decorative
         light glow, not a contrast boundary (ADR-0014 rescopes the gate).
-     5. Sheen — a faint diagonal inner highlight layered as a separate
-        background-image over the gated tint (the gate composites --glass-tint
-        only, so the sheen never weakens the APCA pass).
-     6. Shadow — soft directional --shadow-glass for float separation.
+     5. Shadow — soft directional --shadow-glass for float separation.
      Fallback — opaque surface when transparency/blur is unavailable. */
   --glass-tint: color-mix(in oklch, var(--neutral-0) 54%, transparent);
   --glass-edge: oklch(1 0 0 / 0.45);
@@ -79,9 +76,6 @@
      edge pair so the cut glass reads as a real volumetric surface (ADR-0014).
      Subtle on light surfaces where shadows already separate the panel. */
   --glass-shadow-edge: oklch(0 0 0 / 0.06);
-  /* Inner diagonal sheen — light catching the upper-left of the glass. Kept
-     faint so it never competes with content or weakens the tint's APCA margin. */
-  --glass-sheen: oklch(1 0 0 / 0.1);
   --glass-fallback-bg: var(--popover);
   --glass-scrim: color-mix(in oklch, var(--neutral-50) 55%, transparent);
   --glass-blur: var(--blur-glass);
@@ -181,12 +175,14 @@
      amplify bright highlights but swallow dark shadows, so the bottom shadow-
      edge needs a higher alpha to read as a real volumetric edge. */
   --glass-shadow-edge: oklch(0 0 0 / 0.22);
-  /* Fainter sheen on dark — bright diagonal light would glare over the dark
-     fill; 0.06 keeps the glassmorphism light without halation. */
-  --glass-sheen: oklch(1 0 0 / 0.06);
   --glass-fallback-bg: var(--popover);
   --glass-scrim: color-mix(in oklch, var(--neutral-950) 50%, transparent);
-  --glass-blur: var(--blur-glass);
+  /* Dark frost runs one step heavier (16px = --blur-glass-lg) than the 12px
+     light default: dark backdrops read muddier at low blur, so the deeper frost
+     restores the glassmorphism read iOS/visionOS dark glass is known for. Still
+     inside the ADR-0014 8–16px sweet spot, so the per-pixel backdrop blur stays
+     cheap on mobile (ADR-0016). */
+  --glass-blur: var(--blur-glass-lg);
 
   /* Brand gradient lives in brand.css (the project override surface). */
 

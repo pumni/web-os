@@ -52,6 +52,7 @@ skill: `.agents/skills/README.md` (authoring standard).
 | @pumni/ui styling / tokens / surfaces | `.agents/skills/ui-styling/SKILL.md` |
 | Supabase migration / RLS / grants | `.agents/skills/supabase-migration/SKILL.md` |
 | TanStack Query hook or mutation | `.agents/skills/tanstack-query-hook/SKILL.md` |
+| Watch-together playback sync (reducer / anchors / clock) | `.agents/skills/watch-sync/SKILL.md` |
 | Zustand client UI store | `.agents/skills/zustand-store/SKILL.md` |
 | Deterministic unit/component testing | `.agents/skills/testing-template/SKILL.md` |
 | Disciplined bug diagnosis / repro loops | `.agents/skills/diagnosing-bugs/SKILL.md` |

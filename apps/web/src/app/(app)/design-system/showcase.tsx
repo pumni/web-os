@@ -909,7 +909,8 @@ export function DesignSystemShowcase() {
                   </div>
                   <CardDescription>
                     Glassmorphism (opt-in, <code>variant=&quot;glass&quot;</code>): frosted vibrant
-                    fill, a luminous light border, and an inner sheen. Float it over a backdrop.
+                    fill with a luminous light border and a volumetric rim pair. Float it over a
+                    backdrop.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">

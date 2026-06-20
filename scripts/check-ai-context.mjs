@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
-import { RULES } from './review-gate-rules.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +25,7 @@ const THIN_WRAPPERS = manifest.thinWrappers ?? [];
 const REQUIRED_PACKAGE_SCRIPTS = manifest.requiredPackageScripts ?? [];
 const FRONTMATTER_REQUIRED = manifest.frontmatterRequired ?? [];
 const INDEX_REQUIRED_REFERENCES = manifest.indexRequiredReferences ?? [];
+const SIZE_BUDGETS = manifest.sizeBudgets ?? [];
 const SKILL_VALIDATION = manifest.skillValidation ?? {
   yamlRequiredFields: [],
   markdownRequiredSections: [],
@@ -126,6 +126,24 @@ function checkEntrypointSizes() {
   const stats = fs.statSync(agentPath);
   if (stats.size > 6500) {
     reportWarn(`AGENTS.md is large (${stats.size} bytes). Keep detailed guidance in docs/.`);
+  }
+}
+
+// Hard size ceiling for high-traffic context files. The soft WARNs above are an
+// early signal; these are a build-failing budget so the layer cannot silently
+// re-bloat (the recurring failure mode behind ADR-0005/0006/0007/0009). Budgets
+// live in the manifest (`sizeBudgets`) with headroom over current size; trim the
+// doc rather than raise the budget when it trips.
+function checkSizeBudgets() {
+  for (const budget of SIZE_BUDGETS) {
+    const filePath = resolveRel(budget.path);
+    if (!fs.existsSync(filePath)) continue;
+    const stats = fs.statSync(filePath);
+    if (stats.size > budget.maxBytes) {
+      reportError(
+        `${budget.path} exceeds its size budget (${stats.size} > ${budget.maxBytes} bytes). Trim it — do not raise the budget.`,
+      );
+    }
   }
 }
 
@@ -463,11 +481,15 @@ function checkRuleInventory() {
     return;
   }
 
+  // The rule registry (scripts/review-gate-rules.mjs) is the single source of
+  // truth for the 16 static rules — it already carries id + severity + summary +
+  // fix per rule. The doc must point at it, not re-transcribe the table (which
+  // drifts and burns review tokens). Enforce only that the pointer is present.
   const inventory = content.slice(headingIndex);
-  for (const ruleId of Object.values(RULES)) {
-    if (!inventory.includes(`\`${ruleId}\``)) {
-      reportError(`${inventoryPath} Static Rule Inventory is missing rule id: ${ruleId}`);
-    }
+  if (!inventory.includes('review-gate-rules.mjs')) {
+    reportError(
+      `${inventoryPath} Static Rule Inventory must point to the rule registry (scripts/review-gate-rules.mjs).`,
+    );
   }
 }
 
@@ -606,6 +628,7 @@ checkStructuredMarkdown({
 checkSkillDescriptionTriggers();
 checkAiDocSizes();
 checkEntrypointSizes();
+checkSizeBudgets();
 checkThinWrappers();
 checkMarkdownLinks();
 checkDocPathReferences();

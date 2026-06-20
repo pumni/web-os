@@ -1,8 +1,16 @@
 # 0014. Glassmorphism Surface Treatment
 
-- **Status:** Accepted
+- **Status:** Accepted (glass visual treatment amended by [ADR-0016](0016-glass-sheen-removal-and-dark-blur-tune.md))
 - **Date:** 2026-06-20
 - **Owner:** Design system / `@pumni/ui`
+
+> **Amended by [ADR-0016](0016-glass-sheen-removal-and-dark-blur-tune.md):** the inner
+> diagonal sheen (`--glass-sheen`, `background-image` gradient) was removed as it is
+> not part of the canonical 5-element glassmorphism formula. The nested-glass CSS
+> soft-guard that existed solely to drop the sheen was also removed; the ≤2-layer
+> discipline remains as a doc/skill rule (render-pass cost). Dark blur was tuned
+> 12px → 16px. The structural decisions in this ADR (rim pair, vibrancy, perf
+> discipline, APCA gate, fallback paths) all **stand**.
 
 ## Context
 

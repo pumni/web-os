@@ -49,7 +49,6 @@ function GlassBackdrop({ className }: { className?: string }) {
 export function GlassPlayground() {
   const [saturateBoost, setSaturateBoost] = React.useState<number>(1.4);
   const [blurPx, setBlurPx] = React.useState<number>(12);
-  const [sheen, setSheen] = React.useState<boolean>(true);
   const [glow, setGlow] = React.useState<boolean>(false);
   const [showNested, setShowNested] = React.useState<boolean>(false);
   const [showBackdrop, setShowBackdrop] = React.useState<boolean>(true);
@@ -101,7 +100,6 @@ export function GlassPlayground() {
   const previewCssVars: React.CSSProperties = {
     ['--glass-blur' as string]: `${blurPx}px`,
     ['--glass-saturate' as string]: `${saturateBoost}`,
-    ['--glass-sheen' as string]: sheen ? undefined : 'transparent',
     ['--glass-tint' as string]: `oklch(${tintL} ${tintC} ${tintH} / ${tintAlpha})`,
   };
 
@@ -128,10 +126,9 @@ export function GlassPlayground() {
 
   const sampleLc = Math.abs(apcaContrast(fgSrgb, compositeBgSrgb));
 
-  const glassCSSCode = `/* Glassmorphism — 6-element model (ADR-0014), backdrop required (ADR-0015) */
+  const glassCSSCode = `/* Glassmorphism — 5-element model (ADR-0014, amended by ADR-0016), backdrop required (ADR-0015) */
 .glass-panel {
   background-color: var(--glass-tint);
-  background-image: linear-gradient(135deg, var(--glass-sheen), transparent 42%);
   border: 1px solid var(--glass-edge);
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
@@ -177,7 +174,7 @@ export function GlassPlayground() {
             <div className="space-y-2">
               <h4 className="flex items-center gap-2 font-semibold text-foreground">
                 <span className="flex size-2 rounded-full bg-primary" />
-                Mô hình 6 thành phần
+                Mô hình 5 thành phần
               </h4>
               <ul className="list-disc space-y-1 pl-8 text-muted-foreground">
                 <li>
@@ -187,10 +184,7 @@ export function GlassPlayground() {
                   <strong>Blur + Saturation:</strong> mờ nhòe kính + đẩy màu rực.
                 </li>
                 <li>
-                  <strong>Edge Highlight:</strong> viền hairline bắt sáng.
-                </li>
-                <li>
-                  <strong>Diagonal Sheen:</strong> ánh chéo 135° trang trí.
+                  <strong>Edge Highlight:</strong> viền hairline bắt sáng (cặp top/bottom).
                 </li>
                 <li>
                   <strong>Drop Shadow:</strong> đổ bóng định vị độ nổi.
@@ -207,9 +201,9 @@ export function GlassPlayground() {
                 Kỷ luật hiệu năng
               </h4>
               <p className="pl-4 leading-relaxed text-muted-foreground">
-                Stack tối đa 2 lớp kính lồng nhau (CSS soft-guard tự ẩn sheen). Không bao giờ animate{' '}
-                <code>backdrop-filter</code>. <code>will-change</code> chỉ dùng cho overlay đang
-                chuyển trạng thái.
+                Stack tối đa 2 lớp kính lồng nhau (mỗi lớp ép một backdrop render pass riêng). Không
+                bao giờ animate <code>backdrop-filter</code>. <code>will-change</code> chỉ dùng cho
+                overlay đang chuyển trạng thái.
               </p>
             </div>
           </CardContent>
@@ -312,7 +306,8 @@ export function GlassPlayground() {
                       <div className="relative mt-3">
                         <GlassSurface variant="panel" className="rounded-xl">
                           <div className="p-3 text-[10px] text-muted-foreground">
-                            Lớp kính thứ 2 lồng bên trong. Lớp này tự động ẩn sheen để tối ưu hiệu năng.
+                            Lớp kính thứ 2 lồng bên trong — vẫn giữ kỷ luật tối đa 2 lớp (mỗi lớp
+                            ép một backdrop render pass riêng).
                           </div>
                         </GlassSurface>
                       </div>
@@ -482,10 +477,6 @@ export function GlassPlayground() {
                   <Layers className="size-3.5" /> Style Toggles
                 </h4>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold">Hiệu ứng Sheen (Ánh kim)</span>
-                    <Switch checked={sheen} onCheckedChange={setSheen} />
-                  </div>
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Hiệu ứng Glow (Phát sáng)</span>
                     <Switch checked={glow} onCheckedChange={setGlow} />

@@ -105,14 +105,14 @@ link still fails the gate.
   became layout-only; extended `pumniNoAdHocSurface` to block the shorthand
   `border bg-muted` well. Declined a competing `Surface` primitive.
 - `0014-glassmorphism-surface-treatment.md` — amended the glass *visual
-  treatment* of ADR-0012 toward modern glassmorphism (landed 2026-06-20):
-  vibrancy (`--glass-saturate` 1.4) + a luminous edge pair
-  (`--glass-highlight` / `--glass-shadow-edge`) + an inner `--glass-sheen`
-  gradient + volumetric rim pair on `glass-panel`/`glass-window`, all layered
-  so the APCA gate still reads single fill/border colours. Perf discipline:
-  `will-change` scoped to overlay transitions, stacked glass capped at 2
-  layers (CSS soft-guard + `glass-performance.test.ts`). Blur stays
-  8–16px. Drift guards: `glass-sheen`, `glass-rim`, `glass-performance`.
+  treatment* of ADR-0012 toward modern glassmorphism (landed 2026-06-20,
+  amended 2026-06-21 by ADR-0016): vibrancy (`--glass-saturate` 1.4) + a
+  luminous edge pair (`--glass-highlight` / `--glass-shadow-edge`) +
+  volumetric rim pair on `glass-panel`/`glass-window`, all layered so the
+  APCA gate still reads single fill/border colours. 5-element model (sheen
+  removed by ADR-0016). Perf discipline: `will-change` scoped to overlay
+  transitions, stacked glass capped at 2 layers (doc/skill rule).
+  Blur 8–16px (dark 16px). Drift guards: `glass-rim`, `glass-performance`.
 - `0015-glass-card-backdrop-requirement.md` — supplemented ADR-0014 with the
   usage precondition glass needs to read at all: a `Card variant="glass"` (or
   `glass-panel`) must float over a colourful backdrop (OS desktop blobs, media,
@@ -121,3 +121,9 @@ link still fails the gate.
   backgrounds. No token/value/API change — supplements ADR-0014, does not amend
   it. Migrated the three production sites that violated the rule; promoted
   `/design-trends` to the gold-reference teaching page.
+- `0016-glass-sheen-removal-and-dark-blur-tune.md` — amended ADR-0014's visual
+  treatment: removed the inner diagonal sheen (`--glass-sheen`, not part of the
+  canonical 5-element glassmorphism formula) + nested-glass CSS soft-guard + 2
+  a11y resets + drift-guard test; tuned dark-mode blur 12→16px. 5-element model
+  (tint / blur+saturate / edge pair / shadow / fallback). No public API change.
+  Code gate: lint/typecheck/test all green (282/282 pass).

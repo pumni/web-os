@@ -117,5 +117,10 @@
   "skillValidation": {
     "yamlRequiredFields": ["name", "description"],
     "markdownRequiredSections": ["Rules", "Checklist"]
-  }
+  },
+  "sizeBudgets": [
+    { "path": "AGENTS.md", "maxBytes": 6000 },
+    { "path": "docs/ai/index.md", "maxBytes": 5000 },
+    { "path": "docs/ai/MEMORY.md", "maxBytes": 5000 }
+  ]
 }

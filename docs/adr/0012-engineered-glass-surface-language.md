@@ -4,13 +4,14 @@
 - **Date:** 2026-06-20
 - **Owner:** Design system / `@pumni/ui`
 
-> **Amended by [ADR-0014](0014-glassmorphism-surface-treatment.md):** the glass
+> **Amended by [ADR-0014](0014-glassmorphism-surface-treatment.md) (further amended
+> by [ADR-0016](0016-glass-sheen-removal-and-dark-blur-tune.md)):** the glass
 > *visual treatment* below (low blur, `saturate(1.05)`, neutral fill, the
 > "rim pair" naming) was later moved toward modern glassmorphism — frosted blur,
-> vibrancy, a luminous edge pair (`--glass-highlight`/`--glass-shadow-edge`), and
-> an inner `--glass-sheen`. The structural decisions in this ADR (solid cards for
-> content, glass only for floating layers, de-Appled OS chrome, APCA gate
-> authoritative, a11y fallbacks) **still stand**.
+> vibrancy, a luminous edge pair (`--glass-highlight`/`--glass-shadow-edge`). The
+> structural decisions in this ADR (solid cards for content, glass only for floating
+> layers, de-Appled OS chrome, APCA gate authoritative, a11y fallbacks) **still
+> stand**.
 
 ## Context
 

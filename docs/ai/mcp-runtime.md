@@ -69,23 +69,16 @@ the filesystem under `apps/web/src/app`.
 
 ## Docs-first workflow for Next.js 16 APIs
 
-Before writing **any** code that uses:
-- Cache APIs (`'use cache'`, `cacheLife`, `cacheTag`, `updateTag`, `revalidateTag`)
-- Async request APIs (`params`, `searchParams`, `cookies`, `headers`, `draftMode`)
-- New 16.2 features (`transitionTypes`, Dev Server Lock, `browserToTerminal`)
-
-Always check the local bundled docs first:
+The "verify Next.js 16 APIs against the installed docs, never training-data
+memory" rule and the cache/async API list live in `apps/web/AGENTS.md` and
+`.claude/rules/*` — that is the single source. MCP only adds a faster lookup
+path to the same bundled docs:
 
 ```
-# Option A: via MCP nextjs_docs tool
 nextjs_docs search "cacheLife"
 nextjs_docs get "/app/api-reference/functions/cacheLife"
-
-# Option B: direct filesystem read (no MCP needed)
-cat node_modules/next/dist/docs/app/api-reference/functions/cacheLife.md
+# equivalent without MCP: cat node_modules/next/dist/docs/app/api-reference/functions/cacheLife.md
 ```
-
-This eliminates reliance on stale training-data knowledge. Never assume Next.js 16 API signatures from memory — always verify against the installed version's docs.
 
 
 ## Limits and rules

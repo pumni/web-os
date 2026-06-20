@@ -18,6 +18,22 @@ verify against the canonical convention docs.
   projection and user-scoped cache tag. Review server-only and service-role
   boundaries before copying this pattern.
 
+## Watch Sync (Realtime)
+
+The active watch-together surface (ADR-0011). See `.agents/skills/watch-sync`
+for the architecture rules before copying.
+
+- `apps/web/src/features/watch/sync-machine.ts`: pure follower-lifecycle reducer
+  `(state, event) => { state, effects }` plus transition-derived telemetry.
+- `apps/web/src/features/watch/sync-math.ts`: pure timing math —
+  `calculateExpectedPosition`, `shouldAcceptPlaybackAnchor` (broadcast vs
+  persisted-snapshot dedupe), Cristian `selectBestClockSample`.
+- `apps/web/src/features/watch/hooks/use-sync-controller.ts`: the thin executor
+  that applies reducer effects to the player (only side-effecting layer).
+- `apps/web/src/features/watch/hooks/use-server-clock.ts`: min-RTT clock probe.
+- `apps/web/src/test/features/watch-sync-machine.test.ts`: transition-by-transition
+  test mapping — the template for adding new sync behavior.
+
 ## Supabase
 
 - `supabase/migrations/001_initial_profiles.sql`: table, RLS policies, explicit

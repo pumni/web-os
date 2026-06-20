@@ -38,7 +38,7 @@ export function DesignTrendsFooter() {
         </div>
         <div className="space-y-2">
           <h5 className="font-bold text-foreground">4. Stacked Limit</h5>
-          <p>Tránh lồng quá 2 cấp kính. CSS soft-guard tự ẩn sheen ở lớp con để bảo vệ FPS mobile.</p>
+          <p>Tránh lồng quá 2 cấp kính — mỗi lớp ép một backdrop render pass riêng, cấp thứ 3 sẽ tank FPS mobile.</p>
         </div>
         <div className="space-y-2">
           <h5 className="font-bold text-foreground">5. No Raw Backdrop-Filter</h5>
