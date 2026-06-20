@@ -96,7 +96,7 @@ function Window({
       <header
         data-slot="window-titlebar"
         id={titleId}
-        className="glass-titlebar flex h-10 shrink-0 items-center gap-3 border-b px-3"
+        className="glass-titlebar flex h-10 shrink-0 items-center gap-3 px-3"
       >
         <div className="flex items-center gap-2">
           <WindowControl

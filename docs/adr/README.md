@@ -127,3 +127,9 @@ link still fails the gate.
   a11y resets + drift-guard test; tuned dark-mode blur 12→16px. 5-element model
   (tint / blur+saturate / edge pair / shadow / fallback). No public API change.
   Code gate: lint/typecheck/test all green (282/282 pass).
+- `0017-bento-container-query-and-subgrid-deferral.md` — made `BentoGrid` a
+  named container (`@container/bento`) so it collapses 1→6→12 by its own width
+  (fixes sidebar/dialog/Window crushing) with `@[…]/bento:` tier spans that stay
+  in sync via the named container; deferred subgrid (large `Card` refactor,
+  small cosmetic win). Thresholds match legacy `sm`/`lg` so full-width
+  consumers render identically.

@@ -1,6 +1,6 @@
 import { Download, Monitor, Terminal } from 'lucide-react';
 
-import { Card } from '@pumni/ui';
+import { CardWell } from '@pumni/ui';
 
 import { ADD_SONGS_STEPS, SKY_PLAYER_LINKS, SUPPORTED_FORMATS } from '../content';
 
@@ -60,10 +60,11 @@ export function AddSongsCallout() {
         <p className="type-label font-semibold text-foreground">Supported File Types</p>
         <div className="grid gap-2 sm:grid-cols-3">
           {SUPPORTED_FORMATS.map((format) => (
-            <Card
+            <CardWell
               key={format.ext}
-              variant="inset"
-              className="flex flex-col justify-between gap-0 rounded-lg p-3"
+              radius="lg"
+              padding="sm"
+              className="flex flex-col justify-between gap-0"
             >
               <div>
                 <code className="mb-1.5 inline-block rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-bold text-primary">
@@ -71,7 +72,7 @@ export function AddSongsCallout() {
                 </code>
                 <p className="text-xs leading-relaxed text-muted-foreground">{format.note}</p>
               </div>
-            </Card>
+            </CardWell>
           ))}
         </div>
       </div>

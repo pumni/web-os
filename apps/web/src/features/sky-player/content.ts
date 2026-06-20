@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Search, Command, SlidersHorizontal, FolderOpen } from 'lucide-react';
+import { Command, FolderOpen, Search, SlidersHorizontal } from 'lucide-react';
 
 export const SKY_PLAYER_LINKS = {
   repo: 'https://github.com/pumni/Sky-Player',
@@ -125,9 +125,6 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = [
     ],
   },
 ];
-
-/** Flat list derived from groups — useful for search or docs export. */
-const KEYBOARD_SHORTCUTS: Shortcut[] = SHORTCUT_GROUPS.flatMap((g) => g.shortcuts);
 
 export const SUPPORTED_FORMATS = [
   { ext: '.json', note: 'Structured key lists with timestamp offsets from Sky Music editors.' },

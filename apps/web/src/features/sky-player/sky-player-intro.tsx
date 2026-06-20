@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Sparkles, Download, Keyboard, HelpCircle } from 'lucide-react';
 
-import { Card, CardContent, motion, recipes, useReducedMotion } from '@pumni/ui';
+import { Badge, Card, CardContent, CardWell, motion, recipes, useReducedMotion } from '@pumni/ui';
 
 import { PreviewWindow } from './preview-window';
 import { HERO_HIGHLIGHTS, SKY_PLAYER_VERSION } from './content';
@@ -37,12 +37,9 @@ export function SkyPlayerIntro() {
             className="space-y-8 lg:col-span-6"
           >
             {/* Version badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1">
-              <span className="size-1.5 rounded-full bg-primary motion-safe:animate-pulse" />
-              <span className="type-caption font-semibold text-primary">
-                {SKY_PLAYER_VERSION} · Windows PC
-              </span>
-            </div>
+            <Badge tone="primary" pulse className="px-3 py-1">
+              {SKY_PLAYER_VERSION} · Windows PC
+            </Badge>
 
             {/* Headline */}
             <div className="space-y-4">
@@ -68,14 +65,15 @@ export function SkyPlayerIntro() {
             {/* Stats row */}
             <div className="flex flex-wrap gap-2 border-t border-border pt-6">
               {HERO_HIGHLIGHTS.map((item) => (
-                <Card
+                <CardWell
                   key={item.label}
-                  variant="inset"
-                  className="flex flex-col gap-0.5 rounded-lg px-4 py-2.5"
+                  radius="lg"
+                  padding="none"
+                  className="flex flex-col gap-0.5 px-4 py-2.5"
                 >
                   <span className="text-xs font-bold text-foreground">{item.label}</span>
                   <span className="mt-0.5 type-caption text-muted-foreground">{item.detail}</span>
-                </Card>
+                </CardWell>
               ))}
             </div>
           </motion.div>

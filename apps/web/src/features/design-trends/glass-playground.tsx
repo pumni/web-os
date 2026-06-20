@@ -15,6 +15,7 @@ import {
   Slider,
   Switch,
   apcaContrast,
+  formatOklch,
   oklchToSrgb,
 } from '@pumni/ui';
 import {
@@ -33,6 +34,27 @@ import { toast } from 'sonner';
 function copyToClipboard(text: string, label: string) {
   navigator.clipboard.writeText(text);
   toast.success(`Đã sao chép ${label} vào bộ nhớ tạm!`);
+}
+
+/**
+ * Production sweet-spot bounds (ADR-0012/0014/0016). Sliders clamp to these so
+ * the playground can never teach a value the design system forbids — blur > 16px
+ * or saturate > 1.8 raise mobile GPU cost for no perceptual gain (each glass
+ * layer forces a separate backdrop render pass).
+ */
+const SPECS = {
+  blur: { min: 8, max: 16, production: '12px (light) · 16px (dark)' },
+  saturate: { min: 1.0, max: 1.8, production: '1.4' },
+} as const;
+
+/** In-spec confirmation badge — shows the slider is clamped to the production range. */
+function SpecBadge() {
+  return (
+    <Badge tone="success" size="sm" className="gap-1 font-normal">
+      <Check className="size-3" />
+      Trong spec
+    </Badge>
+  );
 }
 
 /** The canonical 2-blob backdrop a glass card must float over (ADR-0015). */
@@ -100,7 +122,13 @@ export function GlassPlayground() {
   const previewCssVars: React.CSSProperties = {
     ['--glass-blur' as string]: `${blurPx}px`,
     ['--glass-saturate' as string]: `${saturateBoost}`,
-    ['--glass-tint' as string]: `oklch(${tintL} ${tintC} ${tintH} / ${tintAlpha})`,
+    // Built via the colour-math formatter (not a hand-written oklch literal) so
+    // the preview keeps the token boundary: this is a runtime slider value,
+    // not a hardcoded design colour.
+    ['--glass-tint' as string]: formatOklch(
+      { l: tintL, c: tintC, h: tintH },
+      { alpha: tintAlpha },
+    ),
   };
 
   const fgOklch = isDark
@@ -218,10 +246,10 @@ export function GlassPlayground() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="divide-y text-xs">
+            <div className="divide-y divide-border text-xs">
               <div className="grid grid-cols-2 bg-muted/30 p-3 font-medium">
                 <div>Nên làm (Pumni OS)</div>
-                <div className="border-l pl-3">Không nên làm</div>
+                <div className="border-l border-border pl-3">Không nên làm</div>
               </div>
               {[
                 {
@@ -246,7 +274,7 @@ export function GlassPlayground() {
                     <Check className="mt-0.5 size-3.5 shrink-0" />
                     <span>{row.do}</span>
                   </div>
-                  <div className="flex items-start gap-1 border-l pl-3 text-destructive">
+                  <div className="flex items-start gap-1 border-l border-border pl-3 text-destructive">
                     <X className="mt-0.5 size-3.5 shrink-0" />
                     <span>{row.dont}</span>
                   </div>
@@ -306,8 +334,9 @@ export function GlassPlayground() {
                       <div className="relative mt-3">
                         <GlassSurface variant="panel" className="rounded-xl">
                           <div className="p-3 text-[10px] text-muted-foreground">
-                            Lớp kính thứ 2 lồng bên trong — vẫn giữ kỷ luật tối đa 2 lớp (mỗi lớp
-                            ép một backdrop render pass riêng).
+                            Lớp kính thứ 2 (tối đa). Mỗi lớp <code>backdrop-filter</code> ép một
+                            render pass riêng — lớp thứ 3 sẽ nhân chuỗi per-pixel blur cost và tụt
+                            FPS trên mobile. Đây là doc rule (ADR-0016), không phải CSS soft-guard.
                           </div>
                         </GlassSurface>
                       </div>
@@ -346,7 +375,10 @@ export function GlassPlayground() {
                 <div className="rounded-lg border bg-card p-3 space-y-1.5">
                   <div className="text-muted-foreground font-semibold">OKLCH Tint Color</div>
                   <div className="font-mono text-foreground font-medium select-all">
-                    oklch({tintL.toFixed(3)} {tintC.toFixed(3)} {tintH.toFixed(1)} / {tintAlpha.toFixed(2)})
+                    {formatOklch(
+                      { l: tintL, c: tintC, h: tintH },
+                      { precision: 3, alpha: tintAlpha },
+                    )}
                   </div>
                   <p className="text-[10px] leading-snug text-muted-foreground">
                     Hệ màu đồng nhất của dự án, chống méo sắc độ khi đổi opacity.
@@ -385,6 +417,7 @@ export function GlassPlayground() {
               <div className="space-y-4">
                 <h4 className="font-bold text-foreground flex items-center gap-1.5 border-b pb-1">
                   <Sliders className="size-3.5" /> Backdrop Filters
+                  <SpecBadge />
                 </h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
@@ -392,12 +425,16 @@ export function GlassPlayground() {
                     <span className="font-mono text-muted-foreground">{blurPx}px</span>
                   </div>
                   <Slider
-                    min={0}
-                    max={24}
+                    min={SPECS.blur.min}
+                    max={SPECS.blur.max}
                     step={1}
                     value={[blurPx]}
                     onValueChange={(val) => setBlurPx(val[0] ?? 12)}
                   />
+                  <p className="text-[10px] leading-snug text-muted-foreground">
+                    Spec {SPECS.blur.min}–{SPECS.blur.max}px (product: {SPECS.blur.production}). Trên 16px tăng
+                    GPU cost trên mobile không tương xứng.
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
@@ -405,12 +442,16 @@ export function GlassPlayground() {
                     <span className="font-mono text-muted-foreground">{saturateBoost.toFixed(1)}x</span>
                   </div>
                   <Slider
-                    min={1.0}
-                    max={3.0}
+                    min={SPECS.saturate.min}
+                    max={SPECS.saturate.max}
                     step={0.1}
                     value={[saturateBoost]}
                     onValueChange={(val) => setSaturateBoost(val[0] ?? 1.4)}
                   />
+                  <p className="text-[10px] leading-snug text-muted-foreground">
+                    Spec {SPECS.saturate.min.toFixed(1)}–{SPECS.saturate.max.toFixed(1)}x (product: {SPECS.saturate.production}).
+                    Vibrancy cao hơn đè màu backdrop quá mức.
+                  </p>
                 </div>
               </div>
 
@@ -418,6 +459,11 @@ export function GlassPlayground() {
                 <h4 className="font-bold text-foreground flex items-center gap-1.5 border-b pb-1">
                   <Palette className="size-3.5" /> OKLCH Primitives (Tint)
                 </h4>
+                <p className="text-[10px] leading-snug text-muted-foreground">
+                  Trình diễn cách token Tier-1 được mix thành <code>--glass-tint</code> (Tier-2). Mặc định
+                  khớp token production ({isDark ? 'neutral-900 34%' : 'neutral-0 54%'}). Component thật luôn
+                  dùng <code>bg-glass</code> / <code>GlassSurface</code>, không bao giờ ref primitive trực tiếp.
+                </p>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="font-semibold">Lightness (Độ sáng L)</span>

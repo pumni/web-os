@@ -63,11 +63,21 @@ export function parseOklch(value: string): Oklch {
   };
 }
 
-/** Format an OKLCH triad as a CSS string, dropping a zero alpha-less channel. */
+/**
+ * Format an OKLCH triad as a CSS string. Pass `alpha` (0–1) to emit the
+ * modern slash-separated alpha form (`oklch(L C H / A)`); omit it for a solid
+ * colour. Centralising the `oklch(` literal here (an exempt colour-math file)
+ * keeps callers from hand-writing the function name, which the
+ * `checkDesignTokenBoundaries` lint flags as a token-boundary violation.
+ */
 export function formatOklch(
   { l, c, h }: { l: number; c: number; h: number },
-  precision = 4,
+  options: { precision?: number; alpha?: number } = {},
 ): string {
+  const precision = options.precision ?? 4;
   const round = (n: number) => Number(n.toFixed(precision));
-  return `oklch(${round(l)} ${round(c)} ${round(h)})`;
+  const channels = `${round(l)} ${round(c)} ${round(h)}`;
+  return options.alpha === undefined
+    ? `oklch(${channels})`
+    : `oklch(${channels} / ${round(options.alpha)})`;
 }

@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
   CardWell,
+  IconBadge,
 } from '@pumni/ui';
 import {
   ChevronRight,
@@ -20,8 +21,8 @@ import {
   Copy,
   Gauge,
   Laptop,
+  LayoutGrid,
   Palette,
-  Sliders,
   Smartphone,
   Sparkles,
   Tablet,
@@ -30,13 +31,32 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+/**
+ * BentoSimulator — a faithful, non-faked bento grid preview.
+ *
+ * The earlier version simulated tablet/mobile by hand-rolling per-item
+ * `gridColumn: 'span N'` overrides. That fought the tier system (the inline
+ * spans won and the `tier` prop became meaningless) and faked responsive
+ * behaviour instead of exercising it. BentoGrid is now a **container-query**
+ * grid (`@container/bento`), so this simulator's job got simpler: clamp the
+ * preview viewport to a real width and the grid collapses 12 → 6 → 1 columns on
+ * its own — the same code path production takes when nested in a sidebar,
+ * dialog, or OS Window narrower than the viewport.
+ *
+ * `rowHeight` opts the grid into the bento math (`grid-auto-rows: minmax(Npx,
+ * auto)`), so the `row-span-2` tiers (hero/feature) read as exactly twice a
+ * metric row — the proportional "hộp cơm" ratios that distinguish a bento grid
+ * from a generic CSS grid. The `auto` ceiling lets dense content (the full-width
+ * log table) grow past the floor without clipping.
+ */
+
 type Breakpoint = 'desktop' | 'tablet' | 'mobile';
 
 const bentoGridRecipeCode = `import { BentoGrid, BentoGridItem } from '@pumni/ui';
 
 export default function MyBento() {
   return (
-    <BentoGrid columns={12}>
+    <BentoGrid rowHeight={140}>
       <BentoGridItem tier="hero" title="Tiêu đề chính" description="Chi tiết..." />
       <BentoGridItem tier="feature" title="Tính năng" />
       <BentoGridItem tier="metric" ariaLabel="1.420 người dùng" title="1,420" />
@@ -51,6 +71,29 @@ function copyToClipboard(text: string, label: string) {
   toast.success(`Đã sao chép ${label} vào bộ nhớ tạm!`);
 }
 
+// Floor height of each implicit grid row (px). With it, row-span-2 tiers
+// (hero/feature) span exactly two tracks — the proportional bento ratio.
+const ROW_HEIGHT = 140;
+
+// The preview viewport is clamped to a real width. Because BentoGrid is now a
+// container-query grid (`@container/bento`), clamping its width directly drives
+// the 1 → 6 → 12 column collapse — the SAME code path production takes when
+// nested in a narrow sidebar/dialog. No faked per-item spans, no viewport
+// tricks: this is the real container-query responsive behaviour.
+const BREAKPOINT_MAX_WIDTH: Record<Breakpoint, string> = {
+  desktop: '100%',
+  tablet: '700px',
+  mobile: '360px',
+};
+
+// Container-query class labels (mirror BentoGrid's internal breakpoints) so the
+// badge teaches the real mechanism, not the legacy viewport variant.
+const BREAKPOINT_BADGE: Record<Breakpoint, string> = {
+  desktop: '@[64rem]/bento:grid-cols-12',
+  tablet: '@[40rem]/bento:grid-cols-6',
+  mobile: 'grid-cols-1',
+};
+
 export function BentoSimulator() {
   const [simulatedBreakpoint, setSimulatedBreakpoint] = React.useState<Breakpoint>('desktop');
   const [userCount, setUserCount] = React.useState<number>(1420);
@@ -62,39 +105,6 @@ export function BentoSimulator() {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
-
-  const simulatedMaxWidth =
-    simulatedBreakpoint === 'desktop' ? '100%' : simulatedBreakpoint === 'tablet' ? '700px' : '360px';
-  
-  const gridColumns = simulatedBreakpoint === 'desktop' ? 12 : simulatedBreakpoint === 'tablet' ? 6 : 1;
-
-  const simulatedGridStyle =
-    simulatedBreakpoint === 'tablet'
-      ? { gridTemplateColumns: 'repeat(6, minmax(0, 1fr))' }
-      : simulatedBreakpoint === 'mobile'
-        ? { gridTemplateColumns: 'repeat(1, minmax(0, 1fr))' }
-        : undefined;
-
-  const getSimulatedItemStyle = (tier: 'hero' | 'feature' | 'metric' | 'accent' | 'full') => {
-    if (simulatedBreakpoint === 'desktop') return undefined;
-    if (simulatedBreakpoint === 'mobile') {
-      return { gridColumn: 'span 1 / span 1', gridRow: 'auto' };
-    }
-    switch (tier) {
-      case 'hero':
-        return { gridColumn: 'span 6 / span 6' };
-      case 'feature':
-        return { gridColumn: 'span 6 / span 6' };
-      case 'metric':
-        return { gridColumn: 'span 3 / span 3' };
-      case 'accent':
-        return { gridColumn: 'span 2 / span 2' };
-      case 'full':
-        return { gridColumn: 'span 6 / span 6' };
-      default:
-        return undefined;
-    }
-  };
 
   return (
     <div className="grid gap-6 lg:grid-cols-12">
@@ -130,6 +140,7 @@ export function BentoSimulator() {
             <hr className="border-border" />
             <p className="text-[11px] italic text-muted-foreground">
               💡 Responsive: grid tự ép về 6 cột ở Tablet và xếp dọc 1 cột ở Mobile, bảo toàn nội dung.
+              Ô <code>hero</code>/<code>feature</code> cao đúng 2 hàng metric nhờ <code>rowHeight</code>.
             </p>
           </CardContent>
         </Card>
@@ -153,7 +164,7 @@ export function BentoSimulator() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <pre className="max-h-52 overflow-x-auto rounded-b-xl border-t bg-muted/60 p-3 font-mono text-[11px] text-muted-foreground">
+            <pre className="max-h-52 overflow-x-auto rounded-b-xl border-t bg-muted p-3 font-mono text-[11px] text-muted-foreground">
               <code>{bentoGridRecipeCode}</code>
             </pre>
           </CardContent>
@@ -198,12 +209,14 @@ export function BentoSimulator() {
           </CardHeader>
 
           <CardContent className="border-t bg-muted/10 p-6">
+            {/* The preview viewport is a real width-clamped container, not a
+                faked span override. BentoGrid's own cascade handles 12→6→1. */}
             <div
-              className="mx-auto overflow-hidden rounded-xl border bg-background shadow-sm transition-all duration-500 ease-out"
-              style={{ maxWidth: simulatedMaxWidth }}
+              className="mx-auto overflow-hidden rounded-xl border bg-background shadow-sm transition-[max-width] duration-500 ease-snappy"
+              style={{ maxWidth: BREAKPOINT_MAX_WIDTH[simulatedBreakpoint] }}
             >
               {/* Viewport Address Bar Chrome */}
-              <div className="flex items-center gap-2 border-b bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 border-b bg-muted px-4 py-2 text-xs text-muted-foreground">
                 <div className="flex gap-1.5">
                   <span className="size-2 rounded-full bg-border" />
                   <span className="size-2 rounded-full bg-border" />
@@ -215,32 +228,34 @@ export function BentoSimulator() {
               </div>
 
               {/* Simulated Page Content Area */}
-              <div className="bg-muted/20 p-4 space-y-4">
+              <div className="bg-muted p-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-muted-foreground">
-                    MẶT BẰNG GRID ({gridColumns} cột)
+                    MẶT BẰNG GRID{' '}
+                    <span className="font-mono text-[10px] text-foreground/60">
+                      ({BREAKPOINT_BADGE[simulatedBreakpoint]})
+                    </span>
                   </h4>
                   <Badge tone="neutral" size="sm">
-                    {gridColumns === 12 ? 'lg:grid-cols-12' : gridColumns === 6 ? 'sm:grid-cols-6' : 'grid-cols-1'}
+                    {BREAKPOINT_BADGE[simulatedBreakpoint]}
                   </Badge>
                 </div>
 
-                <BentoGrid columns={12} style={simulatedGridStyle}>
+                {/* No per-item span overrides: tier + rowHeight drive layout. */}
+                <BentoGrid rowHeight={ROW_HEIGHT}>
                   {/* HERO */}
                   <BentoGridItem
                     tier="hero"
-                    style={getSimulatedItemStyle('hero')}
-                    icon={<Gauge className="size-4 text-primary" />}
+                    icon={<Gauge className="size-4" />}
                     title="Thông số Hệ thống OS"
                     description="Báo cáo hiệu suất nhân CPU và tốc độ đọc ghi IO."
-                    minHeight={340}
                   >
                     <CardWell padding="sm" radius="lg" className="my-1 space-y-2">
                       <div className="flex justify-between text-[10px]">
                         <span>V8 Engine Performance</span>
                         <span className="font-semibold text-primary">99.8%</span>
                       </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-background">
                         <div className="h-full rounded-full bg-primary" style={{ width: '85%' }} />
                       </div>
                       <div className="flex justify-between gap-4 text-[9px] text-muted-foreground">
@@ -264,26 +279,24 @@ export function BentoSimulator() {
                     </div>
                   </BentoGridItem>
 
-                  {/* FEATURE */}
+                  {/* FEATURE — spotlight variant demo */}
                   <BentoGridItem
                     tier="feature"
                     variant="spotlight"
-                    icon={<Sparkles className="size-4 text-primary" />}
+                    icon={<Sparkles className="size-4" />}
                     title="Spotlight Hover Lift"
                     description="Card này minh họa radial-gradient chạy theo con trỏ chuột."
-                    minHeight={340}
-                    style={getSimulatedItemStyle('feature')}
                   >
-                    <div className="my-2 rounded-lg border border-primary/10 bg-primary/5 p-2.5 text-center text-[10px]">
-                      <p className="font-medium text-primary">Bản dùng thử Spotlight</p>
+                    <CardWell padding="sm" radius="lg" className="my-2 text-center">
+                      <p className="text-[10px] font-medium text-primary">Bản dùng thử Spotlight</p>
                       <p className="mt-0.5 text-[9px] text-muted-foreground">
                         Rà chuột qua card để thấy đèn phát sáng.
                       </p>
-                    </div>
+                    </CardWell>
                     <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
                       <Code className="size-3" />
                       <span>
-                        Dùng <code>CardSpotlight</code> wrapper
+                        Dùng <code>variant=&quot;spotlight&quot;</code>
                       </span>
                     </div>
                   </BentoGridItem>
@@ -291,9 +304,7 @@ export function BentoSimulator() {
                   {/* METRIC */}
                   <BentoGridItem
                     tier="metric"
-                    style={getSimulatedItemStyle('metric')}
                     ariaLabel={`${userCount.toLocaleString()} người dùng đang hoạt động`}
-                    minHeight={160}
                   >
                     <div className="flex items-start justify-between">
                       <div className="text-[10px] font-medium uppercase text-muted-foreground">
@@ -311,13 +322,11 @@ export function BentoSimulator() {
                     </div>
                   </BentoGridItem>
 
-                  {/* ACCENT CONTROLLER */}
+                  {/* METRIC — Accent Tonal controller */}
                   <BentoGridItem
                     tier="metric"
-                    style={getSimulatedItemStyle('metric')}
-                    icon={<Palette className="size-4 text-primary" />}
+                    icon={<Palette className="size-4" />}
                     title="Accent Tonal"
-                    minHeight={160}
                   >
                     <div className="my-1 flex gap-1.5">
                       {(
@@ -349,16 +358,39 @@ export function BentoSimulator() {
                     </div>
                   </BentoGridItem>
 
+                  {/* ACCENT — the 2-col CTA tier (completes all 5 tiers) */}
+                  <BentoGridItem
+                    tier="accent"
+                    icon={<LayoutGrid className="size-4" />}
+                    title="Quick Add"
+                  >
+                    <div className="flex flex-1 items-end">
+                      <Button
+                        size="xs"
+                        variant="outline"
+                        className="h-6 w-full px-2 text-[10px]"
+                        onClick={() => toast.success('Đã thêm tile mẫu!')}
+                      >
+                        <Code className="size-3" /> + Tile
+                      </Button>
+                    </div>
+                  </BentoGridItem>
+
+                  {/* ACCENT — second shortcut tile */}
+                  <BentoGridItem tier="accent" title="Export">
+                    <div className="truncate text-[9px] text-muted-foreground">
+                      Phím tắt bento · 2 cột
+                    </div>
+                  </BentoGridItem>
+
                   {/* FULL-WIDTH TABLE LOGS */}
                   <BentoGridItem
                     tier="full"
-                    style={getSimulatedItemStyle('full')}
-                    minHeight={180}
                     title="Full Tile (12-Col) — Bảng Nhật Ký"
                     description="Tự động trải rộng toàn trang ở mọi chế độ."
                   >
                     <div className="my-2 space-y-1 font-mono text-[10px] text-muted-foreground">
-                      <div className="flex justify-between border-b pb-0.5">
+                      <div className="flex justify-between border-b border-border pb-0.5">
                         <span>[14:52:10] GET /api/design-trends - 200 OK</span>
                         <span className="text-success">Rendered</span>
                       </div>
@@ -375,15 +407,18 @@ export function BentoSimulator() {
             {/* Description below */}
             <CardWell padding="md" radius="lg" className="mt-4 space-y-2 text-xs">
               <h5 className="flex items-center gap-1.5 font-bold">
-                <Sliders className="size-3.5 text-primary" />
+                <IconBadge size="sm" tone="primary-soft" aria-hidden>
+                  <Sparkles className="size-3.5" />
+                </IconBadge>
                 Giải thích spanning:
               </h5>
               <p className="leading-relaxed text-muted-foreground">
-                Khi chuyển sang <strong className="text-foreground">Tablet</strong>, các ô{' '}
-                <code>hero</code> và <code>feature</code> hạ cấp chiếm trọn 6 cột, còn các ô{' '}
-                <code>metric</code> xếp gọn nửa chiều rộng (3 cột). Ở{' '}
-                <strong className="text-foreground">Mobile</strong>, toàn bộ xếp chồng 1 cột. Không cần
-                viết class responsive thủ công.
+                Khung xem trước được kẹp theo <strong className="text-foreground">chiều rộng thật</strong>{' '}
+                của từng breakpoint. Vì <code>BentoGrid</code> giờ là grid theo{' '}
+                <strong className="text-foreground">container query</strong> (<code>@container/bento</code>),
+                nó tự thu 12 → 6 → 1 cột dựa trên chiều rộng của chính nó — y hệt khi đặt trong sidebar hay
+                dialog hẹp ngoài production. Ô <code>hero</code>/<code>feature</code> cao đúng 2 lần{' '}
+                <code>metric</code> nhờ <code>rowHeight={'{140}'}</code> tạo track cố định (bento math).
               </p>
             </CardWell>
           </CardContent>

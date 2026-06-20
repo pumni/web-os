@@ -35,7 +35,12 @@
      delineation. Promoted to its own GPU composite layer so the per-pixel
      backdrop blur does not bottleneck the CPU on scroll. `will-change` is
      intentionally omitted here and reserved for the animated overlay state
-     below (perf discipline: reserve layers only when needed). */
+     below (perf discipline: reserve layers only when needed).
+     Edge = ONE uniform luminous hairline (the 1px --glass-edge border, equal on
+     all four sides) + a subtle 1px inset top highlight + the soft directional
+     drop shadow that does the real separation — the standard web glassmorphism
+     edge, with no thick or asymmetric top band. The bottom shadow-edge inset is
+     held at zero in light mode (dark mode carries it). */
   background-color: var(--glass-tint);
   border: 1px solid var(--glass-edge);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -48,8 +53,9 @@
 }
 
 @utility glass-window {
-  /* Same glassmorphism treatment as glass-panel; windows carry the deeper
-     active/glow drop shadow (--shadow-glass-glow). Own GPU composite layer. */
+  /* Same glassmorphism treatment as glass-panel (Fresnel rim + specular bevel);
+     windows carry the deeper active/glow drop shadow (--shadow-glass-glow). Own
+     GPU composite layer. */
   background-color: var(--glass-tint);
   border: 1px solid var(--glass-edge);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));

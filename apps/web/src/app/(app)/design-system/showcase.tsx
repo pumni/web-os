@@ -1905,17 +1905,18 @@ export function DesignSystemShowcase() {
         <ShowcaseSection
           title="Bento Grid (12-col)"
           id="bento-grid"
-          description="Mathematical 12-column grid with tier-based spans (hero/feature/metric/accent/full). Visual contract: Playwright snapshots this section."
+          description="Mathematical 12-column grid with tier-based spans (hero/feature/metric/accent/full). `rowHeight` fixes the row track so row-span-2 tiers read as exactly twice a metric — the proportional ratios that make a real bento. Visual contract: Playwright snapshots this section."
         >
-          <BentoGrid id="bento-showcase">
-            {/* HERO tier: col-span-6 row-span-2 (desktop), col-span-6 (tablet) */}
+          <BentoGrid id="bento-showcase" rowHeight={110} dense>
+            {/* HERO tier: col-span-6 row-span-2 (desktop), col-span-6 (tablet).
+                With rowHeight=110 the 2-row span fixes the tile at 220px — no
+                minHeight needed; the math owns the height. */}
             <BentoGridItem
               tier="hero"
               ariaLabel="142k active users this month"
               icon={<UserIcon className="size-4" />}
               title="142k"
               description="Active users this month — hero KPI tile"
-              minHeight={220}
             >
               <div className="flex flex-1 items-end">
                 <div className="flex h-16 w-full items-end gap-1">
@@ -1936,7 +1937,6 @@ export function DesignSystemShowcase() {
               icon={<SettingsIcon className="size-4" />}
               title="System Health"
               description="Feature tile — chart / sparkline / donut"
-              minHeight={220}
             >
               <div className="flex flex-1 items-center justify-center">
                 <div className="relative size-20">

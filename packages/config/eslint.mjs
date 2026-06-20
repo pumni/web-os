@@ -146,7 +146,6 @@ export const pumniNoAdHocSurface = [
       // TODO(card-system-unification): these still hand-roll `border bg-muted`
       // inset wells; migrate them to <CardWell> in a follow-up pass, then drop
       // the entry. Dashboard + watch room cards are already migrated & enforced.
-      '**/features/sky-player/**',
       '**/watch-room.tsx',
       '**/watch-lobby.tsx',
       '**/source-tabs.tsx',

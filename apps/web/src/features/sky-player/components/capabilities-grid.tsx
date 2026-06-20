@@ -5,6 +5,8 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardWell,
+  IconBadge,
   motion,
   recipes,
   useReducedMotion,
@@ -35,14 +37,14 @@ function CapabilityCard({
     >
       <CardSpotlight interactive className="h-full">
         <CardHeader className={cn('gap-4', isFeatured && 'lg:flex-row lg:items-start')}>
-          <div
-            className={cn(
-              'flex shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary',
-              isFeatured ? 'size-12' : 'size-10',
-            )}
+          <IconBadge
+            tone="primary-soft"
+            size={isFeatured ? 'lg' : 'md'}
+            radius="xl"
+            aria-hidden
           >
-            <Icon className={cn(isFeatured ? 'size-6' : 'size-5')} aria-hidden />
-          </div>
+            <Icon />
+          </IconBadge>
 
           <div className="min-w-0 space-y-2">
             <CardTitle
@@ -55,13 +57,17 @@ function CapabilityCard({
             </CardDescription>
 
             {isFeatured && (
-              <div className="mt-4 flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3 py-2">
+              <CardWell
+                radius="lg"
+                padding="none"
+                className="mt-4 flex items-center gap-1.5 px-3 py-2"
+              >
                 <span className="font-mono text-xs text-muted-foreground">{'> '}</span>
                 <span className="font-mono text-xs text-foreground">
                   dawn sky cotl
                   <span className="text-primary motion-safe:animate-pulse">_</span>
                 </span>
-              </div>
+              </CardWell>
             )}
           </div>
         </CardHeader>

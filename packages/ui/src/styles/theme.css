@@ -71,11 +71,15 @@
      Fallback — opaque surface when transparency/blur is unavailable. */
   --glass-tint: color-mix(in oklch, var(--neutral-0) 54%, transparent);
   --glass-edge: oklch(1 0 0 / 0.45);
-  --glass-highlight: oklch(1 0 0 / 0.6);
-  /* Dark bottom rim — pairs with --glass-highlight as a top-lit / bottom-shaded
-     edge pair so the cut glass reads as a real volumetric surface (ADR-0014).
-     Subtle on light surfaces where shadows already separate the panel. */
-  --glass-shadow-edge: oklch(0 0 0 / 0.06);
+  /* Subtle 1px top highlight kept close to the border alpha so the edge reads as
+     ONE uniform luminous hairline, not a brighter/thicker top. Standard web
+     glassmorphism: equal-weight rim on all sides + soft drop shadow. */
+  --glass-highlight: oklch(1 0 0 / 0.5);
+  /* Light glass carries NO dark inner edge / contour (Hype4/Malewicz glassmorphism,
+     Apple Liquid Glass, Tailwind glass all rely on the light rim + drop shadow).
+     Bottom shadow-edge held at zero alpha so the pinned box-shadow layer + the
+     glass-rim drift guard (dark > light) still hold. Dark mode carries the rim. */
+  --glass-shadow-edge: oklch(0 0 0 / 0);
   --glass-fallback-bg: var(--popover);
   --glass-scrim: color-mix(in oklch, var(--neutral-50) 55%, transparent);
   --glass-blur: var(--blur-glass);
@@ -167,10 +171,10 @@
      edge + inset highlight read as the lit glass edge over the dark fill. */
   --glass-tint: color-mix(in oklch, var(--neutral-900) 34%, transparent);
   --glass-edge: oklch(1 0 0 / 0.14);
-  /* Bumped 0.22 → 0.30 (ADR-0014): dark backdrops swallow bright edges, so the
-     luminous top highlight needs a stronger alpha to read as the glassmorphism
-     lit cut edge. Still ungated (specular, not a contrast boundary). */
-  --glass-highlight: oklch(1 0 0 / 0.3);
+  /* Near-uniform luminous rim on dark glass — top highlight kept only a touch
+     above the border so it reads as one even hairline (no thick/asymmetric top
+     band), still visible against the dark blobs. */
+  --glass-highlight: oklch(1 0 0 / 0.2);
   /* Dark bottom rim — stronger than light (0.06 → 0.22) because dark surfaces
      amplify bright highlights but swallow dark shadows, so the bottom shadow-
      edge needs a higher alpha to read as a real volumetric edge. */
