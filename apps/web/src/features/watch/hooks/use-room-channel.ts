@@ -17,6 +17,7 @@ import type {
 } from '../types';
 import { watchKeys } from '../query-keys';
 import { getStructuralSignature } from '../sync-math';
+import { useTelemetryRef } from '@/lib/observability';
 
 function getPlaybackSignature(room: Room): string {
   return `${room.is_playing}|${room.anchor_position}|${room.anchor_server_ts}|${room.playback_rate}`;
@@ -42,6 +43,7 @@ export function useRoomChannel(
   const isHostRef = useRef(isHost);
   const joinedAtRef = useRef(0);
   const wasDisconnectedRef = useRef(false);
+  const telemetryRef = useTelemetryRef();
   useEffect(() => {
     isHostRef.current = isHost;
   }, [isHost]);
@@ -192,6 +194,7 @@ export function useRoomChannel(
         setChannelStatus('connected');
         if (wasDisconnectedRef.current) {
           wasDisconnectedRef.current = false;
+          telemetryRef.current.event('channel.reconnect', { roomId: room.id });
           void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
           void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
         }
@@ -201,6 +204,9 @@ export function useRoomChannel(
           joinedAt: joinedAtRef.current,
         });
       } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+        if (!wasDisconnectedRef.current) {
+          telemetryRef.current.event('channel.disconnect', { roomId: room.id, status });
+        }
         wasDisconnectedRef.current = true;
         setChannelStatus('disconnected');
       }
@@ -210,7 +216,9 @@ export function useRoomChannel(
       void supabase.removeChannel(activeChannel);
       channelRef.current = null;
     };
-  }, [room.id, userId, queryClient]);
+    // telemetryRef is a stable ref; listed for exhaustive-deps, does not
+    // re-subscribe the channel.
+  }, [room.id, userId, queryClient, telemetryRef]);
 
   // Re-track presence when host role flips WITHOUT tearing down the channel.
   useEffect(() => {

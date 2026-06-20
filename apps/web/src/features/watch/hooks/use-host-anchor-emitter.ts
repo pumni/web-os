@@ -3,6 +3,7 @@
 import { useEffect, useRef, type MutableRefObject, type RefObject } from 'react';
 import type { MediaPlayerInstance } from '@vidstack/react';
 import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
+import { useTelemetryRef } from '@/lib/observability';
 import type { PlaybackAnchor } from '../types';
 
 interface UseHostAnchorEmitterOptions {
@@ -24,6 +25,7 @@ export function useHostAnchorEmitter({
   const sessionIdRef = useRef<string | null>(null);
   const pendingAnchorRef = useRef<PlaybackAnchor | null>(null);
   const persistTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const telemetryRef = useTelemetryRef();
 
   const getHostSessionId = () => {
     if (!sessionIdRef.current) {
@@ -51,7 +53,7 @@ export function useHostAnchorEmitter({
       .eq('id', roomId)
       .then(({ error }) => {
         if (error) {
-          console.error('Failed to update watch room database anchor', error);
+          telemetryRef.current.error(error, { scope: 'host-anchor-persist', roomId });
         }
       });
   };

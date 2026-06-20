@@ -1,0 +1,271 @@
+import type { DriftAction } from './hooks/use-sync-controller';
+
+/**
+ * Pure state machine for watch playback sync (ADR-0011).
+ *
+ * This module owns the *follower lifecycle* as a finite, side-effect-free
+ * reducer: `(state, event) => { state, effects }`. It has no React, player, or
+ * network dependencies, so the whole lifecycle — drift reconciliation, manual
+ * detach/resync, autoplay-gesture recovery, host-role flips — is unit-tested in
+ * isolation.
+ *
+ * The reducer decides *which* effect class to run; the numeric math
+ * (`calculateExpectedPosition`, `classifyDrift`, `nudgedRate`) stays pure in
+ * `sync-math.ts` / here, and a thin executor (step 2) reads the player, calls
+ * those helpers, dispatches `DRIFT_TICK`, and applies the returned effects.
+ *
+ * It is deliberately behaviour-preserving against the current imperative
+ * controller (`hooks/use-sync-controller.ts`); see the test suite for the
+ * transition-by-transition mapping.
+ */
+
+export type SyncRole = 'host' | 'follower';
+export type SyncQuality = 'in-sync' | 'catching-up';
+export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected';
+
+/**
+ * Richer phase used for telemetry and UI. Distinct from {@link selectSyncStatus},
+ * which preserves the legacy 3-value public contract.
+ */
+export type SyncPhase =
+  | 'host'
+  | 'idle'
+  | 'in-sync'
+  | 'catching-up'
+  | 'gesture-required'
+  | 'detached'
+  | 'disconnected';
+
+export interface SyncState {
+  /** Whether this client is the authoritative host or a follower. */
+  role: SyncRole;
+  /** Follower is tracking the host anchor. False once the user manually scrubs. */
+  following: boolean;
+  /** Drift quality of the last reconcile tick. */
+  quality: SyncQuality;
+  /** Autoplay was blocked; a real user gesture is required to resume. */
+  gestureRequired: boolean;
+  /** Realtime channel connectivity (tracked for phase/telemetry; inert today). */
+  connection: ConnectionStatus;
+  /** Server-clock offset has been established at least once. */
+  clockReady: boolean;
+}
+
+export type SyncEvent =
+  | { type: 'ROLE_CHANGED'; isHost: boolean }
+  | { type: 'CLOCK_READY' }
+  | { type: 'CHANNEL_STATUS'; status: ConnectionStatus }
+  | { type: 'ANCHOR_RECEIVED' }
+  | { type: 'DRIFT_TICK'; action: DriftAction; drift?: number }
+  | { type: 'MANUAL_INTERACTION' }
+  | { type: 'RESYNC_CMD' }
+  | { type: 'GESTURE_REQUIRED' }
+  | { type: 'GESTURE_RESUMED' };
+
+export type SyncEffect =
+  /** Align the player's play/pause state to the anchor (matchTransportState). */
+  | { type: 'match-transport' }
+  /** Set the player's playbackRate to the anchor rate (if it differs). */
+  | { type: 'match-rate' }
+  /** Small playbackRate nudge toward the anchor to close sub-hardSeek drift. */
+  | { type: 'nudge' }
+  /** Hard seek the player to the expected anchor position. */
+  | { type: 'seek-to-expected' }
+  /** Run an immediate reconcile tick (compute drift, dispatch DRIFT_TICK). */
+  | { type: 'reconcile-now' }
+  /** Clear `muted` before resuming from a user gesture. */
+  | { type: 'unmute' };
+
+export interface SyncTransition {
+  state: SyncState;
+  effects: SyncEffect[];
+}
+
+export function initialSyncState(isHost: boolean): SyncState {
+  return {
+    role: isHost ? 'host' : 'follower',
+    following: true,
+    quality: 'in-sync',
+    gestureRequired: false,
+    connection: 'connecting',
+    clockReady: false,
+  };
+}
+
+const NONE: SyncEffect[] = [];
+
+/**
+ * Pure transition function. Returns the next state and the effects an executor
+ * must apply to the player. Never mutates the input state.
+ */
+export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition {
+  switch (event.type) {
+    case 'ROLE_CHANGED':
+      // Role flip resets follower locks and quality (controller lines 79-87).
+      return {
+        state: {
+          ...state,
+          role: event.isHost ? 'host' : 'follower',
+          following: true,
+          quality: 'in-sync',
+        },
+        effects: NONE,
+      };
+
+    case 'CLOCK_READY':
+      return { state: { ...state, clockReady: true }, effects: NONE };
+
+    case 'CHANNEL_STATUS':
+      // Tracked for phase/telemetry; the controller does not currently react to
+      // connectivity, so no effects (behaviour-preserving, additive).
+      return { state: { ...state, connection: event.status }, effects: NONE };
+
+    case 'ANCHOR_RECEIVED':
+      // Caller only dispatches this for *accepted* anchors (shouldAcceptPlaybackAnchor).
+      // Host stores the anchor outside the machine and runs no follower effect.
+      if (state.role === 'host') return { state, effects: NONE };
+      // A fresh anchor is a deliberate host command: re-engage and reconcile now.
+      return { state: { ...state, following: true }, effects: [{ type: 'reconcile-now' }] };
+
+    case 'DRIFT_TICK': {
+      // Reconcile bypass: host, or follower that has manually detached.
+      if (state.role === 'host' || !state.following) return { state, effects: NONE };
+      switch (event.action) {
+        case 'in-sync':
+          return {
+            state: { ...state, quality: 'in-sync' },
+            effects: [{ type: 'match-transport' }, { type: 'match-rate' }],
+          };
+        case 'nudge':
+          return {
+            state: { ...state, quality: 'catching-up' },
+            effects: [{ type: 'match-transport' }, { type: 'nudge' }],
+          };
+        case 'seek':
+          return {
+            state: { ...state, quality: 'catching-up' },
+            effects: [
+              { type: 'match-transport' },
+              { type: 'seek-to-expected' },
+              { type: 'match-rate' },
+            ],
+          };
+        default:
+          return assertNever(event.action);
+      }
+    }
+
+    case 'MANUAL_INTERACTION':
+      // Host's own interactions are the source of truth, not a detach.
+      if (state.role === 'host') return { state, effects: NONE };
+      return { state: { ...state, following: false, quality: 'catching-up' }, effects: NONE };
+
+    case 'RESYNC_CMD':
+      // Re-engage and snap to the host (controller `resync`, lines 206-222).
+      // quality is left to the next DRIFT_TICK, matching the old code.
+      return {
+        state: { ...state, following: true },
+        effects: [
+          { type: 'seek-to-expected' },
+          { type: 'match-rate' },
+          { type: 'match-transport' },
+        ],
+      };
+
+    case 'GESTURE_REQUIRED':
+      return { state: { ...state, gestureRequired: true }, effects: NONE };
+
+    case 'GESTURE_RESUMED':
+      // Real user gesture: unmute, then behave like RESYNC_CMD (controller
+      // `resumeFromGesture`, lines 225-231).
+      return {
+        state: { ...state, gestureRequired: false, following: true },
+        effects: [
+          { type: 'unmute' },
+          { type: 'seek-to-expected' },
+          { type: 'match-rate' },
+          { type: 'match-transport' },
+        ],
+      };
+
+    default:
+      return assertNever(event);
+  }
+}
+
+/**
+ * Legacy public sync status (`'host' | 'in-sync' | 'catching-up'`) preserved for
+ * the controller's return contract. Followers report drift quality; the host
+ * reports `'host'`.
+ */
+export function selectSyncStatus(state: SyncState): 'host' | 'in-sync' | 'catching-up' {
+  return state.role === 'host' ? 'host' : state.quality;
+}
+
+/** Richer lifecycle phase for telemetry and indicators (highest condition wins). */
+export function selectPhase(state: SyncState): SyncPhase {
+  if (state.role === 'host') return 'host';
+  if (!state.clockReady) return 'idle';
+  if (state.connection === 'disconnected') return 'disconnected';
+  if (state.gestureRequired) return 'gesture-required';
+  if (!state.following) return 'detached';
+  return state.quality;
+}
+
+/**
+ * Pure nudge math extracted from the reconcile loop: shift the playback rate one
+ * step toward the host, clamped to the player's safe range.
+ */
+export function nudgedRate(anchorRate: number, drift: number, nudgeStep: number): number {
+  return Math.max(0.5, Math.min(2.0, anchorRate + Math.sign(drift) * nudgeStep));
+}
+
+export interface SyncTelemetryEvent {
+  name: string;
+  attrs: Record<string, string | number | boolean>;
+}
+
+/**
+ * Derive sync-health telemetry purely from a transition (ADR-0011). Emitting
+ * from the transition rather than hand-placed `track()` calls keeps telemetry
+ * honest — it cannot drift from behaviour. Low-noise by design: only meaningful
+ * lifecycle edges are reported, not every reconcile tick.
+ */
+export function syncTelemetryEvents(
+  prev: SyncState,
+  event: SyncEvent,
+  next: SyncState,
+): SyncTelemetryEvent[] {
+  switch (event.type) {
+    case 'ROLE_CHANGED':
+      return prev.role !== next.role ? [{ name: 'host.transfer', attrs: { role: next.role } }] : [];
+    case 'DRIFT_TICK':
+      // Hard corrections are the felt-quality signal; nudges/in-sync are normal.
+      if (next.role === 'follower' && next.following && event.action === 'seek') {
+        const attrs: SyncTelemetryEvent['attrs'] = {};
+        if (event.drift !== undefined) attrs.drift = Math.round(event.drift * 100) / 100;
+        return [{ name: 'sync.seek', attrs }];
+      }
+      return [];
+    case 'MANUAL_INTERACTION':
+      return prev.following && !next.following ? [{ name: 'sync.detached', attrs: {} }] : [];
+    case 'RESYNC_CMD':
+      return [{ name: 'sync.resync', attrs: { from: 'command' } }];
+    case 'GESTURE_REQUIRED':
+      return !prev.gestureRequired && next.gestureRequired
+        ? [{ name: 'sync.gesture_required', attrs: {} }]
+        : [];
+    case 'GESTURE_RESUMED':
+      return [{ name: 'sync.resync', attrs: { from: 'gesture' } }];
+    case 'CHANNEL_STATUS':
+      return prev.connection !== next.connection
+        ? [{ name: 'channel.status', attrs: { status: next.connection } }]
+        : [];
+    default:
+      return [];
+  }
+}
+
+function assertNever(value: never): never {
+  throw new Error(`Unhandled sync machine variant: ${JSON.stringify(value)}`);
+}

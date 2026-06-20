@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { PersonalizationProvider, PersonalizationScript, Toaster } from '@pumni/ui';
+import { TelemetryProvider } from '@/lib/observability';
 import './globals.css';
 
 const geistSans = Geist({
@@ -64,10 +65,14 @@ export default function RootLayout({
         <PersonalizationScript />
         <ThemeProvider>
           <PersonalizationProvider>
-            <QueryProvider>
-              {children}
-              <Toaster />
-            </QueryProvider>
+            {/* Vendor-neutral observability seam (ADR-0011). No-op by default;
+                a consuming project injects a real sink via the `telemetry` prop. */}
+            <TelemetryProvider>
+              <QueryProvider>
+                {children}
+                <Toaster />
+              </QueryProvider>
+            </TelemetryProvider>
           </PersonalizationProvider>
         </ThemeProvider>
       </body>

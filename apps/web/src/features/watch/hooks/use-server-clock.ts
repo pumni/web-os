@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { useTelemetryRef } from '@/lib/observability';
 
 export function useServerClock() {
   const [ready, setReady] = useState(false);
   const [clockOffset, setClockOffset] = useState<number>(0);
   const clockOffsetRef = useRef<number>(0);
+  const telemetryRef = useTelemetryRef();
 
   useEffect(() => {
     let active = true;
@@ -28,9 +30,13 @@ export function useServerClock() {
           clockOffsetRef.current = offset;
           setClockOffset(offset);
           setReady(true);
+          telemetryRef.current.event('clock.offset', {
+            offsetMs: Math.round(offset),
+            rttMs: rtt,
+          });
         }
       } catch (err) {
-        console.error('Failed to sync clock, falling back to local time', err);
+        telemetryRef.current.error(err, { scope: 'server-clock' });
         if (active && isFirstSync) {
           clockOffsetRef.current = 0;
           setClockOffset(0);
@@ -48,7 +54,9 @@ export function useServerClock() {
       active = false;
       clearInterval(interval);
     };
-  }, []);
+    // telemetryRef is a stable ref; listed to satisfy exhaustive-deps without
+    // re-running the clock sync.
+  }, [telemetryRef]);
 
   const serverClock = () => Date.now() + clockOffsetRef.current;
 

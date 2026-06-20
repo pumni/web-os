@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type {
   MediaPlayerInstance,
   MediaPlayEvent,
@@ -13,10 +13,22 @@ import {
   shouldAcceptPersistedAnchorSnapshot,
   shouldAcceptPlaybackAnchor,
 } from '../sync-math';
+import {
+  initialSyncState,
+  nudgedRate,
+  selectSyncStatus,
+  syncReducer,
+  syncTelemetryEvents,
+  type SyncEffect,
+  type SyncEvent,
+  type SyncState,
+} from '../sync-machine';
+import { useTelemetryRef } from '@/lib/observability';
 import { useHostAnchorEmitter } from './use-host-anchor-emitter';
 
 // ---------------------------------------------------------------------------
-// Pure helpers — no side-effects, no refs
+// Pure helpers — no side-effects, no refs (kept here as the controller's
+// public test surface; the lifecycle itself now lives in `../sync-machine`).
 // ---------------------------------------------------------------------------
 
 export type DriftThresholds = {
@@ -57,7 +69,11 @@ export function matchTransportState(
 }
 
 // ---------------------------------------------------------------------------
-// Hook
+// Hook — drives the pure `syncReducer` (ADR-0011) and applies its effects to
+// the Vidstack player. The reducer owns the lifecycle (following / quality /
+// gesture / role); this hook is the thin executor. Plain functions capture
+// fresh props each render; refs provide stable indirection for the realtime
+// subscription and the reconcile interval.
 // ---------------------------------------------------------------------------
 
 export function useSyncController(
@@ -67,27 +83,12 @@ export function useSyncController(
   serverClock: () => number,
   roomEvents: Pick<RoomRealtimeEvents, 'onAnchor'>,
 ) {
-  const [syncStatus, setSyncStatus] = useState<'host' | 'in-sync' | 'catching-up'>(
-    isHost ? 'host' : 'in-sync',
-  );
-
-  // Follower sync lock states (client-side only)
-  const [isFollowingHost, setIsFollowingHost] = useState<boolean>(true);
-  const isFollowingHostRef = useRef<boolean>(true);
-
-  const [prevIsHost, setPrevIsHost] = useState(isHost);
-  if (isHost !== prevIsHost) {
-    setPrevIsHost(isHost);
-    setIsFollowingHost(true);
-    setSyncStatus(isHost ? 'host' : 'in-sync');
-  }
-
-  useEffect(() => {
-    isFollowingHostRef.current = true;
-  }, [isHost]);
-
-  const [needsGesture, setNeedsGesture] = useState(false);
-  const needsGestureRef = useRef(false);
+  // Single source of truth for the sync lifecycle. `stateRef` mirrors it so the
+  // imperative paths read fresh values synchronously after a dispatch — without
+  // a second set of boolean refs (the old isFollowingHostRef/needsGestureRef).
+  const [state, setState] = useState<SyncState>(() => initialSyncState(isHost));
+  const stateRef = useRef(state);
+  const telemetryRef = useTelemetryRef();
 
   const anchorRef = useRef<PlaybackAnchor>({
     isPlaying: room.is_playing,
@@ -96,19 +97,114 @@ export function useSyncController(
     playbackRate: room.playback_rate,
   });
 
-  // Sync anchorRef when room prop updates from server
-  useEffect(() => {
-    const persistedAnchor = {
-      isPlaying: room.is_playing,
-      anchorPosition: room.anchor_position,
-      anchorServerTs: new Date(room.anchor_server_ts).getTime(),
-      playbackRate: room.playback_rate,
-    };
+  // Programmatic window: ignore play/pause/seeked events emitted by reconcile
+  // itself. Required because `isOriginTrusted` is unreliable on YouTube
+  // (synthetic iframe events), which previously caused false sync breakages.
+  const programmaticUntilRef = useRef(0);
+  const PROGRAMMATIC_WINDOW_MS = 1500; // YouTube bridge async; adjust if needed
+  const markProgrammatic = () => {
+    programmaticUntilRef.current = Date.now() + PROGRAMMATIC_WINDOW_MS;
+  };
+  const isWithinProgrammaticWindow = () => Date.now() < programmaticUntilRef.current;
 
-    if (shouldAcceptPersistedAnchorSnapshot(anchorRef.current, persistedAnchor)) {
-      anchorRef.current = persistedAnchor;
+  // Stable indirection to the latest dispatch / reconcile, broken out so the
+  // realtime subscription and interval reach the freshest closure (and so the
+  // callbacks below avoid a definition cycle). Synced in an effect, never during
+  // render — see `react-hooks/refs`.
+  const dispatchRef = useRef<(event: SyncEvent) => void>(() => {});
+  const reconcileNowRef = useRef<() => void>(() => {});
+
+  // Robust play: browsers block unmuted autoplay without a user gesture. Fall
+  // back to muted autoplay (always allowed); if even that fails, surface a
+  // tap-to-play overlay via the GESTURE_REQUIRED event.
+  const tryPlay = (player: MediaPlayerInstance) => {
+    markProgrammatic();
+    player.play().catch(() => {
+      markProgrammatic();
+      player.muted = true;
+      player.play().catch(() => {
+        dispatchRef.current({ type: 'GESTURE_REQUIRED' });
+      });
+    });
+  };
+
+  // Compute current drift against the host anchor and feed the machine a tick.
+  const reconcileNow = () => {
+    const player = playerRef.current;
+    if (!player) return;
+    const anchor = anchorRef.current;
+    const expected = calculateExpectedPosition(anchor, serverClock());
+    const drift = expected - player.currentTime;
+    const action = classifyDrift(Math.abs(drift), getDriftThresholds(room.source_type));
+    dispatchRef.current({ type: 'DRIFT_TICK', action, drift });
+  };
+
+  // Apply one reducer effect to the player. Effects recompute live position from
+  // the current anchor + server clock, so they always act on fresh state.
+  const applyEffect = (effect: SyncEffect) => {
+    const player = playerRef.current;
+    if (!player) return;
+    const anchor = anchorRef.current;
+    switch (effect.type) {
+      case 'match-transport':
+        matchTransportState(player, anchor, tryPlay, markProgrammatic);
+        break;
+      case 'match-rate':
+        if (player.playbackRate !== anchor.playbackRate) {
+          player.playbackRate = anchor.playbackRate;
+        }
+        break;
+      case 'nudge': {
+        const expected = calculateExpectedPosition(anchor, serverClock());
+        const drift = expected - player.currentTime;
+        const { nudge } = getDriftThresholds(room.source_type);
+        player.playbackRate = nudgedRate(anchor.playbackRate, drift, nudge);
+        break;
+      }
+      case 'seek-to-expected': {
+        const expected = calculateExpectedPosition(anchor, serverClock());
+        if (Math.abs(player.currentTime - expected) > 0.01) {
+          markProgrammatic();
+          player.currentTime = expected;
+        }
+        break;
+      }
+      case 'reconcile-now':
+        reconcileNow();
+        break;
+      case 'unmute':
+        player.muted = false;
+        break;
     }
-  }, [room.is_playing, room.anchor_position, room.anchor_server_ts, room.playback_rate]);
+  };
+
+  // Run the pure reducer, commit the next state, then apply its effects. Called
+  // only from events/effects (never render), so the stateRef write is allowed.
+  const dispatch = (event: SyncEvent) => {
+    const prev = stateRef.current;
+    const { state: next, effects } = syncReducer(prev, event);
+    stateRef.current = next;
+    setState(next);
+    for (const effect of effects) applyEffect(effect);
+    const telemetry = telemetryRef.current;
+    for (const e of syncTelemetryEvents(prev, event, next)) telemetry.event(e.name, e.attrs);
+  };
+
+  // Sync the stable handles after each commit (never during render).
+  useEffect(() => {
+    dispatchRef.current = dispatch;
+    reconcileNowRef.current = reconcileNow;
+  });
+
+  // Role flip (host transfer). Dispatched from an effect to respect ref
+  // discipline; ROLE_CHANGED has no effects, so the extra commit is harmless.
+  const prevIsHostRef = useRef(isHost);
+  useEffect(() => {
+    if (prevIsHostRef.current !== isHost) {
+      prevIsHostRef.current = isHost;
+      dispatchRef.current({ type: 'ROLE_CHANGED', isHost });
+    }
+  }, [isHost]);
 
   const emitAnchor = useHostAnchorEmitter({
     anchorRef,
@@ -118,191 +214,73 @@ export function useSyncController(
     serverClock,
   });
 
-  // Programmatic window: ignore play/pause/seeked events emitted by reconcile/resync itself.
-  // This is required because isOriginTrusted is unreliable on YouTube providers (synthetic
-  // events from iframe API) which previously caused incorrect sync breakages when the host paused.
-  const programmaticUntilRef = useRef(0);
-  const PROGRAMMATIC_WINDOW_MS = 1500; // YouTube bridge async; adjust if needed
-  const markProgrammatic = () => {
-    programmaticUntilRef.current = Date.now() + PROGRAMMATIC_WINDOW_MS;
-  };
-  const isWithinProgrammaticWindow = () => Date.now() < programmaticUntilRef.current;
-
-  // Robust play: browsers block unmuted autoplay without a user gesture.
-  // Fall back to muted autoplay (always allowed); if even that fails, surface
-  // a tap-to-play overlay via needsGesture.
-  const tryPlay = (player: MediaPlayerInstance) => {
-    markProgrammatic();
-    player.play().catch(() => {
-      markProgrammatic();
-      player.muted = true;
-      player.play().catch(() => {
-        needsGestureRef.current = true;
-        setNeedsGesture(true);
-      });
-    });
-  };
-
-  // Follower drift reconciliation loop
-  const reconcile = () => {
-    const player = playerRef.current;
-    // Bypassed if client is not following host or if client is host
-    if (!player || isHost || !isFollowingHostRef.current) return;
-
-    const anchor = anchorRef.current;
-    const now = serverClock();
-
-    // Calculate the expected position of the playback head using pure helper
-    const expected = calculateExpectedPosition(anchor, now);
-
-    // 1) Match play/pause state
-    matchTransportState(player, anchor, tryPlay, markProgrammatic);
-
-    // 2) Match position according to drift tolerance thresholds
-    const drift = expected - player.currentTime;
-    const absDrift = Math.abs(drift);
-    const thresholds = getDriftThresholds(room.source_type);
-    const action = classifyDrift(absDrift, thresholds);
-
-    switch (action) {
-      case 'in-sync':
-        if (player.playbackRate !== anchor.playbackRate) {
-          player.playbackRate = anchor.playbackRate;
-        }
-        setSyncStatus('in-sync');
-        break;
-      case 'nudge': {
-        const adjustedRate = anchor.playbackRate + Math.sign(drift) * thresholds.nudge;
-        player.playbackRate = Math.max(0.5, Math.min(2.0, adjustedRate));
-        setSyncStatus('catching-up');
-        break;
-      }
-      case 'seek':
-        if (Math.abs(player.currentTime - expected) > 0.01) {
-          markProgrammatic();
-          player.currentTime = expected;
-        }
-        player.playbackRate = anchor.playbackRate;
-        setSyncStatus('catching-up');
-        break;
-    }
-  };
-
-  const reconcileRef = useRef(reconcile);
+  // Adopt the persisted room anchor when the server snapshot is newer.
   useEffect(() => {
-    reconcileRef.current = reconcile;
-  });
-
-  // Detect follower manual interaction
-  const handleFollowerManualInteraction = () => {
-    if (isHost) return;
-    // Follower broke sync
-    isFollowingHostRef.current = false;
-    setIsFollowingHost(false);
-    setSyncStatus('catching-up');
-  };
-
-  // Command to catch up with host immediately
-  const resync = () => {
-    isFollowingHostRef.current = true;
-    setIsFollowingHost(true);
-
-    const player = playerRef.current;
-    const anchor = anchorRef.current;
-    if (!player) return;
-
-    const expected = calculateExpectedPosition(anchor, serverClock());
-    if (Math.abs(player.currentTime - expected) > 0.01) {
-      markProgrammatic();
-      player.currentTime = expected;
+    const persistedAnchor = {
+      isPlaying: room.is_playing,
+      anchorPosition: room.anchor_position,
+      anchorServerTs: new Date(room.anchor_server_ts).getTime(),
+      playbackRate: room.playback_rate,
+    };
+    if (shouldAcceptPersistedAnchorSnapshot(anchorRef.current, persistedAnchor)) {
+      anchorRef.current = persistedAnchor;
     }
-    player.playbackRate = anchor.playbackRate;
+  }, [room.is_playing, room.anchor_position, room.anchor_server_ts, room.playback_rate]);
 
-    matchTransportState(player, anchor, tryPlay, markProgrammatic);
-  };
-
-  // Called from the tap-to-play overlay (a real user gesture).
-  const resumeFromGesture = () => {
-    needsGestureRef.current = false;
-    setNeedsGesture(false);
-    const player = playerRef.current;
-    if (player) player.muted = false;
-    resync();
-  };
-
-  const receiveAnchorRef = useRef<(anchor: PlaybackAnchor) => void>(() => {});
+  // Receive a host anchor over realtime: accept-or-drop, store, then re-engage +
+  // reconcile via the machine (the host stores it but runs no follower effect).
   useEffect(() => {
-    receiveAnchorRef.current = (newAnchor: PlaybackAnchor) => {
+    return roomEvents.onAnchor((newAnchor: PlaybackAnchor) => {
       if (!shouldAcceptPlaybackAnchor(anchorRef.current, newAnchor)) return;
       anchorRef.current = newAnchor;
-      if (isHost) return;
-
-      // Each accepted anchor is a deliberate transport command from the host;
-      // re-engage following and reconcile even if the follower had manually broken sync.
-      if (!isFollowingHostRef.current) {
-        isFollowingHostRef.current = true;
-        setIsFollowingHost(true);
-      }
-      reconcileRef.current();
-    };
-  }, [isHost]);
-
-  useEffect(() => {
-    return roomEvents.onAnchor((anchor) => receiveAnchorRef.current(anchor));
+      if (stateRef.current.role === 'host') return;
+      dispatchRef.current({ type: 'ANCHOR_RECEIVED' });
+    });
   }, [roomEvents]);
 
-  // Periodically check sync for followers.
-  // Note: We deliberately do NOT check document.hidden here to pause the loop. Gating
-  // on visibility would cause audio to drift uncorrected when the user runs the video
-  // in a background tab (a supported use case). Correct background audio alignment
-  // is prioritized over the minor CPU overhead of a 1s timer.
+  // Periodic follower drift check. We deliberately do NOT gate on
+  // document.hidden: background-tab audio must stay aligned, and the machine
+  // no-ops the tick for hosts / detached followers anyway.
   useEffect(() => {
     if (isHost) return;
-
-    const interval = setInterval(() => {
-      reconcileRef.current();
-    }, 1000);
-
+    const interval = setInterval(() => reconcileNowRef.current(), 1000);
     return () => clearInterval(interval);
   }, [isHost]);
+
+  // --- Public commands & handlers -------------------------------------------
+  const resync = () => dispatchRef.current({ type: 'RESYNC_CMD' });
+  const resumeFromGesture = () => dispatchRef.current({ type: 'GESTURE_RESUMED' });
 
   const isFollowerManualEvent = (e?: { isOriginTrusted?: boolean }) =>
     !isWithinProgrammaticWindow() && e?.isOriginTrusted !== false;
 
-  // Player event handlers
+  const handleFollowerManualInteraction = () => dispatchRef.current({ type: 'MANUAL_INTERACTION' });
+
   const handlePlay = (e?: MediaPlayEvent) => {
-    if (isHost) {
-      emitAnchor();
-    } else if (isFollowerManualEvent(e)) {
-      handleFollowerManualInteraction();
-    }
+    if (isHost) emitAnchor();
+    else if (isFollowerManualEvent(e)) handleFollowerManualInteraction();
   };
 
   const handlePause = (e?: MediaPauseEvent) => {
-    if (isHost) {
-      emitAnchor();
-    } else if (isFollowerManualEvent(e)) {
-      handleFollowerManualInteraction();
-    }
+    if (isHost) emitAnchor();
+    else if (isFollowerManualEvent(e)) handleFollowerManualInteraction();
   };
 
   const handleRateChange = () => {
     if (isHost) emitAnchor();
   };
 
-  const handleSeeked = (detail?: number, e?: MediaSeekedEvent) => {
-    if (isHost) {
-      emitAnchor();
-    } else if (isFollowerManualEvent(e)) {
-      handleFollowerManualInteraction();
-    }
+  const handleSeeked = (_detail?: number, e?: MediaSeekedEvent) => {
+    if (isHost) emitAnchor();
+    else if (isFollowerManualEvent(e)) handleFollowerManualInteraction();
   };
 
   const handleControlPlayPauseIntent = () => {
     if (isHost) {
       const player = playerRef.current;
       if (player) {
-        // Force the target state immediately based on host intent to enable parallel buffering/play
+        // Force the target state immediately based on host intent to enable
+        // parallel buffering/play.
         const targetPlaying = player.paused;
         emitAnchor({ overridePlaying: targetPlaying });
       }
@@ -312,17 +290,14 @@ export function useSyncController(
   };
 
   const handleControlSeekCommitIntent = () => {
-    if (isHost) {
-      emitAnchor();
-    } else {
-      handleFollowerManualInteraction();
-    }
+    if (isHost) emitAnchor();
+    else handleFollowerManualInteraction();
   };
 
   return {
-    syncStatus,
-    isFollowingHost,
-    needsGesture,
+    syncStatus: selectSyncStatus(state),
+    isFollowingHost: state.following,
+    needsGesture: state.gestureRequired,
     resync,
     resumeFromGesture,
     playerHandlers: {

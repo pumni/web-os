@@ -87,3 +87,8 @@ link still fails the gate.
   OS skeleton; locked a brand-contract token layer, an inverse-APCA foreground
   generator, and a granular `exports` map; declined Style Dictionary, Storybook,
   RTL, and a premature package split as enterprise tax for the current context.
+- `0011-watch-sync-state-machine-and-observability-seam.md` — made the watch
+  playback-sync lifecycle an explicit pure reducer (states/events/effects) and
+  added a vendor-neutral, no-op observability seam fed from the machine's
+  transitions; declined XState and a direct vendor SDK / `@pumni/observability`
+  split as premature.
