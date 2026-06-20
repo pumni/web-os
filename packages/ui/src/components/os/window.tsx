@@ -28,7 +28,10 @@ function WindowControl({
       aria-label={label}
       title={label}
       className={cn(
-        'inline-flex size-3.5 items-center justify-center rounded-full text-transparent transition-colors hover:text-(--window-control-icon) focus-visible:text-(--window-control-icon) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-2.5',
+        'inline-flex size-6 items-center justify-center rounded-md text-muted-foreground',
+        'transition-colors hover:text-foreground focus-visible:outline-2',
+        'focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-3.5',
+        'state-hover',
         className,
       )}
       {...props}
@@ -73,22 +76,14 @@ function Window({
           <WindowControl
             label="Close window"
             onClick={onClose}
-            className="bg-(--window-control-close)"
+            className="hover:text-destructive"
           >
             <X />
           </WindowControl>
-          <WindowControl
-            label="Minimize window"
-            onClick={onMinimize}
-            className="bg-(--window-control-minimize)"
-          >
+          <WindowControl label="Minimize window" onClick={onMinimize}>
             <Minus />
           </WindowControl>
-          <WindowControl
-            label="Maximize window"
-            onClick={onMaximize}
-            className="bg-(--window-control-maximize)"
-          >
+          <WindowControl label="Maximize window" onClick={onMaximize}>
             <Maximize2 />
           </WindowControl>
         </div>

@@ -54,25 +54,19 @@
   --tracking-body: var(--letter-spacing-normal);
 
   /* Glass surfaces (translucent fill doubles as the contrast scrim).
-     Expressed as <neutral primitive> at an alpha via color-mix so the glass
-     follows the neutral ramp instead of hardcoding raw oklch literals. */
-  --glass-bg: color-mix(in oklch, var(--neutral-0) 51%, transparent);
-  --glass-border: color-mix(
-    in oklch,
-    var(--primary) 6%,
-    color-mix(in oklch, var(--neutral-950) 50%, transparent)
-  );
-  --glass-highlight: color-mix(
-    in oklch,
-    var(--primary) 5%,
-    color-mix(in oklch, var(--neutral-0) 58%, transparent)
-  );
-  /* Luminous glass rim — translucent white hairline that catches the light */
-  --glass-edge: color-mix(
-    in oklch,
-    var(--primary) 6%,
-    color-mix(in oklch, var(--neutral-0) 52%, transparent)
-  );
+     Engineered dark-glass identity: thin NEUTRAL fill (no brand tint), a bright
+     top rim + dark bottom rim applied as inset box-shadows in glass.css. The
+     fill opacity is tuned against the APCA gate (Lc 50 light text / Lc 25 UI
+     edge) — see glass-contrast.test.ts. Crispness comes from the rim pair, not
+     opacity. Verified margins: text Lc 53.3, edge Lc 29.8 over the worst blob. */
+  --glass-bg: color-mix(in oklch, var(--neutral-0) 54%, transparent);
+  /* Neutral hairline (no brand tint) — kept dark enough to clear the APCA
+     UI-edge gate and the forced-colors / reduced-transparency fallbacks. */
+  --glass-border: color-mix(in oklch, var(--neutral-950) 42%, transparent);
+  /* Specular rim pair: bright top edge + dark bottom edge (real glass). Applied
+     as inset box-shadows in glass.css, so NOT subject to the APCA token gate. */
+  --glass-rim-top: oklch(1 0 0 / 0.55);
+  --glass-rim-bottom: oklch(0.2 0.01 260 / 0.08);
   --glass-scrim: color-mix(in oklch, var(--neutral-50) 55%, transparent);
   --glass-blur: var(--blur-glass);
 
@@ -83,13 +77,6 @@
   --desktop-blob-secondary: var(--indigo-500);
   --desktop-blob-accent: var(--brand-gradient-to);
   --desktop-blob-cyan: var(--cyan-400);
-
-  /* Window controls */
-  --window-control-close: var(--red-500);
-  --window-control-minimize: var(--amber-400);
-  --window-control-maximize: var(--emerald-500);
-  /* Dark glyphs on the traffic-light dots, both themes (macOS-style). */
-  --window-control-icon: oklch(0 0 0 / 0.6);
 
   /* Modal / sheet scrim */
   --overlay: oklch(0 0 0 / 0.4);
@@ -106,6 +93,11 @@
   --glass-edge-rim-bottom: inset 0 -1px 0 0 oklch(1 0 0 / 0.03);
   --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.06);
   --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.06);
+
+  /* Solid card top highlight — lit top edge on the opaque raised surface.
+     Applied by the `surface-raised` utility alongside --shadow-card-raised so
+     solid cards carry real lift + a faint specular top rim. */
+  --card-rim-top: oklch(1 0 0 / 0.6);
 
   /* Interactive card hover shadow with dynamic accent ambient glow */
   --shadow-interactive-hover:
@@ -158,23 +150,15 @@
   --tracking-body: var(--tracking-body-dark);
   /* 0.01em */
 
-  /* Dark glass: darker translucent fill + brighter hairline border */
-  --glass-bg: color-mix(in oklch, var(--neutral-900) 36%, transparent);
-  --glass-border: color-mix(
-    in oklch,
-    var(--primary) 5%,
-    color-mix(in oklch, var(--neutral-0) 42%, transparent)
-  );
-  --glass-highlight: color-mix(
-    in oklch,
-    var(--primary) 5%,
-    color-mix(in oklch, var(--neutral-0) 28%, transparent)
-  );
-  --glass-edge: color-mix(
-    in oklch,
-    var(--primary) 5%,
-    color-mix(in oklch, var(--neutral-0) 24%, transparent)
-  );
+  /* Dark engineered glass — keep enough fill that white text holds Lc 60 over
+     the blobs (gated); the bright top rim carries the "glass" read. Tune the
+     fill % DOWN only as far as the gate allows (don't trade contrast for
+     thinness). Neutral, no brand tint. Verified margins: text Lc 92.8, edge
+     Lc 29.9 over the worst blob. */
+  --glass-bg: color-mix(in oklch, var(--neutral-900) 46%, transparent);
+  --glass-border: color-mix(in oklch, var(--neutral-0) 42%, transparent);
+  --glass-rim-top: oklch(1 0 0 / 0.16);
+  --glass-rim-bottom: oklch(0 0 0 / 0.24);
   --glass-scrim: color-mix(in oklch, var(--neutral-950) 50%, transparent);
   --glass-blur: var(--blur-glass);
 
@@ -185,11 +169,6 @@
   --desktop-blob-secondary: var(--indigo-500);
   --desktop-blob-accent: var(--brand-gradient-to);
   --desktop-blob-cyan: var(--cyan-400);
-
-  /* Window controls */
-  --window-control-close: var(--red-500);
-  --window-control-minimize: var(--amber-400);
-  --window-control-maximize: var(--emerald-500);
 
   /* Deeper scrim reads better over a dark backdrop. */
   --overlay: oklch(0 0 0 / 0.6);
@@ -205,6 +184,10 @@
   --glass-edge-rim-bottom: inset 0 -1px 0 0 oklch(1 0 0 / 0.06);
   --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.18);
   --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.18);
+
+  /* Solid card top highlight — darker backdrop, so a much fainter rim reads as
+     the lit top edge (mirrors the glass rim-top calibration). */
+  --card-rim-top: oklch(1 0 0 / 0.05);
 
   /* Interactive card hover shadow with dynamic accent ambient glow */
   --shadow-interactive-hover:
@@ -314,7 +297,7 @@
      Tailwind's built-in `shadow-*`. Floating glass depth stays inside the
      `glass-*` utilities (glass.css), which also carry the a11y fallbacks — so
      blur is intentionally NOT exposed as a standalone utility. */
-  --shadow-card: var(--shadow-1);
+  --shadow-card: var(--shadow-card-raised);
   --shadow-control: var(--shadow-control);
   --shadow-raised: var(--shadow-2);
   --shadow-interactive-hover: var(--shadow-interactive-hover);
@@ -382,4 +365,14 @@
   line-height: var(--text-sm--line-height);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-normal);
+}
+
+/* Solid raised surface — multi-layer soft elevation + a faint lit top rim so
+   opaque cards carry real depth (not the flat --shadow-1 hairline). This keeps
+   glass reserved for true floating layers. Consumed by the Card solid/spotlight
+   variants via `surface-raised` instead of a magic-value box-shadow in TSX. */
+@utility surface-raised {
+  box-shadow:
+    var(--shadow-card-raised),
+    inset 0 1px 0 0 var(--card-rim-top);
 }

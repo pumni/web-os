@@ -130,21 +130,31 @@
   --leading-compensation-dark: 0.075;
   /* extra line-height    */
 
-  /* --- Glass blur (kept in the GPU-friendly 8–15px range) --- */
-  --blur-glass-sm: 10px;
-  --blur-glass: 16px;
-  --blur-glass-lg: 24px;
+  /* --- Glass blur (engineered: clearer than the old frosted 16px) ---
+     Held in the GPU-friendly 8–15px range. The three steps shift down so
+     glass reads as thinner/clearer (content-forward) rather than milky
+     frost; crispness now comes from the rim pair + directional shadow. */
+  --blur-glass-sm: 8px;
+  --blur-glass: 12px;
+  --blur-glass-lg: 20px;
   --blur-scrim: 4px;
+
+  /* Engineered glass keeps backdrop colour close to true — no vibrancy pump.
+     The single vibrancy knob consumed by every `glass-*` utility (see the
+     drift guard in glass-saturate.test.ts). */
+  --glass-saturate: 1.05;
 
   /* --- Elevation shadows (tuned for floating glass layers) --- */
   --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
   --shadow-control: var(--shadow-1);
   --shadow-2: 0 4px 12px -2px oklch(0 0 0 / 0.12), 0 2px 4px -2px oklch(0 0 0 / 0.08);
-  /* Neutral, layered elevation for floating glass — soft modern depth instead
-     of a tinted halo. Multiple stacked steps read as ambient + key light. */
+  /* Directional elevation for floating glass — key light from the top with a
+     slight downward bias, instead of a symmetric ambient halo. Reads as a
+     real lit object rather than a flat frosted plane. */
   --shadow-glass:
-    0 1px 2px -1px oklch(0 0 0 / 0.06), 0 6px 12px -4px oklch(0 0 0 / 0.1),
-    0 18px 40px -12px oklch(0 0 0 / 0.16);
+    0 1px 2px -1px oklch(0 0 0 / 0.07),
+    0 8px 16px -6px oklch(0 0 0 / 0.12),
+    0 20px 40px -14px oklch(0 0 0 / 0.16);
   --shadow-glass-glow-soft:
     0 1px 1px -0.5px oklch(0 0 0 / 0.04), 0 6px 14px -6px oklch(0 0 0 / 0.1),
     0 18px 36px -14px oklch(0 0 0 / 0.16);
@@ -152,6 +162,14 @@
   --shadow-glass-glow-base:
     0 2px 4px -1px oklch(0 0 0 / 0.06), 0 12px 28px -8px oklch(0 0 0 / 0.18),
     0 28px 56px -18px oklch(0 0 0 / 0.22);
+
+  /* Solid content elevation — soft multi-layer, modern depth (NOT the flat
+     --shadow-1 hairline). Lets solid cards carry real lift so glass is reserved
+     for true floating layers. The inset top rim is applied alongside this in
+     the `surface-raised` utility (theme.css) to read as a lit top edge. */
+  --shadow-card-raised:
+    0 1px 2px -1px oklch(0 0 0 / 0.05),
+    0 4px 10px -3px oklch(0 0 0 / 0.07);
 
   /* --- Z-index: single owned OS layering scale (see design-system.md).
      EVERY cross-component layer — shell chrome AND floating primitives —

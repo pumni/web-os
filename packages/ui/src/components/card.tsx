@@ -41,17 +41,18 @@ import { cn } from '../lib/cn';
 const cardVariants = cva('flex flex-col gap-6 py-6 text-card-foreground', {
   variants: {
     variant: {
-      // Raised, crisp content surface — the default. Owned elevation utility.
-      solid: 'border bg-card shadow-card',
+      // Raised, crisp content surface — the default. Owned elevation utility +
+      // a lit top rim via `surface-raised` (real lift, not the flat hairline).
+      solid: 'border bg-card surface-raised',
       // Recessed nested well (no shadow, lower contrast fill).
       inset: 'border border-border bg-muted',
       // Opt-in: floating translucent glass. Use ONLY when the card literally
       // floats over other content. Most content should NOT use this.
       glass: 'glass-panel',
       // Opt-in: pointer-tracked spotlight highlight on hover.
-      // Renders the same opaque base as `solid` + adds a ::before radial
+      // Renders the same opaque raised base as `solid` + adds a ::before radial
       // gradient that follows the cursor (requires CardSpotlight client wrapper).
-      spotlight: 'border bg-card shadow-card card-spotlight group',
+      spotlight: 'border bg-card surface-raised card-spotlight group',
     },
     interactive: {
       true: 'cursor-pointer transition-[transform,box-shadow,border-color] duration-(--duration-base) ease-snappy hover:shadow-interactive-hover hover:border-primary/30 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)',

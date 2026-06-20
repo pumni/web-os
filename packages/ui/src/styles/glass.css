@@ -12,47 +12,47 @@
  */
 
 @utility glass-panel {
-  /* Frosted fill + ONE translucent `--glass-edge` hairline. The float/depth is
-     carried by the layered drop shadow — no extra edge lines that read as a
-     thick or double-coloured border. */
+  /* Engineered glass: thin neutral fill, tokenized saturate (no vibrancy pump),
+     a bright top rim + dark bottom rim (inset box-shadows) instead of a single
+     hairline + skeuomorphic top sheen. Float depth = directional --shadow-glass. */
   background-color: var(--glass-bg);
-  border: 1px solid var(--glass-edge);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  /* layered drop shadow for float + a soft inner top sheen (no hard 2nd line) */
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass),
-    inset 0 1px 1px -0.5px var(--glass-highlight);
+    inset 0 1px 0 0 var(--glass-rim-top),
+    inset 0 -1px 0 0 var(--glass-rim-bottom);
 }
 
 @utility glass-window {
-  /* Frosted fill + ONE translucent `--glass-edge` hairline. The float/depth is
-     carried by the layered drop shadow — no extra edge lines that read as a
-     thick or double-coloured border. */
+  /* Same engineered rim pair + tokenized saturate as glass-panel; windows carry
+     the deeper active/glow drop shadow (--shadow-glass-glow) instead. */
   background-color: var(--glass-bg);
-  border: 1px solid var(--glass-edge);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass-glow),
-    inset 0 1px 1px -0.5px var(--glass-highlight);
+    inset 0 1px 0 0 var(--glass-rim-top),
+    inset 0 -1px 0 0 var(--glass-rim-bottom);
 }
 
 .glass-window[data-active='false'] {
   background-color: color-mix(in oklch, var(--glass-bg) 80%, var(--popover));
   border-color: var(--border);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass-glow-soft),
-    inset 0 1px 1px -0.5px var(--glass-highlight);
+    inset 0 1px 0 0 var(--glass-rim-top);
 }
 
 .glass-window[data-active='false'] .glass-titlebar {
   background-color: color-mix(in oklch, var(--glass-bg) 75%, var(--muted));
   border-color: var(--border);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 }
 
 /* Bar variant for shell chrome (sidebar rails, topbars): glass look, NO
@@ -60,9 +60,9 @@
    separation is handled by directional variants below. */
 @utility glass-bar {
   background-color: var(--glass-bg);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  box-shadow: inset 0 1px 0 0 var(--glass-rim-top);
 }
 
 /* Bordered bar variant for FLOATING elements (docks, floating toolbars).
@@ -70,10 +70,10 @@
    reads as a distinct floating surface against the background. */
 @utility glass-bar-bordered {
   background-color: var(--glass-bg);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+  box-shadow: inset 0 1px 0 0 var(--glass-rim-top);
 }
 
 /* Shell chrome variant — glass bar base + right-side glass edge + ambient depth.
@@ -85,32 +85,32 @@
    Together they provide consistent shell separation without theme overrides. */
 @utility glass-bar-edge-r {
   background-color: var(--glass-bg);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-shell-depth),
     var(--glass-edge-rim),
-    inset 0 1px 0 0 var(--glass-highlight);
+    inset 0 1px 0 0 var(--glass-rim-top);
 }
 
 /* Shell chrome variant — glass bar base + bottom-side glass edge + depth.
    Same unified dual-mechanism approach as `glass-bar-edge-r`. */
 @utility glass-bar-edge-b {
   background-color: var(--glass-bg);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-shell-depth-bottom),
     var(--glass-edge-rim-bottom),
-    inset 0 1px 0 0 var(--glass-highlight);
+    inset 0 1px 0 0 var(--glass-rim-top);
 }
 
 @utility glass-titlebar {
   background-color: color-mix(in oklch, var(--glass-bg) 82%, var(--popover));
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
-  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border-bottom: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+  box-shadow: inset 0 1px 0 0 var(--glass-rim-top);
 }
 
 /*
@@ -128,6 +128,9 @@
   .glass-titlebar {
     background: var(--popover);
     border-color: var(--border);
+    /* Replace the engineered rim insets with flat elevation so they don't ghost
+       over an opaque fallback surface. */
+    box-shadow: var(--shadow-2);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -207,6 +210,8 @@
 .glass-a11y-preview[data-transparency='reduced'] .glass-titlebar {
   background: var(--popover);
   border-color: var(--border);
+  /* Flat elevation mirrors the prefers-reduced-transparency fallback. */
+  box-shadow: var(--shadow-2);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }

@@ -854,7 +854,7 @@ export function DesignSystemShowcase() {
         <ShowcaseSection
           id="surfaces-layout"
           title="Surfaces & Layout"
-          description="Layout structures: default glass cards, solid cards, floating surface primitives, windows, and scrolling views."
+          description="Layout structures: engineered glass cards, raised solid cards, floating surface primitives, windows, and scrolling views."
         >
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Card comparison */}
@@ -870,7 +870,8 @@ export function DesignSystemShowcase() {
                     </CardAction>
                   </div>
                   <CardDescription>
-                    Frosted, floating panel using translucency roles.
+                    Engineered dark-glass: thin neutral fill, a bright top rim
+                    and dark bottom rim, clearer backdrop.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
@@ -952,7 +953,7 @@ export function DesignSystemShowcase() {
                 <div className="space-y-2 text-sm">
                   <p className="font-medium text-foreground">Foreground Active</p>
                   <p className="text-xs text-muted-foreground">
-                    Full backdrop-blur filters enabled. Traffic controls highlighted.
+                    Clear backdrop-blur + neutral window controls. Close goes destructive on hover.
                   </p>
                   <Skeleton className="h-3 w-5/6" />
                   <Skeleton className="h-3 w-2/3" />

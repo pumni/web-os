@@ -14,11 +14,10 @@ hard rules and completion checklist stay in `SKILL.md`.
 | `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
 | `border` / `input` / `field` / `ring` | Hairlines, fields, input backdrops, focus ring |
-| `glass-bg` / `glass-border` / `glass-edge` / `glass-highlight` / `glass-scrim` / `glass-blur` | Translucent glass surfaces |
+| `glass-bg` / `glass-border` / `glass-rim-top` / `glass-rim-bottom` / `glass-scrim` / `glass-blur` | Translucent engineered-glass surfaces. Rim pair = inset box-shadows (NOT APCA-gated); vibrancy is the single `--glass-saturate` knob. |
 | `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) |
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
-| `window-control-*` | Window traffic-light controls |
 | `chart-1` ... `chart-5` | Data-visualization series colors |
 
 Primitive color variables (`--indigo-*`, `--violet-*`, `--neutral-*`, status
@@ -28,8 +27,8 @@ scales, and raw `oklch(...)`) are restricted to token/theme files.
 
 | Role | How to build it | Use for |
 | --- | --- | --- |
-| Floating glass | `GlassSurface variant="panel\|bar\|window\|titlebar"` or the matching `glass-*` utility | Floating layers: dialogs, sheets, popovers, command palette, toast, topbar, dock, sidebar rail, OS windows, pills/overlays |
-| Solid card | `<Card>` / `variant="solid"` -> `border bg-card shadow-sm rounded-xl` | Primary content surfaces |
+| Floating glass | `GlassSurface variant="panel\|bar\|window\|titlebar"` or the matching `glass-*` utility | Floating layers: dialogs, sheets, popovers, command palette, toast, topbar, dock, sidebar rail, OS windows, pills/overlays. Engineered glass: thin neutral fill + bright-top/dark-bottom rim pair, tokenized `--glass-saturate`, directional `--shadow-glass`. |
+| Solid card | `<Card>` / `variant="solid"` -> `border bg-card surface-raised rounded-xl` | Primary content surfaces. `surface-raised` = `--shadow-card-raised` + `--card-rim-top` lit edge (NOT flat). |
 | Inset well | `<Card variant="inset">` or `bg-muted border border-border` | Nested wells inside cards: stat tiles, list rows, scroll wells |
 | Control fill | `bg-muted` plus `motion-safe:hover:bg-muted/80` | Small inline controls: tabs, chips, code pills |
 | Status tint | `bg-{destructive\|warning\|success\|primary}/10 border-{...}/20 text-{...}` | Inline status chips/banners |

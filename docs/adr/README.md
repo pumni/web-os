@@ -92,3 +92,9 @@ link still fails the gate.
   added a vendor-neutral, no-op observability seam fed from the machine's
   transitions; declined XState and a direct vendor SDK / `@pumni/observability`
   split as premature.
+- `0012-engineered-glass-surface-language.md` — moved the `@pumni/ui` glass
+  identity from iOS frosted vibrancy to engineered dark-glass (thin neutral
+  fill + bright-top/dark-bottom rim pair + tokenized `--glass-saturate` +
+  directional shadow), gave solid cards real elevation (`surface-raised`), and
+  de-Appled the OS window chrome (neutral controls); kept the OS shell
+  presentational and the APCA gate authoritative.

@@ -47,7 +47,7 @@ surface).
 | `rounded-[14px]`, `rounded-2xl` everywhere | Named radius utilities off `--radius-base` | One personalizable knob, not magic px |
 | `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-(--duration-base)` | Brand curves + owned timing |
 | Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
-| Glass on hero / page backgrounds | Glass only on floating layers; opaque shell | `backdrop-filter` is GPU-heavy |
+| Glass on hero / page backgrounds | Glass only on floating layers; opaque shell + raised solid cards | `backdrop-filter` is GPU-heavy; engineered glass uses a rim pair, not opacity |
 | Eyeballing contrast on glass/accents | Trust gated tokens; verify APCA Lc 60 / Lc 25 | `glass-contrast` test owns the cascade |
 | `backdrop-blur-md` | Glass utility / `GlassSurface` | Reduced-transparency and performance fallbacks |
 | `bg-card/40`, `border-border/20` | Solid surface tokens: opaque, `border-border` | Surfaces are opaque in the unified system |
@@ -71,10 +71,23 @@ ContextMenu, Command palette, Toast, Topbar, Dock, Sidebar rail, OS
 `Window`/titlebar, and small floating pills/overlays. Large backgrounds and flat
 shell surfaces stay opaque.
 
+**Surface identity = engineered dark-glass (ADR-0012).** A glass surface is a
+thin NEUTRAL fill (`--glass-bg`, no brand tint) tuned to the APCA gate edge,
+with a **bright top rim + dark bottom rim** (`--glass-rim-top` /
+`--glass-rim-bottom`, applied as inset box-shadows in the `glass-*` utilities)
+instead of a single hairline + a skeuomorphic top sheen. Float depth is the
+directional `--shadow-glass`. The one vibrancy knob is `--glass-saturate`
+(≈1.05 — no `saturate(1.3)` vibrancy pump); the `glass-saturate.test.ts` guard
+locks it. Solid cards are NOT flat — they carry real elevation via the
+`surface-raised` utility (`--shadow-card-raised` + `--card-rim-top`), so glass
+is used only where it earns its cost. The OS `Window`/Dock are presentational
+chrome (neutral window controls, no macOS traffic lights).
+
 Use the closed set from the skill: floating glass, solid card, inset well,
 control fill, status tint. APCA contrast is gated at Lc 60 text / Lc 25 UI in
 `apps/web/src/test/design-system/glass-contrast.test.ts`; do not add a WCAG 2.x
-ratio gate.
+ratio gate. The rim tokens are specular (inset shadows) and are NOT subject to
+the APCA gate — tune `--glass-bg` / `--glass-border`, never the thresholds.
 
 **Hard rules:**
 
