@@ -19,9 +19,7 @@ describe('useRoomMembership', () => {
   it('joins the room and refetches member-gated data before marking membership ready', async () => {
     const queryClient = new QueryClient();
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries').mockResolvedValue(undefined);
-    const fetchMock = vi
-      .spyOn(globalThis, 'fetch')
-      .mockResolvedValue({ ok: true } as Response);
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({ ok: true } as Response);
 
     const { result } = renderHook(() => useRoomMembership('room-1', queryClient));
 

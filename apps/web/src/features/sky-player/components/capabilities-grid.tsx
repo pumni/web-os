@@ -46,14 +46,11 @@ function CapabilityCard({
 
           <div className="min-w-0 space-y-2">
             <CardTitle
-              className={cn(
-                'font-semibold tracking-tight',
-                isFeatured ? 'text-xl' : 'text-base',
-              )}
+              className={cn('font-semibold tracking-tight', isFeatured ? 'text-xl' : 'text-base')}
             >
               {cap.title}
             </CardTitle>
-            <CardDescription className="type-body text-muted-foreground leading-relaxed">
+            <CardDescription className="type-body leading-relaxed text-muted-foreground">
               {cap.description}
             </CardDescription>
 
@@ -62,7 +59,7 @@ function CapabilityCard({
                 <span className="font-mono text-xs text-muted-foreground">{'> '}</span>
                 <span className="font-mono text-xs text-foreground">
                   dawn sky cotl
-                  <span className="motion-safe:animate-pulse text-primary">_</span>
+                  <span className="text-primary motion-safe:animate-pulse">_</span>
                 </span>
               </div>
             )}

@@ -129,14 +129,14 @@ function AvatarUpload({
         <div
           className={cn(
             'group relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-border bg-muted transition-all duration-200 hover:opacity-90',
-            isDragging && 'border-primary bg-primary/10 ring-2 ring-primary/20 scale-105',
+            isDragging && 'scale-105 border-primary bg-primary/10 ring-2 ring-primary/20',
           )}
           onClick={onChangeClick}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          <Avatar className="h-full w-full select-none rounded-full">
+          <Avatar className="h-full w-full rounded-full select-none">
             <AvatarImage
               src={previewUrl || undefined}
               alt={fullName || 'User'}

@@ -66,9 +66,9 @@ export function SideDock({
   };
 
   return (
-    <Card variant="glass" className="h-full flex flex-col overflow-hidden select-none p-0">
+    <Card variant="glass" className="flex h-full flex-col overflow-hidden p-0 select-none">
       <div className="flex h-full min-h-0 flex-1 flex-col p-4">
-        <Tabs defaultValue="playlist" className="w-full flex-1 flex flex-col h-full min-h-0">
+        <Tabs defaultValue="playlist" className="flex h-full min-h-0 w-full flex-1 flex-col">
           <TabsList className="grid h-9 shrink-0 grid-cols-3 gap-0 border-b border-border bg-transparent p-0 text-muted-foreground">
             <TabsTrigger
               value="playlist"
@@ -90,12 +90,12 @@ export function SideDock({
             >
               <Users className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Người</span>
-              <span className="tabular-nums text-[11px] font-semibold">{participants.length}</span>
+              <span className="text-[11px] font-semibold tabular-nums">{participants.length}</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Playlist Tab */}
-          <TabsContent value="playlist" className="flex-1 mt-3 focus-visible:outline-none">
+          <TabsContent value="playlist" className="mt-3 flex-1 focus-visible:outline-none">
             <PlaylistPanel
               roomId={roomId}
               items={queueItems}
@@ -110,7 +110,7 @@ export function SideDock({
           {/* Chat Tab */}
           <TabsContent
             value="chat"
-            className="flex-1 mt-3 focus-visible:outline-none flex flex-col min-h-0"
+            className="mt-3 flex min-h-0 flex-1 flex-col focus-visible:outline-none"
           >
             <ChatPanel
               messages={messages}
@@ -125,7 +125,7 @@ export function SideDock({
           {/* Participants Tab */}
           <TabsContent
             value="participants"
-            className="flex-1 mt-3 flex flex-col gap-3 focus-visible:outline-none overflow-hidden min-h-0"
+            className="mt-3 flex min-h-0 flex-1 flex-col gap-3 overflow-hidden focus-visible:outline-none"
           >
             <ParticipantRail
               participants={participants}

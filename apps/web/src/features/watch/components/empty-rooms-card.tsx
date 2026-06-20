@@ -24,8 +24,8 @@ export function EmptyRoomsCard() {
         <div className="w-full max-w-sm space-y-1">
           <h3 className="text-lg font-semibold text-foreground">No watch rooms yet</h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            Start a synchronized session and invite friends — your recent rooms show up here so
-            you can pick up where you left off.
+            Start a synchronized session and invite friends — your recent rooms show up here so you
+            can pick up where you left off.
           </p>
         </div>
 

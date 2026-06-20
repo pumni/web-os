@@ -3,14 +3,7 @@
 import * as React from 'react';
 import { Plus, Minus } from 'lucide-react';
 
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  cn,
-  Card,
-  CardContent,
-} from '@pumni/ui';
+import { AnimatePresence, motion, useReducedMotion, cn, Card, CardContent } from '@pumni/ui';
 
 import { FAQ_ITEMS, type FaqItem as FaqItemType } from '../content';
 
@@ -38,9 +31,7 @@ function FaqCard({
   );
   const initial = shouldReduce ? false : { height: 0, opacity: 0 };
   const exit = shouldReduce ? undefined : { height: 0, opacity: 0 };
-  const transition = shouldReduce
-    ? { duration: 0 }
-    : { duration: 0.2, ease: 'easeOut' as const };
+  const transition = shouldReduce ? { duration: 0 } : { duration: 0.2, ease: 'easeOut' as const };
 
   return (
     <Card key={faq.question} className={cardClass}>
@@ -48,9 +39,9 @@ function FaqCard({
         type="button"
         onClick={() => onToggle(idx)}
         aria-expanded={isOpen}
-        className="flex w-full items-start justify-between gap-4 px-6 py-4 text-left transition-colors hover:bg-muted/50 cursor-pointer focus-visible:outline-ring"
+        className="flex w-full cursor-pointer items-start justify-between gap-4 px-6 py-4 text-left transition-colors hover:bg-muted/50 focus-visible:outline-ring"
       >
-        <div className="flex items-start gap-3 min-w-0">
+        <div className="flex min-w-0 items-start gap-3">
           <span className={badgeClass}>{idx + 1}</span>
           <span className="type-label font-semibold text-foreground">{faq.question}</span>
         </div>
@@ -69,8 +60,8 @@ function FaqCard({
             transition={transition}
             className="overflow-hidden"
           >
-            <CardContent className="border-t border-border pb-5 pt-4">
-              <p className="type-body ps-8 text-muted-foreground leading-relaxed">{faq.answer}</p>
+            <CardContent className="border-t border-border pt-4 pb-5">
+              <p className="ps-8 type-body leading-relaxed text-muted-foreground">{faq.answer}</p>
             </CardContent>
           </motion.div>
         ) : null}

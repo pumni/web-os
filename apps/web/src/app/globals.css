@@ -5,7 +5,7 @@
    sibling workspace package, so its component class names (glass-panel, Card
    layout, dropdown/search animations, …) must be registered explicitly or they
    get purged and those components render unstyled. */
-@source "../../../../packages/ui/src";
+@source '../../../../packages/ui/src';
 
 /* Pumni OS design system — 3-tier tokens + shared surface utilities (see docs/conventions/design-system.md) */
 @import '@pumni/ui/styles/tokens.css';
@@ -70,7 +70,9 @@
   position: absolute;
   inset: -2px;
   border-radius: inherit;
-  box-shadow: 0 0 12px var(--color-primary), 0 0 24px var(--color-primary);
+  box-shadow:
+    0 0 12px var(--color-primary),
+    0 0 24px var(--color-primary);
   animation: note-hit-pulse 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   pointer-events: none;
 }

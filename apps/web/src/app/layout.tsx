@@ -49,7 +49,7 @@ export default function RootLayout({
     >
       <body
         suppressHydrationWarning
-        className="min-h-full flex flex-col bg-background text-foreground"
+        className="flex min-h-full flex-col bg-background text-foreground"
       >
         {/* Swallow Vidstack's benign "provider destroyed" promise rejection (fired
             when the media provider is torn down mid-load: React StrictMode

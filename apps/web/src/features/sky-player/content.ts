@@ -1,10 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import {
-  Search,
-  Command,
-  SlidersHorizontal,
-  FolderOpen,
-} from 'lucide-react';
+import { Search, Command, SlidersHorizontal, FolderOpen } from 'lucide-react';
 
 export const SKY_PLAYER_LINKS = {
   repo: 'https://github.com/pumni/Sky-Player',
@@ -112,7 +107,11 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = [
     id: 'playback',
     label: 'Playback',
     shortcuts: [
-      { keys: ['d'], label: 'Dry-run', description: 'Simulate playback without sending keypresses.' },
+      {
+        keys: ['d'],
+        label: 'Dry-run',
+        description: 'Simulate playback without sending keypresses.',
+      },
       { keys: ['h'], label: 'HUD detail', description: 'Toggle on-screen playback HUD.' },
       { keys: ['F3'], label: 'Telemetry', description: 'Show or hide timing telemetry.' },
     ],
@@ -166,11 +165,11 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     question: 'What are timing profiles and dry-run for?',
     answer:
-      'Timing profiles adjust how keypresses are spaced to match in-game latency. Dry-run lets you preview a song\'s timing and HUD output without sending actual keystrokes — useful for calibration before a live performance.',
+      "Timing profiles adjust how keypresses are spaced to match in-game latency. Dry-run lets you preview a song's timing and HUD output without sending actual keystrokes — useful for calibration before a live performance.",
   },
   {
     question: 'Could this violate the game Terms of Service?',
     answer:
-      'Automatically playing music sheets or using simulated keystrokes might violate Thatgamecompany\'s Terms of Service. Review the official Sky: Children of the Light rules and use this tool responsibly and at your own risk.',
+      "Automatically playing music sheets or using simulated keystrokes might violate Thatgamecompany's Terms of Service. Review the official Sky: Children of the Light rules and use this tool responsibly and at your own risk.",
   },
 ];

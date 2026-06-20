@@ -135,8 +135,7 @@ export function useHostAnchorEmitter({
     if (isHost) broadcastAnchor?.(nextAnchor);
 
     const isTransportEdge =
-      options?.overridePlaying !== undefined ||
-      nextAnchor.isPlaying !== prevAnchor.isPlaying;
+      options?.overridePlaying !== undefined || nextAnchor.isPlaying !== prevAnchor.isPlaying;
 
     if (isTransportEdge) {
       flushPersist(); // Clear any pending timers and flush previous anchor if any
@@ -148,4 +147,3 @@ export function useHostAnchorEmitter({
 
   return emitAnchor;
 }
-

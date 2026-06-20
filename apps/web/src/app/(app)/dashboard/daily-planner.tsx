@@ -74,7 +74,9 @@ export function DailyPlanner() {
   };
 
   const toggleTask = (id: string) => {
-    saveTasks(tasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)));
+    saveTasks(
+      tasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)),
+    );
   };
 
   const deleteTask = (id: string) => {
@@ -83,7 +85,7 @@ export function DailyPlanner() {
 
   if (!mounted) {
     return (
-      <div className="flex h-full flex-col justify-between gap-4 animate-pulse">
+      <div className="flex h-full animate-pulse flex-col justify-between gap-4">
         <div className="h-5 w-40 rounded-md bg-muted" />
         <div className="space-y-2">
           <div className="h-10 rounded-md bg-muted" />
@@ -102,7 +104,7 @@ export function DailyPlanner() {
     <div className="flex h-full flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="type-caption font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="type-caption font-semibold tracking-wider text-muted-foreground uppercase">
             Progress
           </span>
           <span
@@ -156,7 +158,7 @@ export function DailyPlanner() {
                       : 'border-input bg-background group-hover:border-primary/60',
                   )}
                 >
-                  {task.completed ? <Check className="size-3 stroke-[3]" /> : null}
+                  {task.completed ? <Check className="size-3 stroke-3" /> : null}
                 </span>
                 <span
                   className={cn(

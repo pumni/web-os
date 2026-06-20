@@ -28,13 +28,8 @@ function createInitialState(roomId: string): InternalRoomMembershipState {
  * Registers the current user as a room member, then refetches member-gated
  * room data. Queue reads/writes depend on this membership row passing RLS.
  */
-export function useRoomMembership(
-  roomId: string,
-  queryClient: QueryClient,
-): RoomMembershipState {
-  const [state, setState] = useState<InternalRoomMembershipState>(() =>
-    createInitialState(roomId),
-  );
+export function useRoomMembership(roomId: string, queryClient: QueryClient): RoomMembershipState {
+  const [state, setState] = useState<InternalRoomMembershipState>(() => createInitialState(roomId));
 
   useEffect(() => {
     let cancelled = false;

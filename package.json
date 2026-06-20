@@ -13,7 +13,9 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "format": "turbo format",
-    "ai:check": "bun scripts/check-ai-context.mjs",
+    "ai:check": "bun scripts/check-ai-context.mjs && bun run ai:tw",
+    "ai:tw": "tailwind-lint --config apps/web/src/app/globals.css \"apps/web/**/*.{ts,tsx}\" \"packages/ui/src/**/*.{ts,tsx}\"",
+    "ai:tw:fix": "tailwind-lint --config apps/web/src/app/globals.css \"apps/web/**/*.{ts,tsx}\" \"packages/ui/src/**/*.{ts,tsx}\" --fix",
     "ai:secrets": "bun scripts/check-secrets.mjs",
     "ai:review:static": "bun scripts/check-review-gate-rules.mjs",
     "ai:eval": "bun scripts/run-ai-evals.mjs",
@@ -27,6 +29,9 @@
   },
   "devDependencies": {
     "prettier": "^3.8.4",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "tailwind-lint": "^0.12.0",
+    "tailwindcss": "^4",
     "turbo": "2.9.18",
     "typescript": "^5"
   },

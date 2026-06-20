@@ -55,46 +55,38 @@ function TasksMetricContent() {
     serialized: string;
   } | null>(null);
 
-  const getSnapshot = React.useCallback(
-    (): StoredTask[] => {
-      return cacheRef.current
-        ? cacheRef.current.tasks
-        : (FROZEN_EMPTY_TASKS as StoredTask[]);
-    },
-    []
-  );
+  const getSnapshot = React.useCallback((): StoredTask[] => {
+    return cacheRef.current ? cacheRef.current.tasks : (FROZEN_EMPTY_TASKS as StoredTask[]);
+  }, []);
 
-  const subscribe = React.useCallback(
-    (notify: () => void): (() => void) => {
-      if (typeof window === 'undefined') return () => {};
-      const sync = () => {
-        const fresh = readTasksFromStorage();
-        const serialized = JSON.stringify(fresh);
-        const previous = cacheRef.current;
-        if (previous === null || previous.serialized !== serialized) {
-          cacheRef.current = { tasks: fresh, serialized };
-          notify();
-        } else {
-          cacheRef.current = { tasks: fresh, serialized };
-        }
-      };
-      sync();
-      window.addEventListener('storage', sync);
-      window.addEventListener('focus', sync);
-      window.addEventListener(TASKS_UPDATED_EVENT, sync);
-      return () => {
-        window.removeEventListener('storage', sync);
-        window.removeEventListener('focus', sync);
-        window.removeEventListener(TASKS_UPDATED_EVENT, sync);
-      };
-    },
-    []
-  );
+  const subscribe = React.useCallback((notify: () => void): (() => void) => {
+    if (typeof window === 'undefined') return () => {};
+    const sync = () => {
+      const fresh = readTasksFromStorage();
+      const serialized = JSON.stringify(fresh);
+      const previous = cacheRef.current;
+      if (previous === null || previous.serialized !== serialized) {
+        cacheRef.current = { tasks: fresh, serialized };
+        notify();
+      } else {
+        cacheRef.current = { tasks: fresh, serialized };
+      }
+    };
+    sync();
+    window.addEventListener('storage', sync);
+    window.addEventListener('focus', sync);
+    window.addEventListener(TASKS_UPDATED_EVENT, sync);
+    return () => {
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('focus', sync);
+      window.removeEventListener(TASKS_UPDATED_EVENT, sync);
+    };
+  }, []);
 
   const tasks = React.useSyncExternalStore(
     subscribe,
     getSnapshot,
-    () => FROZEN_EMPTY_TASKS as StoredTask[]
+    () => FROZEN_EMPTY_TASKS as StoredTask[],
   );
 
   const completed = tasks.filter((t) => t.completed).length;
@@ -102,12 +94,7 @@ function TasksMetricContent() {
   const allDone = total > 0 && completed === total;
 
   const titleValue = total === 0 ? '0/0' : `${completed}/${total}`;
-  const description =
-    total === 0
-      ? 'No tasks yet'
-      : allDone
-        ? 'All done'
-        : "Today's tasks";
+  const description = total === 0 ? 'No tasks yet' : allDone ? 'All done' : "Today's tasks";
   const ariaTemplate = `${completed} of ${total} tasks completed`;
 
   return (
@@ -122,10 +109,10 @@ function TasksMetricContent() {
       <div className="mt-auto flex items-center gap-2">
         <span
           className={cn(
-            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold border',
+            'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold',
             allDone
-              ? 'bg-success/10 text-success border-success/20'
-              : 'bg-primary/10 text-primary border-primary/20'
+              ? 'border-success/20 bg-success/10 text-success'
+              : 'border-primary/20 bg-primary/10 text-primary',
           )}
         >
           {allDone ? 'Caught up' : 'Keep going'}
@@ -163,7 +150,9 @@ function PersonalizeMetric() {
     rose: 'RO',
   };
   const titleValue = mounted ? (swatch[accentValue] ?? 'CY') : '--';
-  const accentLabel = mounted ? (accentValue.charAt(0).toUpperCase() + accentValue.slice(1)) : 'Loading';
+  const accentLabel = mounted
+    ? accentValue.charAt(0).toUpperCase() + accentValue.slice(1)
+    : 'Loading';
   const description = mounted ? `${accentLabel} accent` : 'Loading accent...';
   const ariaLabel = mounted ? `Current theme accent: ${accentLabel}` : 'Loading accent';
 
@@ -177,7 +166,7 @@ function PersonalizeMetric() {
       ariaLabel={ariaLabel}
     >
       <div className="mt-auto flex items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground border border-border">
+        <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
           Theme
         </span>
         <Button asChild variant="ghost" size="xs" className="gap-1 px-2 text-primary">
@@ -190,7 +179,6 @@ function PersonalizeMetric() {
     </BentoGridItem>
   );
 }
-
 
 export function DashboardBento({ recentRooms }: DashboardBentoProps) {
   const mostRecent = recentRooms[0];
@@ -213,7 +201,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
       >
         <div className="mt-2 flex flex-1 flex-col gap-3 rounded-lg border bg-muted p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               <span className="relative flex size-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-primary" />
@@ -246,7 +234,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
               placeholder="Enter a room code (e.g. ABCD)"
               maxLength={12}
               aria-label="Room code to join"
-              className="flex-1 font-mono uppercase tracking-wider"
+              className="flex-1 font-mono tracking-wider uppercase"
               autoCapitalize="characters"
               spellCheck={false}
             />
@@ -286,7 +274,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
                 {mostRecent.code}
               </span>
               {mostRecent.is_playing ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-semibold text-success border border-success/20">
+                <span className="inline-flex items-center gap-1 rounded-full border border-success/20 bg-success/10 px-2 py-0.5 text-xs font-semibold text-success">
                   <span className="relative flex size-1.5">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
                     <span className="relative inline-flex size-1.5 rounded-full bg-success" />
@@ -294,7 +282,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
                   Live now
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded-full bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground border border-border">
+                <span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground">
                   <Pause className="size-3" />
                   Idle
                 </span>
@@ -364,10 +352,10 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
         <div className="mt-auto flex items-center justify-between gap-2">
           <span
             className={cn(
-              'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold border',
+              'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold',
               totalRooms > 0
-                ? 'bg-primary/10 text-primary border-primary/20'
-                : 'bg-muted text-muted-foreground border-border'
+                ? 'border-primary/20 bg-primary/10 text-primary'
+                : 'border-border bg-muted text-muted-foreground',
             )}
           >
             {totalRooms > 0 ? 'In your library' : 'Start one today'}
@@ -393,18 +381,13 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
         <div className="mt-auto flex items-center gap-2">
           <span
             className={cn(
-              'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold border',
+              'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold',
               playingCount > 0
-                ? 'bg-success/10 text-success border-success/20'
-                : 'bg-muted text-muted-foreground border-border'
+                ? 'border-success/20 bg-success/10 text-success'
+                : 'border-border bg-muted text-muted-foreground',
             )}
           >
-            <span
-              className={cn(
-                'relative flex size-1.5',
-                playingCount === 0 && 'hidden'
-              )}
-            >
+            <span className={cn('relative flex size-1.5', playingCount === 0 && 'hidden')}>
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
               <span className="relative inline-flex size-1.5 rounded-full bg-success" />
             </span>

@@ -121,7 +121,7 @@ export function SyncPlayer({
          absolute black (no semantic token covers it) and pumniNoRawColor
          correctly flags Tailwind `bg-black` in className. */
       style={{ backgroundColor: '#000' }}
-      className="relative w-full aspect-video overflow-hidden rounded-xl border border-border shadow-sm"
+      className="relative aspect-video w-full overflow-hidden rounded-xl border border-border shadow-sm"
     >
       <MediaPlayer
         ref={playerRef}
@@ -138,9 +138,9 @@ export function SyncPlayer({
         onSeeked={onSeeked}
         onRateChange={onRateChange}
         onEnded={onEnded}
-        className="w-full h-full"
+        className="h-full w-full"
       >
-        <MediaProvider className="w-full h-full" />
+        <MediaProvider className="h-full w-full" />
         <PreferHighestQuality enabled={sourceType === 'youtube'} />
         <PlayerVolumePreferenceSync
           playerRef={playerRef}

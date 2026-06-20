@@ -309,8 +309,18 @@ describe('Watch synced playback math & helpers', () => {
   });
 
   describe('matchTransportState', () => {
-    const pausedAnchor = { isPlaying: false, anchorPosition: 0, anchorServerTs: 0, playbackRate: 1 };
-    const playingAnchor = { isPlaying: true, anchorPosition: 0, anchorServerTs: 0, playbackRate: 1 };
+    const pausedAnchor = {
+      isPlaying: false,
+      anchorPosition: 0,
+      anchorServerTs: 0,
+      playbackRate: 1,
+    };
+    const playingAnchor = {
+      isPlaying: true,
+      anchorPosition: 0,
+      anchorServerTs: 0,
+      playbackRate: 1,
+    };
 
     it('calls tryPlay when the anchor is playing but the player is paused', () => {
       const tryPlay = vi.fn();

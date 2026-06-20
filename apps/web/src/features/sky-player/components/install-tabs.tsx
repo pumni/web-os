@@ -28,10 +28,7 @@ function InstallStep({
   return (
     <li className="relative flex gap-4 pb-5 last:pb-0">
       {index < total - 1 ? (
-        <span
-          aria-hidden
-          className="absolute start-4 top-8 bottom-0 w-px bg-border"
-        />
+        <span aria-hidden className="absolute inset-s-4 top-8 bottom-0 w-px bg-border" />
       ) : null}
       <div className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-xs font-bold text-primary">
         {index + 1}
@@ -86,18 +83,18 @@ function SourcePanel() {
 export function InstallTabs() {
   return (
     <Window title="Sky Player — Installation" className="w-full shadow-raised">
-      <Tabs defaultValue="release" className="w-full flex flex-col gap-2">
-        <div className="border-b border-border p-3 -mx-4 -mt-4 bg-muted/10">
+      <Tabs defaultValue="release" className="flex w-full flex-col gap-2">
+        <div className="-mx-4 -mt-4 border-b border-border bg-muted/10 p-3">
           <TabsList>
             <TabsTrigger value="release">Standalone release</TabsTrigger>
             <TabsTrigger value="source">From source</TabsTrigger>
           </TabsList>
         </div>
 
-        <TabsContent value="release" className="mt-0 min-h-[280px] focus-visible:outline-none">
+        <TabsContent value="release" className="mt-0 min-h-70 focus-visible:outline-none">
           <ReleasePanel />
         </TabsContent>
-        <TabsContent value="source" className="mt-0 min-h-[280px] focus-visible:outline-none">
+        <TabsContent value="source" className="mt-0 min-h-70 focus-visible:outline-none">
           <SourcePanel />
         </TabsContent>
       </Tabs>

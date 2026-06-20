@@ -11,7 +11,7 @@ export default async function WatchLobbyPage() {
   await requireUser();
 
   return (
-    <div className="flex items-center justify-center min-h-[70vh] p-4">
+    <div className="flex min-h-[70vh] items-center justify-center p-4">
       <WatchLobby />
     </div>
   );

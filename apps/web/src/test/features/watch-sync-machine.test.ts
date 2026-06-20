@@ -41,10 +41,10 @@ describe('sync-machine reducer (ADR-0011, behaviour-preserving)', () => {
 
   describe('ROLE_CHANGED', () => {
     it('promoting to host derives "host" status and re-locks follow', () => {
-      const next = syncReducer(
-        follower({ following: false, quality: 'catching-up' }),
-        { type: 'ROLE_CHANGED', isHost: true },
-      );
+      const next = syncReducer(follower({ following: false, quality: 'catching-up' }), {
+        type: 'ROLE_CHANGED',
+        isHost: true,
+      });
       expect(next.state.role).toBe('host');
       expect(next.state.following).toBe(true);
       expect(selectSyncStatus(next.state)).toBe('host');
@@ -233,7 +233,9 @@ describe('syncTelemetryEvents (derived from transitions, low-noise)', () => {
       { name: 'sync.seek', attrs: { drift: 3.14 } },
     ]);
     expect(emit(follower(), { type: 'DRIFT_TICK', action: 'nudge', drift: 1 })).toEqual([]);
-    expect(emit(follower({ following: false }), { type: 'DRIFT_TICK', action: 'seek' })).toEqual([]);
+    expect(emit(follower({ following: false }), { type: 'DRIFT_TICK', action: 'seek' })).toEqual(
+      [],
+    );
     expect(emit(host(), { type: 'DRIFT_TICK', action: 'seek', drift: 5 })).toEqual([]);
   });
 
@@ -264,10 +266,12 @@ describe('syncTelemetryEvents (derived from transitions, low-noise)', () => {
     expect(emit(follower(), { type: 'CHANNEL_STATUS', status: 'disconnected' })).toEqual([
       { name: 'channel.status', attrs: { status: 'disconnected' } },
     ]);
-    expect(emit(follower({ connection: 'connecting' }), {
-      type: 'CHANNEL_STATUS',
-      status: 'connecting',
-    })).toEqual([]);
+    expect(
+      emit(follower({ connection: 'connecting' }), {
+        type: 'CHANNEL_STATUS',
+        status: 'connecting',
+      }),
+    ).toEqual([]);
   });
 });
 

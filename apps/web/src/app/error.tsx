@@ -17,7 +17,7 @@ export default function Error({
   return (
     <div className="flex h-[50vh] flex-col items-center justify-center space-y-4 text-center">
       <h2 className="text-xl font-bold text-destructive">Something went wrong!</h2>
-      <p className="text-sm text-muted-foreground max-w-sm">
+      <p className="max-w-sm text-sm text-muted-foreground">
         An error occurred while loading this page: {error.message || 'Unknown error'}
       </p>
       <Button onClick={() => reset()} variant="outline">

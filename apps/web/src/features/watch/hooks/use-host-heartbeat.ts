@@ -15,7 +15,7 @@ export function useHostHeartbeat(roomId: string, userId: string, isHost: boolean
         .from('watch_room_heartbeats')
         .upsert(
           { room_id: roomId, host_id: userId, heartbeat_at: new Date().toISOString() },
-          { onConflict: 'room_id' }
+          { onConflict: 'room_id' },
         );
     };
     beat();
@@ -23,4 +23,3 @@ export function useHostHeartbeat(roomId: string, userId: string, isHost: boolean
     return () => clearInterval(interval);
   }, [roomId, userId, isHost]);
 }
-

@@ -39,11 +39,7 @@ import { setRoomSource, leaveRoom } from '../actions';
 import { useRoomQuery } from '../hooks/use-room-query';
 import { useQueueQuery, useAdvanceQueue } from '../hooks/use-room-queue';
 import { watchKeys } from '../query-keys';
-import type {
-  Room,
-  QueueItem,
-  RoomBroadcastEvent,
-} from '../types';
+import type { Room, QueueItem, RoomBroadcastEvent } from '../types';
 import { TapToPlayOverlay } from './tap-to-play-overlay';
 import { HostClaimBanner } from './host-claim-banner';
 import { useHostHeartbeat } from '../hooks/use-host-heartbeat';
@@ -139,9 +135,7 @@ function SourceChangeDialog({
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="new-source-ref" className="type-label">
-              {newSourceType === 'youtube'
-                ? 'Link hoặc ID video YouTube'
-                : 'Link video trực tiếp'}
+              {newSourceType === 'youtube' ? 'Link hoặc ID video YouTube' : 'Link video trực tiếp'}
             </Label>
             <Input
               id="new-source-ref"
@@ -297,12 +291,12 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   if (!clockReady) {
     return (
-      <div className="flex flex-1 items-center justify-center p-4 min-h-0">
+      <div className="flex min-h-0 flex-1 items-center justify-center p-4">
         <GlassSurface
           variant="panel"
-          className="flex flex-col items-center justify-center gap-4 px-8 py-10 rounded-xl max-w-xs w-full select-none"
+          className="flex w-full max-w-xs flex-col items-center justify-center gap-4 rounded-xl px-8 py-10 select-none"
         >
-          <div className="size-10 motion-safe:animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <div className="size-10 rounded-full border-2 border-primary border-t-transparent motion-safe:animate-spin" />
           <span className="type-caption text-muted-foreground">Đang đồng bộ với máy chủ...</span>
         </GlassSurface>
       </div>
@@ -310,11 +304,11 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   }
 
   return (
-    <div className="w-full flex-1 flex flex-col gap-3 p-4 min-h-0 select-none">
+    <div className="flex min-h-0 w-full flex-1 flex-col gap-3 p-4 select-none">
       {/* Top Header Bar */}
       <GlassSurface
         variant="bar"
-        className="flex items-center justify-between w-full select-none shrink-0 px-3 py-2 rounded-xl"
+        className="flex w-full shrink-0 items-center justify-between rounded-xl px-3 py-2 select-none"
       >
         {/* Left: Back + Title + Status */}
         <div className="flex items-center gap-2">
@@ -328,14 +322,14 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             <ArrowLeft className="size-4" />
           </Button>
 
-          <div className="flex items-center gap-2 min-w-0">
-            <h2 className="type-heading text-sm truncate">Phòng xem chung</h2>
+          <div className="flex min-w-0 items-center gap-2">
+            <h2 className="truncate type-heading text-sm">Phòng xem chung</h2>
             <SyncIndicator status={syncStatus} />
             {channelStatus !== 'connected' && (
               <span
                 role="status"
                 aria-live="polite"
-                className="hidden sm:inline-flex items-center rounded-sm bg-destructive/10 border border-destructive/20 px-2 py-0.5 text-xs font-medium text-destructive motion-safe:animate-pulse"
+                className="hidden items-center rounded-sm border border-destructive/20 bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive motion-safe:animate-pulse sm:inline-flex"
               >
                 Mất kết nối
               </span>
@@ -344,14 +338,14 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         </div>
 
         {/* Right: Room code chip + actions */}
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex shrink-0 items-center gap-1">
           {/* Room code — click to copy */}
           <Button
             variant="ghost"
             size="sm"
             onClick={handleCopyCode}
             aria-label="Sao chép mã phòng"
-            className="hidden sm:inline-flex items-center gap-1 h-7 px-2.5 rounded-md border border-border bg-muted font-mono text-xs font-bold tracking-widest text-foreground motion-safe:hover:bg-muted/80 transition-colors duration-(--duration-fast)"
+            className="hidden h-7 items-center gap-1 rounded-md border border-border bg-muted px-2.5 font-mono text-xs font-bold tracking-widest text-foreground transition-colors duration-(--duration-fast) motion-safe:hover:bg-muted/80 sm:inline-flex"
           >
             <Hash className="size-3 text-muted-foreground" />
             <span>{currentRoom.code}</span>
@@ -373,7 +367,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             size="icon"
             onClick={() => setIsDockOpen((prev) => !prev)}
             aria-label={isDockOpen ? 'Ẩn bảng điều khiển' : 'Hiện bảng điều khiển'}
-            className="hidden lg:flex size-8"
+            className="hidden size-8 lg:flex"
           >
             {isDockOpen ? (
               <PanelRightClose className="size-4" />
@@ -387,7 +381,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             variant="ghost"
             size="icon"
             onClick={() => setIsSheetOpen(true)}
-            className="lg:hidden size-8"
+            className="size-8 lg:hidden"
             aria-label="Hàng chờ và Người xem"
           >
             <ListVideo className="size-4" />
@@ -403,9 +397,9 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
       )}
 
       {/* Main Zones Layout */}
-      <div className="flex flex-col lg:flex-row gap-4 flex-1 items-stretch min-h-0">
+      <div className="flex min-h-0 flex-1 flex-col items-stretch gap-4 lg:flex-row">
         {/* Left: Stage (Video Player) */}
-        <div className="flex-1 flex flex-col justify-center min-w-0">
+        <div className="flex min-w-0 flex-1 flex-col justify-center">
           <SyncPlayer
             sourceType={currentRoom.source_type}
             sourceRef={currentRoom.source_ref}
@@ -434,11 +428,11 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         {/* Right: Side Dock — collapsible desktop panel */}
         <div
           className={cn(
-            'hidden lg:block shrink-0 min-h-0 overflow-hidden transition-[width,opacity] duration-(--duration-base) ease-fluid',
+            'hidden min-h-0 shrink-0 overflow-hidden transition-[width,opacity] duration-(--duration-base) ease-fluid lg:block',
             isDockOpen ? 'w-80 opacity-100' : 'w-0 opacity-0',
           )}
         >
-          <div className="w-80 min-h-0 h-full">
+          <div className="h-full min-h-0 w-80">
             <SideDock
               roomId={currentRoom.id}
               userId={userId}
@@ -463,12 +457,12 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent
           side="right"
-          className="w-full sm:max-w-md p-0 border-l border-border flex flex-col h-full"
+          className="flex h-full w-full flex-col border-l border-border p-0 sm:max-w-md"
         >
-          <SheetHeader className="p-4 border-b border-border shrink-0">
+          <SheetHeader className="shrink-0 border-b border-border p-4">
             <SheetTitle className="type-heading text-sm">Bảng điều khiển</SheetTitle>
           </SheetHeader>
-          <div className="flex-1 overflow-hidden min-h-0 p-2">
+          <div className="min-h-0 flex-1 overflow-hidden p-2">
             <SideDock
               roomId={currentRoom.id}
               userId={userId}

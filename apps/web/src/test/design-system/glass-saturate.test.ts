@@ -18,10 +18,7 @@ import { repoRoot } from './token-test-utils';
  * the regex-over-file pattern used by the other CSS-token guards in this folder.
  */
 describe('glass vibrancy is tokenized', () => {
-  const glassCss = readFileSync(
-    path.join(repoRoot, 'packages/ui/src/styles/glass.css'),
-    'utf8',
-  );
+  const glassCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/glass.css'), 'utf8');
 
   it('exposes the single --glass-saturate knob in tokens.css', () => {
     const tokensCss = readFileSync(

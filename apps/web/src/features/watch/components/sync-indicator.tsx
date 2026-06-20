@@ -33,7 +33,7 @@ export function SyncIndicator({ status }: SyncIndicatorProps) {
       role="status"
       aria-live="polite"
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-sm px-2 py-0.5 type-caption font-medium border select-none transition-colors',
+        'inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 type-caption font-medium transition-colors select-none',
         config.className,
       )}
     >

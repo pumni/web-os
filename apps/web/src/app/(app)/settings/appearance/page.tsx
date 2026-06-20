@@ -134,7 +134,12 @@ export default function AppearanceSettingsPage() {
             </p>
           </div>
 
-          <SegmentedPicker aria-label="Glass level" options={GLASS_LEVELS} value={glass} onChange={setGlass} />
+          <SegmentedPicker
+            aria-label="Glass level"
+            options={GLASS_LEVELS}
+            value={glass}
+            onChange={setGlass}
+          />
         </CardContent>
       </Card>
 
@@ -147,7 +152,12 @@ export default function AppearanceSettingsPage() {
             </p>
           </div>
 
-          <SegmentedPicker aria-label="Density" options={DENSITIES} value={density} onChange={setDensity} />
+          <SegmentedPicker
+            aria-label="Density"
+            options={DENSITIES}
+            value={density}
+            onChange={setDensity}
+          />
         </CardContent>
       </Card>
     </div>

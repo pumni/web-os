@@ -26,7 +26,7 @@ export function AuthShell({ subtitle, title, description, footer, children }: Au
   return (
     <div className="relative flex min-h-screen items-center justify-center p-4 sm:p-6 lg:p-8">
       <DesktopBackground />
-      <div className="relative z-10 w-full max-w-md space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-500">
+      <div className="relative z-10 w-full max-w-md animate-in space-y-6 duration-500 fade-in slide-in-from-bottom-3">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-gradient-brand text-4xl font-bold tracking-tight">Pumni OS</h1>
           <p className="text-sm text-muted-foreground">{subtitle}</p>

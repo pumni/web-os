@@ -19,7 +19,7 @@ export function AddSongsCallout() {
       </div>
 
       {/* Steps List - Vertical Timeline */}
-      <ol className="relative border-s border-border ms-3.5 space-y-6">
+      <ol className="relative ms-3.5 space-y-6 border-s border-border">
         {ADD_SONGS_STEPS.map((step, idx) => {
           const Icon = STEP_ICONS[idx] ?? Download;
           return (
@@ -28,10 +28,10 @@ export function AddSongsCallout() {
                 <Icon className="size-3.5" />
               </span>
               <div className="space-y-1 pt-0.5">
-                <p className="text-xs font-bold uppercase tracking-widest text-primary">
+                <p className="text-xs font-bold tracking-widest text-primary uppercase">
                   Step {idx + 1}
                 </p>
-                <p className="type-label text-foreground leading-relaxed">
+                <p className="type-label leading-relaxed text-foreground">
                   {idx === 0 ? (
                     <>
                       Visit{' '}
@@ -63,13 +63,13 @@ export function AddSongsCallout() {
             <Card
               key={format.ext}
               variant="inset"
-              className="p-3 gap-0 rounded-lg flex flex-col justify-between"
+              className="flex flex-col justify-between gap-0 rounded-lg p-3"
             >
               <div>
-                <code className="inline-block rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-bold text-primary mb-1.5">
+                <code className="mb-1.5 inline-block rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-bold text-primary">
                   {format.ext}
                 </code>
-                <p className="text-xs text-muted-foreground leading-relaxed">{format.note}</p>
+                <p className="text-xs leading-relaxed text-muted-foreground">{format.note}</p>
               </div>
             </Card>
           ))}

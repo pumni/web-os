@@ -79,17 +79,17 @@ function ParticipantRow({
 
   return (
     <motion.div {...(shouldReduceMotion ? {} : recipes.staggerItem)} className={rowClass}>
-      <div className="flex items-center gap-2 min-w-0">
+      <div className="flex min-w-0 items-center gap-2">
         <Avatar className={avatarClass}>
           {profile?.avatar_url && (
             <AvatarImage src={profile.avatar_url} alt={displayName} className="object-cover" />
           )}
           <AvatarFallback className={fallbackClass}>{initials}</AvatarFallback>
         </Avatar>
-        <div className="flex flex-col min-w-0">
+        <div className="flex min-w-0 flex-col">
           <span className="truncate font-medium text-foreground">{label}</span>
           {isHost && (
-            <span className="type-caption flex items-center gap-0.5 mt-0.5 text-primary font-medium">
+            <span className="mt-0.5 flex items-center gap-0.5 type-caption font-medium text-primary">
               <Crown className="size-2.5 fill-current" />
               Chủ phòng
             </span>
@@ -113,7 +113,7 @@ export function ParticipantRail({
   return (
     <motion.div
       {...(shouldReduceMotion ? {} : recipes.staggerContainer)}
-      className="flex flex-col gap-1.5 flex-1 overflow-y-auto min-h-0"
+      className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto"
     >
       {participants.map((p) => {
         const profile = profiles[p.userId];
@@ -137,7 +137,7 @@ export function ParticipantRail({
                 <ContextMenuItem
                   disabled={isPending}
                   onClick={() => onTransferHost(p.userId)}
-                  className="text-xs gap-2"
+                  className="gap-2 text-xs"
                 >
                   <Crown className="size-3.5" />
                   Chuyển quyền chủ phòng

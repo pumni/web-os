@@ -168,10 +168,10 @@ function BentoGridItemContent({
               </div>
             )}
             {title && (
-              <h3 className="type-heading text-foreground break-words">{title}</h3>
+              <h3 className="type-heading text-foreground wrap-break-word">{title}</h3>
             )}
             {description && (
-              <p className="type-label text-muted-foreground break-words">{description}</p>
+              <p className="type-label text-muted-foreground wrap-break-word">{description}</p>
             )}
           </div>
         )}

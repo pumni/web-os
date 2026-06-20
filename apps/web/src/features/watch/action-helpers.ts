@@ -38,17 +38,12 @@ export function sanitizeSourceRef(
  * The host boundary is also enforced by RLS — this is defense-in-depth so we
  * can return friendly Vietnamese error messages before hitting the DB write.
  */
-export async function assertHostOwnership<
-  T extends string = 'host_id',
->(
+export async function assertHostOwnership<T extends string = 'host_id'>(
   supabase: SupabaseClient<Database>,
   roomId: string,
   userId: string,
   columns: readonly T[] = ['host_id' as T],
-): Promise<
-  | { ok: true; room: Record<T, unknown> }
-  | { ok: false; message: string }
-> {
+): Promise<{ ok: true; room: Record<T, unknown> } | { ok: false; message: string }> {
   const { data: room, error } = await supabase
     .from('watch_rooms')
     .select(columns.join(','))

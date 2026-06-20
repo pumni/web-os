@@ -52,9 +52,7 @@ export function PasswordFields({
         </p>
       ) : null}
 
-      <SubmitButton className="w-full">
-        {pending ? pendingText : submitText}
-      </SubmitButton>
+      <SubmitButton className="w-full">{pending ? pendingText : submitText}</SubmitButton>
     </>
   );
 }

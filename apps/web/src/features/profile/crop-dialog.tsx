@@ -98,7 +98,7 @@ export function CropDialog({
               step={0.1}
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="w-full h-1 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+              className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-muted accent-primary"
             />
           </div>
         </div>

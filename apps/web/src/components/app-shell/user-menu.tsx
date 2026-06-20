@@ -74,7 +74,7 @@ export function UserMenu({ user }: UserMenuProps) {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
+            <p className="text-sm leading-none font-medium">
               {user.user_metadata['full_name'] ?? 'User'}
             </p>
             <p className="text-xs leading-none text-muted-foreground">{email}</p>
@@ -100,7 +100,7 @@ export function UserMenu({ user }: UserMenuProps) {
             event.preventDefault();
             void handleSignOut();
           }}
-          className="text-destructive focus:text-destructive-foreground focus:bg-destructive"
+          className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
         >
           <LogOut className="mr-2 h-4 w-4" />
           <span>{isSigningOut ? 'Signing out...' : 'Sign Out'}</span>

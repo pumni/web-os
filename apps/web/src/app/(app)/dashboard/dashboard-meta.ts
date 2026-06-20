@@ -19,7 +19,12 @@ export type QuickAction = Readonly<{
 }>;
 
 export const quickActions: ReadonlyArray<QuickAction> = [
-  { id: 'design-system', label: 'Design System', href: '/design-system' as Route, icon: ComponentIcon },
+  {
+    id: 'design-system',
+    label: 'Design System',
+    href: '/design-system' as Route,
+    icon: ComponentIcon,
+  },
   { id: 'sky-player', label: 'Sky Player', href: '/nextjs-ecosystem' as Route, icon: Music },
   { id: 'profile', label: 'Manage profile', href: '/settings/profile', icon: User },
   { id: 'account', label: 'Account', href: '/settings/account', icon: Settings },

@@ -23,11 +23,7 @@ function getPlaybackSignature(room: Room): string {
   return `${room.is_playing}|${room.anchor_position}|${room.anchor_server_ts}|${room.playback_rate}`;
 }
 
-export function useRoomChannel(
-  room: Room,
-  userId: string,
-  isHost: boolean,
-) {
+export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
   const queryClient = useQueryClient();
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [channelStatus, setChannelStatus] = useState<'connecting' | 'connected' | 'disconnected'>(

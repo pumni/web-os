@@ -8,13 +8,7 @@ type SectionHeaderProps = {
   icon?: LucideIcon;
 };
 
-export function SectionHeader({
-  id,
-  eyebrow,
-  title,
-  description,
-  icon: Icon,
-}: SectionHeaderProps) {
+export function SectionHeader({ id, eyebrow, title, description, icon: Icon }: SectionHeaderProps) {
   return (
     <header id={id} className="space-y-3">
       <div className="flex items-center gap-2">
@@ -28,14 +22,10 @@ export function SectionHeader({
         </span>
       </div>
 
-      <h2 className="type-title text-balance text-foreground">
-        {title}
-      </h2>
+      <h2 className="type-title text-balance text-foreground">{title}</h2>
 
       {description ? (
-        <p className="type-body max-w-2xl text-pretty text-muted-foreground">
-          {description}
-        </p>
+        <p className="max-w-2xl type-body text-pretty text-muted-foreground">{description}</p>
       ) : null}
     </header>
   );

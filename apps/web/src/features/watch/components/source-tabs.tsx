@@ -12,16 +12,12 @@ export function VideoSourceTabs({
   onChange: (val: SourceType) => void;
 }) {
   return (
-    <Tabs
-      value={value}
-      onValueChange={(val) => onChange(val as SourceType)}
-      className="w-full"
-    >
-      <TabsList className="grid grid-cols-2 w-full h-8 p-0.5 bg-muted border border-border rounded-md">
-        <TabsTrigger value="youtube" className="text-xs h-7">
+    <Tabs value={value} onValueChange={(val) => onChange(val as SourceType)} className="w-full">
+      <TabsList className="grid h-8 w-full grid-cols-2 rounded-md border border-border bg-muted p-0.5">
+        <TabsTrigger value="youtube" className="h-7 text-xs">
           YouTube
         </TabsTrigger>
-        <TabsTrigger value="url" className="text-xs h-7">
+        <TabsTrigger value="url" className="h-7 text-xs">
           Direct URL (MP4/HLS)
         </TabsTrigger>
       </TabsList>

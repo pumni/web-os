@@ -1,7 +1,16 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Button, Input, Avatar, AvatarFallback, AvatarImage, Tooltip, TooltipTrigger, TooltipContent } from '@pumni/ui';
+import {
+  Button,
+  Input,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@pumni/ui';
 import { Send, MessageSquare } from 'lucide-react';
 import type { ChatMessage } from '../types';
 import { ReactionBar } from './reaction-bar';
@@ -49,7 +58,7 @@ function MessageAvatar({
       {!isGrouped ? (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Avatar className="size-6 border border-border cursor-pointer">
+            <Avatar className="size-6 cursor-pointer border border-border">
               {avatarUrl && (
                 <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
               )}
@@ -84,17 +93,17 @@ function BubbleContent({
   const radiusClass = getBubbleRadiusClass(isMe, groupPosition);
 
   return (
-    <div className={`flex flex-col gap-0.5 min-w-0 ${isMe ? 'items-end' : 'items-start'}`}>
-      <div className="relative flex items-end max-w-full">
+    <div className={`flex min-w-0 flex-col gap-0.5 ${isMe ? 'items-end' : 'items-start'}`}>
+      <div className="relative flex max-w-full items-end">
         <div
-          className={`max-w-full wrap-break-word px-3 py-2 text-xs shadow-control ${radiusClass} ${
+          className={`max-w-full px-3 py-2 text-xs wrap-break-word shadow-control ${radiusClass} ${
             isMe ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'
           }`}
         >
-          <p className="whitespace-pre-wrap leading-snug select-text">{children}</p>
+          <p className="leading-snug whitespace-pre-wrap select-text">{children}</p>
         </div>
         <span
-          className={`type-caption pointer-events-none absolute top-1/2 hidden -translate-y-1/2 whitespace-nowrap text-muted-foreground opacity-0 transition-opacity duration-(--duration-fast) group-hover:opacity-100 sm:block ${
+          className={`pointer-events-none absolute top-1/2 hidden -translate-y-1/2 type-caption whitespace-nowrap text-muted-foreground opacity-0 transition-opacity duration-(--duration-fast) group-hover:opacity-100 sm:block ${
             isMe ? 'right-full mr-1.5' : 'left-full ml-1.5'
           }`}
         >
@@ -131,7 +140,7 @@ function ChatBubble({ msg, isMe, profile, groupPosition }: ChatBubbleProps) {
   return (
     <div
       className={`group flex gap-1.5 text-xs outline-none ${
-        isMe ? 'self-end flex-row-reverse items-end' : 'self-start items-end'
+        isMe ? 'flex-row-reverse items-end self-end' : 'items-end self-start'
       } max-w-[98%] ${groupPosition === 'single' || groupPosition === 'first' ? 'mt-2' : 'mt-0.5'}`}
     >
       {!isMe && (
@@ -142,11 +151,7 @@ function ChatBubble({ msg, isMe, profile, groupPosition }: ChatBubbleProps) {
           avatarUrl={profile?.avatar_url ?? null}
         />
       )}
-      <BubbleContent
-        isMe={isMe}
-        groupPosition={groupPosition}
-        sentAt={msg.sentAt}
-      >
+      <BubbleContent isMe={isMe} groupPosition={groupPosition} sentAt={msg.sentAt}>
         {msg.text}
       </BubbleContent>
     </div>
@@ -180,19 +185,19 @@ export function ChatPanel({
   };
 
   return (
-    <div className="relative flex flex-col h-full select-none">
-      <div className="relative flex-1 min-h-0 overflow-hidden">
+    <div className="relative flex h-full flex-col select-none">
+      <div className="relative min-h-0 flex-1 overflow-hidden">
         <div
           ref={logRef}
           role="log"
           aria-live="polite"
-          className="relative flex h-full min-h-0 flex-col gap-0 overflow-y-auto overflow-x-hidden py-1"
+          className="relative flex h-full min-h-0 flex-col gap-0 overflow-x-hidden overflow-y-auto py-1"
         >
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center py-10 text-center text-muted-foreground">
               <MessageSquare className="mb-2 size-8 stroke-[1.5] opacity-40" />
               <span className="type-caption">Chưa có tin nhắn nào.</span>
-              <span className="type-caption mt-0.5 text-muted-foreground">Bắt đầu trò chuyện!</span>
+              <span className="mt-0.5 type-caption text-muted-foreground">Bắt đầu trò chuyện!</span>
             </div>
           ) : (
             messages.map((msg, idx) => {
@@ -234,14 +239,14 @@ export function ChatPanel({
             aria-label="Nhập tin nhắn"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            className="h-9 text-xs flex-1 pe-10 rounded-full border border-border bg-muted"
+            className="h-9 flex-1 rounded-full border border-border bg-muted pe-10 text-xs"
             maxLength={500}
           />
           <Button
             type="submit"
             variant="ghost"
             size="icon"
-            className="absolute right-1 top-1/2 size-7 -translate-y-1/2 rounded-full text-muted-foreground hover:text-foreground"
+            className="absolute top-1/2 right-1 size-7 -translate-y-1/2 rounded-full text-muted-foreground hover:text-foreground"
             disabled={!inputText.trim()}
             aria-label="Gửi tin nhắn"
           >

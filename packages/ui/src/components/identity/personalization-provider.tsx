@@ -91,24 +91,19 @@ function PersonalizationProvider({
     setDensityState(readStored(DENSITY_KEY, DENSITIES, defaultDensity));
   }, [defaultAccent, defaultGlass, defaultDensity]);
 
-  // Reflect onto the root element — the same node next-themes flags `.dark`.
+  // Reflect personalization attributes onto the root element in a single pass.
   React.useEffect(() => {
     const root = document.documentElement;
+
     if (accent === 'cyan') root.removeAttribute('data-accent');
     else root.setAttribute('data-accent', accent);
-  }, [accent]);
 
-  React.useEffect(() => {
-    const root = document.documentElement;
     if (glass === 'default') root.removeAttribute('data-glass');
     else root.setAttribute('data-glass', glass);
-  }, [glass]);
 
-  React.useEffect(() => {
-    const root = document.documentElement;
     if (density === 'comfortable') root.removeAttribute('data-density');
     else root.setAttribute('data-density', density);
-  }, [density]);
+  }, [accent, glass, density]);
 
   const setAccent = React.useCallback((next: Accent) => {
     setAccentState(next);

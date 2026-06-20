@@ -59,7 +59,7 @@ function ProtectedShellFallback() {
         </div>
       </aside>
       <div className="flex min-h-dvh flex-col lg:pl-64">
-        <header className="glass-bar-edge-b sticky top-0 z-topbar flex h-16 shrink-0 items-center justify-between px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-topbar flex h-16 shrink-0 items-center justify-between glass-bar-edge-b px-4 sm:px-6 lg:px-8">
           <div className="h-5 w-32 rounded bg-muted lg:hidden" />
           <div className="h-8 w-8 rounded-full bg-muted" />
         </header>

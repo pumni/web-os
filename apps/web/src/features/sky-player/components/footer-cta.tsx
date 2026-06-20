@@ -8,14 +8,8 @@ export function FooterCta() {
   const shouldReduce = useReducedMotion();
 
   return (
-    <Card
-      asChild
-      radius="2xl"
-      className="relative overflow-hidden border-border"
-    >
-      <motion.section
-        {...(shouldReduce ? {} : recipes.fadeRise)}
-      >
+    <Card asChild radius="2xl" className="relative overflow-hidden border-border">
+      <motion.section {...(shouldReduce ? {} : recipes.fadeRise)}>
         {/* Gradient background */}
         <div
           aria-hidden
@@ -25,7 +19,7 @@ export function FooterCta() {
         {/* Ambient glows */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-primary/10 blur-3xl"
+          className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-primary/10 blur-3xl"
         />
         <div
           aria-hidden
@@ -33,16 +27,15 @@ export function FooterCta() {
         />
 
         <CardContent className="relative px-8 py-16 text-center md:px-16 md:py-24 xl:py-28">
-          <span className="type-caption mb-4 inline-block font-bold tracking-widest text-primary uppercase">
+          <span className="mb-4 inline-block type-caption font-bold tracking-widest text-primary uppercase">
             Ready to play
           </span>
 
-          <h2 className="type-display mx-auto max-w-2xl text-balance text-foreground xl:text-5xl">
-            Bring music to Sky with{' '}
-            <span className="text-gradient-brand">Sky Player.</span>
+          <h2 className="mx-auto max-w-2xl type-display text-balance text-foreground xl:text-5xl">
+            Bring music to Sky with <span className="text-gradient-brand">Sky Player.</span>
           </h2>
 
-          <p className="type-body mx-auto mt-4 max-w-md text-pretty text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-md type-body text-pretty text-muted-foreground">
             Grab the latest release, open your instrument in Sky, and experience automatic song
             playback from the terminal.
           </p>
@@ -55,4 +48,3 @@ export function FooterCta() {
     </Card>
   );
 }
-

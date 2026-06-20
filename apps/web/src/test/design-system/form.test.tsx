@@ -60,7 +60,11 @@ describe('Input', () => {
 describe('Label', () => {
   it('renders with data-slot and forwards ref', () => {
     const ref = React.createRef<HTMLLabelElement>();
-    render(<Label ref={ref} data-testid="label">Email</Label>);
+    render(
+      <Label ref={ref} data-testid="label">
+        Email
+      </Label>,
+    );
     const el = screen.getByTestId('label');
     expect(el.tagName).toBe('LABEL');
     expect(el).toHaveAttribute('data-slot', 'label');
@@ -74,7 +78,11 @@ describe('Label', () => {
 describe('Button', () => {
   it('renders as a button with data-slot and forwards ref', () => {
     const ref = React.createRef<HTMLButtonElement>();
-    render(<Button ref={ref} data-testid="btn">Click</Button>);
+    render(
+      <Button ref={ref} data-testid="btn">
+        Click
+      </Button>,
+    );
     const el = screen.getByTestId('btn');
     expect(el.tagName).toBe('BUTTON');
     expect(el).toHaveAttribute('data-slot', 'button');
@@ -82,7 +90,11 @@ describe('Button', () => {
   });
 
   it('sets aria-busy and hides label text when loading', () => {
-    render(<Button loading data-testid="btn">Save</Button>);
+    render(
+      <Button loading data-testid="btn">
+        Save
+      </Button>,
+    );
     const el = screen.getByTestId('btn');
     expect(el).toHaveAttribute('aria-busy', 'true');
     // Label span should be aria-hidden while loading so SR skips the
@@ -95,7 +107,11 @@ describe('Button', () => {
   });
 
   it('is disabled when loading even without explicit disabled', () => {
-    render(<Button loading data-testid="btn">Save</Button>);
+    render(
+      <Button loading data-testid="btn">
+        Save
+      </Button>,
+    );
     expect(screen.getByTestId('btn')).toBeDisabled();
   });
 });
@@ -181,14 +197,7 @@ describe('AuthField', () => {
   it('error-driven aria-invalid wins over consumer inputProps', () => {
     // Consumer tries to suppress aria-invalid — error should win because
     // computed aria-invalid is placed after the inputProps spread.
-    render(
-      <AuthField
-        id="test"
-        label="Test"
-        error={['Bad value.']}
-        aria-invalid={false}
-      />,
-    );
+    render(<AuthField id="test" label="Test" error={['Bad value.']} aria-invalid={false} />);
     expect(screen.getByLabelText('Test')).toHaveAttribute('aria-invalid', 'true');
   });
 });
@@ -278,9 +287,7 @@ describe('Form integration', () => {
       );
     }
 
-    expect(() => render(<BadConsumer />)).toThrow(
-      'useFormField should be used within <FormField>',
-    );
+    expect(() => render(<BadConsumer />)).toThrow('useFormField should be used within <FormField>');
     spy.mockRestore();
   });
 });

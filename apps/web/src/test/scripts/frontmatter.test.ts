@@ -12,7 +12,6 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 // @ts-expect-error - import JS script into test
 import { parseFrontmatter } from '../../../../../scripts/frontmatter.mjs';
 
-
 // ---- Tests ----
 
 describe('parseFrontmatter', () => {

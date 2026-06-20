@@ -34,11 +34,11 @@ export function DashboardHeaderCard({ user }: DashboardHeaderCardProps) {
       {/* Decorative ambient glow — purely visual */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-24 -top-24 size-56 rounded-full bg-primary/10 blur-3xl"
+        className="pointer-events-none absolute -top-24 -right-24 size-56 rounded-full bg-primary/10 blur-3xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-20 -bottom-20 size-48 rounded-full bg-linear-to-tr from-(--brand-gradient-from)/10 to-(--brand-gradient-via)/10 blur-3xl"
+        className="pointer-events-none absolute -bottom-20 -left-20 size-48 rounded-full bg-linear-to-tr from-(--brand-gradient-from)/10 to-(--brand-gradient-via)/10 blur-3xl"
       />
 
       <CardContent className="relative flex flex-col gap-5 py-6 md:flex-row md:items-center md:justify-between">
@@ -55,7 +55,7 @@ export function DashboardHeaderCard({ user }: DashboardHeaderCardProps) {
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 space-y-1">
-            <h1 className="type-title font-semibold leading-tight text-foreground">
+            <h1 className="type-title leading-tight font-semibold text-foreground">
               {greeting},{' '}
               <span className="bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-to) bg-clip-text text-transparent">
                 {user.email?.split('@')[0]}
@@ -76,7 +76,7 @@ export function DashboardHeaderCard({ user }: DashboardHeaderCardProps) {
             <Clock className="size-3.5 text-primary" />
             <time
               dateTime={date?.toISOString()}
-              className="font-mono font-semibold tabular-nums text-foreground"
+              className="font-mono font-semibold text-foreground tabular-nums"
             >
               {timeString}
             </time>

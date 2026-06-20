@@ -30,7 +30,6 @@ function readMigration20() {
   );
 }
 
-
 describe('watch queue RLS hardening migration (017)', () => {
   it('keeps queue reads scoped to room membership', () => {
     const sql = readMigration17();
@@ -43,7 +42,9 @@ describe('watch queue RLS hardening migration (017)', () => {
     const sql = readMigration17();
 
     expect(sql).toContain('and added_by = (select auth.uid())');
-    expect(sql).toContain('grant update(position) on table public.watch_queue_items to authenticated');
+    expect(sql).toContain(
+      'grant update(position) on table public.watch_queue_items to authenticated',
+    );
   });
 });
 
@@ -103,12 +104,20 @@ describe('watch RPC hardening migration (018)', () => {
     const sql = readMigration18();
 
     // Verify revokes for both private and public functions
-    expect(sql).toContain('revoke all on function private.is_room_member(uuid) from public, anon, authenticated;');
-    expect(sql).toContain('revoke all on function public.transfer_room_host(uuid, uuid) from public, anon, authenticated;');
+    expect(sql).toContain(
+      'revoke all on function private.is_room_member(uuid) from public, anon, authenticated;',
+    );
+    expect(sql).toContain(
+      'revoke all on function public.transfer_room_host(uuid, uuid) from public, anon, authenticated;',
+    );
 
     // Verify grants to authenticated
-    expect(sql).toContain('grant execute on function private.is_room_member(uuid) to authenticated;');
-    expect(sql).toContain('grant execute on function public.transfer_room_host(uuid, uuid) to authenticated;');
+    expect(sql).toContain(
+      'grant execute on function private.is_room_member(uuid) to authenticated;',
+    );
+    expect(sql).toContain(
+      'grant execute on function public.transfer_room_host(uuid, uuid) to authenticated;',
+    );
   });
 });
 
@@ -133,7 +142,9 @@ describe('watch room heartbeats migration (020)', () => {
   });
 
   it('does NOT add the table to supabase_realtime publication', () => {
-    expect(sql).not.toContain('alter publication supabase_realtime add table public.watch_room_heartbeats');
+    expect(sql).not.toContain(
+      'alter publication supabase_realtime add table public.watch_room_heartbeats',
+    );
   });
 
   it('updates claim_room_host_impl to query watch_room_heartbeats and falls back to watch_rooms', () => {
@@ -147,7 +158,8 @@ describe('watch room heartbeats migration (020)', () => {
     expect(sql).not.toContain('select hb.heartbeat_at into');
     expect(sql).not.toContain('select r.host_heartbeat_at into');
     // Ensure it is checked inside the update where clause
-    expect(sql).toMatch(/update\s+public\.watch_rooms\s+r[\s\S]+?where[\s\S]+?not\s+exists\s*\(\s*select\s+1\s+from\s+public\.watch_room_heartbeats/i);
+    expect(sql).toMatch(
+      /update\s+public\.watch_rooms\s+r[\s\S]+?where[\s\S]+?not\s+exists\s*\(\s*select\s+1\s+from\s+public\.watch_room_heartbeats/i,
+    );
   });
 });
-

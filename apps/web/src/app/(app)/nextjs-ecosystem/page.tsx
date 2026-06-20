@@ -25,12 +25,7 @@ import {
   Wrench,
   Layers,
 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  Separator,
-  cn,
-} from '@pumni/ui';
+import { Card, CardContent, Separator, cn } from '@pumni/ui';
 import { SectionNav } from './section-nav';
 
 export const metadata: Metadata = {
@@ -64,7 +59,7 @@ function InfoBox({
   };
   return (
     <div className={`space-y-2 rounded-md ${variants[variant]} p-3`}>
-      <span className="text-xs font-semibold uppercase text-muted-foreground">{label}</span>
+      <span className="text-xs font-semibold text-muted-foreground uppercase">{label}</span>
       <div className="text-muted-foreground">{children}</div>
     </div>
   );
@@ -137,13 +132,18 @@ function LTSTimeline() {
   const milestones = [
     { version: 'v14', label: 'Next.js 14', date: 'EOL 10/2025', status: 'eol' as const },
     { version: 'v15', label: 'Next.js 15', date: 'EOL 21/10/2026', status: 'eol' as const },
-    { version: 'v16.2.9', label: 'Next.js 16.2.9', date: 'LTS — Active', status: 'active' as const },
+    {
+      version: 'v16.2.9',
+      label: 'Next.js 16.2.9',
+      date: 'LTS — Active',
+      status: 'active' as const,
+    },
   ];
 
   return (
     <div className="relative flex w-full items-start justify-between">
       {/* Gradient timeline line */}
-      <div className="absolute top-5 inset-x-4 h-[2px] rounded-full bg-gradient-to-r from-border via-border to-primary/40" />
+      <div className="absolute inset-x-4 top-5 h-0.5 rounded-full bg-linear-to-r from-border via-border to-primary/40" />
 
       {milestones.map((m) => (
         <div key={m.version} className="relative z-10 flex flex-col items-center gap-2 text-center">
@@ -174,7 +174,6 @@ function LTSTimeline() {
   );
 }
 
-
 // ──────────────────────────────────────────
 // PAGE
 // ──────────────────────────────────────────
@@ -187,9 +186,8 @@ export default function NextjsEcosystemPage() {
           Next.js 16.2.9 Ecosystem
         </h1>
         <p className="text-muted-foreground">
-          Báo cáo nghiên cứu chuyên sâu về kiến trúc, hiệu năng và hệ sinh thái của
-          phiên bản LTS — từ Explicit Caching, Turbopack, AI Agent Integration đến cảnh báo
-          sản xuất.
+          Báo cáo nghiên cứu chuyên sâu về kiến trúc, hiệu năng và hệ sinh thái của phiên bản LTS —
+          từ Explicit Caching, Turbopack, AI Agent Integration đến cảnh báo sản xuất.
         </p>
 
         {/* ── Key Metrics Bar ── */}
@@ -221,30 +219,45 @@ export default function NextjsEcosystemPage() {
             <Separator />
             <div className="space-y-2 text-base">
               <p>
-                Next.js 16.2.9 đánh dấu một cột mốc kiến trúc — thiết lập hệ thống với
-                caching tường minh, tối ưu hóa triệt để cho biên dịch Rust (Turbopack), và mang
-                định hướng AI-native.
+                Next.js 16.2.9 đánh dấu một cột mốc kiến trúc — thiết lập hệ thống với caching tường
+                minh, tối ưu hóa triệt để cho biên dịch Rust (Turbopack), và mang định hướng
+                AI-native.
               </p>
               <p>
-                Hệ thống yêu cầu Node.js tối thiểu 20.9.0 (LTS) và TypeScript 5.1.0,
-                chính thức loại bỏ Node.js 18 để tận dụng GC tối ưu ở cấp độ V8 engine.
-                Tất cả request-time API giờ là <strong>async Promises</strong> — đảm bảo
-                thread-safety khi kết xuất máy chủ song song.
+                Hệ thống yêu cầu Node.js tối thiểu 20.9.0 (LTS) và TypeScript 5.1.0, chính thức loại
+                bỏ Node.js 18 để tận dụng GC tối ưu ở cấp độ V8 engine. Tất cả request-time API giờ
+                là <strong>async Promises</strong> — đảm bảo thread-safety khi kết xuất máy chủ song
+                song.
               </p>
             </div>
 
             <div className="space-y-3">
               <InfoBox label="Request Interceptor">
-                <p><strong>proxy.ts</strong> thay thế middleware.ts — Reverse Proxy thuần túy trên Node.js runtime, đảm nhiệm redirects, header manipulation và A/B testing. Xác thực &amp; phân quyền chuyển hoàn toàn vào Server Components/Actions.</p>
+                <p>
+                  <strong>proxy.ts</strong> thay thế middleware.ts — Reverse Proxy thuần túy trên
+                  Node.js runtime, đảm nhiệm redirects, header manipulation và A/B testing. Xác thực
+                  &amp; phân quyền chuyển hoàn toàn vào Server Components/Actions.
+                </p>
               </InfoBox>
               <InfoBox label="Hạ tầng triển khai">
-                <p><strong>Build Adapters API</strong> chuẩn hóa đa nền tảng — Vercel, Netlify, AWS, Cloudflare, Google Cloud vận hành trên cùng bộ API công khai với 9.000+ E2E tests xác minh.</p>
+                <p>
+                  <strong>Build Adapters API</strong> chuẩn hóa đa nền tảng — Vercel, Netlify, AWS,
+                  Cloudflare, Google Cloud vận hành trên cùng bộ API công khai với 9.000+ E2E tests
+                  xác minh.
+                </p>
               </InfoBox>
               <InfoBox label="Linting">
-                <p><code>next lint</code> đã loại bỏ. Chuyển sang <strong>Biome</strong> hoặc <strong>ESLint Flat Config</strong> (v10) — Rust-based tools cho tốc độ cao.</p>
+                <p>
+                  <code>next lint</code> đã loại bỏ. Chuyển sang <strong>Biome</strong> hoặc{' '}
+                  <strong>ESLint Flat Config</strong> (v10) — Rust-based tools cho tốc độ cao.
+                </p>
               </InfoBox>
               <InfoBox label="Kiểu tham số">
-                <p><code>params</code> và <code>searchParams</code> giờ là <strong>async Promises</strong> bắt buộc — nền tảng cho Partial Prerendering (PPR).</p>
+                <p>
+                  <code>params</code> và <code>searchParams</code> giờ là{' '}
+                  <strong>async Promises</strong> bắt buộc — nền tảng cho Partial Prerendering
+                  (PPR).
+                </p>
               </InfoBox>
             </div>
 
@@ -292,7 +305,9 @@ export default function NextjsEcosystemPage() {
                   <tr>
                     <td className="px-4 py-2 font-medium">Caching</td>
                     <td className="px-4 py-2 text-muted-foreground">Ngầm định (implicit)</td>
-                    <td className="px-4 py-2 text-muted-foreground">&quot;use cache&quot; tường minh</td>
+                    <td className="px-4 py-2 text-muted-foreground">
+                      &quot;use cache&quot; tường minh
+                    </td>
                     <td className="px-4 py-2 text-muted-foreground">Chống stale data</td>
                   </tr>
                   <tr>
@@ -323,11 +338,11 @@ export default function NextjsEcosystemPage() {
         <div className="space-y-2 rounded-lg bg-muted/50 p-6">
           <h2 className="text-xl font-bold">Tổng Kết</h2>
           <p className="text-muted-foreground">
-            Next.js 16.2.9 đánh dấu kỷ nguyên trưởng thành — nơi ranh giới giữa máy khách,
-            biên mạng và máy chủ được xác định tường minh bằng kiến trúc toán học thay vì
-            phép thử sai ngầm định. Với React Compiler, Turbopack, Explicit Caching, AI
-            DevTools MCP và Build Adapters, nó trở thành công cụ công nghiệp hạng nặng,
-            chấm dứt tình trạng độc quyền nền tảng.
+            Next.js 16.2.9 đánh dấu kỷ nguyên trưởng thành — nơi ranh giới giữa máy khách, biên mạng
+            và máy chủ được xác định tường minh bằng kiến trúc toán học thay vì phép thử sai ngầm
+            định. Với React Compiler, Turbopack, Explicit Caching, AI DevTools MCP và Build
+            Adapters, nó trở thành công cụ công nghiệp hạng nặng, chấm dứt tình trạng độc quyền nền
+            tảng.
           </p>
         </div>
       </section>
@@ -352,18 +367,23 @@ export default function NextjsEcosystemPage() {
               <div className="space-y-2 rounded-md border-primary/20 bg-primary/5 p-4">
                 <p className="text-sm font-semibold">Vai trò của proxy.ts</p>
                 <ul className="list-inside list-disc space-y-1 text-muted-foreground">
-                  <li>Chỉ đảm nhiệm redirects dựa trên cookie, header manipulation, A/B testing.</li>
+                  <li>
+                    Chỉ đảm nhiệm redirects dựa trên cookie, header manipulation, A/B testing.
+                  </li>
                   <li>Chạy hoàn toàn trên Node.js runtime — toàn bộ hệ sinh thái NPM.</li>
                   <li>Xác thực &amp; phân quyền bắt buộc ở Server Components/Actions.</li>
                   <li>Môi trường thực thi duy nhất, có thể dự đoán được.</li>
-                  <li>Thiết lập kiến trúc &ldquo;defense in depth&rdquo; — tách biệt rõ giữa lớp mạng và lớp logic nghiệp vụ.</li>
+                  <li>
+                    Thiết lập kiến trúc &ldquo;defense in depth&rdquo; — tách biệt rõ giữa lớp mạng
+                    và lớp logic nghiệp vụ.
+                  </li>
                 </ul>
               </div>
               <Callout>
-                Mọi hàm truy cập dữ liệu cấp yêu cầu (<code>cookies()</code>,{' '}
-                <code>headers()</code>, <code>draftMode()</code>, <code>params</code>,{' '}
-                <code>searchParams</code>) giờ chỉ dùng qua <strong>await</strong> —
-                nền tảng bắt buộc cho <strong>Partial Prerendering (PPR)</strong> hoạt động.
+                Mọi hàm truy cập dữ liệu cấp yêu cầu (<code>cookies()</code>, <code>headers()</code>
+                , <code>draftMode()</code>, <code>params</code>, <code>searchParams</code>) giờ chỉ
+                dùng qua <strong>await</strong> — nền tảng bắt buộc cho{' '}
+                <strong>Partial Prerendering (PPR)</strong> hoạt động.
               </Callout>
 
               <Separator />
@@ -371,7 +391,8 @@ export default function NextjsEcosystemPage() {
               <h3 className="text-base font-semibold">Kiến Trúc Bảo Mật Phân Tầng 2 Lớp</h3>
               <p className="text-muted-foreground">
                 Với <code>proxy.ts</code> và Dynamic by Default, kiến trúc bảo mật được khuyến nghị
-                tách thành <strong>Tầng Mạng (Proxy Layer)</strong> và <strong>Tầng Ứng dụng (App Layer)</strong>.
+                tách thành <strong>Tầng Mạng (Proxy Layer)</strong> và{' '}
+                <strong>Tầng Ứng dụng (App Layer)</strong>.
               </p>
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -380,7 +401,9 @@ export default function NextjsEcosystemPage() {
                     <li>Redirect chưa đăng nhập, A/B testing.</li>
                     <li>Làm mới session — ghi đè token vào cookie.</li>
                     <li>Thiết lập CORS headers.</li>
-                    <li><strong>Không chứa</strong> logic nghiệp vụ kết nối DB.</li>
+                    <li>
+                      <strong>Không chứa</strong> logic nghiệp vụ kết nối DB.
+                    </li>
                   </ul>
                 </InfoBox>
                 <InfoBox label="Tầng 2: App Layer (Ứng dụng)" variant="info">
@@ -388,12 +411,15 @@ export default function NextjsEcosystemPage() {
                     <li>RBAC phân quyền chi tiết, kiểm tra JWT.</li>
                     <li>Xác minh sở hữu dữ liệu (ownership).</li>
                     <li>Thực hiện tại Server Components / Actions.</li>
-                    <li>Dynamic by Default → <strong>luôn thực thi real-time</strong> mỗi request.</li>
+                    <li>
+                      Dynamic by Default → <strong>luôn thực thi real-time</strong> mỗi request.
+                    </li>
                   </ul>
                 </InfoBox>
               </div>
 
-              <CodeBlock code={`// proxy.ts — Tầng Mạng: chỉ kiểm tra session redirect
+              <CodeBlock
+                code={`// proxy.ts — Tầng Mạng: chỉ kiểm tra session redirect
 import { NextResponse } from 'next/server';
 
 export default async function middleware(req: Request) {
@@ -405,7 +431,8 @@ export default async function middleware(req: Request) {
   }
 
   return NextResponse.next();
-}`} />
+}`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -423,25 +450,41 @@ export default async function middleware(req: Request) {
               <p className="text-muted-foreground">
                 PPR vận hành song hành với Cache Components. Next.js 16.2.9 tự động tạo một
                 <strong> &quot;lớp vỏ tĩnh&quot; (static HTML shell)</strong> chứa mọi nội dung
-                không phụ thuộc vào dữ liệu yêu cầu cục bộ (navigation bars, headers, footers).
-                Edge Network trả về ngay lớp vỏ tĩnh → TTFB cực thấp, nội dung dynamic được
-                stream vào các lỗ hổng Suspense.
+                không phụ thuộc vào dữ liệu yêu cầu cục bộ (navigation bars, headers, footers). Edge
+                Network trả về ngay lớp vỏ tĩnh → TTFB cực thấp, nội dung dynamic được stream vào
+                các lỗ hổng Suspense.
               </p>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="Tĩnh (Static)" variant="highlight">
-                  <p>Nội dung không đọc runtime API (<code>cookies()</code>, <code>headers()</code>, <code>searchParams</code>, fetch không cache) → render trước tại build-time. Trả về tức thì.</p>
+                  <p>
+                    Nội dung không đọc runtime API (<code>cookies()</code>, <code>headers()</code>,{' '}
+                    <code>searchParams</code>, fetch không cache) → render trước tại build-time. Trả
+                    về tức thì.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Động (Dynamic)" variant="info">
-                  <p>Bất kỳ đoạn code nào đọc runtime API → trở thành &quot;dynamic hole&quot;. <strong>Bắt buộc bao bọc trong <code>&lt;Suspense&gt;</code></strong> để không phá vỡ lớp vỏ tĩnh của toàn trang.</p>
+                  <p>
+                    Bất kỳ đoạn code nào đọc runtime API → trở thành &quot;dynamic hole&quot;.{' '}
+                    <strong>
+                      Bắt buộc bao bọc trong <code>&lt;Suspense&gt;</code>
+                    </strong>{' '}
+                    để không phá vỡ lớp vỏ tĩnh của toàn trang.
+                  </p>
                 </InfoBox>
               </div>
 
               <InfoBox label="Ràng buộc Suspense" variant="warning">
-                <p>Nếu một hàm gọi <code>cookies()</code> ở trên cùng mà không nằm trong <code>&lt;Suspense&gt;</code>, toàn bộ trang sẽ bị biến thành loading skeleton — mất hoàn toàn lợi ích PPR. Dùng <code>next-browser ppr lock</code> để phát hiện tình trạng này.</p>
+                <p>
+                  Nếu một hàm gọi <code>cookies()</code> ở trên cùng mà không nằm trong{' '}
+                  <code>&lt;Suspense&gt;</code>, toàn bộ trang sẽ bị biến thành loading skeleton —
+                  mất hoàn toàn lợi ích PPR. Dùng <code>next-browser ppr lock</code> để phát hiện
+                  tình trạng này.
+                </p>
               </InfoBox>
 
-              <CodeBlock code={`// ✅ PPR đúng — dynamic được cô lập trong Suspense
+              <CodeBlock
+                code={`// ✅ PPR đúng — dynamic được cô lập trong Suspense
 export default async function Page() {
   return (
     <div>
@@ -452,7 +495,8 @@ export default async function Page() {
       <Footer />             {/* ← Static */}
     </div>
   );
-}`} />
+}`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -468,18 +512,24 @@ export default async function Page() {
           <Card>
             <CardContent className="space-y-3 pt-6">
               <p>
-                Sau <code>next build</code>, siêu dữ liệu đa hình (routes, cache
-                rules, static assets) được xuất ra định dạng phiên bản hóa có kiểu dữ liệu
-                chặt chẽ. Các nền tảng viết Adapter qua <code>modifyConfig</code> và{' '}
-                <code>onBuildComplete</code>. Vercel, Netlify, AWS, Cloudflare, Google Cloud
-                vận hành trên cùng bộ API công khai — đi kèm 9.000+ E2E tests làm chuẩn xác minh.
+                Sau <code>next build</code>, siêu dữ liệu đa hình (routes, cache rules, static
+                assets) được xuất ra định dạng phiên bản hóa có kiểu dữ liệu chặt chẽ. Các nền tảng
+                viết Adapter qua <code>modifyConfig</code> và <code>onBuildComplete</code>. Vercel,
+                Netlify, AWS, Cloudflare, Google Cloud vận hành trên cùng bộ API công khai — đi kèm
+                9.000+ E2E tests làm chuẩn xác minh.
               </p>
               <div className="grid gap-3 md:grid-cols-2">
                 <InfoBox label="Verified Adapter" variant="highlight">
-                  <p>Adapter phải open-source và vượt qua toàn bộ phổ kiểm thử 9.000+ test cases để đạt chứng nhận.</p>
+                  <p>
+                    Adapter phải open-source và vượt qua toàn bộ phổ kiểm thử 9.000+ test cases để
+                    đạt chứng nhận.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Ecosystem Working Group" variant="highlight">
-                  <p>Vercel, Netlify, AWS, Cloudflare, Google Cloud — mọi nền tảng vận hành trên cùng bộ API công khai, được bảo trợ bởi Ecosystem Working Group.</p>
+                  <p>
+                    Vercel, Netlify, AWS, Cloudflare, Google Cloud — mọi nền tảng vận hành trên cùng
+                    bộ API công khai, được bảo trợ bởi Ecosystem Working Group.
+                  </p>
                 </InfoBox>
               </div>
             </CardContent>
@@ -498,16 +548,31 @@ export default async function Page() {
             <CardContent className="pt-6">
               <div className="grid gap-3 md:grid-cols-2">
                 <InfoBox label="ESLint">
-                  <p><code>next lint</code> đã bị loại bỏ hoàn toàn. Chuyển sang <strong>Biome</strong> hoặc <strong>ESLint Flat Config</strong> (v10) — trả quyền kiểm soát cho công cụ chuyên dụng, tăng tốc qua Rust-based tools.</p>
+                  <p>
+                    <code>next lint</code> đã bị loại bỏ hoàn toàn. Chuyển sang{' '}
+                    <strong>Biome</strong> hoặc <strong>ESLint Flat Config</strong> (v10) — trả
+                    quyền kiểm soát cho công cụ chuyên dụng, tăng tốc qua Rust-based tools.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Output Dirs">
-                  <p>Thư mục riêng biệt cho <code>next dev</code> và <code>next build</code>, cho phép thực thi đồng thời mà không xung đột lockfile.</p>
+                  <p>
+                    Thư mục riêng biệt cho <code>next dev</code> và <code>next build</code>, cho
+                    phép thực thi đồng thời mà không xung đột lockfile.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Tối ưu Hình ảnh">
-                  <p><code>minimumCacheTTL</code>: 60s → <strong>4 giờ</strong>. <code>qualities: [75]</code>. <code>dangerouslyAllowLocalIP: false</code> chống SSRF. Biến môi trường custom yêu cầu <code>images.localPatterns</code> whitelist.</p>
+                  <p>
+                    <code>minimumCacheTTL</code>: 60s → <strong>4 giờ</strong>.{' '}
+                    <code>qualities: [75]</code>. <code>dangerouslyAllowLocalIP: false</code> chống
+                    SSRF. Biến môi trường custom yêu cầu <code>images.localPatterns</code>{' '}
+                    whitelist.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Lockfile & Gỡ lỗi">
-                  <p>Khóa phiên ngăn concurrent dev/build. <code>--inspect</code> cho <code>next start</code>. Hydration Diff Indicator trực quan.</p>
+                  <p>
+                    Khóa phiên ngăn concurrent dev/build. <code>--inspect</code> cho{' '}
+                    <code>next start</code>. Hydration Diff Indicator trực quan.
+                  </p>
                 </InfoBox>
               </div>
 
@@ -516,12 +581,14 @@ export default async function Page() {
               <h3 className="text-base font-semibold">Async Request APIs — Breaking Change</h3>
               <p className="text-muted-foreground">
                 Mọi đối tượng giao tiếp mạng — <code>cookies()</code>, <code>headers()</code>,{' '}
-                <code>params</code>, <code>searchParams</code> — giờ đây đều là <strong>Promise</strong>.
-                Bắt buộc tiêu thụ qua <code>await</code> hoặc <code>React.use()</code>. Triết lý
-                này dọn đường cho Suspense phi tuyến tính và giải phóng luồng chính.
+                <code>params</code>, <code>searchParams</code> — giờ đây đều là{' '}
+                <strong>Promise</strong>. Bắt buộc tiêu thụ qua <code>await</code> hoặc{' '}
+                <code>React.use()</code>. Triết lý này dọn đường cho Suspense phi tuyến tính và giải
+                phóng luồng chính.
               </p>
 
-              <CodeBlock code={`// ❌ Next.js 15
+              <CodeBlock
+                code={`// ❌ Next.js 15
 export default function Page({ params }) {
   const { slug } = params;        // sync
   return <Post slug={slug} />;
@@ -531,10 +598,14 @@ export default function Page({ params }) {
 export default async function Page({ params }: { params: Promise<{ slug: string }>) {
   const { slug } = await params;  // async Promise
   return <Post slug={slug} />;
-}`} />
+}`}
+              />
 
               <InfoBox label="Parallel Routes — strict">
-                <p>Mọi slot bắt buộc khai báo tệp <code>default.js</code> rõ ràng (dù chỉ <code>return null</code>). Không khai báo → build thất bại ngay lập tức.</p>
+                <p>
+                  Mọi slot bắt buộc khai báo tệp <code>default.js</code> rõ ràng (dù chỉ{' '}
+                  <code>return null</code>). Không khai báo → build thất bại ngay lập tức.
+                </p>
               </InfoBox>
             </CardContent>
           </Card>
@@ -552,26 +623,34 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
             <CardContent className="space-y-4 pt-6">
               <p className="text-base">
                 Kích hoạt qua <code>reactCompiler: true</code> trong <code>next.config.ts</code>.
-                Compiler thực hiện escape analysis tương tự cơ chế tối ưu V8 — nếu cấu trúc
-                tuân thủ React Rules, tự động tiêm <code>useMemo</code> và <code>useCallback</code>
+                Compiler thực hiện escape analysis tương tự cơ chế tối ưu V8 — nếu cấu trúc tuân thủ
+                React Rules, tự động tiêm <code>useMemo</code> và <code>useCallback</code>
                 tương đương ở cấp độ AST.
               </p>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="Hiệu quả" variant="highlight">
-                  <p>Giảm 20–40% re-renders trong analytics dashboards và danh sách dữ liệu thời gian thực. Loại bỏ hoàn toàn dependency arrays viết tay.</p>
+                  <p>
+                    Giảm 20–40% re-renders trong analytics dashboards và danh sách dữ liệu thời gian
+                    thực. Loại bỏ hoàn toàn dependency arrays viết tay.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Đánh đổi">
-                  <p>Build time tăng nhẹ — dịch chuyển gánh nặng tính toán từ runtime của người dùng sang build-time.</p>
+                  <p>
+                    Build time tăng nhẹ — dịch chuyển gánh nặng tính toán từ runtime của người dùng
+                    sang build-time.
+                  </p>
                 </InfoBox>
               </div>
 
-              <CodeBlock code={`// next.config.ts
+              <CodeBlock
+                code={`// next.config.ts
 const nextConfig = {
   reactCompiler: true,
 };
 
-export default nextConfig;`} />
+export default nextConfig;`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -596,20 +675,28 @@ export default nextConfig;`} />
             <CardContent className="space-y-4 pt-6">
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="Mặc định Dynamic" variant="highlight">
-                  <p>Mọi route mặc định <strong>dynamic</strong>. Không có caching ngầm định — dữ liệu luôn được truy xuất tươi mới trừ khi khai báo tường minh.</p>
+                  <p>
+                    Mọi route mặc định <strong>dynamic</strong>. Không có caching ngầm định — dữ
+                    liệu luôn được truy xuất tươi mới trừ khi khai báo tường minh.
+                  </p>
                 </InfoBox>
-                <InfoBox label="Khai báo &quot;use cache&quot;" variant="highlight">
+                <InfoBox label='Khai báo "use cache"' variant="highlight">
                   <ul className="list-inside list-disc space-y-1">
                     <li>Đặt ở đầu tệp, đầu hàm, hoặc inline trong async function.</li>
-                    <li>Khai báo qua <code>cacheComponents: true</code> trong next.config.ts.</li>
-                    <li>Thay thế hoàn toàn <code>revalidate</code>, <code>fetchCache</code>, <code>unstable_cache</code>.</li>
+                    <li>
+                      Khai báo qua <code>cacheComponents: true</code> trong next.config.ts.
+                    </li>
+                    <li>
+                      Thay thế hoàn toàn <code>revalidate</code>, <code>fetchCache</code>,{' '}
+                      <code>unstable_cache</code>.
+                    </li>
                   </ul>
                 </InfoBox>
               </div>
 
               <Callout>
-                Nguyên lý cốt lõi: dữ liệu cũ (stale data) không bao giờ được tải âm thầm —
-                mọi hành vi lưu trữ phải được khai báo tường minh bởi kỹ sư hệ thống.
+                Nguyên lý cốt lõi: dữ liệu cũ (stale data) không bao giờ được tải âm thầm — mọi hành
+                vi lưu trữ phải được khai báo tường minh bởi kỹ sư hệ thống.
               </Callout>
             </CardContent>
           </Card>
@@ -627,13 +714,24 @@ export default nextConfig;`} />
             <CardContent className="space-y-4 pt-6">
               <div className="space-y-3">
                 <InfoBox label="1. Build ID" variant="info">
-                  <p>Chuỗi định danh duy nhất cho mỗi lần biên dịch. Khi deploy mới, toàn bộ bộ đệm cũ lập tức bị vô hiệu hóa — đảm bảo tính nhất quán của phiên bản mã.</p>
+                  <p>
+                    Chuỗi định danh duy nhất cho mỗi lần biên dịch. Khi deploy mới, toàn bộ bộ đệm
+                    cũ lập tức bị vô hiệu hóa — đảm bảo tính nhất quán của phiên bản mã.
+                  </p>
                 </InfoBox>
                 <InfoBox label="2. Function ID" variant="info">
-                  <p>Mã băm bảo mật (secure hash) định vị vị trí hàm và chữ ký tham số trong cơ sở mã.</p>
+                  <p>
+                    Mã băm bảo mật (secure hash) định vị vị trí hàm và chữ ký tham số trong cơ sở
+                    mã.
+                  </p>
                 </InfoBox>
                 <InfoBox label="3. Đối số có thể tuần tự hóa" variant="info">
-                  <p>Tham số nguyên thủy (string, number), mảng, object, và kiểu phức tạp như <code>Date</code>, <code>Map</code>, <code>Set</code>, <code>ArrayBuffer</code> đều trở thành phần của khóa. Thay đổi bất kỳ thuộc tính nào → cache entry hoàn toàn mới.</p>
+                  <p>
+                    Tham số nguyên thủy (string, number), mảng, object, và kiểu phức tạp như{' '}
+                    <code>Date</code>, <code>Map</code>, <code>Set</code>, <code>ArrayBuffer</code>{' '}
+                    đều trở thành phần của khóa. Thay đổi bất kỳ thuộc tính nào → cache entry hoàn
+                    toàn mới.
+                  </p>
                 </InfoBox>
               </div>
 
@@ -642,7 +740,8 @@ export default nextConfig;`} />
                 Components đã được cache mà không phá vỡ tính nguyên khối tĩnh của trang.
               </Callout>
 
-              <CodeBlock code={`// "use cache" tại cấp file
+              <CodeBlock
+                code={`// "use cache" tại cấp file
 "use cache";
 
 async function getUser(id: string) {
@@ -655,7 +754,8 @@ export async function getPost(slug: string) {
   "use cache";
   cacheLife('hours');
   // ...
-}`} />
+}`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -710,14 +810,23 @@ export async function getPost(slug: string) {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label='"use cache: remote" — Serverless' variant="highlight">
-                  <p>Bộ nhớ RAM serverless mang tính phù du — instance có thể tắt bất cứ lúc nào. <code>&quot;use cache: remote&quot;</code> đẩy cache vào KV Store phân tán, giữ cache hit rate cao bất chấp auto-scaling.</p>
+                  <p>
+                    Bộ nhớ RAM serverless mang tính phù du — instance có thể tắt bất cứ lúc nào.{' '}
+                    <code>&quot;use cache: remote&quot;</code> đẩy cache vào KV Store phân tán, giữ
+                    cache hit rate cao bất chấp auto-scaling.
+                  </p>
                 </InfoBox>
                 <InfoBox label='"use cache: private" — Zero-Trust' variant="highlight">
-                  <p>Dữ liệu <strong>tuyệt đối không lưu trên server hay CDN</strong>. Tận dụng runtime prefetching trong bộ nhớ trình duyệt (≥ 30 giây). Kiến trúc <strong>Zero-Trust Frontend</strong> bảo vệ PII.</p>
+                  <p>
+                    Dữ liệu <strong>tuyệt đối không lưu trên server hay CDN</strong>. Tận dụng
+                    runtime prefetching trong bộ nhớ trình duyệt (≥ 30 giây). Kiến trúc{' '}
+                    <strong>Zero-Trust Frontend</strong> bảo vệ PII.
+                  </p>
                 </InfoBox>
               </div>
 
-              <CodeBlock code={`// Private cache — bảo vệ PII, không lưu server/CDN
+              <CodeBlock
+                code={`// Private cache — bảo vệ PII, không lưu server/CDN
 "use cache: private";
 async function getCart(userId: string) {
   const token = await cookies().get('session');
@@ -729,7 +838,8 @@ async function getCart(userId: string) {
 async function getInventory(productId: string) {
   cacheLife('max');
   // Chia sẻ cache xuyên suốt cluster
-}`} />
+}`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -751,13 +861,24 @@ async function getInventory(productId: string) {
 
               <div className="space-y-3">
                 <InfoBox label="1. stale — Độ trễ trình duyệt" variant="info">
-                  <p>Thời gian client-side router được phép dùng lại nội dung trong bộ nhớ trình duyệt mà không cần HTTP request. Truyền qua header <code>x-nextjs-stale-time</code>. <strong>Stale tối thiểu: 30 giây</strong> (đảm bảo prefetch không bị vỡ).</p>
+                  <p>
+                    Thời gian client-side router được phép dùng lại nội dung trong bộ nhớ trình
+                    duyệt mà không cần HTTP request. Truyền qua header{' '}
+                    <code>x-nextjs-stale-time</code>. <strong>Stale tối thiểu: 30 giây</strong> (đảm
+                    bảo prefetch không bị vỡ).
+                  </p>
                 </InfoBox>
                 <InfoBox label="2. revalidate — Làm mới nền (SWR)" variant="info">
-                  <p>Hậu duệ ISR. Vượt mốc này → người dùng nhận data cũ ngay lập tức, máy chủ kích hoạt tiến trình nền đồng bộ lại data mới và ghi đè cache.</p>
+                  <p>
+                    Hậu duệ ISR. Vượt mốc này → người dùng nhận data cũ ngay lập tức, máy chủ kích
+                    hoạt tiến trình nền đồng bộ lại data mới và ghi đè cache.
+                  </p>
                 </InfoBox>
                 <InfoBox label="3. expire — Giới hạn sinh tồn" variant="info">
-                  <p>Điểm chết tuyệt đối. Không ai truy cập để refresh → data bị xóa. Request kế tiếp phải render lại đồng bộ từ đầu.</p>
+                  <p>
+                    Điểm chết tuyệt đối. Không ai truy cập để refresh → data bị xóa. Request kế tiếp
+                    phải render lại đồng bộ từ đầu.
+                  </p>
                 </InfoBox>
               </div>
 
@@ -782,7 +903,8 @@ async function getInventory(productId: string) {
                 </InfoBox>
               </div>
 
-              <CodeBlock code={`// Profile có điều kiện — linh hoạt theo trạng thái nội dung
+              <CodeBlock
+                code={`// Profile có điều kiện — linh hoạt theo trạng thái nội dung
 async function getPost(slug: string) {
   "use cache";
   const post = await db.posts.findUnique({ where: { slug } });
@@ -793,7 +915,8 @@ async function getPost(slug: string) {
     cacheLife('days');     // tối ưu cache khi đã xuất bản
   }
   return post;
-}`} />
+}`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -810,17 +933,30 @@ async function getPost(slug: string) {
             <CardContent className="space-y-4 pt-6">
               <div className="space-y-3">
                 <InfoBox label="updateTag() — Read-Your-Writes">
-                  <p>Dành riêng cho <strong>Server Actions</strong>. Xóa ngay cache cũ, buộc request tiếp theo truy xuất dữ liệu mới nhất — đảm bảo UI hiển thị thông tin chính xác ngay sau khi người dùng gửi form.</p>
+                  <p>
+                    Dành riêng cho <strong>Server Actions</strong>. Xóa ngay cache cũ, buộc request
+                    tiếp theo truy xuất dữ liệu mới nhất — đảm bảo UI hiển thị thông tin chính xác
+                    ngay sau khi người dùng gửi form.
+                  </p>
                 </InfoBox>
                 <InfoBox label="revalidateTag() — Stale-While-Revalidate">
-                  <p><strong>Bắt buộc tham số thứ hai</strong> là cacheLife profile. Phục vụ phiên bản cũ với tốc độ tối đa, đồng thời tái tạo HTML mới ở chế độ nền. Lý tưởng cho Route Handlers kích hoạt qua webhook CMS.</p>
+                  <p>
+                    <strong>Bắt buộc tham số thứ hai</strong> là cacheLife profile. Phục vụ phiên
+                    bản cũ với tốc độ tối đa, đồng thời tái tạo HTML mới ở chế độ nền. Lý tưởng cho
+                    Route Handlers kích hoạt qua webhook CMS.
+                  </p>
                 </InfoBox>
                 <InfoBox label="refresh() — Client Router">
-                  <p>Làm mới tuyến đường máy khách mà <strong>không ảnh hưởng cache toàn cục</strong>. Hữu dụng cho bộ đếm lượt xem real-time, thông báo — dữ liệu không liên quan đến cấu trúc tĩnh.</p>
+                  <p>
+                    Làm mới tuyến đường máy khách mà <strong>không ảnh hưởng cache toàn cục</strong>
+                    . Hữu dụng cho bộ đếm lượt xem real-time, thông báo — dữ liệu không liên quan
+                    đến cấu trúc tĩnh.
+                  </p>
                 </InfoBox>
               </div>
 
-              <CodeBlock code={`// Server Action: updateTag()
+              <CodeBlock
+                code={`// Server Action: updateTag()
 'use server';
 export async function updateProfile(data: FormData) {
   await db.updateProfile(data);
@@ -828,7 +964,8 @@ export async function updateProfile(data: FormData) {
 }
 
 // SWR với lifecycle profile
-revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`} />
+revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -861,13 +998,20 @@ revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`} />
 
               <div className="grid gap-4 md:grid-cols-3">
                 <InfoBox label="Dev Startup" variant="highlight">
-                  <p>Khởi động dev server <strong>400% nhanh hơn</strong> trên cùng quy mô dự án lớn.</p>
+                  <p>
+                    Khởi động dev server <strong>400% nhanh hơn</strong> trên cùng quy mô dự án lớn.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Compile Time" variant="highlight">
-                  <p>Giảm từ <strong>40ms → 2.7ms</strong> nội tại — cải thiện <strong>900%</strong>.</p>
+                  <p>
+                    Giảm từ <strong>40ms → 2.7ms</strong> nội tại — cải thiện <strong>900%</strong>.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Bug Fixes" variant="highlight">
-                  <p><strong>200+ fixes</strong> trong 16.2.9: Base38 hash, SRI, Web Worker origin, tree-shaking dynamic imports.</p>
+                  <p>
+                    <strong>200+ fixes</strong> trong 16.2.9: Base38 hash, SRI, Web Worker origin,
+                    tree-shaking dynamic imports.
+                  </p>
                 </InfoBox>
               </div>
 
@@ -878,8 +1022,8 @@ revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`} />
                 Giải quyết triệt để xung đột giữa CSP bảo mật và static caching. Turbopack tự động
                 tính toán cryptographic hashes (sha256) cho tất cả JS files tại thời điểm biên dịch.
                 Các hash này được đưa vào cấu hình CSP tĩnh — trình duyệt xác thực tính toàn vẹn mà
-                không cần tạo nonce theo từng yêu cầu. <strong>Duy trì bảo mật cao nhất + hiệu suất
-                truy xuất tĩnh siêu tốc.</strong>
+                không cần tạo nonce theo từng yêu cầu.{' '}
+                <strong>Duy trì bảo mật cao nhất + hiệu suất truy xuất tĩnh siêu tốc.</strong>
               </p>
 
               {/* Web Worker & Tree Shaking */}
@@ -887,10 +1031,20 @@ revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`} />
               <h3 className="text-base font-semibold">Web Worker Origin & Tree Shaking</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="Web Worker Origin Fix" variant="highlight">
-                  <p>Web Workers tải qua URL <code>blob://</code> dẫn đến <code>location.origin</code> trống — phá hỏng <code>importScripts()</code>. Turbopack chỉ định origin đúng, mở khóa hoàn toàn khả năng chạy WASM phân tán.</p>
+                  <p>
+                    Web Workers tải qua URL <code>blob://</code> dẫn đến{' '}
+                    <code>location.origin</code> trống — phá hỏng <code>importScripts()</code>.
+                    Turbopack chỉ định origin đúng, mở khóa hoàn toàn khả năng chạy WASM phân tán.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Tree Shaking Dynamic Imports" variant="highlight">
-                  <p><code>const &#123; targetExport &#125; = await import(&#39;./large-library&#39;)</code> được nội suy thành static import tương đương. Các exports không sử dụng bị loại bỏ hoàn toàn khỏi bundle.</p>
+                  <p>
+                    <code>
+                      const &#123; targetExport &#125; = await import(&#39;./large-library&#39;)
+                    </code>{' '}
+                    được nội suy thành static import tương đương. Các exports không sử dụng bị loại
+                    bỏ hoàn toàn khỏi bundle.
+                  </p>
                 </InfoBox>
               </div>
             </CardContent>
@@ -908,17 +1062,23 @@ revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`} />
           <Card>
             <CardContent className="space-y-4 pt-6">
               <p className="text-muted-foreground">
-                Độ trễ RSC payload không nằm ở payload size mà ở tốc độ giải mã JSON. Turbopack/React 16.2.9
-                áp dụng quy trình 2 bước tách biệt ranh giới C++ ↔ JS — triệt tiêu overhead
-                boundary-crossing cho <strong>mỗi cặp key-value</strong>.
+                Độ trễ RSC payload không nằm ở payload size mà ở tốc độ giải mã JSON.
+                Turbopack/React 16.2.9 áp dụng quy trình 2 bước tách biệt ranh giới C++ ↔ JS — triệt
+                tiêu overhead boundary-crossing cho <strong>mỗi cặp key-value</strong>.
               </p>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="Bước 1: JSON.parse() thuần C++" variant="highlight">
-                  <p>Không chứa reviver — C++ xử lý chuỗi ở tốc độ phần cứng, không có boundary-crossing overhead.</p>
+                  <p>
+                    Không chứa reviver — C++ xử lý chuỗi ở tốc độ phần cứng, không có
+                    boundary-crossing overhead.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Bước 2: Recursive walk JS" variant="highlight">
-                  <p>Duyệt đệ quy bằng JavaScript thuần, có khả năng <strong>short-circuiting</strong> các chuỗi đơn giản không cần biến đổi.</p>
+                  <p>
+                    Duyệt đệ quy bằng JavaScript thuần, có khả năng{' '}
+                    <strong>short-circuiting</strong> các chuỗi đơn giản không cần biến đổi.
+                  </p>
                 </InfoBox>
               </div>
 
@@ -963,7 +1123,8 @@ revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`} />
 
               <Callout>
                 Kết quả: tốc độ giải mã RSC payload nhanh hơn lên tới <strong>350%</strong>, dịch
-                trực tiếp thành khả năng kết xuất HTML tổng thể nhanh hơn <strong>xấp xỉ 50%</strong> trong ứng dụng thực tế.
+                trực tiếp thành khả năng kết xuất HTML tổng thể nhanh hơn{' '}
+                <strong>xấp xỉ 50%</strong> trong ứng dụng thực tế.
               </Callout>
             </CardContent>
           </Card>
@@ -981,13 +1142,20 @@ revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`} />
             <CardContent className="space-y-3 pt-6">
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="Hiệu năng" variant="highlight">
-                  <p><strong>2x nhanh hơn</strong> cho ảnh cơ bản, <strong>20x nhanh hơn</strong> cho biểu đồ hoặc bố cục phức tạp (chart OG images).</p>
+                  <p>
+                    <strong>2x nhanh hơn</strong> cho ảnh cơ bản, <strong>20x nhanh hơn</strong> cho
+                    biểu đồ hoặc bố cục phức tạp (chart OG images).
+                  </p>
                 </InfoBox>
                 <InfoBox label="CSS & SVG mở rộng" variant="highlight">
                   <ul className="list-inside list-disc space-y-1">
                     <li>Hỗ trợ inline CSS variables.</li>
-                    <li><code>display: contents</code> trong SVG.</li>
-                    <li>Font mặc định: Noto Sans → <strong>Geist Sans</strong>.</li>
+                    <li>
+                      <code>display: contents</code> trong SVG.
+                    </li>
+                    <li>
+                      Font mặc định: Noto Sans → <strong>Geist Sans</strong>.
+                    </li>
                   </ul>
                 </InfoBox>
               </div>
@@ -1008,7 +1176,12 @@ revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`} />
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="View Transitions" variant="highlight">
                   <ul className="list-inside list-disc space-y-1">
-                    <li><code>&lt;Link transitionTypes=[&#123;&#39;slide-forward&#39;&#125;]&gt;</code> kết nối trực tiếp với <code>React.addTransitionType</code>.</li>
+                    <li>
+                      <code>
+                        &lt;Link transitionTypes=[&#123;&#39;slide-forward&#39;&#125;]&gt;
+                      </code>{' '}
+                      kết nối trực tiếp với <code>React.addTransitionType</code>.
+                    </li>
                     <li>Cho phép kích hoạt CSS effects khác nhau dựa trên cấu trúc đường dẫn.</li>
                     <li>Mang lại cảm giác native app trên nền web.</li>
                   </ul>
@@ -1022,11 +1195,13 @@ revalidateTag('posts', 'max'); // ← 2 tham số bắt buộc`} />
                 </InfoBox>
               </div>
 
-              <CodeBlock code={`import { addTransitionType } from 'react';
+              <CodeBlock
+                code={`import { addTransitionType } from 'react';
 <Link href="/blog" transitionTypes={['slide-in']}>Blog</Link>
 
 // Đăng ký custom transition
-addTransitionType('fade-scale');`} />
+addTransitionType('fade-scale');`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -1043,15 +1218,25 @@ addTransitionType('fade-scale');`} />
             <CardContent className="space-y-4 pt-6">
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="Khử Trùng Lặp Layout">
-                  <p>50 liên kết có chung layout → chỉ tải <strong>đúng 1 lần</strong>. Next.js xác định sự tương đồng router segments, giảm truyền tải theo cấp số nhân.</p>
+                  <p>
+                    50 liên kết có chung layout → chỉ tải <strong>đúng 1 lần</strong>. Next.js xác
+                    định sự tương đồng router segments, giảm truyền tải theo cấp số nhân.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Tìm Nạp Trước Tăng Dần" variant="highlight">
-                  <p><strong>Viewport-aware:</strong> chỉ lấy phần chưa có trong cache. Liên kết cuột khỏi viewport → <strong>hủy ngay</strong> mạng. Hover → tái kích hoạt ưu tiên.</p>
+                  <p>
+                    <strong>Viewport-aware:</strong> chỉ lấy phần chưa có trong cache. Liên kết cuột
+                    khỏi viewport → <strong>hủy ngay</strong> mạng. Hover → tái kích hoạt ưu tiên.
+                  </p>
                 </InfoBox>
               </div>
 
               <InfoBox label="prefetchInlining (experimental)">
-                <p>Đóng gói toàn bộ phân đoạn dữ liệu tuyến đường vào <strong>một phản hồi mạng duy nhất</strong> — giảm số lượng gói tin TCP. Đánh đổi chi tiết cache lấy băng thông thấp.</p>
+                <p>
+                  Đóng gói toàn bộ phân đoạn dữ liệu tuyến đường vào{' '}
+                  <strong>một phản hồi mạng duy nhất</strong> — giảm số lượng gói tin TCP. Đánh đổi
+                  chi tiết cache lấy băng thông thấp.
+                </p>
               </InfoBox>
             </CardContent>
           </Card>
@@ -1078,22 +1263,32 @@ addTransitionType('fade-scale');`} />
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="CVE đã vá" variant="warning">
                   <ul className="list-inside list-disc space-y-1">
-                    <li><strong>CVE-2026-23870</strong> (React2Shell): RCE trong RSC protocol.</li>
-                    <li><strong>CVE-2025-66478</strong>: DoS + auth bypass qua segment-prefetch URL.</li>
+                    <li>
+                      <strong>CVE-2026-23870</strong> (React2Shell): RCE trong RSC protocol.
+                    </li>
+                    <li>
+                      <strong>CVE-2025-66478</strong>: DoS + auth bypass qua segment-prefetch URL.
+                    </li>
                   </ul>
                 </InfoBox>
                 <InfoBox label="3 Lớu Phòng Ngự (Server Actions)" variant="highlight">
                   <ul className="list-inside list-disc space-y-1">
-                    <li><strong>Identity</strong> — kiểm tra danh tính qua session.</li>
-                    <li><strong>Ownership</strong> — xác thực quyền sở hữu tài nguyên.</li>
-                    <li><strong>Input Validation</strong> — thẩm định qua Zod.</li>
+                    <li>
+                      <strong>Identity</strong> — kiểm tra danh tính qua session.
+                    </li>
+                    <li>
+                      <strong>Ownership</strong> — xác thực quyền sở hữu tài nguyên.
+                    </li>
+                    <li>
+                      <strong>Input Validation</strong> — thẩm định qua Zod.
+                    </li>
                   </ul>
                 </InfoBox>
               </div>
 
               <Callout>
-                Phó thác an toàn cho <code>proxy.ts</code> được xem là thực tiễn lỗi thời.
-                Mỗi Server Action phải triển khai 3 lớp phòng ngự độc lập.
+                Phó thác an toàn cho <code>proxy.ts</code> được xem là thực tiễn lỗi thời. Mỗi
+                Server Action phải triển khai 3 lớp phòng ngự độc lập.
               </Callout>
             </CardContent>
           </Card>
@@ -1110,22 +1305,34 @@ addTransitionType('fade-scale');`} />
           <Card>
             <CardContent className="space-y-4 pt-6">
               <p className="text-muted-foreground">
-                <code>after()</code> lên lịch callback thực thi <strong>sau khi</strong> máy chủ
-                đã gửi toàn bộ HTML/RSC stream đến trình duyệt — không ảnh hưởng TTFB.
-                Khác với <code>waitUntil()</code> cấp thấp, nó tích hợp với vòng đời React
-                và vẫn tiếp tục chạy ngay cả khi <code>notFound()</code> hay <code>redirect()</code>{' '}
-                được gọi giữa chừng.
+                <code>after()</code> lên lịch callback thực thi <strong>sau khi</strong> máy chủ đã
+                gửi toàn bộ HTML/RSC stream đến trình duyệt — không ảnh hưởng TTFB. Khác với{' '}
+                <code>waitUntil()</code> cấp thấp, nó tích hợp với vòng đời React và vẫn tiếp tục
+                chạy ngay cả khi <code>notFound()</code> hay <code>redirect()</code> được gọi giữa
+                chừng.
               </p>
 
               <InfoBox label="Ràng buộc nghiêm ngặt" variant="warning">
                 <ul className="list-inside list-disc space-y-1">
-                  <li><strong>Server Component tĩnh / PPR:</strong> Không gọi trực tiếp <code>cookies()</code>, <code>headers()</code> bên trong closure <code>after()</code> — sẽ kích hoạt ở build-time hoặc revalidate, không có request context.</li>
-                  <li><strong>Giải pháp:</strong> Đọc request info vào biến cục bộ <strong>trước</strong>, sau đó dùng biến đó bên trong <code>after()</code>.</li>
-                  <li><strong>Route Handlers / proxy.ts:</strong> Có thể gọi tự do <code>headers()</code>, <code>cookies()</code> bên trong <code>after()</code>.</li>
+                  <li>
+                    <strong>Server Component tĩnh / PPR:</strong> Không gọi trực tiếp{' '}
+                    <code>cookies()</code>, <code>headers()</code> bên trong closure{' '}
+                    <code>after()</code> — sẽ kích hoạt ở build-time hoặc revalidate, không có
+                    request context.
+                  </li>
+                  <li>
+                    <strong>Giải pháp:</strong> Đọc request info vào biến cục bộ{' '}
+                    <strong>trước</strong>, sau đó dùng biến đó bên trong <code>after()</code>.
+                  </li>
+                  <li>
+                    <strong>Route Handlers / proxy.ts:</strong> Có thể gọi tự do{' '}
+                    <code>headers()</code>, <code>cookies()</code> bên trong <code>after()</code>.
+                  </li>
                 </ul>
               </InfoBox>
 
-              <CodeBlock code={`import { after } from 'next/server';
+              <CodeBlock
+                code={`import { after } from 'next/server';
 
 // ✅ Server Component — đọc trước, dùng sau
 export default async function Page() {
@@ -1145,7 +1352,8 @@ export async function PUT(req: Request) {
     const h = await headers(); // ← OK trong Route Handler
     await logRequest(h);
   });
-}`} />
+}`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -1163,24 +1371,35 @@ export async function PUT(req: Request) {
               <p className="text-muted-foreground">
                 <code>error.tsx</code> bị giới hạn ở cấp route segment. Các thư viện{' '}
                 <code>react-error-boundary</code> tiêu chuẩn không nhận biết được digest tokens nội
-                bộ của Next.js — chúng bắt gọn lệnh <code>redirect()</code> và vô tình thay thế trang
-                cần chuyển hướng bằng giao diện cảnh báo lỗi. <code>unstable_catchError()</code> giải quyết
-                triệt để xung đột này.
+                bộ của Next.js — chúng bắt gọn lệnh <code>redirect()</code> và vô tình thay thế
+                trang cần chuyển hướng bằng giao diện cảnh báo lỗi.{' '}
+                <code>unstable_catchError()</code> giải quyết triệt để xung đột này.
               </p>
 
               <div className="space-y-3">
                 <InfoBox label="1. Dung nạp luồng điều hướng" variant="highlight">
-                  <p>Mọi lỗi sinh ra từ logic nội bộ Next.js (<code>redirect()</code>, <code>notFound()</code>, <code>unauthorized()</code>) đi xuyên qua ranh giới lỗi này một cách an toàn.</p>
+                  <p>
+                    Mọi lỗi sinh ra từ logic nội bộ Next.js (<code>redirect()</code>,{' '}
+                    <code>notFound()</code>, <code>unauthorized()</code>) đi xuyên qua ranh giới lỗi
+                    này một cách an toàn.
+                  </p>
                 </InfoBox>
                 <InfoBox label="2. Khôi phục dựa trên server data" variant="highlight">
-                  <p><code>unstable_retry()</code> buộc Next.js re-fetch dữ liệu và re-render Server Component trên máy chủ — then chốt khi microservices tạm thời quá tải.</p>
+                  <p>
+                    <code>unstable_retry()</code> buộc Next.js re-fetch dữ liệu và re-render Server
+                    Component trên máy chủ — then chốt khi microservices tạm thời quá tải.
+                  </p>
                 </InfoBox>
                 <InfoBox label="3. Server-rendered fallback">
-                  <p>Giao diện lỗi được cấp dữ liệu trực tiếp từ máy chủ trước khi gửi về client — duy trì trải nghiệm liền mạch.</p>
+                  <p>
+                    Giao diện lỗi được cấp dữ liệu trực tiếp từ máy chủ trước khi gửi về client —
+                    duy trì trải nghiệm liền mạch.
+                  </p>
                 </InfoBox>
               </div>
 
-              <CodeBlock code={`import { unstable_catchError } from 'next/server';
+              <CodeBlock
+                code={`import { unstable_catchError } from 'next/server';
 
 function MyComponent() {
   const { data, error } = unstable_catchError(
@@ -1194,7 +1413,8 @@ function MyComponent() {
   }
 
   return <UserCard user={data} />;
-}`} />
+}`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -1210,25 +1430,39 @@ function MyComponent() {
           <Card>
             <CardContent className="space-y-4 pt-6">
               <p className="text-muted-foreground">
-                Next.js 16.2.9 mở khóa cổng gỡ lỗi Node.js cho <code>next start</code>. Kỹ sư
-                vận hành sử dụng Chrome DevTools để lập hồ sơ CPU và kết xuất heap ngay trên
+                Next.js 16.2.9 mở khóa cổng gỡ lỗi Node.js cho <code>next start</code>. Kỹ sư vận
+                hành sử dụng Chrome DevTools để lập hồ sơ CPU và kết xuất heap ngay trên
                 staging/production — hỗ trợ phân lập memory leak trực quan.
               </p>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="next start --inspect" variant="highlight">
-                  <p>Mở cổng gỡ lỗi Node.js → Chrome DevTools. CPU profiling + heap snapshots trực tiếp trên staging/production.</p>
+                  <p>
+                    Mở cổng gỡ lỗi Node.js → Chrome DevTools. CPU profiling + heap snapshots trực
+                    tiếp trên staging/production.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Memory Monitoring" variant="info">
-                  <p>Biến môi trường <code>--experimental-debug-memory-usage</code> + <code>--heap-prof</code> từ Node.js để theo dõi cache leak và unbounded growth.</p>
+                  <p>
+                    Biến môi trường <code>--experimental-debug-memory-usage</code> +{' '}
+                    <code>--heap-prof</code> từ Node.js để theo dõi cache leak và unbounded growth.
+                  </p>
                 </InfoBox>
               </div>
 
               <InfoBox label="Khuyến nghị SRE cho Standalone + Cache" variant="warning">
                 <ul className="list-inside list-disc space-y-1">
-                  <li><strong>Hạn chế</strong> luồng dữ liệu proxy cho upstream fetches bên trong bộ đệm nội bộ.</li>
-                  <li><strong>Kubernetes / PM2</strong> — graceful restart theo lịch khi RSS vượt ngưỡng an toàn.</li>
-                  <li><strong>Theo dõi</strong> getItemsLru key length accounting — Issue #94890.</li>
+                  <li>
+                    <strong>Hạn chế</strong> luồng dữ liệu proxy cho upstream fetches bên trong bộ
+                    đệm nội bộ.
+                  </li>
+                  <li>
+                    <strong>Kubernetes / PM2</strong> — graceful restart theo lịch khi RSS vượt
+                    ngưỡng an toàn.
+                  </li>
+                  <li>
+                    <strong>Theo dõi</strong> getItemsLru key length accounting — Issue #94890.
+                  </li>
                 </ul>
               </InfoBox>
             </CardContent>
@@ -1248,10 +1482,11 @@ function MyComponent() {
               <div className="space-y-3">
                 <InfoBox label="1. OOM — output: standalone + Cache Components" variant="warning">
                   <p>
-                    <strong>Memory Leak nghiêm trọng</strong> trên Docker/Kubernetes. ArrayBuffer và WriteWrap
-                    bị GC bỏ qua. FinalizationRegistry thiếu giới hạn dung lượng cho negative-cache entries
-                    trên LRU Cache → bộ nhớ V8 tăng theo cấp số nhân đến khi sập dịch vụ.
-                    Bản vá #88577, #89040 đã phê duyệt canary nhưng <strong>chưa vào 16.2.x stable</strong>.
+                    <strong>Memory Leak nghiêm trọng</strong> trên Docker/Kubernetes. ArrayBuffer và
+                    WriteWrap bị GC bỏ qua. FinalizationRegistry thiếu giới hạn dung lượng cho
+                    negative-cache entries trên LRU Cache → bộ nhớ V8 tăng theo cấp số nhân đến khi
+                    sập dịch vụ. Bản vá #88577, #89040 đã phê duyệt canary nhưng{' '}
+                    <strong>chưa vào 16.2.x stable</strong>.
                   </p>
                 </InfoBox>
 
@@ -1266,24 +1501,27 @@ function MyComponent() {
 
                 <InfoBox label="3. Duplicate Fizz IDs — PPR Stream" variant="warning">
                   <p>
-                    Khi luồng network bị gián đoạn trong PPR, HTML sinh ra chứa <code>id=&quot;S:3&quot;</code> trùng lặp.
-                    React 19 dùng <code>$RC(&quot;B:x&quot;,&quot;S:x&quot;)</code> qua <code>getElementById</code> để swap —
-                    ID trùng → nội dung Static/Client Components bị hoán đổi sai, phá hỏng hoàn toàn giao diện.
+                    Khi luồng network bị gián đoạn trong PPR, HTML sinh ra chứa{' '}
+                    <code>id=&quot;S:3&quot;</code> trùng lặp. React 19 dùng{' '}
+                    <code>$RC(&quot;B:x&quot;,&quot;S:x&quot;)</code> qua{' '}
+                    <code>getElementById</code> để swap — ID trùng → nội dung Static/Client
+                    Components bị hoán đổi sai, phá hỏng hoàn toàn giao diện.
                   </p>
                 </InfoBox>
 
                 <InfoBox label="4. Intermittent 404s" variant="warning">
                   <p>
-                    Ứng dụng trả về 404 ngẫu nhiên cho tuyến đường tồn tại sau <code>next/link</code> hoặc
-                    reload cục bộ. Chỉ giải quyết bằng hard refresh — cho thấy gián đoạn đồng bộ trong
-                    router nội bộ hoặc loading boundaries.
+                    Ứng dụng trả về 404 ngẫu nhiên cho tuyến đường tồn tại sau{' '}
+                    <code>next/link</code> hoặc reload cục bộ. Chỉ giải quyết bằng hard refresh —
+                    cho thấy gián đoạn đồng bộ trong router nội bộ hoặc loading boundaries.
                   </p>
                 </InfoBox>
 
                 <InfoBox label="5. LRU Key Length Accounting (Issue #94890)" variant="warning">
                   <p>
-                    <code>getItemsLru</code> bỏ sót độ dài URL key trong tính toán size → heap retention
-                    quá mức trong long-lived servers. Giám sát RSS và thiết lập graceful restart thresholds.
+                    <code>getItemsLru</code> bỏ sót độ dài URL key trong tính toán size → heap
+                    retention quá mức trong long-lived servers. Giám sát RSS và thiết lập graceful
+                    restart thresholds.
                   </p>
                 </InfoBox>
               </div>
@@ -1311,23 +1549,30 @@ function MyComponent() {
             <CardContent className="space-y-4 pt-6">
               <p className="text-muted-foreground">
                 AGENTS.md là tệp chỉ thị đặt tại thư mục gốc dự án, hướng dẫn AI Agent đọc bộ tài
-                liệu cục bộ (<code>node_modules/next/dist/docs/</code>) trước khi viết code — đảm bảo
-                agent sử dụng đúng API của 16.2.9 (ví dụ: <code>&quot;use cache&quot;</code> thay vì
+                liệu cục bộ (<code>node_modules/next/dist/docs/</code>) trước khi viết code — đảm
+                bảo agent sử dụng đúng API của 16.2.9 (ví dụ: <code>&quot;use cache&quot;</code>{' '}
+                thay vì
                 <code>export const revalidate</code>).
               </p>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <InfoBox label="create-next-app" variant="highlight">
-                  <p>Tự động khởi tạo <code>AGENTS.md</code> tại thư mục gốc — chỉ thị AI Agent phải đọc bộ tài liệu cục bộ trước khi viết code.</p>
+                  <p>
+                    Tự động khởi tạo <code>AGENTS.md</code> tại thư mục gốc — chỉ thị AI Agent phải
+                    đọc bộ tài liệu cục bộ trước khi viết code.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Kết quả đo lường" variant="highlight">
-                  <p>Always-available context nâng tỷ lệ hoàn thành tác vụ chính xác lên <strong>100%</strong> trên bộ evals của Vercel.</p>
+                  <p>
+                    Always-available context nâng tỷ lệ hoàn thành tác vụ chính xác lên{' '}
+                    <strong>100%</strong> trên bộ evals của Vercel.
+                  </p>
                 </InfoBox>
               </div>
 
               <Callout>
-                Next.js trở thành framework đầu tiên được thiết kế nguyên bản cho kỷ nguyên lập trình
-                bằng trợ lý tự động (Agent-Driven Development).
+                Next.js trở thành framework đầu tiên được thiết kế nguyên bản cho kỷ nguyên lập
+                trình bằng trợ lý tự động (Agent-Driven Development).
               </Callout>
             </CardContent>
           </Card>
@@ -1345,13 +1590,22 @@ function MyComponent() {
             <CardContent className="space-y-4 pt-6">
               <div className="grid gap-3 md:grid-cols-3">
                 <InfoBox label="Browser Log Forwarding" variant="highlight">
-                  <p><code>logging.browserToTerminal</code> — tự động chuyển hướng lỗi client về Terminal. AI nhận live feedback loop để tự sửa lỗi.</p>
+                  <p>
+                    <code>logging.browserToTerminal</code> — tự động chuyển hướng lỗi client về
+                    Terminal. AI nhận live feedback loop để tự sửa lỗi.
+                  </p>
                 </InfoBox>
                 <InfoBox label="Dev Server Lock File" variant="info">
-                  <p><code>.next/dev/lock</code> ngăn Agent tạo thêm tiến trình dev server khi đã có trên cổng 3000.</p>
+                  <p>
+                    <code>.next/dev/lock</code> ngăn Agent tạo thêm tiến trình dev server khi đã có
+                    trên cổng 3000.
+                  </p>
                 </InfoBox>
                 <InfoBox label="MCP Server" variant="highlight">
-                  <p><code>.mcp.json</code> + <code>next-devtools-mcp</code>: get_errors, get_logs, get_page_metadata, browser_eval, bundle.analyze.</p>
+                  <p>
+                    <code>.mcp.json</code> + <code>next-devtools-mcp</code>: get_errors, get_logs,
+                    get_page_metadata, browser_eval, bundle.analyze.
+                  </p>
                 </InfoBox>
               </div>
 
@@ -1366,10 +1620,13 @@ function MyComponent() {
               <InfoBox label="Ví dụ: PPR Analysis" variant="highlight">
                 <p>
                   <code>next-browser ppr lock</code> phong tỏa mô hình hiển thị, sau đó{' '}
-                  <code>next-browser tree</code> trả về: <em>&quot;1 dynamic hole, 1 static blocked
-                  by: getVisitorCount at app/blog/[slug]/page.tsx:5&quot;</em>. AI Agent lập tức suy luận
-                  hàm <code>getVisitorCount</code> đã vỡ static shell → tự động bao bọc bằng{' '}
-                  <code>&lt;Suspense&gt;</code>.
+                  <code>next-browser tree</code> trả về:{' '}
+                  <em>
+                    &quot;1 dynamic hole, 1 static blocked by: getVisitorCount at
+                    app/blog/[slug]/page.tsx:5&quot;
+                  </em>
+                  . AI Agent lập tức suy luận hàm <code>getVisitorCount</code> đã vỡ shell → tự động
+                  bao bọc bằng <code>&lt;Suspense&gt;</code>.
                 </p>
               </InfoBox>
             </CardContent>
@@ -1389,35 +1646,39 @@ function MyComponent() {
               <div className="space-y-3">
                 <InfoBox label="Codemod" variant="highlight">
                   <p>
-                    <code>npx @next/codemod@canary upgrade latest</code> — tự động di chuyển cấu hình sang
-                    Turbopack, gỡ bỏ tiền tố <code>unstable_</code> cho
-                    các API đã ổn định (<code>cacheLife</code>, <code>cacheTag</code>).
+                    <code>npx @next/codemod@canary upgrade latest</code> — tự động di chuyển cấu
+                    hình sang Turbopack, gỡ bỏ tiền tố <code>unstable_</code> cho các API đã ổn định
+                    (<code>cacheLife</code>, <code>cacheTag</code>).
                   </p>
                 </InfoBox>
 
                 <InfoBox label="npx next typegen" variant="info">
                   <p>
-                    Tái tạo <code>PageProps</code> và{' '}
-                    <code>RouteContext</code> types. <code>params</code> và <code>searchParams</code> là Promise bắt buộc. Không handcraft các interfaces này — chúng sẽ drift.
+                    Tái tạo <code>PageProps</code> và <code>RouteContext</code> types.{' '}
+                    <code>params</code> và <code>searchParams</code> là Promise bắt buộc. Không
+                    handcraft các interfaces này — chúng sẽ drift.
                   </p>
                 </InfoBox>
 
                 <InfoBox label="Error Boundaries" variant="info">
                   <p>
-                    Sử dụng <code>unstable_catchError()</code> cho framework-aware error boundaries —
-                    đảm bảo <code>redirect()</code>, <code>notFound()</code>, <code>unauthorized()</code> hoạt động xuyên qua ranh giới lỗi.
+                    Sử dụng <code>unstable_catchError()</code> cho framework-aware error boundaries
+                    — đảm bảo <code>redirect()</code>, <code>notFound()</code>,{' '}
+                    <code>unauthorized()</code> hoạt động xuyên qua ranh giới lỗi.
                   </p>
                 </InfoBox>
 
                 <InfoBox label="CI/CD + AI Integration" variant="highlight">
                   <p>
                     Phân phối <code>AGENTS.md</code> xuyên suốt Monorepo. Tích hợp{' '}
-                    <code>next-browser</code> tests vào PR reviews — tự động phát hiện static shell leakages.
+                    <code>next-browser</code> tests vào PR reviews — tự động phát hiện static shell
+                    leakages.
                   </p>
                 </InfoBox>
               </div>
 
-              <CodeBlock code={`# Công cụ chuẩn 16.2.9
+              <CodeBlock
+                code={`# Công cụ chuẩn 16.2.9
 npx @next/codemod@canary upgrade latest   # Codemod tự động
 npx next typegen                          # Tái tạo types
 
@@ -1425,7 +1686,8 @@ npx next typegen                          # Tái tạo types
 bun run typecheck
 bun run lint
 bun run test
-bun run build`} />
+bun run build`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -1442,28 +1704,53 @@ bun run build`} />
             <CardContent className="space-y-4 pt-6">
               <InfoBox label="Lớp Dữ Liệu">
                 <ul className="list-inside list-disc space-y-1">
-                  <li><strong>Prisma v7:</strong> Kiến trúc driver-adapters. Cần <code>serverExternalPackages: [&#39;@prisma/client&#39;, &#39;pg&#39;]</code> cho Turbopack.</li>
-                  <li><strong>Drizzle ORM:</strong> ESM native, tương thích hoàn hảo Turbopack. <code>__drizzle_migrations</code> bảo toàn bảng cái khi di chuyển provider.</li>
+                  <li>
+                    <strong>Prisma v7:</strong> Kiến trúc driver-adapters. Cần{' '}
+                    <code>serverExternalPackages: [&#39;@prisma/client&#39;, &#39;pg&#39;]</code>{' '}
+                    cho Turbopack.
+                  </li>
+                  <li>
+                    <strong>Drizzle ORM:</strong> ESM native, tương thích hoàn hảo Turbopack.{' '}
+                    <code>__drizzle_migrations</code> bảo toàn bảng cái khi di chuyển provider.
+                  </li>
                 </ul>
               </InfoBox>
 
               <InfoBox label="Xác Thực & Phân Quyền">
                 <ul className="list-inside list-disc space-y-1">
-                  <li><strong>Auth.js v5:</strong> Split config pattern qua <code>auth.config.ts</code> — cô lập Prisma Adapter ở server routes.</li>
-                  <li><strong>Better Auth:</strong> 100% quyền sở hữu session tables — ưu việt cho B2B/SaaS.</li>
-                  <li><strong>Clerk:</strong> Tích hợp nhanh nhất nhưng rủi ro vendor lock-in.</li>
+                  <li>
+                    <strong>Auth.js v5:</strong> Split config pattern qua{' '}
+                    <code>auth.config.ts</code> — cô lập Prisma Adapter ở server routes.
+                  </li>
+                  <li>
+                    <strong>Better Auth:</strong> 100% quyền sở hữu session tables — ưu việt cho
+                    B2B/SaaS.
+                  </li>
+                  <li>
+                    <strong>Clerk:</strong> Tích hợp nhanh nhất nhưng rủi ro vendor lock-in.
+                  </li>
                 </ul>
               </InfoBox>
 
               <InfoBox label="Tailwind CSS v4 + Turbopack">
                 <ul className="list-inside list-disc space-y-1">
-                  <li><strong>CSS-Native Config:</strong> Token khai báo qua <code>@theme</code>, không cần file JS.</li>
-                  <li><strong>Core Rust Engine:</strong> Biên dịch 5x nhanh, khởi động dưới 100ms.</li>
-                  <li><strong>Cảnh báo:</strong> JIT scanner đôi khi bỏ sót arbitrary value classes (<code>h-[80vh]</code>, <code>z-[100]</code>). Workaround: React Inline Styles + <code>@source &quot;tailwind-safelist.txt&quot;</code>.</li>
+                  <li>
+                    <strong>CSS-Native Config:</strong> Token khai báo qua <code>@theme</code>,
+                    không cần file JS.
+                  </li>
+                  <li>
+                    <strong>Core Rust Engine:</strong> Biên dịch 5x nhanh, khởi động dưới 100ms.
+                  </li>
+                  <li>
+                    <strong>Cảnh báo:</strong> JIT scanner đôi khi bỏ sót arbitrary value classes (
+                    <code>h-[80vh]</code>, <code>z-[100]</code>). Workaround: React Inline Styles +{' '}
+                    <code>@source &quot;tailwind-safelist.txt&quot;</code>.
+                  </li>
                 </ul>
               </InfoBox>
 
-              <CodeBlock code={`// next.config.ts — Prisma + Turbopack
+              <CodeBlock
+                code={`// next.config.ts — Prisma + Turbopack
 const nextConfig = {
   serverExternalPackages: ['@prisma/client', 'pg'],
 };
@@ -1472,7 +1759,8 @@ const nextConfig = {
 export const authConfig = {
   providers: [/* ... */],
   // DB adapter isolated in server-only routes
-};`} />
+};`}
+              />
             </CardContent>
           </Card>
         </div>

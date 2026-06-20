@@ -3,7 +3,16 @@
 import React from 'react';
 import { useMediaState, useMediaRemote, type MediaPlayerInstance } from '@vidstack/react';
 import { Button, Slider, GlassSurface, Switch, cn } from '@pumni/ui';
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, Clapperboard, SkipForward } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize,
+  Minimize,
+  Clapperboard,
+  SkipForward,
+} from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@pumni/ui';
 import { useControlsVisibility } from '../hooks/use-controls-visibility';
 
@@ -81,9 +90,7 @@ function useSmoothTimelineTime({
         Number.isFinite(playerTime) &&
         Math.abs(playerTime - interpolatedTime) < 1;
       const nextTime = clampTime(
-        hasStablePlayerTime
-          ? Math.max(playerTime, interpolatedTime)
-          : interpolatedTime,
+        hasStablePlayerTime ? Math.max(playerTime, interpolatedTime) : interpolatedTime,
         duration,
       );
 
@@ -106,12 +113,7 @@ function useSmoothTimelineTime({
 
 function PlayPauseButton({ paused, onToggle }: { paused: boolean; onToggle: () => void }) {
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={onToggle}
-      aria-label={paused ? 'Play' : 'Pause'}
-    >
+    <Button variant="ghost" size="icon" onClick={onToggle} aria-label={paused ? 'Play' : 'Pause'}>
       {paused ? (
         <Play className="size-4 fill-current text-foreground" />
       ) : (
@@ -153,7 +155,7 @@ function VolumeControl({
         max={1}
         step={0.05}
         onValueChange={onVolumeChange}
-        className="w-20 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-foreground/30"
+        className="w-20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:border-foreground/30 **:data-[slot=thumb]:bg-foreground **:data-[slot=track]:bg-foreground/20"
         aria-label="Volume level"
       />
     </>
@@ -170,15 +172,11 @@ function SyncStatusBadge({
   if (isHost) return null;
   if (isFollowingHost) {
     return (
-      <span className="type-caption text-muted-foreground ml-2 select-none">
-        &bull; Đồng bộ
-      </span>
+      <span className="ml-2 type-caption text-muted-foreground select-none">&bull; Đồng bộ</span>
     );
   }
   return (
-    <span className="type-caption text-warning ml-2 select-none font-medium">
-      &bull; Lệch sync
-    </span>
+    <span className="ml-2 type-caption font-medium text-warning select-none">&bull; Lệch sync</span>
   );
 }
 
@@ -187,14 +185,14 @@ function SoftLockBanner({ onResync }: { onResync: () => void }) {
     <div
       role="status"
       aria-live="polite"
-      className="flex items-center justify-between w-full px-3 py-1.5 rounded-md border border-warning/20 bg-warning/10 text-warning text-xs select-none"
+      className="flex w-full items-center justify-between rounded-md border border-warning/20 bg-warning/10 px-3 py-1.5 text-xs text-warning select-none"
     >
       <span className="leading-snug">Bạn đang xem lệch tiến trình của phòng.</span>
       <Button
         variant="ghost"
         size="sm"
         onClick={onResync}
-        className="h-6 text-xs px-2.5 font-semibold motion-safe:hover:bg-warning/10 text-warning border border-warning/20 shrink-0 ml-2"
+        className="ml-2 h-6 shrink-0 border border-warning/20 px-2.5 text-xs font-semibold text-warning motion-safe:hover:bg-warning/10"
       >
         Đồng bộ lại
       </Button>
@@ -220,8 +218,8 @@ function TimelineScrubber({
   const sliderValue = seekPreview ?? currentTime;
 
   return (
-    <div className="flex items-center gap-3 w-full">
-      <span className="text-xs font-mono text-foreground select-none tabular-nums min-w-9 text-right">
+    <div className="flex w-full items-center gap-3">
+      <span className="min-w-9 text-right font-mono text-xs text-foreground tabular-nums select-none">
         {formatTime(sliderValue)}
       </span>
       <Slider
@@ -231,10 +229,10 @@ function TimelineScrubber({
         step={0.1}
         onValueChange={onSeekPreview}
         onValueCommit={onSeekCommit}
-        className="flex-1 **:data-[slot=track]:bg-foreground/20 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:bg-foreground **:data-[slot=thumb]:border-border"
+        className="flex-1 **:data-[slot=range]:bg-foreground **:data-[slot=thumb]:border-border **:data-[slot=thumb]:bg-foreground **:data-[slot=track]:bg-foreground/20"
         aria-label="Seek progress"
       />
-      <span className="text-xs font-mono text-muted-foreground select-none tabular-nums min-w-9">
+      <span className="min-w-9 font-mono text-xs text-muted-foreground tabular-nums select-none">
         {formatTime(duration)}
       </span>
     </div>
@@ -281,12 +279,8 @@ function HostActionGroup({
       )}
 
       {/* Playback Rate / Speed Selector — host only authoritative */}
-      <Select
-        value={playbackRate.toString()}
-        onValueChange={onSpeedChange}
-        disabled={!isHost}
-      >
-        <SelectTrigger className="h-7 w-14 text-xs px-1.5 bg-transparent border-foreground/20 text-foreground focus:ring-foreground/30">
+      <Select value={playbackRate.toString()} onValueChange={onSpeedChange} disabled={!isHost}>
+        <SelectTrigger className="h-7 w-14 border-foreground/20 bg-transparent px-1.5 text-xs text-foreground focus:ring-foreground/30">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -302,7 +296,7 @@ function HostActionGroup({
       {/* Auto-play Toggle */}
       {isHost && onAutoPlayToggle && (
         <div className="flex items-center gap-1.5">
-          <span className="type-caption text-muted-foreground select-none whitespace-nowrap">
+          <span className="type-caption whitespace-nowrap text-muted-foreground select-none">
             Tự động phát
           </span>
           <Switch
@@ -448,7 +442,7 @@ export function RoomControls({
     <>
       <div
         className={cn(
-          'absolute inset-x-0 bottom-0 h-48 pointer-events-none z-10 transition-opacity duration-(--duration-base) ease-fluid',
+          'pointer-events-none absolute inset-x-0 bottom-0 z-10 h-48 transition-opacity duration-(--duration-base) ease-fluid',
           visible ? 'opacity-100' : 'opacity-0',
         )}
         style={{
@@ -464,14 +458,12 @@ export function RoomControls({
         onFocus={controlsBind.onFocus}
         onBlur={controlsBind.onBlur}
         className={cn(
-          'absolute bottom-4 left-4 right-4 z-20 flex flex-col gap-2 p-3 rounded-nested transition-all duration-(--duration-base) ease-fluid',
-          visible ? 'opacity-100 translate-y-0' : 'opacity-0 pointer-events-none translate-y-2',
+          'absolute right-4 bottom-4 left-4 z-20 flex flex-col gap-2 rounded-nested p-3 transition-all duration-(--duration-base) ease-fluid',
+          visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0',
         )}
       >
         {/* Soft-lock alert banner for follower */}
-        {!isHost && !isFollowingHost && resync ? (
-          <SoftLockBanner onResync={resync} />
-        ) : null}
+        {!isHost && !isFollowingHost && resync ? <SoftLockBanner onResync={resync} /> : null}
 
         <TimelineScrubber
           currentTime={timelineTime}
@@ -482,7 +474,7 @@ export function RoomControls({
         />
 
         {/* Control buttons */}
-        <div className="flex items-center justify-between w-full">
+        <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2">
             <PlayPauseButton paused={paused} onToggle={handlePlayPause} />
             <VolumeControl

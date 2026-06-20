@@ -33,12 +33,10 @@ function ShortcutList({ groupId }: { groupId: string }) {
       {group.shortcuts.map((shortcut) => (
         <li key={shortcut.label}>
           <Card variant="inset" className="h-full">
-            <CardContent className="flex justify-between items-start gap-4 p-4">
+            <CardContent className="flex items-start justify-between gap-4 p-4">
               <div className="min-w-0 space-y-1">
-                <p className="type-label font-semibold text-foreground">
-                  {shortcut.label}
-                </p>
-                <p className="type-caption text-muted-foreground leading-relaxed">
+                <p className="type-label font-semibold text-foreground">{shortcut.label}</p>
+                <p className="type-caption leading-relaxed text-muted-foreground">
                   {shortcut.description}
                 </p>
               </div>
@@ -46,11 +44,12 @@ function ShortcutList({ groupId }: { groupId: string }) {
               {/* Key chips — aligned to the right, smart joins */}
               <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
                 {shortcut.keys.map((key, i) => {
-                  const isCombination = shortcut.keys.includes('Ctrl') || shortcut.keys.includes('Shift');
+                  const isCombination =
+                    shortcut.keys.includes('Ctrl') || shortcut.keys.includes('Shift');
                   return (
                     <React.Fragment key={i}>
                       {i > 0 && (
-                        <span className="text-xs text-muted-foreground font-semibold">
+                        <span className="text-xs font-semibold text-muted-foreground">
                           {isCombination ? '+' : '/'}
                         </span>
                       )}
@@ -78,10 +77,10 @@ export function ShortcutsReference() {
 
   return (
     <Window title="Sky Player — Help & Reference" className="w-full shadow-raised">
-      <Tabs defaultValue="picker" className="w-full flex flex-col gap-2">
+      <Tabs defaultValue="picker" className="flex w-full flex-col gap-2">
         {/* Tab List */}
-        <div className="border-b border-border p-3 -mx-4 -mt-4 bg-muted/10">
-          <TabsList className="flex flex-wrap h-auto gap-1">
+        <div className="-mx-4 -mt-4 border-b border-border bg-muted/10 p-3">
+          <TabsList className="flex h-auto flex-wrap gap-1">
             {tabsItems.map((item) => (
               <TabsTrigger key={item.id} value={item.id}>
                 {item.label}
@@ -91,7 +90,7 @@ export function ShortcutsReference() {
         </div>
 
         {/* Tab Contents */}
-        <div className="min-h-[280px] p-5 pt-4">
+        <div className="min-h-70 p-5 pt-4">
           {SHORTCUT_GROUPS.map((group) => (
             <TabsContent
               key={group.id}

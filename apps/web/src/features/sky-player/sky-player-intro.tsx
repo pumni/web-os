@@ -22,11 +22,11 @@ export function SkyPlayerIntro() {
   return (
     <div className="min-h-screen">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative flex flex-col justify-center overflow-hidden pb-16 pt-14 md:pb-20 md:pt-20 lg:pb-24 lg:pt-24">
+      <section className="relative flex flex-col justify-center overflow-hidden pt-14 pb-16 md:pt-20 md:pb-20 lg:pt-24 lg:pb-24">
         {/* Ambient background blobs */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-1/4 top-0 size-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/8 blur-[100px]" />
-          <div className="absolute right-0 top-1/3 size-96 rounded-full bg-(--desktop-blob-cyan)/10 blur-[80px]" />
+          <div className="absolute top-0 left-1/4 size-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/8 blur-[100px]" />
+          <div className="absolute top-1/3 right-0 size-96 rounded-full bg-(--desktop-blob-cyan)/10 blur-[80px]" />
           <div className="absolute bottom-0 left-1/3 size-80 rounded-full bg-(--brand-gradient-to)/8 blur-[80px]" />
         </div>
 
@@ -46,13 +46,13 @@ export function SkyPlayerIntro() {
 
             {/* Headline */}
             <div className="space-y-4">
-              <h1 className="type-display text-balance leading-[1.08] text-foreground md:text-5xl lg:text-6xl xl:text-7xl">
+              <h1 className="type-display leading-[1.08] text-balance text-foreground md:text-5xl lg:text-6xl xl:text-7xl">
                 Play Sky music
                 <br />
                 <span className="text-gradient-brand">with Sky Player.</span>
               </h1>
 
-              <p className="type-body max-w-lg text-pretty text-muted-foreground md:text-lg">
+              <p className="max-w-lg type-body text-pretty text-muted-foreground md:text-lg">
                 An automatic music sheet player for{' '}
                 <strong className="font-semibold text-foreground">
                   Sky: Children of the Light
@@ -71,18 +71,23 @@ export function SkyPlayerIntro() {
                 <Card
                   key={item.label}
                   variant="inset"
-                  className="flex flex-col px-4 py-2.5 gap-0.5 rounded-lg"
+                  className="flex flex-col gap-0.5 rounded-lg px-4 py-2.5"
                 >
                   <span className="text-xs font-bold text-foreground">{item.label}</span>
-                  <span className="type-caption mt-0.5 text-muted-foreground">{item.detail}</span>
+                  <span className="mt-0.5 type-caption text-muted-foreground">{item.detail}</span>
                 </Card>
               ))}
             </div>
           </motion.div>
 
           <motion.div
-            {...(shouldReduce ? {} : { ...recipes.fadeRise, transition: { ...recipes.fadeRise.transition, delay: 0.15 } })}
-            className="relative flex justify-center lg:col-span-6 lg:sticky lg:top-24 lg:self-start"
+            {...(shouldReduce
+              ? {}
+              : {
+                  ...recipes.fadeRise,
+                  transition: { ...recipes.fadeRise.transition, delay: 0.15 },
+                })}
+            className="relative flex justify-center lg:sticky lg:top-24 lg:col-span-6 lg:self-start"
           >
             {/* Glow halo behind window */}
             <div
@@ -150,9 +155,7 @@ export function SkyPlayerIntro() {
                   <AlertTriangle className="h-5 w-5 text-warning" />
                 </div>
                 <div className="space-y-1.5">
-                  <h3 className="type-heading text-foreground">
-                    Responsible use guidance
-                  </h3>
+                  <h3 className="type-heading text-foreground">Responsible use guidance</h3>
                   <p className="type-body text-muted-foreground">
                     Automatically playing music sheets or using simulated keystrokes might violate
                     Thatgamecompany&apos;s Terms of Service. Use this tool responsibly and at your

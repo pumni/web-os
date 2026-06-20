@@ -173,14 +173,14 @@ export function PlaylistPanel({
     <div className="flex h-full min-h-0 flex-col gap-3">
       {/* Now Playing */}
       {currentItem && (
-        <div className="flex shrink-0 select-none items-center gap-2.5 rounded-lg bg-primary/10 px-2.5 py-2">
+        <div className="flex shrink-0 items-center gap-2.5 rounded-lg bg-primary/10 px-2.5 py-2 select-none">
           <span className="relative flex size-2.5 shrink-0">
-            <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60" />
+            <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 motion-safe:animate-ping" />
             <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
           </span>
-          <div className="flex flex-col min-w-0 flex-1">
-            <span className="type-caption text-primary font-medium">Đang phát</span>
-            <span className="truncate text-xs text-foreground font-medium leading-tight">
+          <div className="flex min-w-0 flex-1 flex-col">
+            <span className="type-caption font-medium text-primary">Đang phát</span>
+            <span className="truncate text-xs leading-tight font-medium text-foreground">
               {currentItem.title || currentItem.source_ref}
             </span>
           </div>
@@ -268,7 +268,7 @@ export function PlaylistPanel({
               size="sm"
               className="h-9 w-full rounded-full text-xs"
             >
-              <Plus className="size-3.5 mr-1.5" />
+              <Plus className="mr-1.5 size-3.5" />
               Thêm vào hàng chờ
             </Button>
           </form>
@@ -277,7 +277,7 @@ export function PlaylistPanel({
 
       {/* Queue List */}
       <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-0.5">
-        <div className="flex items-center justify-between shrink-0">
+        <div className="flex shrink-0 items-center justify-between">
           <span className="type-label">Hàng chờ</span>
           <span className="type-caption text-muted-foreground tabular-nums">
             {items.length} video
@@ -285,8 +285,8 @@ export function PlaylistPanel({
         </div>
 
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 text-center text-muted-foreground select-none flex-1">
-            <Music className="size-8 stroke-[1.5] mb-2 opacity-40" />
+          <div className="flex flex-1 flex-col items-center justify-center py-10 text-center text-muted-foreground select-none">
+            <Music className="mb-2 size-8 stroke-[1.5] opacity-40" />
             <span className="type-caption">Hàng chờ trống</span>
           </div>
         ) : (
@@ -370,14 +370,14 @@ function SortableItem({
   return (
     <div ref={setNodeRef} style={style} className={rowClass}>
       {/* Index / Playing indicator */}
-      <div className="size-5 flex items-center justify-center shrink-0">
+      <div className="flex size-5 shrink-0 items-center justify-center">
         {isCurrent ? (
           <span className="relative flex size-2.5">
-            <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60" />
+            <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 motion-safe:animate-ping" />
             <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
           </span>
         ) : (
-          <span className="text-muted-foreground font-mono tabular-nums leading-none text-[10px] opacity-50">
+          <span className="font-mono text-[10px] leading-none text-muted-foreground tabular-nums opacity-50">
             {idx + 1}
           </span>
         )}
@@ -386,7 +386,7 @@ function SortableItem({
       {/* Drag Handle */}
       <button
         type="button"
-        className="size-5 flex items-center justify-center cursor-grab text-muted-foreground opacity-30 motion-safe:hover:text-muted-foreground motion-safe:hover:opacity-100 active:cursor-grabbing shrink-0 transition-colors"
+        className="flex size-5 shrink-0 cursor-grab items-center justify-center text-muted-foreground opacity-30 transition-colors active:cursor-grabbing motion-safe:hover:text-muted-foreground motion-safe:hover:opacity-100"
         aria-label="Kéo để sắp xếp"
         {...attributes}
         {...listeners}
@@ -395,7 +395,7 @@ function SortableItem({
       </button>
 
       {/* Title + source type */}
-      <div className="flex flex-col gap-0.5 min-w-0 flex-1 select-none">
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5 select-none">
         <span className={titleClass}>{item.title || item.source_ref}</span>
         <span className={badgeClass}>{isYoutube ? 'YouTube' : 'URL'}</span>
       </div>

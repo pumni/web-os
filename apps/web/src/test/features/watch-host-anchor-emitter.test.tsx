@@ -57,7 +57,7 @@ describe('useHostAnchorEmitter', () => {
         roomId: 'room-123',
         isHost: true,
         serverClock: () => 1000,
-      })
+      }),
     );
 
     const emitAnchor = result.current;
@@ -92,7 +92,7 @@ describe('useHostAnchorEmitter', () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         anchor_position: 14,
-      })
+      }),
     );
   });
 
@@ -123,7 +123,7 @@ describe('useHostAnchorEmitter', () => {
         roomId: 'room-123',
         isHost: true,
         serverClock: () => 1000,
-      })
+      }),
     );
 
     const emitAnchor = result.current;
@@ -139,7 +139,7 @@ describe('useHostAnchorEmitter', () => {
       expect.objectContaining({
         is_playing: true,
         anchor_position: 5,
-      })
+      }),
     );
   });
 
@@ -170,7 +170,7 @@ describe('useHostAnchorEmitter', () => {
         roomId: 'room-123',
         isHost: true,
         serverClock: () => 1000,
-      })
+      }),
     );
 
     // Call emitAnchor, which schedules a persist
@@ -190,7 +190,7 @@ describe('useHostAnchorEmitter', () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         anchor_position: 20,
-      })
+      }),
     );
   });
 
@@ -223,7 +223,7 @@ describe('useHostAnchorEmitter', () => {
         roomId: 'room-123',
         isHost: isHostVal,
         serverClock: () => 1000,
-      })
+      }),
     );
 
     // Call emitAnchor, which schedules a persist
@@ -242,7 +242,7 @@ describe('useHostAnchorEmitter', () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         anchor_position: 30,
-      })
+      }),
     );
   });
 });

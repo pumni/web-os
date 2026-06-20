@@ -81,7 +81,7 @@ export function RoomCard({ room }: RoomCardProps) {
 
             {/* Status chip — semantic tint pattern */}
             {room.is_playing ? (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success border border-success/20">
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-success/20 bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
                 <span className="relative flex size-1.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
                   <span className="relative inline-flex size-1.5 rounded-full bg-success" />
@@ -89,7 +89,7 @@ export function RoomCard({ room }: RoomCardProps) {
                 Playing
               </span>
             ) : (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground border border-border">
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
                 Idle
               </span>
             )}

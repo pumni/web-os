@@ -107,6 +107,37 @@ the APCA gate — tune `--glass-bg` / `--glass-border`, never the thresholds.
    `rounded-[Npx]`.
 6. No new color tokens. Reuse existing semantic tokens.
 
+## Tailwind v4 variant syntax (canonical form)
+
+This repo is **Tailwind v4**. Most AI training data is v3, where bare
+attribute variants did not exist — so models emit the verbose v3 form by
+default. Prefer the v4 canonical shorthand.
+
+Enforced in CI via `tailwind-lint` (the Tailwind language-service `suggestCanonicalClasses`
+diagnostic, run headless): `bun run ai:tw` checks (part of `bun run ai:check`)
+and `bun run ai:tw:fix` rewrites the whole repo in one pass. The rule is raised
+to `error` severity in `.vscode/settings.json` so the gate actually fails on it.
+
+Class **ordering** is a separate concern, owned by `prettier-plugin-tailwindcss`
+(`bun run format`), not a lint rule — so `tailwind-lint`'s `recommendedVariantOrder`
+is turned off to avoid two tools fighting over order.
+
+**Rule:** for a `data-*` / `aria-*` variant that tests only attribute
+*presence* (no `=`), drop the brackets. For one that tests a *value* (has `=`),
+keep the brackets — it cannot be shortened.
+
+| Tests | v3 / verbose (avoid) | v4 canonical (use) | Generated selector |
+| --- | --- | --- | --- |
+| presence | `data-[disabled]:opacity-50` | `data-disabled:opacity-50` | `&[data-disabled]` |
+| presence | `data-[inset]:pl-8` | `data-inset:pl-8` | `&[data-inset]` |
+| presence | `aria-[checked]:bg-accent` | `aria-checked:bg-accent` | `&[aria-checked]` |
+| **value** | `data-[state=open]:rotate-180` | **keep as-is** | `&[data-state="open"]` |
+| **value** | `data-[variant=destructive]:text-destructive` | **keep as-is** | `&[data-variant="destructive"]` |
+
+The two forms compile to identical CSS; this is a readability/consistency
+convention, so it is safe to apply mechanically — but only to the no-`=` cases.
+Never rewrite a variant containing `=` (including `not-data-[…=…]:`).
+
 ## State-layer tokens
 
 `--state-hover`, `--state-pressed`, and `--state-selected` are transient

@@ -3,5 +3,14 @@
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
-  }
+  },
+
+  // Consumed by the `tailwind-lint` CLI (bun run ai:tw) — it reads
+  // tailwindCSS.lint.* from .vscode/settings.json. Canonical is raised to
+  // "error" so the CI gate fails on verbose v4 variants (default is "warning",
+  // and the CLI only fails the run on errors). Variant ordering is left to
+  // prettier-plugin-tailwindcss, so its lint rule is off to avoid double-tooling.
+  // Convention: docs/conventions/design-system.md.
+  "tailwindCSS.lint.suggestCanonicalClasses": "error",
+  "tailwindCSS.lint.recommendedVariantOrder": "ignore"
 }

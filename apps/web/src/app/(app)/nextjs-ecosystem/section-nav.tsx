@@ -15,18 +15,12 @@ const ECOSYSTEM_SECTIONS = [
 ] as const;
 
 export function SectionNav() {
-  const sectionIds = React.useMemo(
-    () => ECOSYSTEM_SECTIONS.map((s) => s.id),
-    [],
-  );
+  const sectionIds = React.useMemo(() => ECOSYSTEM_SECTIONS.map((s) => s.id), []);
   const activeSection = useActiveSection(sectionIds);
 
   return (
-    <div className="sticky top-16 z-[60] -mx-4 border-b border-border bg-background px-4 sm:-mx-6 sm:px-6">
-      <nav
-        aria-label="Page sections"
-        className="flex overflow-x-auto scrollbar-none"
-      >
+    <div className="sticky top-16 z-60 -mx-4 border-b border-border bg-background px-4 sm:-mx-6 sm:px-6">
+      <nav aria-label="Page sections" className="flex scrollbar-none overflow-x-auto">
         {ECOSYSTEM_SECTIONS.map((section) => {
           const Icon = section.icon;
           const isActive = activeSection === section.id;
@@ -39,7 +33,7 @@ export function SectionNav() {
                 document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' });
               }}
               className={cn(
-                'flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-3 text-sm font-medium transition-colors duration-200 whitespace-nowrap focus-visible:outline-ring sm:px-5',
+                'flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-3 text-sm font-medium whitespace-nowrap transition-colors duration-200 focus-visible:outline-ring sm:px-5',
                 isActive
                   ? 'border-primary text-foreground'
                   : 'border-transparent text-muted-foreground hover:text-foreground',

@@ -346,7 +346,11 @@ describe('Semantic surface contrast', () => {
 
   describe.each(['light', 'dark'] as const)('%s mode', (mode) => {
     it.each([
-      { fg: '--secondary-foreground', bg: '--secondary', label: 'secondary-foreground on secondary' },
+      {
+        fg: '--secondary-foreground',
+        bg: '--secondary',
+        label: 'secondary-foreground on secondary',
+      },
       { fg: '--card-foreground', bg: '--card', label: 'card-foreground on card' },
       { fg: '--foreground', bg: '--background', label: 'foreground on background' },
     ] as const)('$label is readable', ({ fg, bg, label }) => {

@@ -90,20 +90,20 @@ export function WatchLobby() {
   return (
     <motion.div
       {...(shouldReduceMotion ? {} : recipes.fadeRise)}
-      className="w-full max-w-md mx-auto flex flex-col gap-6"
+      className="mx-auto flex w-full max-w-md flex-col gap-6"
     >
       {/* Hero Header */}
-      <div className="flex flex-col items-center text-center gap-3 select-none">
+      <div className="flex flex-col items-center gap-3 text-center select-none">
         {/* Glow icon with pulse ring */}
         <div className="relative flex items-center justify-center">
           <div className="absolute size-16 rounded-full bg-primary/20 motion-safe:animate-pulse" />
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 border border-primary/30 text-primary shadow-sm shadow-primary/20">
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary shadow-sm shadow-primary/20">
             <Clapperboard className="size-7" />
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-bold tracking-tight text-gradient-brand">Watch Together</h1>
-          <p className="text-sm text-muted-foreground max-w-[300px] leading-relaxed">
+          <h1 className="text-gradient-brand text-3xl font-bold tracking-tight">Watch Together</h1>
+          <p className="max-w-75 text-sm leading-relaxed text-muted-foreground">
             Xem video cùng bạn bè theo thời gian thực.
           </p>
           <p className="text-xs text-muted-foreground/60">
@@ -118,11 +118,11 @@ export function WatchLobby() {
         disableTransition={false}
         className="w-full"
       >
-        <TabsList className="grid grid-cols-2 w-full h-9 p-1 bg-muted border border-border rounded-lg mb-4">
-          <TabsTrigger value="create" className="text-xs h-full">
+        <TabsList className="mb-4 grid h-9 w-full grid-cols-2 rounded-lg border border-border bg-muted p-1">
+          <TabsTrigger value="create" className="h-full text-xs">
             Tạo Phòng Mới
           </TabsTrigger>
-          <TabsTrigger value="join" className="text-xs h-full">
+          <TabsTrigger value="join" className="h-full text-xs">
             Tham Gia Phòng
           </TabsTrigger>
         </TabsList>
@@ -132,7 +132,7 @@ export function WatchLobby() {
           <TabsContent value="create">
             <Card variant="glass">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-base">
                   <span className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
                     <Sparkles className="size-4" />
                   </span>
@@ -176,7 +176,7 @@ export function WatchLobby() {
                     </p>
                   </div>
 
-                  <Button type="submit" disabled={isPending} className="w-full mt-1">
+                  <Button type="submit" disabled={isPending} className="mt-1 w-full">
                     {isPending ? 'Đang xử lý...' : 'Khởi tạo phòng'}
                   </Button>
                 </form>
@@ -188,7 +188,7 @@ export function WatchLobby() {
           <TabsContent value="join">
             <Card variant="glass">
               <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-base">
                   <span className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
                     <LogIn className="size-4" />
                   </span>
@@ -207,19 +207,19 @@ export function WatchLobby() {
                     <Input
                       id="join-code"
                       placeholder="VD: ABCD23"
-                      className="text-center font-mono text-lg uppercase tracking-[0.35em] h-12"
+                      className="h-12 text-center font-mono text-lg tracking-[0.35em] uppercase"
                       maxLength={6}
                       value={joinCode}
                       onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                       disabled={isPending}
                       required
                     />
-                    <p className="text-xs text-muted-foreground/70 text-center select-none">
+                    <p className="text-center text-xs text-muted-foreground/70 select-none">
                       Mã phòng do người tạo phòng cung cấp.
                     </p>
                   </div>
 
-                  <Button type="submit" disabled={isPending} className="w-full mt-1">
+                  <Button type="submit" disabled={isPending} className="mt-1 w-full">
                     {isPending ? 'Đang kết nối...' : 'Tham gia phòng'}
                   </Button>
                 </form>

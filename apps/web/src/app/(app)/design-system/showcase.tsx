@@ -226,7 +226,7 @@ export function DesignSystemShowcase() {
 
   return (
     <div className="flex gap-10 pb-16">
-      <aside className="hidden lg:block shrink-0 w-52">
+      <aside className="hidden w-52 shrink-0 lg:block">
         <nav className="sticky top-24 space-y-0.5 pt-1">
           {SHOWCASE_SECTIONS.map((section) => (
             <a
@@ -239,8 +239,8 @@ export function DesignSystemShowcase() {
               className={cn(
                 'block rounded-md px-3 py-1.5 text-sm transition-colors',
                 activeSection === section.id
-                  ? 'bg-accent text-accent-foreground font-medium'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                  ? 'bg-accent font-medium text-accent-foreground'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
               )}
             >
               {section.label}
@@ -251,7 +251,7 @@ export function DesignSystemShowcase() {
 
       <div className="min-w-0 flex-1 space-y-12">
         {/* HEADER */}
-        <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b pb-6">
+        <header className="flex flex-col gap-4 border-b pb-6 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Design System</h1>
             <p className="max-w-2xl text-sm text-muted-foreground">
@@ -292,16 +292,16 @@ export function DesignSystemShowcase() {
               <CardContent className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 <Swatch
                   label="Background"
-                  className="bg-background text-foreground border border-border"
+                  className="border border-border bg-background text-foreground"
                 />
                 <Swatch label="Foreground" className="bg-foreground text-background" />
                 <Swatch
                   label="Card"
-                  className="bg-card text-card-foreground border border-border"
+                  className="border border-border bg-card text-card-foreground"
                 />
                 <Swatch
                   label="Popover"
-                  className="bg-popover text-popover-foreground border border-border"
+                  className="border border-border bg-popover text-popover-foreground"
                 />
                 <Swatch label="Primary" className="bg-primary text-primary-foreground" />
                 <Swatch label="Secondary" className="bg-secondary text-secondary-foreground" />
@@ -315,7 +315,7 @@ export function DesignSystemShowcase() {
                 />
                 <Swatch
                   label="Border"
-                  className="bg-border text-foreground flex items-center justify-center text-xs"
+                  className="flex items-center justify-center bg-border text-xs text-foreground"
                 />
               </CardContent>
             </Card>
@@ -332,35 +332,35 @@ export function DesignSystemShowcase() {
                   <span className="text-xs text-muted-foreground">Example</span>
                 </div>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-mono text-muted-foreground">text-4xl</span>
+                  <span className="font-mono text-xs text-muted-foreground">text-4xl</span>
                   <span className="text-4xl font-bold tracking-tight">OS Title</span>
                 </div>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-mono text-muted-foreground">text-3xl</span>
+                  <span className="font-mono text-xs text-muted-foreground">text-3xl</span>
                   <span className="text-3xl font-semibold">Section Header</span>
                 </div>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-mono text-muted-foreground">text-2xl</span>
+                  <span className="font-mono text-xs text-muted-foreground">text-2xl</span>
                   <span className="text-2xl font-semibold">Sub-heading</span>
                 </div>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-mono text-muted-foreground">text-xl</span>
+                  <span className="font-mono text-xs text-muted-foreground">text-xl</span>
                   <span className="text-xl font-medium">Card Header</span>
                 </div>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-mono text-muted-foreground">text-lg</span>
+                  <span className="font-mono text-xs text-muted-foreground">text-lg</span>
                   <span className="text-lg font-medium">Lead text</span>
                 </div>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-mono text-muted-foreground">text-base</span>
+                  <span className="font-mono text-xs text-muted-foreground">text-base</span>
                   <span className="text-base text-foreground">Body default</span>
                 </div>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-mono text-muted-foreground">text-sm</span>
+                  <span className="font-mono text-xs text-muted-foreground">text-sm</span>
                   <span className="text-sm text-muted-foreground">Subdued detail</span>
                 </div>
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-mono text-muted-foreground">text-xs</span>
+                  <span className="font-mono text-xs text-muted-foreground">text-xs</span>
                   <span className="text-xs text-muted-foreground">Captions & labels</span>
                 </div>
               </CardContent>
@@ -395,7 +395,7 @@ export function DesignSystemShowcase() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-1.5 text-sm">
-                <div className="flex justify-between border-b pb-1 font-medium text-xs text-muted-foreground">
+                <div className="flex justify-between border-b pb-1 text-xs font-medium text-muted-foreground">
                   <span>Layer Role</span>
                   <span>Utility Name / Value</span>
                 </div>
@@ -417,7 +417,7 @@ export function DesignSystemShowcase() {
           </div>
 
           {/* APCA Contrast Verification */}
-          <div className="pt-4 space-y-4">
+          <div className="space-y-4 pt-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div className="space-y-1">
                 <h3 className="text-lg font-semibold tracking-tight text-foreground">
@@ -489,7 +489,7 @@ export function DesignSystemShowcase() {
               <div className="relative grid gap-4 md:grid-cols-2">
                 <GlassSurface
                   variant="panel"
-                  className="p-5 flex flex-col justify-between min-h-64"
+                  className="flex min-h-64 flex-col justify-between p-5"
                 >
                   <div className="space-y-2">
                     <span className="text-xs font-semibold text-primary uppercase">
@@ -498,16 +498,16 @@ export function DesignSystemShowcase() {
                     <h4 className="text-2xl font-bold tracking-tight text-foreground">
                       Lc 60 / Lc 25
                     </h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
                       All semantic color pairs are gated: body text ≥ Lc 60, UI elements ≥ Lc 25.
                       APCA is perceptually accurate across both light and dark backgrounds.
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <span className="rounded bg-success/20 px-2 py-0.5 text-xs text-success font-medium">
+                    <span className="rounded bg-success/20 px-2 py-0.5 text-xs font-medium text-success">
                       Lc 60+ Text
                     </span>
-                    <span className="rounded bg-accent/20 px-2 py-0.5 text-xs text-accent font-medium">
+                    <span className="rounded bg-accent/20 px-2 py-0.5 text-xs font-medium text-accent">
                       Lc 25+ UI
                     </span>
                   </div>
@@ -515,7 +515,7 @@ export function DesignSystemShowcase() {
 
                 <Window title="Surface Contrast Monitor" className="min-h-64">
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">APCA Gate Status</span>
                       <span
                         className={cn(
@@ -584,7 +584,7 @@ export function DesignSystemShowcase() {
                   <span className="text-lg font-bold" style={{ color: apcaFg }}>
                     Aa
                   </span>
-                  <div className="text-xs space-y-0.5">
+                  <div className="space-y-0.5 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-semibold" style={{ color: apcaFg }}>
                         {(() => {
@@ -898,14 +898,14 @@ export function DesignSystemShowcase() {
                     </CardAction>
                   </div>
                   <CardDescription>
-                    Engineered dark-glass: thin neutral fill, a bright top rim
-                    and dark bottom rim, clearer backdrop.
+                    Engineered dark-glass: thin neutral fill, a bright top rim and dark bottom rim,
+                    clearer backdrop.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
                   Optimal for OS windows, dialog panels, and elements layered on top of backdrops.
                 </CardContent>
-                <CardFooter className="border-t justify-end gap-2">
+                <CardFooter className="justify-end gap-2 border-t">
                   <Button variant="outline" size="sm">
                     Secondary
                   </Button>
@@ -923,7 +923,7 @@ export function DesignSystemShowcase() {
                 <CardContent className="text-sm text-muted-foreground">
                   Optimal for inline content blocks, lists, and forms sitting inside dialogs.
                 </CardContent>
-                <CardFooter className="border-t justify-between text-xs text-muted-foreground">
+                <CardFooter className="justify-between border-t text-xs text-muted-foreground">
                   <span>Last updated 2 mins ago</span>
                   <Button size="sm">Action</Button>
                 </CardFooter>
@@ -948,16 +948,16 @@ export function DesignSystemShowcase() {
                   </span>
                   <span className="font-semibold text-primary">Active</span>
                 </GlassSurface>
-                <GlassSurface variant="panel" className="p-4 text-xs space-y-1">
+                <GlassSurface variant="panel" className="space-y-1 p-4 text-xs">
                   <div className="font-semibold text-foreground">
                     Dialog / popover panel role (<code>.glass-panel</code>)
                   </div>
                   <div className="text-muted-foreground">Maximum readability over gradients.</div>
                 </GlassSurface>
-                <GlassSurface variant="window" className="rounded-xl overflow-hidden p-0">
+                <GlassSurface variant="window" className="overflow-hidden rounded-xl p-0">
                   <GlassSurface
                     variant="titlebar"
-                    className="flex items-center justify-between px-3 py-2 text-xs border-b"
+                    className="flex items-center justify-between border-b px-3 py-2 text-xs"
                   >
                     <span>
                       Window Titlebar (<code>.glass-titlebar</code>)
@@ -968,7 +968,7 @@ export function DesignSystemShowcase() {
                       <span className="size-2.5 rounded-full bg-success" />
                     </div>
                   </GlassSurface>
-                  <div className="p-4 text-xs min-h-20">
+                  <div className="min-h-20 p-4 text-xs">
                     Window container body role (<code>.glass-window</code>)
                   </div>
                 </GlassSurface>
@@ -1027,12 +1027,12 @@ export function DesignSystemShowcase() {
                   <span className="mb-2 block text-xs font-semibold text-muted-foreground">
                     Horizontal Scroll
                   </span>
-                  <ScrollArea className="w-full whitespace-nowrap rounded-md border p-3">
+                  <ScrollArea className="w-full rounded-md border p-3 whitespace-nowrap">
                     <div className="flex gap-3 pb-3">
                       {Array.from({ length: 10 }).map((_, i) => (
                         <div
                           key={i}
-                          className="inline-block rounded bg-muted p-4 text-xs min-w-36 text-center"
+                          className="inline-block min-w-36 rounded bg-muted p-4 text-center text-xs"
                         >
                           Column item {i + 1}
                         </div>
@@ -1179,7 +1179,7 @@ export function DesignSystemShowcase() {
 
                 <ContextMenu>
                   <ContextMenuTrigger asChild>
-                    <div className="flex h-20 w-full items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground cursor-context-menu hover:bg-muted/30 transition-colors">
+                    <div className="flex h-20 w-full cursor-context-menu items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground transition-colors hover:bg-muted/30">
                       Right-Click Area
                     </div>
                   </ContextMenuTrigger>
@@ -1196,9 +1196,7 @@ export function DesignSystemShowcase() {
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuSub>
-                      <ContextMenuSubTrigger>
-                        View Options
-                      </ContextMenuSubTrigger>
+                      <ContextMenuSubTrigger>View Options</ContextMenuSubTrigger>
                       <ContextMenuSubContent className="w-48">
                         <ContextMenuCheckboxItem
                           checked={contextCheckState.showHidden}
@@ -1219,11 +1217,12 @@ export function DesignSystemShowcase() {
                       </ContextMenuSubContent>
                     </ContextMenuSub>
                     <ContextMenuSub>
-                      <ContextMenuSubTrigger>
-                        Sort By
-                      </ContextMenuSubTrigger>
+                      <ContextMenuSubTrigger>Sort By</ContextMenuSubTrigger>
                       <ContextMenuSubContent className="w-40">
-                        <ContextMenuRadioGroup value={dropdownRadio} onValueChange={setDropdownRadio}>
+                        <ContextMenuRadioGroup
+                          value={dropdownRadio}
+                          onValueChange={setDropdownRadio}
+                        >
                           <ContextMenuRadioItem value="name">Name</ContextMenuRadioItem>
                           <ContextMenuRadioItem value="date">Date Modified</ContextMenuRadioItem>
                           <ContextMenuRadioItem value="size">Size</ContextMenuRadioItem>
@@ -1294,7 +1293,7 @@ export function DesignSystemShowcase() {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Skeleton className="size-10 rounded-full" />
-                  <div className="space-y-2 grow">
+                  <div className="grow space-y-2">
                     <Skeleton className="h-4 w-3/5" />
                     <Skeleton className="h-3 w-4/5" />
                   </div>
@@ -1309,7 +1308,7 @@ export function DesignSystemShowcase() {
                 <p className="text-xs font-semibold text-muted-foreground">Shimmer Variant</p>
                 <div className="flex items-center gap-3">
                   <Skeleton variant="shimmer" className="size-10 rounded-full" />
-                  <div className="space-y-2 grow">
+                  <div className="grow space-y-2">
                     <Skeleton variant="shimmer" className="h-4 w-3/5" />
                     <Skeleton variant="shimmer" className="h-3 w-4/5" />
                   </div>
@@ -1407,7 +1406,7 @@ export function DesignSystemShowcase() {
                       alt="Jane"
                     />
                     <AvatarFallback>JN</AvatarFallback>
-                    <AvatarBadge className="bg-success border-2 border-background size-3" />
+                    <AvatarBadge className="size-3 border-2 border-background bg-success" />
                   </Avatar>
                   <Avatar className="size-8">
                     <AvatarFallback>U</AvatarFallback>
@@ -1457,8 +1456,8 @@ export function DesignSystemShowcase() {
                       aria-pressed={accent === value}
                       onClick={() => setAccent(value)}
                       className={cn(
-                        'size-8 rounded-full border-2 bg-primary capitalize transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer',
-                        accent === value ? 'border-foreground scale-105' : 'border-transparent',
+                        'size-8 cursor-pointer rounded-full border-2 bg-primary capitalize transition-transform hover:scale-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+                        accent === value ? 'scale-105 border-foreground' : 'border-transparent',
                       )}
                     />
                   ))}
@@ -1466,7 +1465,7 @@ export function DesignSystemShowcase() {
                 <p className="text-xs text-muted-foreground">
                   Applies <code>data-accent</code> attribute to scope color mixes. Accent is
                   currently:{' '}
-                  <span className="font-mono font-semibold capitalize text-foreground">
+                  <span className="font-mono font-semibold text-foreground capitalize">
                     {accent || 'cyan (default)'}
                   </span>
                   .
@@ -1481,10 +1480,15 @@ export function DesignSystemShowcase() {
                 <CardDescription>Adjust transparency fallbacks and blur weights.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <SegmentedPicker aria-label="Glass level" options={GLASS_LEVELS} value={glass} onChange={setGlass} />
+                <SegmentedPicker
+                  aria-label="Glass level"
+                  options={GLASS_LEVELS}
+                  value={glass}
+                  onChange={setGlass}
+                />
                 <p className="text-xs text-muted-foreground">
                   Current intensity:{' '}
-                  <span className="font-mono font-semibold capitalize text-foreground">
+                  <span className="font-mono font-semibold text-foreground capitalize">
                     {glass || 'default'}
                   </span>
                   . Applies <code>data-glass</code> parameter to override global variables.
@@ -1501,10 +1505,15 @@ export function DesignSystemShowcase() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <SegmentedPicker aria-label="Density" options={DENSITIES} value={density} onChange={setDensity} />
+                <SegmentedPicker
+                  aria-label="Density"
+                  options={DENSITIES}
+                  value={density}
+                  onChange={setDensity}
+                />
                 <p className="text-xs text-muted-foreground">
                   Current density:{' '}
-                  <span className="font-mono font-semibold capitalize text-foreground">
+                  <span className="font-mono font-semibold text-foreground capitalize">
                     {density || 'comfortable'}
                   </span>
                   . Applies <code>data-density</code> parameter to override control height
@@ -1531,7 +1540,7 @@ export function DesignSystemShowcase() {
               <CardContent className="space-y-3">
                 <motion.div
                   {...(shouldReduceMotion ? {} : recipes.hoverLift)}
-                  className="cursor-default rounded-xl border bg-card p-4 text-xs hover:border-primary/50 transition-colors"
+                  className="cursor-default rounded-xl border bg-card p-4 text-xs transition-colors hover:border-primary/50"
                 >
                   <p className="font-semibold text-foreground">hoverLift Recipe</p>
                   <p className="mt-1 text-muted-foreground">
@@ -1543,7 +1552,7 @@ export function DesignSystemShowcase() {
                   type="button"
                   {...(shouldReduceMotion ? {} : recipes.pressScale)}
                   onClick={() => toast.info('pressScale gesture tapped.')}
-                  className="w-full text-left rounded-xl bg-primary p-4 text-xs text-primary-foreground cursor-pointer"
+                  className="w-full cursor-pointer rounded-xl bg-primary p-4 text-left text-xs text-primary-foreground"
                 >
                   <p className="font-semibold">pressScale Recipe</p>
                   <p className="mt-1 text-primary-foreground/80">
@@ -1581,7 +1590,7 @@ export function DesignSystemShowcase() {
                       <motion.li
                         key={word}
                         {...(shouldReduceMotion ? {} : recipes.staggerItem)}
-                        className="rounded bg-muted px-3 py-2 text-xs text-muted-foreground flex items-center justify-between"
+                        className="flex items-center justify-between rounded bg-muted px-3 py-2 text-xs text-muted-foreground"
                       >
                         <span>{word}</span>
                         <span className="font-mono text-[10px] opacity-75">Index {i}</span>
@@ -1633,7 +1642,7 @@ export function DesignSystemShowcase() {
                 </div>
                 <CardDescription>Framer Motion AnimatePresence transition hooks.</CardDescription>
               </CardHeader>
-              <CardContent className="min-h-52 flex items-center justify-center bg-muted/20 rounded-xl border border-dashed">
+              <CardContent className="flex min-h-52 items-center justify-center rounded-xl border border-dashed bg-muted/20">
                 <AnimatePresence>
                   {motionWindowOpen && (
                     <Window
@@ -1665,16 +1674,16 @@ export function DesignSystemShowcase() {
                 </div>
                 <CardDescription>Content enter/exit for use with AnimatePresence.</CardDescription>
               </CardHeader>
-              <CardContent className="min-h-32 flex items-center justify-center">
+              <CardContent className="flex min-h-32 items-center justify-center">
                 <AnimatePresence>
                   {fadeRiseVisible && (
                     <motion.div
                       key="fade-rise-demo"
                       {...(shouldReduceMotion ? {} : recipes.fadeRise)}
-                      className="rounded-lg bg-primary/10 border border-primary/20 p-4 text-sm"
+                      className="rounded-lg border border-primary/20 bg-primary/10 p-4 text-sm"
                     >
                       <p className="font-semibold text-primary">Fade + Rise</p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="mt-1 text-xs text-muted-foreground">
                         Exit animation triggers when unmounted inside AnimatePresence.
                       </p>
                     </motion.div>
@@ -1722,7 +1731,7 @@ export function DesignSystemShowcase() {
                 Provides modal containment, focus trapping, and backdrop overlay rendering.
               </DialogDescription>
             </DialogHeader>
-            <div className="px-6 py-5 space-y-4 text-sm text-muted-foreground">
+            <div className="space-y-4 px-6 py-5 text-sm text-muted-foreground">
               <p>This dialog overlay uses a translucent panel with built-in close action hooks.</p>
               {/* Z-index regression scenario (§1 of layering-interaction-2026-upgrade):
                 Select content must render at --z-popover (1050) — above this modal at
@@ -1769,7 +1778,7 @@ export function DesignSystemShowcase() {
 
         {/* OVERLAY SHEET PORTAL */}
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-          <SheetContent className="w-full sm:max-w-md flex flex-col justify-between">
+          <SheetContent className="flex w-full flex-col justify-between sm:max-w-md">
             <div>
               <SheetHeader className="border-b pb-4">
                 <div className="flex size-10 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
@@ -1780,7 +1789,7 @@ export function DesignSystemShowcase() {
                   Sliding lateral portal for contextual preferences or filters.
                 </SheetDescription>
               </SheetHeader>
-              <div className="py-6 space-y-4">
+              <div className="space-y-4 py-6">
                 <span className="block text-xs font-semibold text-muted-foreground">
                   Scope Settings
                 </span>
@@ -1834,8 +1843,8 @@ export function DesignSystemShowcase() {
               description="Active users this month — hero KPI tile"
               minHeight={220}
             >
-              <div className="flex-1 flex items-end">
-                <div className="w-full h-16 flex items-end gap-1">
+              <div className="flex flex-1 items-end">
+                <div className="flex h-16 w-full items-end gap-1">
                   {[40, 55, 38, 72, 60, 85, 78].map((h, i) => (
                     <div
                       key={i}
@@ -1855,7 +1864,7 @@ export function DesignSystemShowcase() {
               description="Feature tile — chart / sparkline / donut"
               minHeight={220}
             >
-              <div className="flex-1 flex items-center justify-center">
+              <div className="flex flex-1 items-center justify-center">
                 <div className="relative size-20">
                   <svg viewBox="0 0 36 36" className="size-full -rotate-90">
                     <circle
@@ -1975,7 +1984,7 @@ export function DesignSystemShowcase() {
                 <CardTitle className="text-sm">Loading State</CardTitle>
                 <CardDescription>Breathing pulse + aria-busy</CardDescription>
               </CardHeader>
-              <CardContent className="px-0 space-y-2">
+              <CardContent className="space-y-2 px-0">
                 <Skeleton className="h-3 w-4/5" />
                 <Skeleton className="h-3 w-3/5" />
               </CardContent>
@@ -2026,7 +2035,7 @@ export function DesignSystemShowcase() {
                   Highlight passes through clicks (pointer-events: none).
                 </CardDescription>
               </CardHeader>
-              <CardContent className="px-0 space-y-3">
+              <CardContent className="space-y-3 px-0">
                 <Button size="sm">Action Button</Button>
                 <p className="text-xs text-muted-foreground">
                   Interactive content works normally inside a spotlight card.
@@ -2052,7 +2061,7 @@ function ShowcaseSection({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="space-y-4 scroll-mt-24">
+    <section id={id} className="scroll-mt-24 space-y-4">
       <div className="space-y-1">
         <h2 className="text-xl font-semibold tracking-tight text-foreground">{title}</h2>
         <p className="text-sm text-muted-foreground">{description}</p>
@@ -2071,16 +2080,16 @@ function Swatch({ label, className }: { label: string; className: string }) {
       )}
     >
       <span>{label}</span>
-      <span className="text-[10px] opacity-75 self-end">Aa</span>
+      <span className="self-end text-[10px] opacity-75">Aa</span>
     </div>
   );
 }
 
 function RadiusDemo({ label, className }: { label: string; className: string }) {
   return (
-    <div className="flex flex-col items-center gap-1.5 p-2 rounded-md border bg-muted/20">
+    <div className="flex flex-col items-center gap-1.5 rounded-md border bg-muted/20 p-2">
       <div className={cn('size-12 border-2 border-primary bg-background shadow-xs', className)} />
-      <span className="text-[10px] font-mono text-muted-foreground text-center truncate w-full">
+      <span className="w-full truncate text-center font-mono text-[10px] text-muted-foreground">
         {label}
       </span>
     </div>

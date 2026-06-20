@@ -353,12 +353,10 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
   const supabase = await createSupabaseServerClient();
 
   // Enforce host boundary (also verified by RLS); also read the active queue item.
-  const ownership = await assertHostOwnership(
-    supabase,
-    roomId,
-    user.id,
-    ['host_id', 'current_queue_item_id'] as const,
-  );
+  const ownership = await assertHostOwnership(supabase, roomId, user.id, [
+    'host_id',
+    'current_queue_item_id',
+  ] as const);
   if (!ownership.ok) return ownership;
   const currentQueueItemId = ownership.room.current_queue_item_id as string | null;
 

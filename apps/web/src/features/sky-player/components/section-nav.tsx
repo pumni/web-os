@@ -13,11 +13,8 @@ export function SectionNav() {
   const activeSection = useActiveSection(PAGE_SECTION_IDS);
 
   return (
-    <div className="sticky top-16 z-[60] border-b border-border bg-background">
-      <nav
-        aria-label="Page sections"
-        className="flex overflow-x-auto"
-      >
+    <div className="sticky top-16 z-60 border-b border-border bg-background">
+      <nav aria-label="Page sections" className="flex overflow-x-auto">
         {PAGE_SECTIONS.map((section) => (
           <a
             key={section.id}
@@ -29,7 +26,7 @@ export function SectionNav() {
               });
             }}
             className={cn(
-              'shrink-0 border-b-2 px-5 py-3.5 text-sm font-medium transition-colors duration-(--duration-base) ease-fluid whitespace-nowrap focus-visible:outline-ring',
+              'shrink-0 border-b-2 px-5 py-3.5 text-sm font-medium whitespace-nowrap transition-colors duration-(--duration-base) ease-fluid focus-visible:outline-ring',
               activeSection === section.id
                 ? 'border-primary text-foreground'
                 : 'border-transparent text-muted-foreground hover:text-foreground',

@@ -50,7 +50,7 @@ function TabsList({
       ref={ref}
       data-slot="tabs-list"
       className={cn(
-        'inline-flex h-control w-fit items-center justify-center rounded-lg bg-muted p-[3px] text-muted-foreground',
+        'inline-flex h-control w-fit items-center justify-center rounded-lg bg-muted p-0.75 text-muted-foreground',
         className,
       )}
       {...props}
