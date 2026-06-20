@@ -4,30 +4,48 @@
  * Reusable glassmorphism surfaces for FLOATING layers only (ADR-0012/0014):
  * topbar, dock, window titlebar, dialog, sheet, popover, command palette,
  * toast. Never apply to large background areas — `backdrop-filter` is
- * GPU-intensive. Blur is held in the 8–16px range via `--glass-blur`.
+ * GPU-intensive (each glass element forces a separate backdrop render pass,
+ * see WebKit/Web-perf guidance). Blur is held in the 8–16px range via
+ * `--glass-blur`.
  *
- * 5-element model (ADR-0014): tint (`--glass-tint`, doubles as the text scrim),
+ * 6-element model (ADR-0014): tint (`--glass-tint`, doubles as the text scrim),
  * blur + saturation (`--glass-blur` / `--glass-saturate`), edge highlight
- * (`--glass-edge` + inset `--glass-highlight`), drop shadow (`--shadow-glass`,
- * the real delineator), and an opaque `--glass-fallback-bg`. `glass-panel` /
- * `glass-window` are GPU-promoted (`translateZ(0)`). Accessibility fallbacks
- * below honour user system preferences.
+ * (`--glass-edge` + inset top `--glass-highlight` paired with inset bottom
+ * `--glass-shadow-edge`), an inner diagonal sheen (`--glass-sheen`, a
+ * `background-image` layer the APCA gate does NOT read), drop shadow
+ * (`--shadow-glass`, the real delineator), and an opaque `--glass-fallback-bg`.
+ * `glass-panel` / `glass-window` are GPU-promoted (`translateZ(0)`).
+ *
+ * Performance discipline (ADR-0014, modern glassmorphism 2026):
+ * - `will-change` is NOT set on static glass; it is scoped to overlays that are
+ *   actively animating (Radix `[data-state=open|closed]`) so compositor layers
+ *   are reserved only during transitions, not held forever.
+ * - Stacked glass is capped at 2 layers; a nested glass panel drops its sheen
+ *   (see `.glass-panel .glass-panel` below) so a third layer never pays the
+ *   recursive backdrop-filter cost it would otherwise incur.
+ * Accessibility fallbacks below honour user system preferences.
  */
 
 @utility glass-panel {
-  /* Glassmorphism — 5-element model (ADR-0014): a never-fully-transparent tint,
-     frosted blur + saturation vibrancy, a luminous white edge (+ an inset top
-     highlight for the lit cut edge), and a soft directional drop shadow that
-     does the real panel delineation. Promoted to its own GPU composite layer so
-     the per-pixel backdrop blur does not bottleneck the CPU on scroll. */
+  /* Glassmorphism — 6-element model (ADR-0014): a never-fully-transparent tint,
+     an inner diagonal sheen (a faint white light catching the upper-left,
+     layered as background-image so it never weakens the APCA-gated tint),
+     frosted blur + saturation vibrancy, a luminous white edge, the top-lit /
+     bottom-shaded inset rim pair (`--glass-highlight` / `--glass-shadow-edge`)
+     for a volumetric cut-edge read, and a soft directional drop shadow that
+     does the real panel delineation. Promoted to its own GPU composite layer
+     so the per-pixel backdrop blur does not bottleneck the CPU on scroll.
+     `will-change` is intentionally omitted here and reserved for the animated
+     overlay state below (perf discipline: reserve layers only when needed). */
   background-color: var(--glass-tint);
+  background-image: linear-gradient(135deg, var(--glass-sheen), transparent 42%);
   border: 1px solid var(--glass-edge);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass),
-    inset 0 1px 0 0 var(--glass-highlight);
-  will-change: transform;
+    inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
 }
 
@@ -35,14 +53,46 @@
   /* Same glassmorphism treatment as glass-panel; windows carry the deeper
      active/glow drop shadow (--shadow-glass-glow). Own GPU composite layer. */
   background-color: var(--glass-tint);
+  background-image: linear-gradient(135deg, var(--glass-sheen), transparent 42%);
   border: 1px solid var(--glass-edge);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass-glow),
-    inset 0 1px 0 0 var(--glass-highlight);
-  will-change: transform;
+    inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
+}
+
+/*
+ * Performance — reserve compositor layers only while a glass overlay is
+ * actively animating its open/close transition (Radix sets `data-state`).
+ * `will-change` held on static glass forces the browser to keep an extra GPU
+ * buffer per panel indefinitely (memory cost with no benefit); scoping it to
+ * the transition window lets the buffer be reclaimed after the animation ends.
+ * Base glass still composites correctly via the cheap `translateZ(0)` promotion.
+ */
+.glass-panel[data-state='open'],
+.glass-panel[data-state='closed'],
+.glass-window[data-state='open'],
+.glass-window[data-state='closed'] {
+  will-change: transform, opacity;
+}
+
+/*
+ * Performance — cap stacked glass at 2 layers.
+ * Each glass element forces a separate backdrop render pass; three+ nested
+ * layers compound the cost (recursive per-pixel blur) and tank FPS on mid-tier
+ * mobiles (WebKit / web-perf guidance, ADR-0014 perf discipline). The rule
+ * weakens the inner sheen of a glass panel nested directly inside another glass
+ * panel/window so a third layer never inherits the sheen cost — paired with the
+ * test guard in glass-performance.test.ts that fails on 3-deep TSX nesting.
+ */
+.glass-panel .glass-panel,
+.glass-window .glass-panel,
+.glass-panel .glass-window,
+.glass-window .glass-window {
+  background-image: none;
 }
 
 .glass-window[data-active='false'] {
@@ -178,6 +228,11 @@
     --glass-tint: color-mix(in oklch, var(--popover) 92%, transparent);
 
     border-color: var(--border);
+    /* Drop the inner sheen so high-contrast users get a clean, flat translucent
+       surface — the diagonal highlight can read as visual noise against the
+       raised tint under forced contrast. The sheen is a decorative layer the
+       APCA gate does not read, so neutralising it is safe. */
+    background-image: none;
   }
 }
 
@@ -234,6 +289,8 @@
   --glass-tint: color-mix(in oklch, var(--popover) 92%, transparent);
 
   border-color: var(--border);
+  /* Mirror the prefers-contrast: more fallback — neutralise the sheen. */
+  background-image: none;
 }
 
 /* Brand gradient text for hero headings. */

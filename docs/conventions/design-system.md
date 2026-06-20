@@ -77,16 +77,19 @@ ContextMenu, Command palette, Toast, Topbar, Dock, Sidebar rail, OS
 shell surfaces stay opaque.
 
 **Surface identity = glassmorphism for floating layers (ADR-0014, amending
-ADR-0012).** A glass surface is a frosted translucent fill (`--glass-bg`) tuned
-to the APCA gate edge, with: a **luminous light top edge + soft bottom edge**
+ADR-0012).** A glass surface is a frosted translucent fill (`--glass-tint`) tuned
+to the APCA gate edge, with: a **luminous light top edge + dark bottom edge**
 (`--glass-highlight` / `--glass-shadow-edge`, inset box-shadows in the `glass-*`
 utilities), an **inner diagonal sheen** (`--glass-sheen`, a `background-image`
 gradient layered over the gated fill — not gate-read), and **vibrancy** via the
 single `--glass-saturate` knob (≈1.4; the `glass-saturate.test.ts` guard locks
-the tokenization, not the value). Blur is frosted (`--blur-glass` 16px). Float
-depth is the directional `--shadow-glass`. The luminous border read comes from
-`--glass-highlight` (specular, ungated) — a pure-light `--glass-border` fails the
-Lc 25 gate on light surfaces, so the border token stays a gated definition line.
+the tokenization, not the value). Blur is frosted (`--blur-glass` 8–16px).
+Float depth is the directional `--shadow-glass`. The luminous border read comes
+from `--glass-highlight` (specular, ungated) — a pure-light `--glass-edge` fails
+the Lc 25 gate on light surfaces, so the border token stays a gated definition
+line. **Perf discipline:** `will-change` is scoped to overlay transitions only
+(`[data-state=open|closed]`); stacked glass is capped at 2 layers (a CSS
+soft-guard drops the sheen on nested glass; `glass-performance.test.ts`).
 Solid cards are NOT glass — they carry real elevation via `surface-raised`
 (`--shadow-card-raised` + `--card-rim-top`); content stays solid, glass is only
 for floating layers (it earns its `backdrop-filter` cost there). The OS
@@ -105,7 +108,7 @@ card share one surface vocabulary. APCA contrast is gated at Lc 60 text / Lc 25
 UI in
 `apps/web/src/test/design-system/glass-contrast.test.ts`; do not add a WCAG 2.x
 ratio gate. The rim tokens are specular (inset shadows) and are NOT subject to
-the APCA gate — tune `--glass-bg` / `--glass-border`, never the thresholds.
+the APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
 
 **Hard rules:**
 

@@ -105,9 +105,11 @@ link still fails the gate.
   became layout-only; extended `pumniNoAdHocSurface` to block the shorthand
   `border bg-muted` well. Declined a competing `Surface` primitive.
 - `0014-glassmorphism-surface-treatment.md` — amended the glass *visual
-  treatment* of ADR-0012 toward modern glassmorphism: frosted blur (16px) +
+  treatment* of ADR-0012 toward modern glassmorphism (landed 2026-06-20):
   vibrancy (`--glass-saturate` 1.4) + a luminous edge pair
-  (`--glass-highlight`/`--glass-shadow-edge`, renamed from the rim tokens) + an
-  inner `--glass-sheen` gradient, all layered so the APCA gate still reads single
-  fill/border colours. Kept solid-for-content, glass-only-for-floating, the gate,
-  a11y, and the public `glass-*`/`GlassSurface` API names.
+  (`--glass-highlight` / `--glass-shadow-edge`) + an inner `--glass-sheen`
+  gradient + volumetric rim pair on `glass-panel`/`glass-window`, all layered
+  so the APCA gate still reads single fill/border colours. Perf discipline:
+  `will-change` scoped to overlay transitions, stacked glass capped at 2
+  layers (CSS soft-guard + `glass-performance.test.ts`). Blur stays
+  8–16px. Drift guards: `glass-sheen`, `glass-rim`, `glass-performance`.

@@ -57,7 +57,7 @@
   /* 600 */
   --tracking-body: var(--letter-spacing-normal);
 
-  /* Glassmorphism tokens — 5-element model (ADR-0014):
+  /* Glassmorphism tokens — 6-element model (ADR-0014):
      1. Tint — base fill, never fully transparent; tuned so --foreground holds
         APCA Lc 60 over the worst desktop blob (glass-contrast.test.ts). Verified
         margin: text Lc 53.3.
@@ -67,11 +67,21 @@
         brighter inset top highlight for dimension. NOT APCA-gated: glassmorphism
         panels are delineated by their drop shadow, so the edge is the decorative
         light glow, not a contrast boundary (ADR-0014 rescopes the gate).
-     5. Shadow — soft directional --shadow-glass for float separation.
+     5. Sheen — a faint diagonal inner highlight layered as a separate
+        background-image over the gated tint (the gate composites --glass-tint
+        only, so the sheen never weakens the APCA pass).
+     6. Shadow — soft directional --shadow-glass for float separation.
      Fallback — opaque surface when transparency/blur is unavailable. */
   --glass-tint: color-mix(in oklch, var(--neutral-0) 54%, transparent);
   --glass-edge: oklch(1 0 0 / 0.45);
   --glass-highlight: oklch(1 0 0 / 0.6);
+  /* Dark bottom rim — pairs with --glass-highlight as a top-lit / bottom-shaded
+     edge pair so the cut glass reads as a real volumetric surface (ADR-0014).
+     Subtle on light surfaces where shadows already separate the panel. */
+  --glass-shadow-edge: oklch(0 0 0 / 0.06);
+  /* Inner diagonal sheen — light catching the upper-left of the glass. Kept
+     faint so it never competes with content or weakens the tint's APCA margin. */
+  --glass-sheen: oklch(1 0 0 / 0.1);
   --glass-fallback-bg: var(--popover);
   --glass-scrim: color-mix(in oklch, var(--neutral-50) 55%, transparent);
   --glass-blur: var(--blur-glass);
@@ -163,7 +173,17 @@
      edge + inset highlight read as the lit glass edge over the dark fill. */
   --glass-tint: color-mix(in oklch, var(--neutral-900) 34%, transparent);
   --glass-edge: oklch(1 0 0 / 0.14);
-  --glass-highlight: oklch(1 0 0 / 0.22);
+  /* Bumped 0.22 → 0.30 (ADR-0014): dark backdrops swallow bright edges, so the
+     luminous top highlight needs a stronger alpha to read as the glassmorphism
+     lit cut edge. Still ungated (specular, not a contrast boundary). */
+  --glass-highlight: oklch(1 0 0 / 0.3);
+  /* Dark bottom rim — stronger than light (0.06 → 0.22) because dark surfaces
+     amplify bright highlights but swallow dark shadows, so the bottom shadow-
+     edge needs a higher alpha to read as a real volumetric edge. */
+  --glass-shadow-edge: oklch(0 0 0 / 0.22);
+  /* Fainter sheen on dark — bright diagonal light would glare over the dark
+     fill; 0.06 keeps the glassmorphism light without halation. */
+  --glass-sheen: oklch(1 0 0 / 0.06);
   --glass-fallback-bg: var(--popover);
   --glass-scrim: color-mix(in oklch, var(--neutral-950) 50%, transparent);
   --glass-blur: var(--blur-glass);

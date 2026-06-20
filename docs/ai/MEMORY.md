@@ -16,14 +16,17 @@ Owner: `docs/adr/0004-memory-layer-harness-managed.md`.
 
 ## Settled facts
 
-- **Surface identity = engineered dark-glass (not iOS frosted).** Glass uses a
-  bright-top / dark-bottom rim pair (inset box-shadows) + tokenized
-  `--glass-saturate` (single vibrancy knob) + directional `--shadow-glass`;
-  thin neutral fill tuned to the APCA gate edge. Solid cards carry real
-  elevation (`surface-raised`), so glass is reserved for true floating layers.
-  OS Window/Dock/Bento are presentational chrome only (neutral window controls,
-  no macOS traffic lights). Owner: `docs/conventions/design-system.md`,
-  `docs/adr/0012-engineered-glass-surface-language.md`.
+- **Surface identity = glassmorphism for floating layers (ADR-0014, amending
+  ADR-0012).** 6-element model: translucent fill (`--glass-tint`, APCA-gated),
+  frosted blur + vibrancy (`--glass-blur` 8–16px / `--glass-saturate` 1.4),
+  luminous edge pair (`--glass-highlight` top / `--glass-shadow-edge` bottom,
+  inset box-shadows), inner diagonal sheen (`--glass-sheen`, a
+  `background-image` layer the gate does not read), directional drop shadow
+  (`--shadow-glass`), and opaque fallback (`--glass-fallback-bg`). Perf:
+  `will-change` scoped to overlay transitions only; stacked glass ≤2 layers
+  (CSS soft-guard drops sheen on nesting). Solid cards carry real elevation
+  (`surface-raised`), not glass. Owner: `docs/conventions/design-system.md`,
+  `docs/adr/0014-glassmorphism-surface-treatment.md`.
 - **Security boundary is RLS, not UI.** Service-role/secret Supabase keys are
   server-only; browser code uses `NEXT_PUBLIC_*` only. Owner: `AGENTS.md`,
   `docs/conventions/supabase-security.md`.
@@ -54,4 +57,4 @@ Owner: `docs/adr/0004-memory-layer-harness-managed.md`.
 - 2026-06-20 — Context layer lean 2026: cut hand-rolled router (flow-router/context-map/agent-behavior/task-routes) + harness-duplicating workflows + behavioral-eval/ai-metrics machinery; single-file router `docs/ai/index.md`; tool-agnostic `.agents/` kept; validation altitude fixed (code gates vs context gates); ADR 0007 collision renumbered to 0008. Owner: `docs/adr/0009-context-layer-lean-2026.md`.
 - 2026-06-20 — Surface identity → engineered dark-glass: rim pair + tokenized `--glass-saturate` + directional shadow; solid cards get `surface-raised`; OS window chrome de-Appled (neutral controls); shell stays presentational; APCA gate authoritative (tokens tuned to pass, no threshold weakened). Owner: `docs/adr/0012-engineered-glass-surface-language.md`.
 - 2026-06-20 — Card layer unified (3 parallel systems + 43 ad-hoc surfaces): `Card` stays the block surface; added composition-first sub-surfaces `CardWell` (inset well), `Badge` (status pill), `IconBadge` (icon chip); `BentoGridItem` is layout-only and renders through them; dashboard + watch cards migrated; `pumniNoAdHocSurface` extended to block shorthand `border bg-muted` wells (sky-player/larger watch panels ignored pending follow-up migration). Declined a competing `Surface` primitive. Owner: `docs/adr/0013-card-composition-primitives.md`.
-- 2026-06-20 — Glass visual treatment → modern glassmorphism (amends ADR-0012's glass look, keeps its structural decisions): frosted blur 16px + vibrancy `--glass-saturate` 1.4 + luminous edge pair `--glass-highlight`/`--glass-shadow-edge` (renamed from `--glass-rim-top/bottom`) + inner `--glass-sheen` background-image gradient — layered so APCA gate still reads single `--glass-bg`/`--glass-border` colours. Public `glass-*`/`GlassSurface`/`Card variant` API names kept. Content cards stay solid. Owner: `docs/adr/0014-glassmorphism-surface-treatment.md`.
+- 2026-06-20 — Glass visual treatment → modern glassmorphism (amends ADR-0012's glass look, keeps its structural decisions): vibrancy `--glass-saturate` 1.4 + luminous edge pair `--glass-highlight`/`--glass-shadow-edge` + inner `--glass-sheen` background-image gradient + volumetric rim pair on panel/window; `will-change` scoped to overlay transitions; stacked glass ≤2 layers (CSS soft-guard). Blur stays 8–16px. Public `glass-*`/`GlassSurface`/`Card variant` API names kept. Content cards stay solid. Owner: `docs/adr/0014-glassmorphism-surface-treatment.md`.

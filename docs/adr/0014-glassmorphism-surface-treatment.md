@@ -28,44 +28,54 @@ authoritative, a11y fallbacks intact) are **kept**. This ADR amends only the
 
 Hard constraints that bound the treatment:
 
-- The APCA gate (`glass-contrast.test.ts`) parses `--glass-bg` and
-  `--glass-border` as **single colours** composited over the desktop blobs (text
+- The APCA gate (`glass-contrast.test.ts`) parses `--glass-tint` and
+  `--glass-edge` as **single colours** composited over the desktop blobs (text
   ≥ Lc 50 light / 60 dark; UI edge ≥ Lc 25). Neither token may become a gradient.
 - A pure-light border fails the Lc 25 UI-edge gate on a light surface (ADR-0012
   already hit this), so the luminous border read must come from an ungated
-  specular highlight, not from `--glass-border`.
+  specular highlight, not from `--glass-edge`.
 - `glass-saturate.test.ts` requires every `saturate()` in `glass.css` to read
   `var(--glass-saturate)` (no numeric literal).
 
 ## Decision
 
 Reframe the glass layer as **glassmorphism** and carry the look with frosted blur
-+ vibrancy + a luminous highlight + an inner sheen — layered so the APCA gate
-still reads single fill/border colours.
++ vibrancy + a luminous highlight + an inner sheen + a volumetric rim pair —
+layered so the APCA gate still reads single fill/border colours.
 
-**1. Frosted + vibrant (`tokens.css`).** `--blur-glass` 12 → **16px** (`-sm`
-8→10, `-lg` 20→24); `--glass-saturate` 1.05 → **1.4** (the vibrancy that makes the
-blurred backdrop read richer — the glassmorphism signature). Both are outside the
-APCA gate, so they change freely.
+**1. Frosted + vibrant (`tokens.css`).** `--glass-saturate` 1.05 → **1.4**
+(the vibrancy that makes the blurred backdrop read richer — the glassmorphism
+signature). Blur stays in the 8–16px range (`--blur-glass-sm/lg` 8/16) per
+ADR-0012's mobile-safety reasoning — bumping to 20/24 would raise GPU cost on
+mid-tier devices with no visual payoff at the `saturate(1.4)` vibrancy level.
 
-**2. Luminous edge pair, renamed (`theme.css`).** The rim tokens are renamed to
-glassmorphism vocabulary — `--glass-rim-top` → **`--glass-highlight`**,
-`--glass-rim-bottom` → **`--glass-shadow-edge`** — and the highlight is
-brightened (light 0.45→0.6, dark 0.16→0.30) so it reads as the luminous glass
-border glow. `--glass-border` stays the gated structural definition line (dark
-brightened 42%→48%, still ≥ Lc 25; light unchanged). The rename is contained to
-`theme.css` + `glass.css` (grep-verified).
+**2. Luminous edge pair (`theme.css`).** The rim tokens carry glassmorphism
+vocabulary — `--glass-highlight` (bright top, light 0.6 / dark **0.30**) and
+`--glass-shadow-edge` (dark bottom, light 0.06 / dark 0.22). The bottom rim
+was **0** in ADR-0012 (dropped); it returns here as the second half of a
+top-lit / bottom-shaded volumetric cut-edge pair. `--glass-edge` stays the gated
+structural definition line.
 
-**3. Inner sheen (`theme.css` + `glass.css`).** A new `--glass-sheen` token (a
-faint white, light `oklch(1 0 0 / 0.1)` / dark `0.06`) is layered as a
-`background-image: linear-gradient(135deg, var(--glass-sheen), transparent 42%)`
-over the gated `--glass-bg` in `glass-panel`/`glass-window`. The gradient is a
-separate layer the gate does not read, so the gate still composites the solid
-`--glass-bg`. The sheen is neutralised in every opaque a11y fallback (the
-`background` shorthand paths reset it; the two `contrast: more` blocks add an
-explicit `background-image: none`).
+**3. Inner sheen (`theme.css` + `glass.css`).** A `--glass-sheen` token (a
+faint white, light `oklch(1 0 0 / 0.1)` / dark `oklch(1 0 0 / 0.06)`) is
+layered as `background-image: linear-gradient(135deg, var(--glass-sheen),
+transparent 42%)` over the gated `--glass-tint` in `glass-panel`/`glass-window`.
+The gradient is a separate layer the gate does not read, so the gate still
+composites the solid `--glass-tint`. Shell chrome (`glass-bar*`,
+`glass-titlebar`) does **not** carry the sheen — it must read as a flat flush
+surface against the viewport edge.
 
-**4. Naming (`showcase.tsx` + docs).** Fixed the mislabelled "Glass Card
+**4. Performance discipline (ADR-0014 perf).**
+- `will-change` is **not** set on static glass (memory cost with no benefit);
+  it is scoped to overlay open/close transitions (`[data-state=open|closed]`)
+  via a separate rule in `glass.css`. Base glass composites via the cheap
+  `translateZ(0)` layer promotion.
+- Stacked glass is capped at 2 layers. A CSS soft-guard drops the sheen
+  (`background-image: none`) on a glass panel nested inside another glass
+  panel/window so a third layer never pays the recursive backdrop-filter cost.
+  Guarded by `glass-performance.test.ts`.
+
+**5. Naming (`showcase.tsx` + docs).** Fixed the mislabelled "Glass Card
 (Default)" (the Card default is `solid`, not glass) and reframed copy from
 "engineered" to "glassmorphism"; the demo glass now sits over a blob backdrop so
 it reads as glass. Docs (`design-system.md`, the ui-styling skill) and this ADR
@@ -80,21 +90,24 @@ already read as "glass", and renaming them would be churn without benefit.
 **Positive:**
 
 - The glass layer reads as modern glassmorphism (frosted, vibrant, luminous
-  border, inner sheen) over a backdrop, fixing the muddy engineered look.
+  border, inner sheen, volumetric rim pair) over a backdrop, fixing the muddy
+  engineered look.
 - The luminous border is carried by the ungated `--glass-highlight`, so the
   glassmorphism edge ships without weakening the APCA UI-edge gate.
 - Vibrancy remains one knob (`--glass-saturate`), still locked by the drift test.
+- `will-change` scoping reduces GPU memory on pages with many static glass
+  surfaces (e.g. open sidebar + topbar + pinned window).
+- Stacked-glass CSS soft-guard + test prevent the recursive blur bottleneck.
 
 **Negative / costs:**
 
-- Higher blur (16px) and saturate (1.4) cost more GPU than the engineered 12px /
-  1.05 — acceptable because glass is restricted to floating layers (ADR-0012),
-  not large backgrounds.
+- `saturate(1.4)` costs more GPU than the engineered 1.05 — acceptable because
+  glass is restricted to floating layers (ADR-0012), not large backgrounds.
 - Glass now visibly needs a backdrop to read; on a flat opaque surface it looks
   weak. Demos/usages must float it over the desktop blobs (the showcase backdrop
   pattern), not nest it on a solid card.
-- `--glass-sheen` is a new token a rebrand project may want to set; it defaults
-  sensibly if left alone.
+- `--glass-sheen` and `--glass-shadow-edge` are new tokens a rebrand project
+  may want to set; they default sensibly if left alone.
 
 **Neutral:**
 
@@ -104,17 +117,39 @@ already read as "glass", and renaming them would be churn without benefit.
   chrome, glass-only-for-floating discipline, and gate authority all stand. Only
   the glass *visual treatment* changes.
 
+## Implementation record
+
+Landed 2026-06-20. Actual values shipped:
+
+| Token | Light | Dark | Note |
+|---|---|---|---|
+| `--glass-tint` | `neutral-0 54%` | `neutral-900 34%` | Unchanged (APCA-gated) |
+| `--glass-edge` | `oklch(1 0 0 / 0.45)` | `oklch(1 0 0 / 0.14)` | Unchanged (ungated) |
+| `--glass-highlight` | `oklch(1 0 0 / 0.6)` | `oklch(1 0 0 / 0.3)` | Dark bumped 0.22→0.30 |
+| `--glass-shadow-edge` | `oklch(0 0 0 / 0.06)` | `oklch(0 0 0 / 0.22)` | **New** — bottom rim |
+| `--glass-sheen` | `oklch(1 0 0 / 0.1)` | `oklch(1 0 0 / 0.06)` | **New** — inner diagonal |
+| `--glass-blur` | 12px | 12px | Kept (not 16 as originally proposed) |
+| `--glass-saturate` | 1.4 | 1.4 | Bumped 1.05→1.4 |
+| `will-change` | scoped to `[data-state]` | scoped to `[data-state]` | **Removed** from static base |
+
+Blur was kept at 8/12/16 (not the originally proposed 10/16/24) because the
+`saturate(1.4)` vibrancy already delivers the glassmorphism signature; raising
+blur to 24px would contradict the performance-hardening goal for `strong` mode.
+
+Drift guards added: `glass-sheen.test.ts`, `glass-rim.test.ts`,
+`glass-performance.test.ts`.
+
 ## Alternatives considered
 
 - **Keep engineered dark-glass; only fix the showcase backdrop.** Rejected: the
   owner wants the glass *look* to be glassmorphism, not just a better demo. The
   muddy read came from the treatment (low blur, no vibrancy, thin neutral fill),
   not only the missing backdrop.
-- **Make `--glass-bg`/`--glass-border` gradients for the glassmorphism look.**
+- **Make `--glass-tint`/`--glass-edge` gradients for the glassmorphism look.**
   Rejected: the APCA gate parses them as single colours; a gradient breaks the
   gate parser and the fallbacks. The sheen is added as a separate `background-
   image` layer instead.
-- **Brighten `--glass-border` to a pure-light glassmorphism border.** Rejected
+- **Brighten `--glass-edge` to a pure-light glassmorphism border.** Rejected
   for light mode: a near-white border fails the Lc 25 UI-edge gate on a light
   surface (the ADR-0012 finding). The luminous edge is delivered by the ungated
   `--glass-highlight` specular inset instead.
@@ -122,18 +157,31 @@ already read as "glass", and renaming them would be churn without benefit.
   "glassmorphism" namespace.** Rejected: ~34-file ripple across overlays and
   features for names that already read as "glass". Only the internal rim tokens
   were renamed.
+- **Bump blur to 16/24px.** Rejected: `saturate(1.4)` already gives the frosted
+  vibrancy; 24px at `strong` would raise mobile GPU cost for marginal visual
+  gain. The 8–16px sweet spot (ADR-0012 comment) is kept.
 
 ## References
 
 - `packages/ui/src/styles/tokens.css` — `--blur-glass*`, `--glass-saturate`.
 - `packages/ui/src/styles/theme.css` — `--glass-highlight` / `--glass-shadow-edge`
-  (renamed), `--glass-sheen`, `--glass-bg` / `--glass-border`.
+  / `--glass-sheen` (new rim-pair + sheen tokens), `--glass-tint` / `--glass-edge`.
 - `packages/ui/src/styles/glass.css` — sheen `background-image` layer, the
-  luminous edge insets, a11y-fallback neutralisation.
+  volumetric rim-pair insets, `will-change` scoping, nested-glass soft guard,
+  a11y-fallback neutralisation (`background-image: none` under `contrast: more`).
 - `apps/web/src/test/design-system/glass-contrast.test.ts` — APCA gate (unchanged
-  thresholds; border tuned to pass).
+  thresholds; text Lc 50/60 over desktop blobs, edge presence-only).
 - `apps/web/src/test/design-system/glass-saturate.test.ts` — drift guard for the
   tokenized `--glass-saturate`.
+- `apps/web/src/test/design-system/glass-sheen.test.ts` — drift guard for the
+  inner sheen (panel/window carry, shell chrome does not, `contrast: more`
+  neutralises it).
+- `apps/web/src/test/design-system/glass-rim.test.ts` — drift guard for the
+  volumetric rim pair (`--glass-highlight` + `--glass-shadow-edge` on both
+  panel/window, dark rim stronger than light).
+- `apps/web/src/test/design-system/glass-performance.test.ts` — perf guard:
+  no animate `backdrop-filter`, `will-change` scoped to overlays, stacked-glass
+  CSS soft guard.
 - `apps/web/src/app/(app)/design-system/showcase.tsx` — glass demos over a
   backdrop; fixed labels.
 - `docs/adr/0012-engineered-glass-surface-language.md` — the surface decisions

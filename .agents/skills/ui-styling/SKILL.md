@@ -26,6 +26,9 @@ reference detail.
 - Contrast is APCA-gated: Lc 60 text / Lc 25 UI via
   `apps/web/src/test/design-system/glass-contrast.test.ts`. Do not reintroduce a
   WCAG 2.x ratio gate.
+- Glass performance: never animate `backdrop-filter`; cap stacked glass at 2
+  layers (the CSS soft-guard in `glass.css` drops the sheen on nesting);
+  `will-change` is reserved for overlay transitions, not static glass.
 - Radius: named utilities only (`rounded-md/lg/xl`, etc.), never
   `rounded-[Npx]`. All steps derive from `--radius-base` via `calc()`.
 - z-index: one OS scale in `tokens.css` (`100`-`1200`). `--z-overlay` (`900`) is
@@ -52,7 +55,8 @@ not inline its tables here.
 - [ ] No raw `oklch()`, primitive var, or Tailwind built-in palette in component classes.
 - [ ] Surface is one of the closed-set roles; no `bg-{card,background,popover}/NN`.
 - [ ] One `border-border`; status tint is the only `/20` border exception.
-- [ ] Floating layer uses `GlassSurface`/`glass-*`; frosted blur 10-24px only.
+- [ ] Floating layer uses `GlassSurface`/`glass-*`; frosted blur 8-16px only.
+- [ ] Glass perf: no `backdrop-filter` in transitions/animations; ≤2 glass layers stacked.
 - [ ] Radius/z-index use named utilities; no `rounded-[Npx]`, no raw `z-40`/`z-50` for cross-component layers.
 - [ ] Motion uses recipes / `motion-safe:` CSS; `useReducedMotion()` on JS motion.
 - [ ] Contrast pairs resolved by `glass-contrast.test.ts` (APCA), not eyeballed.

@@ -18,6 +18,7 @@ import { pageNav as profile } from '@/app/(app)/settings/profile/nav';
 import { pageNav as account } from '@/app/(app)/settings/account/nav';
 import { pageNav as appearance } from '@/app/(app)/settings/appearance/nav';
 import { pageNav as designSystem } from '@/app/(app)/design-system/nav';
+import { pageNav as designTrends } from '@/app/(app)/design-trends/nav';
 import { pageNav as nextjsEcosystem } from '@/app/(app)/nextjs-ecosystem/nav';
 
 export type NavItem = {
@@ -36,6 +37,7 @@ const pages: PageNav[] = [
   account,
   appearance,
   designSystem,
+  designTrends,
   nextjsEcosystem,
 ];
 

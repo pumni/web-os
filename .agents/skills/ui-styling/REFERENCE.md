@@ -14,7 +14,7 @@ hard rules and completion checklist stay in `SKILL.md`.
 | `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
 | `border` / `input` / `field` / `ring` | Hairlines, fields, input backdrops, focus ring |
-| `glass-bg` / `glass-border` / `glass-highlight` / `glass-shadow-edge` / `glass-sheen` / `glass-scrim` / `glass-blur` | Translucent glassmorphism surfaces. `glass-highlight`/`glass-shadow-edge` = the luminous edge pair (inset box-shadows, NOT APCA-gated); `glass-sheen` = inner `background-image` gradient (not gate-read); vibrancy is the single `--glass-saturate` knob (≈1.4). |
+| `glass-tint` / `glass-edge` / `glass-highlight` / `glass-shadow-edge` / `glass-sheen` / `glass-scrim` / `glass-blur` | Translucent glassmorphism surfaces. `glass-highlight`/`glass-shadow-edge` = the volumetric edge pair (inset box-shadows, NOT APCA-gated); `glass-sheen` = inner `background-image` gradient on `glass-panel`/`glass-window` only (not gate-read, not on shell chrome); `glass-fallback-bg` = opaque fallback; vibrancy is the single `--glass-saturate` knob (≈1.4). Perf: `will-change` scoped to overlay transitions; stacked glass ≤2 layers (CSS soft-guard drops sheen on nesting). |
 | `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) |
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
