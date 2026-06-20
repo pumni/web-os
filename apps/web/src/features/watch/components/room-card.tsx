@@ -2,7 +2,16 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight, Clapperboard, Tv } from 'lucide-react';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, cn } from '@pumni/ui';
+import {
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardWell,
+  IconBadge,
+} from '@pumni/ui';
 
 import type { Room } from '../types';
 
@@ -46,59 +55,42 @@ export function RoomCard({ room }: RoomCardProps) {
     : 'Add a media URL to begin';
 
   return (
-    <Link
-      href={roomUrl}
-      className="group block h-full rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      aria-label={`Resume watch room ${room.code}, ${statusLabel(room.is_playing).toLowerCase()}`}
+    <Card
+      asChild
+      interactive
+      className="group relative h-full overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
     >
-      <Card
-        interactive
-        className={cn(
-          'relative h-full overflow-hidden border transition-colors hover:border-primary/40',
-        )}
+      <Link
+        href={roomUrl}
+        aria-label={`Resume watch room ${room.code}, ${statusLabel(room.is_playing).toLowerCase()}`}
       >
-        {/* Subtle gradient hover wash */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-(--duration-base) group-hover:opacity-100"
-        />
-
         <CardHeader className="gap-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2.5">
-              <span
-                className={cn(
-                  'inline-flex size-8 shrink-0 items-center justify-center rounded-lg',
-                  hasSource ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground',
-                )}
-              >
-                <Clapperboard className="size-4" />
-              </span>
+              <IconBadge tone={hasSource ? 'primary-soft' : 'muted'} size="sm">
+                <Clapperboard />
+              </IconBadge>
               <CardTitle className="truncate font-mono text-base font-semibold text-foreground">
                 {room.code}
               </CardTitle>
             </div>
 
-            {/* Status chip — semantic tint pattern */}
+            {/* Status chip */}
             {room.is_playing ? (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-success/20 bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
-                <span className="relative flex size-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
-                  <span className="relative inline-flex size-1.5 rounded-full bg-success" />
-                </span>
+              <Badge tone="success" size="sm" pulse>
                 Playing
-              </span>
+              </Badge>
             ) : (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+              <Badge tone="neutral" size="sm">
                 Idle
-              </span>
+              </Badge>
             )}
           </div>
         </CardHeader>
 
         <CardContent className="flex flex-1 flex-col gap-4">
           {/* Media info — opaque inset well */}
-          <div className="space-y-1 rounded-lg border bg-muted p-3">
+          <CardWell padding="sm" className="space-y-1">
             <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground">
               <Tv className="size-3 text-primary" />
               Active stream
@@ -107,7 +99,7 @@ export function RoomCard({ room }: RoomCardProps) {
               <p className="truncate text-sm font-semibold text-foreground">{sourceName}</p>
               <p className="truncate font-mono text-[11px] text-muted-foreground">{sourceDetail}</p>
             </div>
-          </div>
+          </CardWell>
 
           <CardDescription className="flex items-center justify-between gap-2 pt-0 text-xs">
             <span className="text-muted-foreground">Last active {lastActiveText}</span>
@@ -117,7 +109,7 @@ export function RoomCard({ room }: RoomCardProps) {
             </span>
           </CardDescription>
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+    </Card>
   );
 }

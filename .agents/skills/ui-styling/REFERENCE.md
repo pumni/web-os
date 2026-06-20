@@ -29,9 +29,10 @@ scales, and raw `oklch(...)`) are restricted to token/theme files.
 | --- | --- | --- |
 | Floating glass | `GlassSurface variant="panel\|bar\|window\|titlebar"` or the matching `glass-*` utility | Floating layers: dialogs, sheets, popovers, command palette, toast, topbar, dock, sidebar rail, OS windows, pills/overlays. Engineered glass: thin neutral fill + bright-top/dark-bottom rim pair, tokenized `--glass-saturate`, directional `--shadow-glass`. |
 | Solid card | `<Card>` / `variant="solid"` -> `border bg-card surface-raised rounded-xl` | Primary content surfaces. `surface-raised` = `--shadow-card-raised` + `--card-rim-top` lit edge (NOT flat). |
-| Inset well | `<Card variant="inset">` or `bg-muted border border-border` | Nested wells inside cards: stat tiles, list rows, scroll wells |
+| Inset well | `<CardWell>` (or `<Card variant="inset">`) — never hand-roll `border bg-muted` (`pumniNoAdHocSurface` blocks it) | Nested wells inside cards: stat tiles, list rows, scroll wells. `radius` md/lg/xl, `padding` none/sm/md/lg. |
 | Control fill | `bg-muted` plus `motion-safe:hover:bg-muted/80` | Small inline controls: tabs, chips, code pills |
-| Status tint | `bg-{destructive\|warning\|success\|primary}/10 border-{...}/20 text-{...}` | Inline status chips/banners |
+| Status tint | `<Badge tone="...">` (`neutral\|primary\|success\|warning\|destructive`, optional `pulse` dot) | Inline status chips/banners — the owned status-tint pill. |
+| Icon chip | `<IconBadge tone="primary-soft\|raised\|muted" size="sm\|md\|lg\|xl">` | The rounded icon container on cards/tiles/empty states. |
 
 ## Radius scale
 

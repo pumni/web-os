@@ -29,10 +29,13 @@ import {
   AvatarBadge,
   AvatarGroup,
   AvatarGroupCount,
+  Badge,
   BentoGrid,
   BentoGridItem,
   Button,
   Card,
+  CardWell,
+  IconBadge,
   CardHeader,
   CardTitle,
   CardAction,
@@ -938,40 +941,101 @@ export function DesignSystemShowcase() {
                   Translucent floating surfaces with dedicated layout roles.
                 </CardDescription>
               </CardHeader>
+              <CardContent>
+                {/* Glass only reads as glass over a backdrop — float these roles
+                    over the desktop blob gradient, not on a flat opaque card. */}
+                <div className="relative overflow-hidden rounded-xl border bg-background p-4">
+                  <div aria-hidden className="absolute inset-0 overflow-hidden">
+                    <div className="absolute -top-20 -left-16 size-72 rounded-full bg-(--desktop-blob-primary) opacity-55 blur-3xl" />
+                    <div className="absolute -right-12 -bottom-24 size-72 rounded-full bg-(--desktop-blob-secondary) opacity-50 blur-3xl" />
+                    <div className="absolute inset-0 bg-background/30" />
+                  </div>
+
+                  <div className="relative grid gap-4">
+                    <GlassSurface
+                      variant="bar"
+                      className="flex items-center justify-between rounded-lg px-4 py-2 text-xs"
+                    >
+                      <span>
+                        Topbar / dock rail role (<code>.glass-bar</code>)
+                      </span>
+                      <span className="font-semibold text-primary">Active</span>
+                    </GlassSurface>
+                    <GlassSurface variant="panel" className="space-y-1 p-4 text-xs">
+                      <div className="font-semibold text-foreground">
+                        Dialog / popover panel role (<code>.glass-panel</code>)
+                      </div>
+                      <div className="text-muted-foreground">
+                        Maximum readability over gradients.
+                      </div>
+                    </GlassSurface>
+                    <GlassSurface variant="window" className="overflow-hidden rounded-xl p-0">
+                      <GlassSurface
+                        variant="titlebar"
+                        className="flex items-center justify-between border-b px-3 py-2 text-xs"
+                      >
+                        <span>
+                          Window Titlebar (<code>.glass-titlebar</code>)
+                        </span>
+                        {/* Neutral monochrome controls (de-Appled per ADR-0012) */}
+                        <div className="flex gap-1.5 text-muted-foreground">
+                          <span className="size-2 rounded-full bg-current opacity-40" />
+                          <span className="size-2 rounded-full bg-current opacity-40" />
+                          <span className="size-2 rounded-full bg-current opacity-40" />
+                        </div>
+                      </GlassSurface>
+                      <div className="min-h-20 p-4 text-xs">
+                        Window container body role (<code>.glass-window</code>)
+                      </div>
+                    </GlassSurface>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Card composition primitives — Badge / IconBadge / CardWell */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Card Composition Primitives</CardTitle>
+                <CardDescription>
+                  The closed set that replaces hand-rolled status pills, icon chips, and inset
+                  wells. Compose these instead of writing <code>border bg-muted</code> by hand.
+                </CardDescription>
+              </CardHeader>
               <CardContent className="grid gap-4">
-                <GlassSurface
-                  variant="bar"
-                  className="flex items-center justify-between px-4 py-2 text-xs"
-                >
-                  <span>
-                    Topbar / dock rail role (<code>.glass-bar</code>)
+                {/* Badge tones */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge tone="success" pulse>
+                    Live
+                  </Badge>
+                  <Badge tone="primary">In library</Badge>
+                  <Badge tone="warning">Syncing</Badge>
+                  <Badge tone="destructive">Error</Badge>
+                  <Badge tone="neutral">Idle</Badge>
+                </div>
+
+                {/* IconBadge tones + sizes */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <IconBadge tone="primary-soft" size="sm" aria-hidden>
+                    <HelpCircleIcon />
+                  </IconBadge>
+                  <IconBadge tone="muted" size="md" aria-hidden>
+                    <HelpCircleIcon />
+                  </IconBadge>
+                  <IconBadge tone="raised" size="lg" radius="xl" aria-hidden>
+                    <HelpCircleIcon />
+                  </IconBadge>
+                </div>
+
+                {/* CardWell inset surface */}
+                <CardWell className="space-y-1">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Inset well (<code>CardWell</code>)
                   </span>
-                  <span className="font-semibold text-primary">Active</span>
-                </GlassSurface>
-                <GlassSurface variant="panel" className="space-y-1 p-4 text-xs">
-                  <div className="font-semibold text-foreground">
-                    Dialog / popover panel role (<code>.glass-panel</code>)
-                  </div>
-                  <div className="text-muted-foreground">Maximum readability over gradients.</div>
-                </GlassSurface>
-                <GlassSurface variant="window" className="overflow-hidden rounded-xl p-0">
-                  <GlassSurface
-                    variant="titlebar"
-                    className="flex items-center justify-between border-b px-3 py-2 text-xs"
-                  >
-                    <span>
-                      Window Titlebar (<code>.glass-titlebar</code>)
-                    </span>
-                    <div className="flex gap-1">
-                      <span className="size-2.5 rounded-full bg-destructive" />
-                      <span className="size-2.5 rounded-full bg-warning" />
-                      <span className="size-2.5 rounded-full bg-success" />
-                    </div>
-                  </GlassSurface>
-                  <div className="min-h-20 p-4 text-xs">
-                    Window container body role (<code>.glass-window</code>)
-                  </div>
-                </GlassSurface>
+                  <p className="text-sm font-semibold text-foreground">
+                    Recessed nested surface for media rows and stats.
+                  </p>
+                </CardWell>
               </CardContent>
             </Card>
 

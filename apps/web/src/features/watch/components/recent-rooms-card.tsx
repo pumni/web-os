@@ -3,13 +3,14 @@ import type { Route } from 'next';
 import { ChevronRight, Clapperboard, Pause, Play } from 'lucide-react';
 
 import {
+  Badge,
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
   CardAction,
-  cn,
+  IconBadge,
 } from '@pumni/ui';
 
 import type { Room } from '../types';
@@ -39,12 +40,9 @@ export function RecentRoomsCard({ rooms, maxRooms = 4 }: RecentRoomsCardProps) {
     <Card className="overflow-hidden">
       <CardHeader>
         <div className="flex min-w-0 items-start gap-3">
-          <span
-            aria-hidden
-            className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"
-          >
-            <Clapperboard className="size-5" />
-          </span>
+          <IconBadge aria-hidden size="md">
+            <Clapperboard />
+          </IconBadge>
           <div className="min-w-0 space-y-1">
             <CardTitle className="text-base font-semibold">Recent Watch Rooms</CardTitle>
             <CardDescription className="text-sm">
@@ -56,19 +54,15 @@ export function RecentRoomsCard({ rooms, maxRooms = 4 }: RecentRoomsCardProps) {
         <CardAction>
           <div className="flex shrink-0 items-center gap-2">
             {playingCount > 0 ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-success/20 bg-success/10 px-2 py-0.5 text-xs font-semibold text-success">
-                <span className="relative flex size-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
-                  <span className="relative inline-flex size-1.5 rounded-full bg-success" />
-                </span>
+              <Badge tone="success" pulse>
                 <Play className="size-3" />
                 {pluralize(playingCount, 'playing')}
-              </span>
+              </Badge>
             ) : (
-              <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+              <Badge tone="neutral">
                 <Pause className="size-3" />
                 All rooms idle
-              </span>
+              </Badge>
             )}
 
             <Link
@@ -83,7 +77,7 @@ export function RecentRoomsCard({ rooms, maxRooms = 4 }: RecentRoomsCardProps) {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className={cn('grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4')}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {visible.map((room) => (
             <RoomCard key={room.id} room={room} />
           ))}

@@ -15,9 +15,14 @@ reference detail.
 - Token tiers: primitive (`tokens.css`) -> semantic (`theme.css`) -> component.
   Components consume semantic only. Never reference a primitive var or raw OKLCH.
 - Surface vocabulary is a closed set: floating glass (`GlassSurface`/`glass-*`),
-  solid card (`Card variant="solid"`), inset well (`Card variant="inset"` /
-  `bg-muted`), control fill (`bg-muted` + hover `/80`), status tint (`/10` fill
-  + `/20` border).
+  solid card (`Card variant="solid"`), inset well (`CardWell` / `Card
+  variant="inset"`), control fill (`bg-muted` + hover `/80`), status tint
+  (`Badge`).
+- Card layer is composition-first: `Card` is the block surface; `CardWell`
+  (inset well), `Badge` (status pill, `tone` + `pulse`), and `IconBadge` (icon
+  chip) are the sub-surface primitives. Never hand-roll `border bg-muted` wells,
+  inline status pills, or icon chips — `pumniNoAdHocSurface` blocks the well.
+  `BentoGridItem` is layout-only and renders through these primitives.
 - Contrast is APCA-gated: Lc 60 text / Lc 25 UI via
   `apps/web/src/test/design-system/glass-contrast.test.ts`. Do not reintroduce a
   WCAG 2.x ratio gate.

@@ -130,6 +130,8 @@ export {
   cardVariants,
 } from './components/layout/card';
 export { CardSpotlight } from './components/layout/card-spotlight';
+export { CardWell, cardWellVariants } from './components/layout/card-well';
+export { IconBadge, iconBadgeVariants } from './components/layout/icon-badge';
 export { Separator } from './components/layout/separator';
 export { ScrollArea, ScrollBar } from './components/layout/scroll-area';
 export { Tabs, TabsContent, TabsList, TabsTrigger } from './components/layout/tabs';
@@ -144,6 +146,7 @@ export {
 export { Highlight } from './components/layout/highlight';
 
 // feedback — transient status
+export { Badge, badgeVariants } from './components/feedback/badge';
 export { Skeleton, skeletonVariants } from './components/feedback/skeleton';
 export { Toaster } from './components/feedback/sonner';
 

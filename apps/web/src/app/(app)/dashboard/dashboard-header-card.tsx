@@ -3,7 +3,7 @@
 import type { User } from '@supabase/supabase-js';
 import { Calendar, Clock } from 'lucide-react';
 
-import { CardSpotlight, CardContent, Avatar, AvatarImage, AvatarFallback, cn } from '@pumni/ui';
+import { Badge, CardSpotlight, CardContent, Avatar, AvatarImage, AvatarFallback } from '@pumni/ui';
 
 import { useClock } from '@/hooks/use-clock';
 import { dateFormatter } from '@/lib/formatters';
@@ -67,12 +67,8 @@ export function DashboardHeaderCard({ user }: DashboardHeaderCardProps) {
           </div>
         </div>
 
-        <div
-          className={cn(
-            'flex shrink-0 items-center gap-2 self-start rounded-xl border bg-card px-3 py-2 shadow-card md:self-auto',
-          )}
-        >
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground sm:text-sm">
+        <div className="flex shrink-0 items-center gap-2 self-start rounded-xl border bg-card surface-raised px-3 py-2 md:self-auto">
+          <Badge tone="neutral">
             <Clock className="size-3.5 text-primary" />
             <time
               dateTime={date?.toISOString()}
@@ -80,11 +76,11 @@ export function DashboardHeaderCard({ user }: DashboardHeaderCardProps) {
             >
               {timeString}
             </time>
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-xs font-medium text-muted-foreground sm:text-sm">
+          </Badge>
+          <Badge tone="neutral">
             <Calendar className="size-3.5 text-primary" />
             <span className="text-foreground">{dateString}</span>
-          </span>
+          </Badge>
         </div>
       </CardContent>
     </CardSpotlight>

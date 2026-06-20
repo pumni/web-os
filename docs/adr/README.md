@@ -98,3 +98,9 @@ link still fails the gate.
   directional shadow), gave solid cards real elevation (`surface-raised`), and
   de-Appled the OS window chrome (neutral controls); kept the OS shell
   presentational and the APCA gate authoritative.
+- `0013-card-composition-primitives.md` — unified the card consumption layer
+  (three parallel systems + 43 ad-hoc surfaces) behind a composition-first set:
+  `Card` stays the block surface; `CardWell` (inset well), `Badge` (status
+  pill), and `IconBadge` (icon chip) replace hand-rolled copies; `BentoGridItem`
+  became layout-only; extended `pumniNoAdHocSurface` to block the shorthand
+  `border bg-muted` well. Declined a competing `Surface` primitive.

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { Route } from 'next';
 import { Clapperboard, Plus } from 'lucide-react';
 
-import { Button, Card, CardContent } from '@pumni/ui';
+import { Button, Card, CardContent, IconBadge } from '@pumni/ui';
 
 export function EmptyRoomsCard() {
   return (
@@ -14,12 +14,9 @@ export function EmptyRoomsCard() {
       />
 
       <CardContent className="relative flex flex-col items-center justify-center gap-4 py-12 text-center">
-        <span
-          aria-hidden
-          className="inline-flex size-14 items-center justify-center rounded-2xl border bg-card text-primary shadow-card"
-        >
-          <Clapperboard className="size-7" />
-        </span>
+        <IconBadge aria-hidden tone="raised" size="xl" radius="2xl">
+          <Clapperboard />
+        </IconBadge>
 
         <div className="w-full max-w-sm space-y-1">
           <h3 className="text-lg font-semibold text-foreground">No watch rooms yet</h3>

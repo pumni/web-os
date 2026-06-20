@@ -108,10 +108,15 @@ const AD_HOC_SURFACE_PATTERNS = [
   '\\bbg-(?:card|background|popover)\\/\\d',
   // Raw elevation shadows — content uses shadow-sm; floating depth is the glass utility.
   '\\bshadow-(?:lg|xl|2xl)\\b',
+  // Hand-rolled inset well — the recessed shorthand `border bg-muted` surface is
+  // owned by <CardWell> (and <Card variant="inset">). Don't re-invent it inline.
+  // The negative lookbehind excludes the canonical `border border-border bg-muted`
+  // form the primitives themselves use (the trailing "border" of "border-border").
+  '(?<!-)\\bborder bg-muted\\b',
 ];
 
 const AD_HOC_SURFACE_MESSAGE =
-  'Surface system is closed: no raw backdrop-blur (use GlassSurface/glass-* for floating layers), no bg-{card,background,popover}/NN opacity (surfaces are opaque — use Card solid/inset or bg-muted), no raw shadow-lg/xl/2xl (content=shadow-sm, floating=glass utility). See docs/conventions/design-system.md §Surface vocabulary.';
+  'Surface system is closed: no raw backdrop-blur (use GlassSurface/glass-* for floating layers), no bg-{card,background,popover}/NN opacity (surfaces are opaque), no raw shadow-lg/xl/2xl (content=shadow-sm, floating=glass utility), no hand-rolled `border bg-muted` inset wells (use <CardWell> / <Card variant="inset">; status pills use <Badge>, icon chips use <IconBadge>). See docs/conventions/design-system.md §Surface vocabulary.';
 
 export const restrictedAdHocSurface = [
   'error',
@@ -138,6 +143,18 @@ export const pumniNoAdHocSurface = [
       '**/sheet.tsx',
       '**/command-palette.tsx',
       '**/window.tsx',
+      // TODO(card-system-unification): these still hand-roll `border bg-muted`
+      // inset wells; migrate them to <CardWell> in a follow-up pass, then drop
+      // the entry. Dashboard + watch room cards are already migrated & enforced.
+      '**/features/sky-player/**',
+      '**/watch-room.tsx',
+      '**/watch-lobby.tsx',
+      '**/source-tabs.tsx',
+      '**/playlist-panel.tsx',
+      '**/participant-rail.tsx',
+      '**/chat-panel.tsx',
+      '**/crop-dialog.tsx',
+      '**/kbd.tsx',
     ],
     rules: {
       'no-restricted-syntax': restrictedAdHocSurface,

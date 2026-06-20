@@ -2,6 +2,8 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/cn';
 import { Card } from '../layout/card';
+import { CardWell } from '../layout/card-well';
+import { IconBadge } from '../layout/icon-badge';
 import { Skeleton } from '../feedback/skeleton';
 
 /**
@@ -153,19 +155,17 @@ function BentoGridItemContent({
   return (
     <>
       {header && (
-        // Inset well — opaque muted surface (rule 3: no bg-muted/NN on content)
-        <div className="flex w-full items-center justify-center rounded-lg bg-muted overflow-hidden min-h-30 max-h-40 border border-border">
+        // Inset well — opaque muted surface (CardWell owns the border + radius).
+        <CardWell padding="none" className="flex w-full items-center justify-center overflow-hidden min-h-30 max-h-40">
           {header}
-        </div>
+        </CardWell>
       )}
       <div className="flex flex-col gap-2 flex-1">
         {(icon || title || description) && (
           <div className="space-y-1.5 min-w-0">
             {icon && (
-              // Status-tint pattern: /10 fill + semantic text (hợp lệ)
-              <div className="inline-flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                {icon}
-              </div>
+              // Status-tint icon chip — primary-soft tone.
+              <IconBadge size="md">{icon}</IconBadge>
             )}
             {title && (
               <h3 className="type-heading text-foreground wrap-break-word">{title}</h3>

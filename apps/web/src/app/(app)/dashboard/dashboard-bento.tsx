@@ -15,7 +15,16 @@ import {
   Users,
 } from 'lucide-react';
 
-import { BentoGrid, BentoGridItem, Button, Input, cn, usePersonalization } from '@pumni/ui';
+import {
+  Badge,
+  BentoGrid,
+  BentoGridItem,
+  Button,
+  CardWell,
+  IconBadge,
+  Input,
+  usePersonalization,
+} from '@pumni/ui';
 
 import type { Room } from '@/features/watch/types';
 
@@ -107,16 +116,7 @@ function TasksMetricContent() {
       ariaLabel={ariaTemplate}
     >
       <div className="mt-auto flex items-center gap-2">
-        <span
-          className={cn(
-            'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold',
-            allDone
-              ? 'border-success/20 bg-success/10 text-success'
-              : 'border-primary/20 bg-primary/10 text-primary',
-          )}
-        >
-          {allDone ? 'Caught up' : 'Keep going'}
-        </span>
+        <Badge tone={allDone ? 'success' : 'primary'}>{allDone ? 'Caught up' : 'Keep going'}</Badge>
       </div>
     </BentoGridItem>
   );
@@ -166,9 +166,7 @@ function PersonalizeMetric() {
       ariaLabel={ariaLabel}
     >
       <div className="mt-auto flex items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1 rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-          Theme
-        </span>
+        <Badge tone="neutral">Theme</Badge>
         <Button asChild variant="ghost" size="xs" className="gap-1 px-2 text-primary">
           <Link href={'/settings/appearance' as Route}>
             Edit
@@ -199,7 +197,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
         description="Create a synchronized session or join one with a code."
         minHeight={320}
       >
-        <div className="mt-2 flex flex-1 flex-col gap-3 rounded-lg border bg-muted p-4">
+        <CardWell className="mt-2 flex flex-1 flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               <span className="relative flex size-2">
@@ -242,7 +240,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
               Join
             </Button>
           </form>
-        </div>
+        </CardWell>
       </BentoGridItem>
 
       {/* HERO 2 - Most Recent Room or empty state */}
@@ -267,25 +265,21 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
         minHeight={320}
       >
         {mostRecent ? (
-          <div className="mt-2 flex flex-1 flex-col gap-3 rounded-lg border bg-muted p-4">
+          <CardWell className="mt-2 flex flex-1 flex-col gap-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="inline-flex items-center gap-2 rounded-md border bg-card px-2.5 py-1 font-mono text-sm font-semibold text-foreground">
                 <Tv className="size-3.5 text-primary" />
                 {mostRecent.code}
               </span>
               {mostRecent.is_playing ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-success/20 bg-success/10 px-2 py-0.5 text-xs font-semibold text-success">
-                  <span className="relative flex size-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
-                    <span className="relative inline-flex size-1.5 rounded-full bg-success" />
-                  </span>
+                <Badge tone="success" pulse>
                   Live now
-                </span>
+                </Badge>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                <Badge tone="neutral">
                   <Pause className="size-3" />
                   Idle
-                </span>
+                </Badge>
               )}
             </div>
 
@@ -315,15 +309,15 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
                 )}
               </Link>
             </Button>
-          </div>
+          </CardWell>
         ) : (
-          <div className="mt-2 flex flex-1 flex-col items-center justify-center gap-3 rounded-lg border bg-muted p-6 text-center">
-            <span
-              aria-hidden
-              className="inline-flex size-12 items-center justify-center rounded-xl border bg-card text-primary shadow-card"
-            >
-              <Play className="size-6" />
-            </span>
+          <CardWell
+            padding="lg"
+            className="mt-2 flex flex-1 flex-col items-center justify-center gap-3 text-center"
+          >
+            <IconBadge aria-hidden tone="raised" size="lg" radius="xl">
+              <Play />
+            </IconBadge>
             <div className="space-y-1">
               <p className="type-heading font-semibold text-foreground">Ready when you are</p>
               <p className="text-xs text-muted-foreground">
@@ -336,7 +330,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
                 <ArrowUpRight className="size-3.5" />
               </Link>
             </Button>
-          </div>
+          </CardWell>
         )}
       </BentoGridItem>
 
@@ -350,16 +344,9 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
         ariaLabel={`${totalRooms} recent watch rooms`}
       >
         <div className="mt-auto flex items-center justify-between gap-2">
-          <span
-            className={cn(
-              'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold',
-              totalRooms > 0
-                ? 'border-primary/20 bg-primary/10 text-primary'
-                : 'border-border bg-muted text-muted-foreground',
-            )}
-          >
+          <Badge tone={totalRooms > 0 ? 'primary' : 'neutral'}>
             {totalRooms > 0 ? 'In your library' : 'Start one today'}
-          </span>
+          </Badge>
           <Button asChild variant="ghost" size="xs" className="gap-1 px-2 text-primary">
             <Link href={'/watch' as Route}>
               Browse
@@ -379,20 +366,9 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
         ariaLabel={`${playingCount} active playing rooms`}
       >
         <div className="mt-auto flex items-center gap-2">
-          <span
-            className={cn(
-              'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold',
-              playingCount > 0
-                ? 'border-success/20 bg-success/10 text-success'
-                : 'border-border bg-muted text-muted-foreground',
-            )}
-          >
-            <span className={cn('relative flex size-1.5', playingCount === 0 && 'hidden')}>
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-success" />
-            </span>
+          <Badge tone={playingCount > 0 ? 'success' : 'neutral'} pulse={playingCount > 0}>
             {playingCount > 0 ? 'Sync engaged' : 'Quiet'}
-          </span>
+          </Badge>
         </div>
       </BentoGridItem>
 
