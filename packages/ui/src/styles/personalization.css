@@ -22,8 +22,8 @@
  * selectable accent (the previous brand hue).
  */
 [data-accent='cyan'] {
-  --primary: var(--cyan-600);
-  --ring: var(--cyan-500);
+  --primary: var(--cyan-500);
+  --ring: var(--cyan-400);
   --desktop-blob-primary: var(--cyan-500);
   --desktop-blob-secondary: var(--indigo-500);
   --brand-gradient-from: var(--cyan-500);

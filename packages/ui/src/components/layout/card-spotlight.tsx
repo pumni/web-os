@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Card } from './card';
 import type { VariantProps } from 'class-variance-authority';
 import type { cardVariants } from './card';
-import { cn } from '../lib/cn';
+import { cn } from '../../lib/cn';
 
 /**
  * CardSpotlight — opt-in client wrapper that adds a pointer-tracked radial

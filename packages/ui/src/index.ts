@@ -1,3 +1,4 @@
+// lib utilities
 export { cn } from './lib/cn';
 export { withViewTransition } from './lib/view-transition';
 export {
@@ -13,46 +14,51 @@ export {
 // dependency (single version, clean package boundary).
 export { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 export {
-  Avatar,
-  AvatarBadge,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarGroupCount,
-  AvatarImage,
-} from './components/avatar';
-export { BentoGrid, BentoGridItem, type BentoTier } from './components/os/bento-grid';
-export { Button, buttonVariants } from './components/button';
-export { SubmitButton } from './components/submit-button';
+  apcaContrast,
+  apcaLuminance,
+  backgroundFor,
+  foregroundFor,
+  type ContrastColorOptions,
+  type ContrastColorResult,
+  type Polarity,
+} from './lib/apca';
+export { clamp01, formatOklch, oklchToSrgb, parseOklch, type Oklch } from './lib/oklch';
+
+// form — inputs, controls, and form scaffolding
+export { Button, buttonVariants } from './components/form/button';
+export { SubmitButton } from './components/form/submit-button';
+export { Input, inputVariants } from './components/form/input';
+export { Label } from './components/form/label';
+export { Checkbox } from './components/form/checkbox';
+export { Switch } from './components/form/switch';
+export { Slider } from './components/form/slider';
 export {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  cardVariants,
-} from './components/card';
-export { CardSpotlight } from './components/card-spotlight';
-export { Checkbox } from './components/checkbox';
-export { CommandPalette, type CommandItem } from './components/command-palette';
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectScrollDownButton,
+  SelectScrollUpButton,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from './components/form/select';
 export {
-  ContextMenu,
-  ContextMenuCheckboxItem,
-  ContextMenuContent,
-  ContextMenuGroup,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuPortal,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from './components/context-menu';
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormField,
+} from './components/form/form';
+export { AuthField } from './components/form/auth-field';
+export { DensityPicker } from './components/form/density-picker';
+export { GlassLevelPicker } from './components/form/glass-level-picker';
+
+// overlay — floating / portaled layers
 export {
   Dialog,
   DialogClose,
@@ -64,8 +70,18 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-} from './components/dialog';
-export { Dock, DockItem } from './components/os/dock';
+} from './components/overlay/dialog';
+export {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from './components/overlay/sheet';
+export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from './components/overlay/popover';
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -82,24 +98,58 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from './components/dropdown-menu';
+} from './components/overlay/dropdown-menu';
 export {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  useFormField,
-} from './components/form';
-export { AuthField } from './components/auth-field';
-export { DensityPicker } from './components/density-picker';
-export { GlassLevelPicker } from './components/glass-level-picker';
-export { GlassSurface, glassSurfaceVariants } from './components/glass-surface';
-export { Highlight } from './components/highlight';
-export { Input, inputVariants } from './components/input';
-export { Label } from './components/label';
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuGroup,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuPortal,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from './components/overlay/context-menu';
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './components/overlay/tooltip';
+export { CommandPalette, type CommandItem } from './components/overlay/command-palette';
+
+// layout — structural & presentational primitives
+export {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  cardVariants,
+} from './components/layout/card';
+export { CardSpotlight } from './components/layout/card-spotlight';
+export { Separator } from './components/layout/separator';
+export { ScrollArea, ScrollBar } from './components/layout/scroll-area';
+export { Tabs, TabsContent, TabsList, TabsTrigger } from './components/layout/tabs';
+export {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+} from './components/layout/avatar';
+export { Highlight } from './components/layout/highlight';
+
+// feedback — transient status
+export { Skeleton, skeletonVariants } from './components/feedback/skeleton';
+export { Toaster } from './components/feedback/sonner';
+
+// identity — Pumni brand tier (glass, personalization)
+export { GlassSurface, glassSurfaceVariants } from './components/identity/glass-surface';
 export {
   ACCENTS,
   type Accent,
@@ -110,46 +160,9 @@ export {
   PersonalizationProvider,
   PersonalizationScript,
   usePersonalization,
-} from './components/personalization-provider';
-export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from './components/popover';
-export { ScrollArea, ScrollBar } from './components/scroll-area';
-export {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectScrollDownButton,
-  SelectScrollUpButton,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from './components/select';
-export { Separator } from './components/separator';
-export {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from './components/sheet';
-export { Skeleton, skeletonVariants } from './components/skeleton';
-export { Toaster } from './components/sonner';
-export { Switch } from './components/switch';
-export { Slider } from './components/slider';
-export { Tabs, TabsContent, TabsList, TabsTrigger } from './components/tabs';
-export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './components/tooltip';
+} from './components/identity/personalization-provider';
+
+// os — desktop shell
+export { BentoGrid, BentoGridItem, type BentoTier } from './components/os/bento-grid';
+export { Dock, DockItem } from './components/os/dock';
 export { Window } from './components/os/window';
-export {
-  apcaContrast,
-  apcaLuminance,
-  backgroundFor,
-  foregroundFor,
-  type ContrastColorOptions,
-  type ContrastColorResult,
-  type Polarity,
-} from './lib/apca';
-export { clamp01, formatOklch, oklchToSrgb, parseOklch, type Oklch } from './lib/oklch';

@@ -1,6 +1,6 @@
 'use client';
 
-import { DENSITIES, type Density } from './personalization-provider';
+import { DENSITIES, type Density } from '../identity/personalization-provider';
 import { Button } from './button';
 
 export function DensityPicker({

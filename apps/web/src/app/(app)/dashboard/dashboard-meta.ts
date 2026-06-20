@@ -28,7 +28,7 @@ export const quickActions: ReadonlyArray<QuickAction> = [
 /**
  * Tier + minimum-height pairing for the Bento grid. `minHeight` is passed to
  * `BentoGridItem`'s primitive prop, so tiles keep CLS-stable layout before
- * their content hydrates (see `packages/ui/src/components/bento-grid.tsx`).
+ * their content hydrates (see `packages/ui/src/components/os/bento-grid.tsx`).
  *
  * Tile math at desktop (12-col grid):
  *   Rows 1–2: hero (6×2) | sky-player (6×2)

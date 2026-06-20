@@ -7,11 +7,11 @@
  * here (or under a project-scoped selector imported AFTER the @pumni/ui styles)
  * WITHOUT editing platform core. See ADR-0010.
  *
- * Defaults below are Pumni's own cyan identity. The light/dark split exists
- * because the brand colour sits at different OKLCH lightness stops per theme to
- * hold APCA contrast against the white `--primary-foreground` — when overriding,
- * keep that split (a lighter dark-mode stop, a darker light-mode stop) and let
- * the glass-contrast test verify the result.
+ * Defaults below are Pumni's own cyan identity. Both themes share the cyan-500
+ * stop: the APCA gate against the white `--primary-foreground` has so much
+ * headroom (Lc ~93–94) that no per-theme lightness split is needed. When
+ * overriding with a higher-chroma or lighter brand, keep enough lightness that
+ * white foreground clears the gate and let the glass-contrast test verify.
  *
  * Scope note: this governs the DEFAULT (attribute-less) appearance only. The
  * named accents (cyan / indigo / violet / rose) in `personalization.css` are a
@@ -23,10 +23,13 @@
  */
 
 :root {
-  /* Core brand colour — drives --primary and everything mixed from it. */
-  --brand-primary: var(--cyan-600);
-  /* Focus ring — usually one lightness stop above --brand-primary. */
-  --brand-ring: var(--cyan-500);
+  /* Core brand colour — drives --primary and everything mixed from it.
+     cyan-500 (not the darker cyan-600): sRGB caps cyan chroma hard at this hue,
+     so the lighter stop renders a more vivid brand while white --primary-foreground
+     still clears the APCA gate with huge headroom (Lc ~94). */
+  --brand-primary: var(--cyan-500);
+  /* Focus ring — one lightness stop above --brand-primary. */
+  --brand-ring: var(--cyan-400);
 
   /* Brand gradient — hero/marketing expression (from → via → to). */
   --brand-gradient-from: var(--cyan-500);
@@ -41,4 +44,23 @@
   --brand-gradient-from: var(--cyan-400);
   --brand-gradient-via: var(--indigo-400);
   --brand-gradient-to: var(--violet-400);
+}
+
+/*
+ * Wide-gamut (Display P3) boost. sRGB clips cyan hard at this lightness, so on
+ * P3 screens we push the brand chroma past the sRGB boundary for a richer cyan.
+ * Same lightness + hue as the sRGB stops above — only chroma rises — so every
+ * APCA pair is unchanged (the gate runs in sRGB, which stays the authority).
+ * Only the `--brand-*` inputs are lifted; the semantic layer reads them via
+ * var(), so light and dark `--primary` / `--ring` both inherit the P3 value.
+ */
+@media (color-gamut: p3) {
+  :root {
+    --brand-primary: oklch(0.555 0.14 202);
+    --brand-ring: oklch(0.7 0.15 201);
+  }
+  .dark {
+    --brand-primary: oklch(0.555 0.14 202);
+    --brand-ring: oklch(0.7 0.15 201);
+  }
 }

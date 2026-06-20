@@ -26,9 +26,13 @@ These are imported once in `apps/web/src/app/globals.css`.
 new project changes identity by overriding `--brand-*` — at `:root` or a
 project-scoped selector imported after the `@pumni/ui` styles — without editing
 core. This is the entry surface of the semantic tier, **not a fourth tier**.
-Keep the light/dark stop split when overriding so the `glass-contrast` test
-holds APCA against `--primary-foreground`. The named accents in
-`personalization.css` stay literal (a runtime user palette, not the brand).
+Both themes share the cyan-500 brand stop (the APCA gate against white
+`--primary-foreground` has ~Lc 93 headroom, so no per-theme lightness split is
+needed); a wide-gamut `@media (color-gamut: p3)` block lifts only chroma for a
+richer cyan on capable displays while the sRGB values stay the gated authority.
+When overriding, keep enough lightness that white foreground clears the
+`glass-contrast` gate. The named accents in `personalization.css` stay literal
+(a runtime user palette, not the brand).
 
 To derive an accessible foreground for an overridden brand colour (instead of
 hand-tuning), use `foregroundFor(bg, targetLc)` / `backgroundFor` from

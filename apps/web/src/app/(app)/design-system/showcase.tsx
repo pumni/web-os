@@ -22,6 +22,7 @@ import {
   AnimatePresence,
   apcaContrast,
   apcaLuminance,
+  AuthField,
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -43,12 +44,19 @@ import {
   CommandPalette,
   type CommandItem,
   ContextMenu,
+  ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
   ContextMenuSeparator,
   ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
   ContextMenuTrigger,
+  DensityPicker,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -66,6 +74,10 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
   Form,
   FormControl,
@@ -117,7 +129,6 @@ import {
   recipes,
   useReducedMotion,
   ACCENTS,
-  GLASS_LEVELS,
   usePersonalization,
 } from '@pumni/ui';
 
@@ -196,6 +207,10 @@ export function DesignSystemShowcase() {
     compact: false,
   });
   const [dropdownRadio, setDropdownRadio] = React.useState('comfortable');
+  const [contextCheckState, setContextCheckState] = React.useState({
+    showHidden: false,
+    readOnly: true,
+  });
   const [apcaFg, setApcaFg] = React.useState('#0a0a0a');
   const [apcaBg, setApcaBg] = React.useState('#fafafa');
 
@@ -706,6 +721,18 @@ export function DesignSystemShowcase() {
                   </form>
                 </Form>
                 <Separator />
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    AuthField (Server Action form field)
+                  </p>
+                  <AuthField
+                    id="demo-auth-field"
+                    label="API Token Name"
+                    placeholder="e.g. Production Read-only"
+                    error={['Token name must be at least 3 characters.']}
+                  />
+                </div>
+                <Separator />
                 <div className="space-y-2">
                   <p className="text-xs font-semibold text-muted-foreground">
                     SubmitButton (Server Action ready)
@@ -926,7 +953,7 @@ export function DesignSystemShowcase() {
                   </div>
                   <div className="text-muted-foreground">Maximum readability over gradients.</div>
                 </GlassSurface>
-                <div className="rounded-xl overflow-hidden border">
+                <GlassSurface variant="window" className="rounded-xl overflow-hidden p-0">
                   <GlassSurface
                     variant="titlebar"
                     className="flex items-center justify-between px-3 py-2 text-xs border-b"
@@ -940,10 +967,10 @@ export function DesignSystemShowcase() {
                       <span className="size-2.5 rounded-full bg-success" />
                     </div>
                   </GlassSurface>
-                  <GlassSurface variant="window" className="p-4 text-xs min-h-20">
+                  <div className="p-4 text-xs min-h-20">
                     Window container body role (<code>.glass-window</code>)
-                  </GlassSurface>
-                </div>
+                  </div>
+                </GlassSurface>
               </CardContent>
             </Card>
 
@@ -1098,6 +1125,7 @@ export function DesignSystemShowcase() {
                     <DropdownMenuItem onClick={() => toast.info('Appearance settings opened.')}>
                       <SettingsIcon />
                       Appearance
+                      <DropdownMenuShortcut>⌘,</DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuCheckboxItem
@@ -1122,6 +1150,21 @@ export function DesignSystemShowcase() {
                       <DropdownMenuRadioItem value="comfortable">Comfortable</DropdownMenuRadioItem>
                       <DropdownMenuRadioItem value="compact">Compact</DropdownMenuRadioItem>
                     </DropdownMenuRadioGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <PanelRightIcon />
+                        Developer Tools
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem onClick={() => toast.info('Console opened.')}>
+                          Toggle Console
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toast.info('Inspector opened.')}>
+                          Inspect Elements
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       variant="destructive"
@@ -1150,6 +1193,42 @@ export function DesignSystemShowcase() {
                       Refresh
                       <ContextMenuShortcut>⌘R</ContextMenuShortcut>
                     </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuSub>
+                      <ContextMenuSubTrigger>
+                        View Options
+                      </ContextMenuSubTrigger>
+                      <ContextMenuSubContent className="w-48">
+                        <ContextMenuCheckboxItem
+                          checked={contextCheckState.showHidden}
+                          onCheckedChange={(checked) =>
+                            setContextCheckState((s) => ({ ...s, showHidden: checked }))
+                          }
+                        >
+                          Show Hidden Files
+                        </ContextMenuCheckboxItem>
+                        <ContextMenuCheckboxItem
+                          checked={contextCheckState.readOnly}
+                          onCheckedChange={(checked) =>
+                            setContextCheckState((s) => ({ ...s, readOnly: checked }))
+                          }
+                        >
+                          Read-Only Mode
+                        </ContextMenuCheckboxItem>
+                      </ContextMenuSubContent>
+                    </ContextMenuSub>
+                    <ContextMenuSub>
+                      <ContextMenuSubTrigger>
+                        Sort By
+                      </ContextMenuSubTrigger>
+                      <ContextMenuSubContent className="w-40">
+                        <ContextMenuRadioGroup value={dropdownRadio} onValueChange={setDropdownRadio}>
+                          <ContextMenuRadioItem value="name">Name</ContextMenuRadioItem>
+                          <ContextMenuRadioItem value="date">Date Modified</ContextMenuRadioItem>
+                          <ContextMenuRadioItem value="size">Size</ContextMenuRadioItem>
+                        </ContextMenuRadioGroup>
+                      </ContextMenuSubContent>
+                    </ContextMenuSub>
                     <ContextMenuSeparator />
                     <ContextMenuItem
                       variant="destructive"
@@ -1421,21 +1500,7 @@ export function DesignSystemShowcase() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="inline-flex rounded-md border bg-card p-1">
-                  {(['comfortable', 'compact'] as const).map((value) => (
-                    <Button
-                      key={value}
-                      type="button"
-                      size="sm"
-                      variant={density === value ? 'secondary' : 'ghost'}
-                      aria-pressed={density === value}
-                      onClick={() => setDensity(value)}
-                      className="capitalize"
-                    >
-                      {value}
-                    </Button>
-                  ))}
-                </div>
+                <DensityPicker value={density} onChange={setDensity} />
                 <p className="text-xs text-muted-foreground">
                   Current density:{' '}
                   <span className="font-mono font-semibold capitalize text-foreground">

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Slot } from 'radix-ui';
 import { cva, type VariantProps } from 'class-variance-authority';
 
-import { cn } from '../lib/cn';
+import { cn } from '../../lib/cn';
 
 /**
  * Translucent glass surface primitive. Use for floating layers only; the global

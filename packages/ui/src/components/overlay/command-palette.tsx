@@ -5,7 +5,7 @@ import { SearchIcon } from 'lucide-react';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 import { matchSorter } from 'match-sorter';
 
-import { Highlight } from './highlight';
+import { Highlight } from '../layout/highlight';
 
 export type CommandItem = {
   id: string;

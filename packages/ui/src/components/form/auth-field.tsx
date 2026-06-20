@@ -2,7 +2,7 @@
 
 import type { ComponentProps, ReactNode } from 'react';
 
-import { cn } from '../lib/cn';
+import { cn } from '../../lib/cn';
 import { Input } from './input';
 import { Label } from './label';
 

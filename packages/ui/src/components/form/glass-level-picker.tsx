@@ -1,6 +1,6 @@
 'use client';
 
-import { GLASS_LEVELS, type GlassLevel } from './personalization-provider';
+import { GLASS_LEVELS, type GlassLevel } from '../identity/personalization-provider';
 import { Button } from './button';
 
 export function GlassLevelPicker({

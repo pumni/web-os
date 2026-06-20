@@ -1,10 +1,10 @@
 /*
  * Pumni OS — Glass surface utilities
  * ----------------------------------
- * Reusable frosted-glass surfaces for FLOATING layers only
- * (topbar, dock, window titlebar, dialog, sheet, popover, command palette,
- * toast). Never apply to large background areas — `backdrop-filter` is
- * GPU-intensive. Blur is held in the 8–16px range via `--glass-blur`.
+ * Reusable engineered-glass surfaces for FLOATING layers only (ADR-0012):
+ * topbar, dock, window titlebar, dialog, sheet, popover, command palette,
+ * toast. Never apply to large background areas — `backdrop-filter` is
+ * GPU-intensive. Blur is held in the 8–12px range via `--glass-blur`.
  *
  * The translucent fill (`--glass-bg`) doubles as a contrast scrim so text /
  * icons stay readable against any background state (WCAG 2.2: 4.5:1 text,

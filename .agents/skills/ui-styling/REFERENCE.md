@@ -117,13 +117,15 @@ values are `soft`, `default`, `strong`; density values are `comfortable`,
 
 ## Adding a component
 
-- Components live in `packages/ui/src/components/` and export from
-  `packages/ui/src/index.ts`.
+- Components live in `packages/ui/src/components/`, grouped by functional role:
+  `form/`, `overlay/`, `layout/`, `feedback/`, `identity/`, or `os/` (see
+  `packages/ui/AGENTS.md`). Export from `packages/ui/src/index.ts`.
 - Use `cva` variants, `data-slot` / `data-variant` styling hooks, Radix for
   interactive primitives, and `cn()` from `@pumni/ui`.
 - Consume semantic tokens only. Floating layers use role-specific glass utility.
 - Do not import app aliases (`@/`), `server-only`, Supabase, auth, env,
   validators, features, or test utilities.
 - For standard shadcn primitives, run the CLI from `packages/ui`, then rewrite
-  `@/lib/cn` to a relative import, replace raw colors with semantic tokens, keep
-  data hooks, and add the barrel export by hand.
+  `@/lib/cn` to a relative import (`../../lib/cn` from inside a group folder),
+  replace raw colors with semantic tokens, keep data hooks, move the file into
+  the right group folder, and add the barrel export by hand.
