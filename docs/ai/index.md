@@ -48,10 +48,14 @@ skill: `.agents/skills/README.md` (authoring standard).
 | Repeated task | Skill |
 | --- | --- |
 | Scope a vague request before coding | `.agents/skills/grill-requirements/SKILL.md` |
+| Scaffold a feature vertical slice | `.agents/skills/feature-module/SKILL.md` |
 | Next.js Server Action | `.agents/skills/server-action/SKILL.md` |
+| Server Component read + Next 16 cache | `.agents/skills/server-component-read/SKILL.md` |
 | @pumni/ui styling / tokens / surfaces | `.agents/skills/ui-styling/SKILL.md` |
 | Supabase migration / RLS / grants | `.agents/skills/supabase-migration/SKILL.md` |
 | TanStack Query hook or mutation | `.agents/skills/tanstack-query-hook/SKILL.md` |
+| Client form (RHF + Zod + Server Action) | `.agents/skills/react-hook-form/SKILL.md` |
+| Shared Zod input schema in @pumni/validators | `.agents/skills/zod-validator/SKILL.md` |
 | Watch-together playback sync (reducer / anchors / clock) | `.agents/skills/watch-sync/SKILL.md` |
 | Zustand client UI store | `.agents/skills/zustand-store/SKILL.md` |
 | Deterministic unit/component testing | `.agents/skills/testing-template/SKILL.md` |

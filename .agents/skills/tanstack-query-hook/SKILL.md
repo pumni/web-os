@@ -12,8 +12,9 @@ mutations in `apps/web/src/features/<feature>`.
 
 - Read `docs/conventions/data-fetching.md` before adding query or mutation
   hooks.
-- Use Server Components for initial request-scoped reads unless the interaction
-  needs client async behavior.
+- Use this skill only for client-driven async. For initial request-scoped server
+  reads use `server-component-read` (Server Component + `'use cache'`); reach for
+  a query hook only when the interaction needs client async behavior.
 - Define stable query keys close to the feature.
 - Components using `useQuery` must handle loading and error states.
 - Mutations must invalidate, refetch, or update the relevant query cache.

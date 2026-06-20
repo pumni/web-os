@@ -6,22 +6,27 @@ description: Build Next.js Server Actions with Zod validation, server-derived au
 # Server Action
 
 Use this skill when adding or changing a Next.js Server Action in
-`apps/web/src/features/<feature>/actions.ts`.
+`apps/web/src/features/<feature>/actions.ts`. This is the write seam: the form
+that calls it is `react-hook-form`; the read it invalidates is
+`server-component-read`.
 
 ## Rules
 
 - Read `apps/web/AGENTS.md` before changing Next.js app code.
-- Keep Server Actions in feature modules, not route files.
-- Validate input with schemas from `@pumni/validators` or a local Zod schema
-  before writing.
-- Derive the current user from server auth helpers; do not trust a client-sent
-  `user_id` as authorization.
+- Keep Server Actions in feature modules, not route files. File carries
+  `"use server"`.
+- Validate input with a schema from `@pumni/validators` (`safeParse`) before any
+  write; never write on a parse failure.
+- Derive the current user from server auth helpers (`requireUser()`); do not
+  trust a client-sent `user_id` as authorization.
 - Keep Supabase service-role clients server-only. Add `"server-only"` to modules
   that encapsulate privileged server access.
 - Return explicit success/failure shapes or throw typed errors. Do not swallow
   Supabase errors.
-- After mutations, use `updateTag(...)` for fresh read-your-writes behavior or
-  `revalidateTag(tag, 'max')` for stale-while-revalidate flows.
+- After mutations, use `updateTag(tag)` for fresh read-your-writes behavior or
+  `revalidateTag(tag, 'max')` for stale-while-revalidate flows. The tag string
+  must match the read's `cacheTag` exactly. Both are Server Action/Component
+  only — they throw in a Route Handler.
 
 ## Checklist
 
