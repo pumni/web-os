@@ -4,7 +4,6 @@ import * as React from 'react';
 import { Card } from './card';
 import type { VariantProps } from 'class-variance-authority';
 import type { cardVariants } from './card';
-import { cn } from '../../lib/cn';
 
 /**
  * CardSpotlight — opt-in client wrapper that adds a pointer-tracked radial
@@ -42,18 +41,56 @@ import { cn } from '../../lib/cn';
 type CardSpotlightProps = Omit<React.ComponentProps<'div'>, 'style'> &
   Omit<VariantProps<typeof cardVariants>, 'variant'> & {
     asChild?: boolean;
+    /** Inline styles are spread onto the Card (spotlight vars are set imperatively). */
     style?: React.CSSProperties;
   };
 
-function CardSpotlight({ className, onPointerMove, style, ...props }: CardSpotlightProps) {
+function CardSpotlight({
+  ref,
+  className,
+  onPointerMove,
+  onPointerEnter,
+  onPointerLeave,
+  style,
+  ...props
+}: CardSpotlightProps) {
+  const rectRef = React.useRef<DOMRect | null>(null);
+  const scrollRef = React.useRef({ x: 0, y: 0 });
+
+  const handlePointerEnter = React.useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      rectRef.current = e.currentTarget.getBoundingClientRect();
+      scrollRef.current = { x: window.scrollX, y: window.scrollY };
+      onPointerEnter?.(e);
+    },
+    [onPointerEnter],
+  );
+
+  const handlePointerLeave = React.useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      rectRef.current = null;
+      onPointerLeave?.(e);
+    },
+    [onPointerLeave],
+  );
+
   const handlePointerMove = React.useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      if (!rectRef.current) {
+        rectRef.current = e.currentTarget.getBoundingClientRect();
+        scrollRef.current = { x: window.scrollX, y: window.scrollY };
+      }
+      const rect = rectRef.current;
+      const scrollDiffX = window.scrollX - scrollRef.current.x;
+      const scrollDiffY = window.scrollY - scrollRef.current.y;
+      
+      const x = ((e.clientX - (rect.left - scrollDiffX)) / rect.width) * 100;
+      const y = ((e.clientY - (rect.top - scrollDiffY)) / rect.height) * 100;
+
       // Update CSS vars inline; the CSS utility reads them for gradient position.
       e.currentTarget.style.setProperty('--spot-x', `${x}%`);
       e.currentTarget.style.setProperty('--spot-y', `${y}%`);
+      
       // Forward to any consumer-provided handler.
       onPointerMove?.(e);
     },
@@ -62,10 +99,13 @@ function CardSpotlight({ className, onPointerMove, style, ...props }: CardSpotli
 
   return (
     <Card
+      ref={ref}
       variant="spotlight"
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       onPointerMove={handlePointerMove}
       style={style}
-      className={cn(className)}
+      className={className}
       {...props}
     />
   );
