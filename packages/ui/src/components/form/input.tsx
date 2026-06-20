@@ -19,6 +19,7 @@ const inputVariants = cva(
 );
 
 function Input({
+  ref,
   className,
   type,
   variant = 'outline',
@@ -26,6 +27,7 @@ function Input({
 }: React.ComponentProps<'input'> & VariantProps<typeof inputVariants>) {
   return (
     <input
+      ref={ref}
       type={type}
       data-slot="input"
       data-variant={variant}

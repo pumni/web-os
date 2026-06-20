@@ -56,7 +56,6 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
   ContextMenuTrigger,
-  DensityPicker,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -86,7 +85,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  GlassLevelPicker,
   GlassSurface,
   Input,
   Label,
@@ -130,6 +128,9 @@ import {
   useReducedMotion,
   ACCENTS,
   usePersonalization,
+  SegmentedPicker,
+  DENSITIES,
+  GLASS_LEVELS,
 } from '@pumni/ui';
 
 type DemoFormValues = {
@@ -1480,7 +1481,7 @@ export function DesignSystemShowcase() {
                 <CardDescription>Adjust transparency fallbacks and blur weights.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <GlassLevelPicker value={glass} onChange={setGlass} />
+                <SegmentedPicker aria-label="Glass level" options={GLASS_LEVELS} value={glass} onChange={setGlass} />
                 <p className="text-xs text-muted-foreground">
                   Current intensity:{' '}
                   <span className="font-mono font-semibold capitalize text-foreground">
@@ -1500,7 +1501,7 @@ export function DesignSystemShowcase() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <DensityPicker value={density} onChange={setDensity} />
+                <SegmentedPicker aria-label="Density" options={DENSITIES} value={density} onChange={setDensity} />
                 <p className="text-xs text-muted-foreground">
                   Current density:{' '}
                   <span className="font-mono font-semibold capitalize text-foreground">

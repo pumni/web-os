@@ -44,6 +44,7 @@ const buttonVariants = cva(
 );
 
 function Button({
+  ref,
   className,
   variant = 'default',
   size = 'default',
@@ -67,6 +68,7 @@ function Button({
 
   return (
     <Comp
+      ref={ref}
       data-slot="button"
       data-variant={variant}
       data-size={size}
@@ -85,6 +87,10 @@ function Button({
             </span>
           )}
           <span
+            // Hide the label from assistive tech while loading (aria-busy covers
+            // the state); otherwise the invisible-but-present label is read aloud
+            // alongside the spinner announcement.
+            aria-hidden={loading || undefined}
             className={cn(
               'inline-flex items-center justify-center gap-2',
               loading && 'opacity-0 pointer-events-none',

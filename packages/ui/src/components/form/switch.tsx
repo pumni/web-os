@@ -5,9 +5,14 @@ import { Switch as SwitchPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/cn';
 
-function Switch({ className, ...props }: React.ComponentProps<typeof SwitchPrimitive.Root>) {
+function Switch({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<typeof SwitchPrimitive.Root>) {
   return (
     <SwitchPrimitive.Root
+      ref={ref}
       data-slot="switch"
       className={cn(
         'peer inline-flex h-(--switch-height) w-(--switch-width) shrink-0 items-center rounded-full border border-transparent shadow-control transition-[background-color,box-shadow] outline-none focus-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input',

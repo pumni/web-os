@@ -5,9 +5,14 @@ import { Slider as SliderPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/cn';
 
-function Slider({ className, ...props }: React.ComponentProps<typeof SliderPrimitive.Root>) {
+function Slider({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<typeof SliderPrimitive.Root>) {
   return (
     <SliderPrimitive.Root
+      ref={ref}
       data-slot="slider"
       className={cn('relative flex w-full touch-none select-none items-center', className)}
       {...props}

@@ -55,8 +55,7 @@ export {
   useFormField,
 } from './components/form/form';
 export { AuthField } from './components/form/auth-field';
-export { DensityPicker } from './components/form/density-picker';
-export { GlassLevelPicker } from './components/form/glass-level-picker';
+export { SegmentedPicker } from './components/form/segmented-picker';
 
 // overlay — floating / portaled layers
 export {

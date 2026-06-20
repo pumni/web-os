@@ -47,11 +47,17 @@ function AuthField({
         id={id}
         name={name ?? id}
         disabled={disabled}
-        aria-invalid={error?.length ? true : undefined}
+        // Spread consumer props first so the error-driven `aria-invalid` below
+        // wins (computed last). Passing `aria-invalid={undefined}` still lets a
+        // consumer opt out.
         {...inputProps}
+        aria-invalid={error?.length ? true : undefined}
+        aria-describedby={error?.length ? `${id}-error` : inputProps['aria-describedby']}
       />
       {error?.[0] ? (
-        <p className="text-sm text-destructive">{error[0]}</p>
+        <p id={`${id}-error`} role="alert" aria-live="polite" className="text-sm text-destructive">
+          {error[0]}
+        </p>
       ) : null}
       {children}
     </div>

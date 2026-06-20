@@ -33,8 +33,15 @@ const FormField = <
 >({
   ...props
 }: ControllerProps<TFieldValues, TName>) => {
+  // `name` is referentially stable across renders, so memoise the context value
+  // to keep every `useFormField` consumer from re-rendering on each parent render.
+  const value = React.useMemo<FormFieldContextValue<TFieldValues, TName>>(
+    () => ({ name: props.name }),
+    [props.name],
+  );
+
   return (
-    <FormFieldContext.Provider value={{ name: props.name }}>
+    <FormFieldContext.Provider value={value}>
       <Controller {...props} />
     </FormFieldContext.Provider>
   );
@@ -47,7 +54,10 @@ const useFormField = () => {
   const formState = useFormState({ name: fieldContext.name });
   const fieldState = getFieldState(fieldContext.name, formState);
 
-  if (!fieldContext) {
+  // The context default is `{} as …`, so `fieldContext` itself is always truthy.
+  // The real "used outside <FormField>" signal is a missing `name` — guard on
+  // that so useFormState/getFieldState above never run on an undefined name.
+  if (!fieldContext.name) {
     throw new Error('useFormField should be used within <FormField>');
   }
 
@@ -71,9 +81,12 @@ const FormItemContext = React.createContext<FormItemContextValue>({} as FormItem
 
 function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
   const id = React.useId();
+  // `id` is stable from useId, so memoise to avoid cascading re-renders of
+  // FormLabel/FormControl/FormDescription/FormMessage on every parent render.
+  const value = React.useMemo<FormItemContextValue>(() => ({ id }), [id]);
 
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider value={value}>
       <div data-slot="form-item" className={cn('grid gap-2', className)} {...props} />
     </FormItemContext.Provider>
   );
@@ -108,12 +121,12 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot.Root>) {
 }
 
 function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
-  const { formDescriptionId } = useFormField();
+  const { id } = React.useContext(FormItemContext);
 
   return (
     <p
       data-slot="form-description"
-      id={formDescriptionId}
+      id={`${id}-form-item-description`}
       className={cn('text-sm text-muted-foreground', className)}
       {...props}
     />
