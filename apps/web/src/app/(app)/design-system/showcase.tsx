@@ -885,15 +885,22 @@ export function DesignSystemShowcase() {
         <ShowcaseSection
           id="surfaces-layout"
           title="Surfaces & Layout"
-          description="Layout structures: engineered glass cards, raised solid cards, floating surface primitives, windows, and scrolling views."
+          description="Layout structures: glassmorphism glass cards, raised solid cards, floating surface primitives, windows, and scrolling views."
         >
           <div className="grid gap-6 lg:grid-cols-2">
-            {/* Card comparison */}
-            <div className="grid gap-4">
-              <Card variant="glass">
+            {/* Card comparison — over a backdrop so the glass card reads as
+                glassmorphism (it refracts the blobs); the solid card stays opaque. */}
+            <div className="relative overflow-hidden rounded-2xl border bg-background p-4">
+              <div aria-hidden className="absolute inset-0 overflow-hidden">
+                <div className="absolute -top-24 -left-16 size-80 rounded-full bg-(--desktop-blob-primary) opacity-55 blur-3xl" />
+                <div className="absolute -right-12 -bottom-24 size-80 rounded-full bg-(--desktop-blob-secondary) opacity-50 blur-3xl" />
+                <div className="absolute inset-0 bg-background/30" />
+              </div>
+              <div className="relative grid gap-4">
+                <Card variant="glass">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle>Glass Card (Default)</CardTitle>
+                    <CardTitle>Glass Card</CardTitle>
                     <CardAction>
                       <Button variant="ghost" size="icon-sm" aria-label="More options">
                         <HelpCircleIcon />
@@ -901,8 +908,8 @@ export function DesignSystemShowcase() {
                     </CardAction>
                   </div>
                   <CardDescription>
-                    Engineered dark-glass: thin neutral fill, a bright top rim and dark bottom rim,
-                    clearer backdrop.
+                    Glassmorphism (opt-in, <code>variant=&quot;glass&quot;</code>): frosted vibrant
+                    fill, a luminous light border, and an inner sheen. Float it over a backdrop.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
@@ -931,14 +938,16 @@ export function DesignSystemShowcase() {
                   <Button size="sm">Action</Button>
                 </CardFooter>
               </Card>
+              </div>
             </div>
 
             {/* Floating Surface role utility */}
             <Card>
               <CardHeader>
-                <CardTitle>Surface Primitives</CardTitle>
+                <CardTitle>Glassmorphism Surfaces</CardTitle>
                 <CardDescription>
-                  Translucent floating surfaces with dedicated layout roles.
+                  Frosted translucent floating surfaces with dedicated layout roles — float them
+                  over a backdrop.
                 </CardDescription>
               </CardHeader>
               <CardContent>

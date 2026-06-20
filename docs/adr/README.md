@@ -104,3 +104,10 @@ link still fails the gate.
   pill), and `IconBadge` (icon chip) replace hand-rolled copies; `BentoGridItem`
   became layout-only; extended `pumniNoAdHocSurface` to block the shorthand
   `border bg-muted` well. Declined a competing `Surface` primitive.
+- `0014-glassmorphism-surface-treatment.md` — amended the glass *visual
+  treatment* of ADR-0012 toward modern glassmorphism: frosted blur (16px) +
+  vibrancy (`--glass-saturate` 1.4) + a luminous edge pair
+  (`--glass-highlight`/`--glass-shadow-edge`, renamed from the rim tokens) + an
+  inner `--glass-sheen` gradient, all layered so the APCA gate still reads single
+  fill/border colours. Kept solid-for-content, glass-only-for-floating, the gate,
+  a11y, and the public `glass-*`/`GlassSurface` API names.

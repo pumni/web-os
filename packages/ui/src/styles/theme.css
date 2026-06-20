@@ -57,23 +57,22 @@
   /* 600 */
   --tracking-body: var(--letter-spacing-normal);
 
-  /* Glass surfaces (translucent fill doubles as the contrast scrim).
-     Engineered dark-glass identity: thin NEUTRAL fill (no brand tint), a bright
-     top rim + dark bottom rim applied as inset box-shadows in glass.css. The
-     fill opacity is tuned against the APCA gate (Lc 50 light text / Lc 25 UI
-     edge) — see glass-contrast.test.ts. Crispness comes from the rim pair, not
-     opacity. Verified margins: text Lc 53.3, edge Lc 28.4 over the worst blob. */
-  --glass-bg: color-mix(in oklch, var(--neutral-0) 54%, transparent);
-  /* Neutral hairline (no brand tint) — lightened to 40% so the edge reads as a
-     crisp definition line rather than a heavy outline, while still clearing the
-     APCA UI-edge gate and the forced-colors / reduced-transparency fallbacks. */
-  --glass-border: color-mix(in oklch, var(--neutral-950) 40%, transparent);
-  /* Specular rim pair: bright top edge + dark bottom edge (real glass). Applied
-     as inset box-shadows in glass.css, so NOT subject to the APCA token gate.
-     Top rim held below the border weight so the lit edge reads as a single
-     engineered highlight, not a double line stacked on the dark hairline. */
-  --glass-rim-top: oklch(1 0 0 / 0.45);
-  --glass-rim-bottom: oklch(0.2 0.01 260 / 0.08);
+  /* Glassmorphism tokens — 5-element model (ADR-0014):
+     1. Tint — base fill, never fully transparent; tuned so --foreground holds
+        APCA Lc 60 over the worst desktop blob (glass-contrast.test.ts). Verified
+        margin: text Lc 53.3.
+     2. Blur + 3. Saturation — frosted vibrancy (tokens.css: --blur-glass 12px,
+        --glass-saturate 1.4).
+     4. Edge — a luminous WHITE border (light reflecting off the cut edge) + a
+        brighter inset top highlight for dimension. NOT APCA-gated: glassmorphism
+        panels are delineated by their drop shadow, so the edge is the decorative
+        light glow, not a contrast boundary (ADR-0014 rescopes the gate).
+     5. Shadow — soft directional --shadow-glass for float separation.
+     Fallback — opaque surface when transparency/blur is unavailable. */
+  --glass-tint: color-mix(in oklch, var(--neutral-0) 54%, transparent);
+  --glass-edge: oklch(1 0 0 / 0.45);
+  --glass-highlight: oklch(1 0 0 / 0.6);
+  --glass-fallback-bg: var(--popover);
   --glass-scrim: color-mix(in oklch, var(--neutral-50) 55%, transparent);
   --glass-blur: var(--blur-glass);
 
@@ -159,15 +158,13 @@
   --tracking-body: var(--tracking-body-dark);
   /* 0.01em */
 
-  /* Dark engineered glass — neutral-900 stays far darker than the mid-tone
-     blobs, so white text clears Lc 60 with huge headroom even at a thin fill;
-     lowered 46% -> 34% so dark glass reads genuinely thinner/clearer (the goal)
-     instead of a milky frost, while the bright top rim carries the "glass" read.
-     Neutral, no brand tint. Verified margins: text Lc 88.8, edge Lc 30.2. */
-  --glass-bg: color-mix(in oklch, var(--neutral-900) 34%, transparent);
-  --glass-border: color-mix(in oklch, var(--neutral-0) 42%, transparent);
-  --glass-rim-top: oklch(1 0 0 / 0.16);
-  --glass-rim-bottom: oklch(0 0 0 / 0.24);
+  /* Dark glassmorphism — neutral-900 tint stays darker than the mid-tone blobs,
+     so white text clears Lc 60 with huge headroom (verified Lc 88.8). The white
+     edge + inset highlight read as the lit glass edge over the dark fill. */
+  --glass-tint: color-mix(in oklch, var(--neutral-900) 34%, transparent);
+  --glass-edge: oklch(1 0 0 / 0.14);
+  --glass-highlight: oklch(1 0 0 / 0.22);
+  --glass-fallback-bg: var(--popover);
   --glass-scrim: color-mix(in oklch, var(--neutral-950) 50%, transparent);
   --glass-blur: var(--blur-glass);
 
@@ -244,8 +241,8 @@
   --color-ring: var(--ring);
 
   /* Glass tokens, also usable as Tailwind color utilities when needed */
-  --color-glass: var(--glass-bg);
-  --color-glass-border: var(--glass-border);
+  --color-glass: var(--glass-tint);
+  --color-glass-border: var(--glass-edge);
   --color-overlay: var(--overlay);
 
   --radius-xs: calc(var(--radius) - 6px);

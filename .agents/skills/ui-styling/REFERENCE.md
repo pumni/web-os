@@ -14,7 +14,7 @@ hard rules and completion checklist stay in `SKILL.md`.
 | `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
 | `border` / `input` / `field` / `ring` | Hairlines, fields, input backdrops, focus ring |
-| `glass-bg` / `glass-border` / `glass-rim-top` / `glass-rim-bottom` / `glass-scrim` / `glass-blur` | Translucent engineered-glass surfaces. Rim pair = inset box-shadows (NOT APCA-gated); vibrancy is the single `--glass-saturate` knob. |
+| `glass-bg` / `glass-border` / `glass-highlight` / `glass-shadow-edge` / `glass-sheen` / `glass-scrim` / `glass-blur` | Translucent glassmorphism surfaces. `glass-highlight`/`glass-shadow-edge` = the luminous edge pair (inset box-shadows, NOT APCA-gated); `glass-sheen` = inner `background-image` gradient (not gate-read); vibrancy is the single `--glass-saturate` knob (≈1.4). |
 | `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) |
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
@@ -27,7 +27,7 @@ scales, and raw `oklch(...)`) are restricted to token/theme files.
 
 | Role | How to build it | Use for |
 | --- | --- | --- |
-| Floating glass | `GlassSurface variant="panel\|bar\|window\|titlebar"` or the matching `glass-*` utility | Floating layers: dialogs, sheets, popovers, command palette, toast, topbar, dock, sidebar rail, OS windows, pills/overlays. Engineered glass: thin neutral fill + bright-top/dark-bottom rim pair, tokenized `--glass-saturate`, directional `--shadow-glass`. |
+| Floating glass | `GlassSurface variant="panel\|bar\|window\|titlebar"` or the matching `glass-*` utility | Floating layers: dialogs, sheets, popovers, command palette, toast, topbar, dock, sidebar rail, OS windows, pills/overlays. Glassmorphism: frosted vibrant fill + luminous edge pair (`--glass-highlight`/`--glass-shadow-edge`) + inner sheen (`--glass-sheen`), tokenized `--glass-saturate`, directional `--shadow-glass`. Only reads over a backdrop. |
 | Solid card | `<Card>` / `variant="solid"` -> `border bg-card surface-raised rounded-xl` | Primary content surfaces. `surface-raised` = `--shadow-card-raised` + `--card-rim-top` lit edge (NOT flat). |
 | Inset well | `<CardWell>` (or `<Card variant="inset">`) — never hand-roll `border bg-muted` (`pumniNoAdHocSurface` blocks it) | Nested wells inside cards: stat tiles, list rows, scroll wells. `radius` md/lg/xl, `padding` none/sm/md/lg. |
 | Control fill | `bg-muted` plus `motion-safe:hover:bg-muted/80` | Small inline controls: tabs, chips, code pills |

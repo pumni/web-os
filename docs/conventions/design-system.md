@@ -51,7 +51,7 @@ surface).
 | `rounded-[14px]`, `rounded-2xl` everywhere | Named radius utilities off `--radius-base` | One personalizable knob, not magic px |
 | `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-(--duration-base)` | Brand curves + owned timing |
 | Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
-| Glass on hero / page backgrounds | Glass only on floating layers; opaque shell + raised solid cards | `backdrop-filter` is GPU-heavy; engineered glass uses a rim pair, not opacity |
+| Glass on hero / page backgrounds | Glass only on floating layers; opaque shell + raised solid cards | `backdrop-filter` is GPU-heavy; glassmorphism reads only over a backdrop |
 | Eyeballing contrast on glass/accents | Trust gated tokens; verify APCA Lc 60 / Lc 25 | `glass-contrast` test owns the cascade |
 | `backdrop-blur-md` | Glass utility / `GlassSurface` | Reduced-transparency and performance fallbacks |
 | `bg-card/40`, `border-border/20` | Solid surface tokens: opaque, `border-border` | Surfaces are opaque in the unified system |
@@ -76,17 +76,22 @@ ContextMenu, Command palette, Toast, Topbar, Dock, Sidebar rail, OS
 `Window`/titlebar, and small floating pills/overlays. Large backgrounds and flat
 shell surfaces stay opaque.
 
-**Surface identity = engineered dark-glass (ADR-0012).** A glass surface is a
-thin NEUTRAL fill (`--glass-bg`, no brand tint) tuned to the APCA gate edge,
-with a **bright top rim + dark bottom rim** (`--glass-rim-top` /
-`--glass-rim-bottom`, applied as inset box-shadows in the `glass-*` utilities)
-instead of a single hairline + a skeuomorphic top sheen. Float depth is the
-directional `--shadow-glass`. The one vibrancy knob is `--glass-saturate`
-(≈1.05 — no `saturate(1.3)` vibrancy pump); the `glass-saturate.test.ts` guard
-locks it. Solid cards are NOT flat — they carry real elevation via the
-`surface-raised` utility (`--shadow-card-raised` + `--card-rim-top`), so glass
-is used only where it earns its cost. The OS `Window`/Dock are presentational
-chrome (neutral window controls, no macOS traffic lights).
+**Surface identity = glassmorphism for floating layers (ADR-0014, amending
+ADR-0012).** A glass surface is a frosted translucent fill (`--glass-bg`) tuned
+to the APCA gate edge, with: a **luminous light top edge + soft bottom edge**
+(`--glass-highlight` / `--glass-shadow-edge`, inset box-shadows in the `glass-*`
+utilities), an **inner diagonal sheen** (`--glass-sheen`, a `background-image`
+gradient layered over the gated fill — not gate-read), and **vibrancy** via the
+single `--glass-saturate` knob (≈1.4; the `glass-saturate.test.ts` guard locks
+the tokenization, not the value). Blur is frosted (`--blur-glass` 16px). Float
+depth is the directional `--shadow-glass`. The luminous border read comes from
+`--glass-highlight` (specular, ungated) — a pure-light `--glass-border` fails the
+Lc 25 gate on light surfaces, so the border token stays a gated definition line.
+Solid cards are NOT glass — they carry real elevation via `surface-raised`
+(`--shadow-card-raised` + `--card-rim-top`); content stays solid, glass is only
+for floating layers (it earns its `backdrop-filter` cost there). The OS
+`Window`/Dock are presentational chrome (neutral window controls, no macOS
+traffic lights).
 
 Use the closed set from the skill: floating glass, solid card, inset well,
 control fill, status tint. The card layer is **composition-first** — `Card` is

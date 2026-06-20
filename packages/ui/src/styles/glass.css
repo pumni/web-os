@@ -1,55 +1,62 @@
 /*
- * Pumni OS — Glass surface utilities
- * ----------------------------------
- * Reusable engineered-glass surfaces for FLOATING layers only (ADR-0012):
+ * Pumni OS — Glassmorphism surface utilities
+ * ------------------------------------------
+ * Reusable glassmorphism surfaces for FLOATING layers only (ADR-0012/0014):
  * topbar, dock, window titlebar, dialog, sheet, popover, command palette,
  * toast. Never apply to large background areas — `backdrop-filter` is
- * GPU-intensive. Blur is held in the 8–12px range via `--glass-blur`.
+ * GPU-intensive. Blur is held in the 8–16px range via `--glass-blur`.
  *
- * The translucent fill (`--glass-bg`) doubles as a contrast scrim so text /
- * icons stay readable against any background state (WCAG 2.2: 4.5:1 text,
- * 3:1 UI). Accessibility fallbacks below honour user system preferences.
+ * 5-element model (ADR-0014): tint (`--glass-tint`, doubles as the text scrim),
+ * blur + saturation (`--glass-blur` / `--glass-saturate`), edge highlight
+ * (`--glass-edge` + inset `--glass-highlight`), drop shadow (`--shadow-glass`,
+ * the real delineator), and an opaque `--glass-fallback-bg`. `glass-panel` /
+ * `glass-window` are GPU-promoted (`translateZ(0)`). Accessibility fallbacks
+ * below honour user system preferences.
  */
 
 @utility glass-panel {
-  /* Engineered glass: thin neutral fill, tokenized saturate (no vibrancy pump),
-     a bright top rim + dark bottom rim (inset box-shadows) instead of a single
-     hairline + skeuomorphic top sheen. Float depth = directional --shadow-glass. */
-  background-color: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  /* Glassmorphism — 5-element model (ADR-0014): a never-fully-transparent tint,
+     frosted blur + saturation vibrancy, a luminous white edge (+ an inset top
+     highlight for the lit cut edge), and a soft directional drop shadow that
+     does the real panel delineation. Promoted to its own GPU composite layer so
+     the per-pixel backdrop blur does not bottleneck the CPU on scroll. */
+  background-color: var(--glass-tint);
+  border: 1px solid var(--glass-edge);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass),
-    inset 0 1px 0 0 var(--glass-rim-top),
-    inset 0 -1px 0 0 var(--glass-rim-bottom);
+    inset 0 1px 0 0 var(--glass-highlight);
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 @utility glass-window {
-  /* Same engineered rim pair + tokenized saturate as glass-panel; windows carry
-     the deeper active/glow drop shadow (--shadow-glass-glow) instead. */
-  background-color: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  /* Same glassmorphism treatment as glass-panel; windows carry the deeper
+     active/glow drop shadow (--shadow-glass-glow). Own GPU composite layer. */
+  background-color: var(--glass-tint);
+  border: 1px solid var(--glass-edge);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass-glow),
-    inset 0 1px 0 0 var(--glass-rim-top),
-    inset 0 -1px 0 0 var(--glass-rim-bottom);
+    inset 0 1px 0 0 var(--glass-highlight);
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .glass-window[data-active='false'] {
-  background-color: color-mix(in oklch, var(--glass-bg) 80%, var(--popover));
+  background-color: color-mix(in oklch, var(--glass-tint) 80%, var(--popover));
   border-color: var(--border);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass-glow-soft),
-    inset 0 1px 0 0 var(--glass-rim-top);
+    inset 0 1px 0 0 var(--glass-highlight);
 }
 
 .glass-window[data-active='false'] .glass-titlebar {
-  background-color: color-mix(in oklch, var(--glass-bg) 75%, var(--muted));
+  background-color: color-mix(in oklch, var(--glass-tint) 75%, var(--muted));
   border-color: var(--border);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -59,21 +66,21 @@
    border — shell edges that touch the viewport should be seamless. Edge
    separation is handled by directional variants below. */
 @utility glass-bar {
-  background-color: var(--glass-bg);
+  background-color: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  box-shadow: inset 0 1px 0 0 var(--glass-rim-top);
+  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
 }
 
 /* Bordered bar variant for FLOATING elements (docks, floating toolbars).
    Carries the full hairline glass border on all four sides so the element
    reads as a distinct floating surface against the background. */
 @utility glass-bar-bordered {
-  background-color: var(--glass-bg);
+  background-color: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 0 var(--glass-rim-top);
+  border: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
 }
 
 /* Shell chrome variant — glass bar base + right-side glass edge + ambient depth.
@@ -84,33 +91,33 @@
       Reads stronger on light backgrounds, subtler on dark.
    Together they provide consistent shell separation without theme overrides. */
 @utility glass-bar-edge-r {
-  background-color: var(--glass-bg);
+  background-color: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-shell-depth),
     var(--glass-edge-rim),
-    inset 0 1px 0 0 var(--glass-rim-top);
+    inset 0 1px 0 0 var(--glass-highlight);
 }
 
 /* Shell chrome variant — glass bar base + bottom-side glass edge + depth.
    Same unified dual-mechanism approach as `glass-bar-edge-r`. */
 @utility glass-bar-edge-b {
-  background-color: var(--glass-bg);
+  background-color: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-shell-depth-bottom),
     var(--glass-edge-rim-bottom),
-    inset 0 1px 0 0 var(--glass-rim-top);
+    inset 0 1px 0 0 var(--glass-highlight);
 }
 
 @utility glass-titlebar {
-  background-color: color-mix(in oklch, var(--glass-bg) 82%, var(--popover));
+  background-color: color-mix(in oklch, var(--glass-tint) 82%, var(--popover));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow: inset 0 1px 0 0 var(--glass-rim-top);
+  border-bottom: 1px solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
 }
 
 /*
@@ -126,13 +133,14 @@
   .glass-bar-edge-r,
   .glass-bar-edge-b,
   .glass-titlebar {
-    background: var(--popover);
+    background: var(--glass-fallback-bg);
     border-color: var(--border);
-    /* Replace the engineered rim insets with flat elevation so they don't ghost
+    /* Replace the glass edge insets with flat elevation so they don't ghost
        over an opaque fallback surface. */
     box-shadow: var(--shadow-2);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+    will-change: auto;
   }
 }
 
@@ -148,7 +156,7 @@
   .glass-bar-edge-r,
   .glass-bar-edge-b,
   .glass-titlebar {
-    background: var(--popover);
+    background: var(--glass-fallback-bg);
     border-color: var(--border);
     box-shadow: var(--shadow-2);
   }
@@ -167,7 +175,7 @@
   .glass-bar-edge-r,
   .glass-bar-edge-b,
   .glass-titlebar {
-    --glass-bg: color-mix(in oklch, var(--popover) 92%, transparent);
+    --glass-tint: color-mix(in oklch, var(--popover) 92%, transparent);
 
     border-color: var(--border);
   }
@@ -208,7 +216,7 @@
 .glass-a11y-preview[data-transparency='reduced'] .glass-bar-edge-r,
 .glass-a11y-preview[data-transparency='reduced'] .glass-bar-edge-b,
 .glass-a11y-preview[data-transparency='reduced'] .glass-titlebar {
-  background: var(--popover);
+  background: var(--glass-fallback-bg);
   border-color: var(--border);
   /* Flat elevation mirrors the prefers-reduced-transparency fallback. */
   box-shadow: var(--shadow-2);
@@ -223,7 +231,7 @@
 .glass-a11y-preview[data-contrast='more'] .glass-bar-edge-r,
 .glass-a11y-preview[data-contrast='more'] .glass-bar-edge-b,
 .glass-a11y-preview[data-contrast='more'] .glass-titlebar {
-  --glass-bg: color-mix(in oklch, var(--popover) 92%, transparent);
+  --glass-tint: color-mix(in oklch, var(--popover) 92%, transparent);
 
   border-color: var(--border);
 }

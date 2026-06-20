@@ -52,7 +52,7 @@ not inline its tables here.
 - [ ] No raw `oklch()`, primitive var, or Tailwind built-in palette in component classes.
 - [ ] Surface is one of the closed-set roles; no `bg-{card,background,popover}/NN`.
 - [ ] One `border-border`; status tint is the only `/20` border exception.
-- [ ] Floating layer uses `GlassSurface`/`glass-*`; blur 8-16px only.
+- [ ] Floating layer uses `GlassSurface`/`glass-*`; frosted blur 10-24px only.
 - [ ] Radius/z-index use named utilities; no `rounded-[Npx]`, no raw `z-40`/`z-50` for cross-component layers.
 - [ ] Motion uses recipes / `motion-safe:` CSS; `useReducedMotion()` on JS motion.
 - [ ] Contrast pairs resolved by `glass-contrast.test.ts` (APCA), not eyeballed.

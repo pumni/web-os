@@ -130,19 +130,19 @@
   --leading-compensation-dark: 0.075;
   /* extra line-height    */
 
-  /* --- Glass blur (engineered: clearer than the old frosted 16px) ---
-     Held in the GPU-friendly 8–15px range. The three steps shift down so
-     glass reads as thinner/clearer (content-forward) rather than milky
-     frost; crispness now comes from the rim pair + directional shadow. */
+  /* --- Glass blur (glassmorphism: frosted, content shows through softly) ---
+     The production-2026 sweet spot is 8–16px: enough frost to read as glass,
+     low enough that the per-pixel backdrop blur stays cheap on mobile (glass is
+     only ever applied to floating layers, never large backgrounds). */
   --blur-glass-sm: 8px;
   --blur-glass: 12px;
-  --blur-glass-lg: 20px;
+  --blur-glass-lg: 16px;
   --blur-scrim: 4px;
 
-  /* Engineered glass keeps backdrop colour close to true — no vibrancy pump.
-     The single vibrancy knob consumed by every `glass-*` utility (see the
-     drift guard in glass-saturate.test.ts). */
-  --glass-saturate: 1.05;
+  /* Glassmorphism vibrancy pump — saturates the backdrop showing through the
+     frost so colours read richer (the signature glassmorphism look). The single
+     knob consumed by every `glass-*` utility (drift guard: glass-saturate.test.ts). */
+  --glass-saturate: 1.4;
 
   /* --- Elevation shadows (tuned for floating glass layers) --- */
   --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
