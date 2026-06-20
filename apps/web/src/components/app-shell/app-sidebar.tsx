@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { Button, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@pumni/ui';
+import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui';
 import { cn } from '@/lib/utils';
 import { useAppUiStore, useSidebarCollapsed } from '@/stores/app-ui-store';
 import { navItems } from './nav-items';
@@ -36,9 +36,8 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
   }, [toggleCollapsed]);
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <aside
-        className={cn(
+    <aside
+      className={cn(
           'glass-bar-edge-r fixed inset-y-0 left-0 z-sidebar hidden transition-[width] duration-300 ease-out lg:block',
           collapsed ? SIDEBAR_WIDTH.collapsed.rail : SIDEBAR_WIDTH.expanded.rail,
         )}
@@ -116,6 +115,5 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
           })}
         </nav>
       </aside>
-    </TooltipProvider>
   );
 }

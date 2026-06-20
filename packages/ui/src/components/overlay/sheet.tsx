@@ -27,10 +27,14 @@ function SheetOverlay({
   style,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
+  const mergedStyle = React.useMemo<React.CSSProperties>(
+    () => ({ zIndex: 'var(--z-overlay)', ...style }),
+    [style],
+  );
   return (
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
-      style={{ zIndex: 'var(--z-overlay)', ...style }}
+      style={mergedStyle}
       className={cn(
         'fixed inset-0 overlay-scrim data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
         className,
@@ -51,12 +55,16 @@ function SheetContent({
   side?: 'top' | 'right' | 'bottom' | 'left';
   showCloseButton?: boolean;
 }) {
+  const mergedStyle = React.useMemo<React.CSSProperties>(
+    () => ({ zIndex: 'var(--z-modal)', ...style }),
+    [style],
+  );
   return (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
-        style={{ zIndex: 'var(--z-modal)', ...style }}
+        style={mergedStyle}
         className={cn(
           'glass-panel fixed flex flex-col gap-4 data-[state=closed]:animate-out data-[state=closed]:duration-(--duration-base) data-[state=open]:animate-in data-[state=open]:duration-(--duration-slow)',
           side === 'right' &&
@@ -73,7 +81,10 @@ function SheetContent({
       >
         {children}
         {showCloseButton && (
-          <SheetPrimitive.Close className="absolute top-4 right-4 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground opacity-80 transition-colors hover:bg-accent hover:text-accent-foreground hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none">
+          <SheetPrimitive.Close
+            data-slot="sheet-close"
+            className="absolute top-4 right-4 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground opacity-80 transition-colors hover:bg-accent hover:text-accent-foreground hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none"
+          >
             <XIcon className="size-4" />
             <span className="sr-only">Close</span>
           </SheetPrimitive.Close>

@@ -108,13 +108,19 @@ interface BentoGridItemProps extends Omit<React.ComponentProps<typeof Card>, 'ti
    */
   tier?: BentoTier;
   /**
-   * Accessible label for tiles that contain only a bare number (e.g. "142k").
-   * Placed on the Card container as `aria-label`.
+   * Accessible label for tiles whose contents alone do not convey meaning
+   * (e.g. a bare number like "142k"). Setting it promotes the tile to a
+   * labelled `group` so screen readers announce the label as the tile's name;
+   * omit it to leave the tile role-less and read its inner title/description
+   * naturally. (A bare `aria-label` on the role-less card div would be
+   * ignored, so the role is applied only when a label is present.)
    */
   ariaLabel?: string;
   /**
-   * When true, renders a Skeleton placeholder instead of children.
-   * Prevents CLS by keeping the tile at its natural size.
+   * When true, renders a Skeleton placeholder instead of children and drives
+   * the Card's `loading` state (`aria-busy="true"` + the breathe animation),
+   * preventing CLS by keeping the tile at its natural size. Does not override
+   * an explicitly supplied `state` (e.g. error/success).
    */
   loading?: boolean;
   /**
@@ -191,22 +197,36 @@ export function BentoGridItem({
   loading = false,
   minHeight,
   interactive = true,
+  // Card carries its own `state` prop (idle/loading/error/success). We only
+  // surface the loading branch here, so let any consumer-supplied `state`
+  // pass through untouched and avoid a name clash in our own props.
+  state,
   ...props
 }: BentoGridItemProps) {
   const cardStyle = minHeight !== undefined ? { minHeight } : undefined;
+  // `aria-label` on a role-less <div> is ignored by the accessibility tree, so
+  // only emit it alongside a `role="group"` — that makes the tile an
+  // announced labelled group when a label is provided, and leaves passive
+  // tiles role-less (their inner title/description still read out naturally).
+  const a11yProps =
+    ariaLabel !== undefined ? { role: 'group' as const, 'aria-label': ariaLabel } : undefined;
   const cardClass = cn(
     'relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container',
-    'rounded-xl',
     bentoTierVariants({ tier }),
     className,
   );
+  // Loading drives both the skeleton content and the Card's `loading` state
+  // (which sets `aria-busy="true"` + the breathe animation), but never
+  // overrides a consumer-supplied `state` (e.g. error/success).
+  const resolvedState = loading ? 'loading' : state;
 
   return (
     <Card
       interactive={interactive}
-      aria-label={ariaLabel}
+      state={resolvedState}
       className={cardClass}
       style={cardStyle}
+      {...a11yProps}
       {...props}
     >
       {loading ? (

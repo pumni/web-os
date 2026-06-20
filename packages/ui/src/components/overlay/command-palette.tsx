@@ -5,7 +5,9 @@ import { SearchIcon } from 'lucide-react';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 import { matchSorter } from 'match-sorter';
 
+import { cn } from '../../lib/cn';
 import { Highlight } from '../layout/highlight';
+import { OVERLAY_ANIMATION } from './_overlay-variants';
 
 export type CommandItem = {
   id: string;
@@ -35,6 +37,7 @@ function CommandPalette({
   emptyMessage = 'No results found.',
 }: CommandPaletteProps) {
   const [query, setQuery] = React.useState('');
+  const [isPending, startTransition] = React.useTransition();
   const [activeIndex, setActiveIndex] = React.useState(0);
   const listRef = React.useRef<HTMLDivElement>(null);
 
@@ -43,7 +46,8 @@ function CommandPalette({
   const filtered = React.useMemo(() => {
     const q = query.trim();
     if (!q) return items;
-    return matchSorter(items, q, { keys: ['label', 'keywords'] });
+    const results = matchSorter(items, q, { keys: ['label', 'keywords'] });
+    return results.slice(0, 25);
   }, [items, query]);
 
   // Bucket results by `group` (first-seen order) so grouped items render under
@@ -65,6 +69,15 @@ function CommandPalette({
     return buckets;
   }, [filtered]);
 
+  // Flat index lookup per item, pre-computed once per filter pass. Replaces the
+  // previous `filtered.indexOf(item)` inside the grouped render loop, which was
+  // O(n²) — every grouped item rescanned the whole list to find its position.
+  const indexByItem = React.useMemo(() => {
+    const map = new Map<CommandItem, number>();
+    filtered.forEach((item, index) => map.set(item, index));
+    return map;
+  }, [filtered]);
+
   function handleOpenChange(next: boolean) {
     if (!next) {
       setQuery('');
@@ -74,10 +87,14 @@ function CommandPalette({
   }
 
   React.useEffect(() => {
+    // Skip the scroll-into-view work while the palette is closed (the effect
+    // previously ran on every activeIndex change even when unmounted behind
+    // the dialog, querying a list that wasn't painted).
+    if (!open) return;
     listRef.current
       ?.querySelector<HTMLElement>(`[data-index="${activeIndex}"]`)
       ?.scrollIntoView({ block: 'nearest' });
-  }, [activeIndex]);
+  }, [activeIndex, open]);
 
   function select(index: number) {
     const item = filtered[index];
@@ -85,6 +102,13 @@ function CommandPalette({
     handleOpenChange(false);
     item.onSelect();
   }
+
+  // Keep the active row valid as the result set shrinks: if filtering removes
+  // every item, drop the stale highlight so Enter (which goes through `select`)
+  // and aria-activedescendant can't point at a vanished row.
+  React.useEffect(() => {
+    if (filtered.length === 0 && activeIndex !== 0) setActiveIndex(0);
+  }, [filtered.length, activeIndex]);
 
   function onKeyDown(event: React.KeyboardEvent) {
     if (event.key === 'ArrowDown') {
@@ -110,7 +134,10 @@ function CommandPalette({
         data-index={index}
         data-active={index === activeIndex}
         onClick={() => select(index)}
-        onMouseMove={() => setActiveIndex(index)}
+        // Guard the mousemove with the current index so hovering WITHIN a row
+        // (or re-entering the already-active row) doesn't fire a redundant
+        // setState per pixel and re-render the whole list.
+        onMouseMove={() => setActiveIndex((current) => (current === index ? current : index))}
         className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-foreground outline-none transition-colors state-hover state-pressed [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground"
       >
         {item.icon}
@@ -136,7 +163,10 @@ function CommandPalette({
           data-slot="command-palette"
           onKeyDown={onKeyDown}
           style={{ zIndex: 'var(--z-command)' }}
-          className="glass-panel fixed top-[20%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] gap-0 overflow-hidden rounded-xl p-0 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-xl"
+          className={cn(
+            'glass-panel fixed top-[20%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] gap-0 overflow-hidden rounded-xl p-0 outline-none sm:max-w-xl',
+            OVERLAY_ANIMATION,
+          )}
         >
           <DialogPrimitive.Title className="sr-only">Command palette</DialogPrimitive.Title>
           <DialogPrimitive.Description className="sr-only">
@@ -144,13 +174,18 @@ function CommandPalette({
           </DialogPrimitive.Description>
 
           <div className="flex items-center gap-2 border-b border-border px-3">
-            <SearchIcon className="size-4 shrink-0 text-muted-foreground" />
+            <SearchIcon
+              className={cn('size-4 shrink-0 text-muted-foreground', isPending && 'animate-pulse')}
+            />
             <input
               autoFocus
               value={query}
               onChange={(event) => {
-                setQuery(event.target.value);
-                setActiveIndex(0);
+                const val = event.target.value;
+                setQuery(val);
+                startTransition(() => {
+                  setActiveIndex(0);
+                });
               }}
               placeholder={placeholder}
               aria-label={placeholder}
@@ -183,7 +218,7 @@ function CommandPalette({
                     {bucket.name}
                   </div>
                   {bucket.items.map((item) => {
-                    const index = filtered.indexOf(item);
+                    const index = indexByItem.get(item) ?? 0;
                     return renderOption(item, index);
                   })}
                 </div>

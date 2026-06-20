@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { DesignSystemShowcase } from '@/app/(app)/design-system/showcase';
-import { PersonalizationProvider } from '@pumni/ui';
+import { PersonalizationProvider, TooltipProvider } from '@pumni/ui';
 
 const toast = vi.hoisted(() => ({
   success: vi.fn(),
@@ -25,13 +25,19 @@ beforeAll(() => {
   };
 });
 
+function renderShowcase() {
+  return render(
+    <PersonalizationProvider>
+      <TooltipProvider>
+        <DesignSystemShowcase />
+      </TooltipProvider>
+    </PersonalizationProvider>,
+  );
+}
+
 describe('DesignSystemShowcase', () => {
   it('renders the primary QA sections from shared UI primitives', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     expect(screen.getByRole('heading', { name: 'Design System' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Foundations', level: 2 })).toBeInTheDocument();
@@ -67,22 +73,14 @@ describe('DesignSystemShowcase', () => {
   });
 
   it('renders the motion window demo mounted by default', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     expect(screen.getByRole('button', { name: 'Unmount Window' })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Motion-tracked window' })).toBeInTheDocument();
   });
 
   it('renders form-control primitives with the default active tab', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     expect(screen.getByRole('switch', { name: /system updates/i })).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /i agree to terms/i })).toBeInTheDocument();
@@ -94,11 +92,7 @@ describe('DesignSystemShowcase', () => {
   });
 
   it('opens the right-click context menu surface', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     fireEvent.contextMenu(screen.getByText('Right-Click Area'));
 
@@ -107,11 +101,7 @@ describe('DesignSystemShowcase', () => {
   });
 
   it('opens dialog and sends toast feedback', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     fireEvent.click(screen.getByRole('button', { name: 'Success' }));
     expect(toast.success).toHaveBeenCalledWith('Changes saved successfully.');
@@ -121,11 +111,7 @@ describe('DesignSystemShowcase', () => {
   });
 
   it('opens sheet and command palette surfaces', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     fireEvent.click(screen.getByRole('button', { name: /trigger sheet/i }));
     expect(screen.getByRole('heading', { name: 'Overlay Side Sheet' })).toBeInTheDocument();
@@ -136,11 +122,7 @@ describe('DesignSystemShowcase', () => {
   });
 
   it('opens dropdown and renders avatar group states', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     fireEvent.pointerDown(screen.getByRole('button', { name: /open dropdown/i }), {
       button: 0,
@@ -153,11 +135,7 @@ describe('DesignSystemShowcase', () => {
   });
 
   it('toggles APCA contrast preview states', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     const solidToggle = screen.getByRole('button', { name: 'Opaque Solid' });
     const highToggle = screen.getByRole('button', { name: 'High Contrast' });
@@ -174,11 +152,7 @@ describe('DesignSystemShowcase', () => {
   });
 
   it('renders fadeRise recipe demo and toggles visibility toggle', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     expect(screen.getByText('fadeRise Recipe')).toBeInTheDocument();
     expect(screen.getByText('Fade + Rise')).toBeInTheDocument();
@@ -189,22 +163,14 @@ describe('DesignSystemShowcase', () => {
   });
 
   it('renders withViewTransition demo', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     expect(screen.getByText('View Transitions')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Trigger withViewTransition' })).toBeInTheDocument();
   });
 
   it('renders APCA contrast calculator with pass/fail indicator', () => {
-    render(
-      <PersonalizationProvider>
-        <DesignSystemShowcase />
-      </PersonalizationProvider>,
-    );
+    renderShowcase();
 
     expect(screen.getByText('APCA Contrast Verification')).toBeInTheDocument();
     expect(screen.getByText('Pass — Text')).toBeInTheDocument();

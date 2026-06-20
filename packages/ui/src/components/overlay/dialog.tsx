@@ -6,6 +6,7 @@ import { Dialog as DialogPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/cn';
 import { Button } from '../form/button';
+import { OVERLAY_ANIMATION } from './_overlay-variants';
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
@@ -28,10 +29,17 @@ function DialogOverlay({
   style,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+  // Memoise the merged style so the object identity is stable across re-renders
+  // for the same consumer `style` (the inline object was recreated every render
+  // before). `--z-overlay` is owned by the scrim — never overridable per-instance.
+  const mergedStyle = React.useMemo<React.CSSProperties>(
+    () => ({ zIndex: 'var(--z-overlay)', ...style }),
+    [style],
+  );
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
-      style={{ zIndex: 'var(--z-overlay)', ...style }}
+      style={mergedStyle}
       className={cn(
         'fixed inset-0 overlay-scrim data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
         className,
@@ -50,14 +58,20 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean;
 }) {
+  const mergedStyle = React.useMemo<React.CSSProperties>(
+    () => ({ zIndex: 'var(--z-modal)', ...style }),
+    [style],
+  );
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
-        style={{ zIndex: 'var(--z-modal)', ...style }}
+        style={mergedStyle}
         className={cn(
-          'glass-panel fixed top-[50%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg p-6 duration-(--duration-base) outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-lg',
+          'glass-panel fixed top-[50%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg p-6 duration-(--duration-base) outline-none',
+          OVERLAY_ANIMATION,
+          'sm:max-w-lg',
           className,
         )}
         {...props}

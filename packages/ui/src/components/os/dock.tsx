@@ -36,7 +36,7 @@ function DockItem({ className, label, active = false, children, ...props }: Dock
       aria-current={active ? 'page' : undefined}
       title={label}
       className={cn(
-        'group relative inline-flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring data-[active=true]:text-foreground [&_svg]:size-5',
+        'group relative inline-flex size-11 items-center justify-center rounded-xl text-muted-foreground transition-[transform,color,background-color] duration-(--duration-base) ease-snappy hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-safe:active:scale-(--press-scale) data-[active=true]:text-foreground [&_svg]:size-5',
         className,
       )}
       {...props}

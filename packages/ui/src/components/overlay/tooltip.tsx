@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Tooltip as TooltipPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/cn';
+import { OVERLAY_ANIMATION, OVERLAY_SLIDE_SIDES } from './_overlay-variants';
 
 function TooltipProvider({
   delayDuration = 0,
@@ -18,12 +19,13 @@ function TooltipProvider({
   );
 }
 
+// NOTE: does NOT wrap in `TooltipProvider`. Radix requires exactly one provider
+// in scope; auto-wrapping each `<Tooltip>` spawns a provider per instance, which
+// defeats the shared `delayDuration` / skip-delay behaviour and wastes context
+// work. Wrap the app (or a region) once in `<TooltipProvider>` — see the root
+// layout — and use bare `<Tooltip>` children here.
 function Tooltip({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
-  return (
-    <TooltipProvider>
-      <TooltipPrimitive.Root data-slot="tooltip" {...props} />
-    </TooltipProvider>
-  );
+  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
 }
 
 function TooltipTrigger({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
@@ -44,7 +46,9 @@ function TooltipContent({
         sideOffset={sideOffset}
         style={{ zIndex: 'var(--z-tooltip)', ...style }}
         className={cn(
-          'w-fit origin-(--radix-tooltip-content-transform-origin) rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+          'w-fit origin-(--radix-tooltip-content-transform-origin) rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background',
+          OVERLAY_SLIDE_SIDES,
+          OVERLAY_ANIMATION,
           className,
         )}
         {...props}

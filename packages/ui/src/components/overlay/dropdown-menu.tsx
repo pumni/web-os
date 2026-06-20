@@ -5,6 +5,7 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react';
 import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/cn';
+import { OVERLAY_PANEL_MOTION } from './_overlay-variants';
 
 function DropdownMenu({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
   return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
@@ -28,14 +29,19 @@ function DropdownMenuContent({
   style,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+  const mergedStyle = React.useMemo<React.CSSProperties>(
+    () => ({ zIndex: 'var(--z-popover)', ...style }),
+    [style],
+  );
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
-        style={{ zIndex: 'var(--z-popover)', ...style }}
+        style={mergedStyle}
         className={cn(
-          'glass-panel max-h-(--radix-dropdown-menu-content-available-height) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md p-1 text-popover-foreground motion-safe:will-change-[opacity,transform] data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+          'glass-panel max-h-(--radix-dropdown-menu-content-available-height) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md p-1 text-popover-foreground motion-safe:will-change-[opacity,transform]',
+          OVERLAY_PANEL_MOTION,
           className,
         )}
         {...props}
@@ -200,12 +206,17 @@ function DropdownMenuSubContent({
   style,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
+  const mergedStyle = React.useMemo<React.CSSProperties>(
+    () => ({ zIndex: 'var(--z-popover)', ...style }),
+    [style],
+  );
   return (
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
-      style={{ zIndex: 'var(--z-popover)', ...style }}
+      style={mergedStyle}
       className={cn(
-        'glass-panel min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md p-1 text-popover-foreground data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+        'glass-panel max-h-(--radix-dropdown-menu-content-available-height) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md p-1 text-popover-foreground motion-safe:will-change-[opacity,transform]',
+        OVERLAY_PANEL_MOTION,
         className,
       )}
       {...props}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import { RootTooltipProvider } from '@/components/providers/tooltip-provider';
 import { PersonalizationProvider, PersonalizationScript, Toaster } from '@pumni/ui';
 import { TelemetryProvider } from '@/lib/observability';
 import './globals.css';
@@ -69,8 +70,10 @@ export default function RootLayout({
                 a consuming project injects a real sink via the `telemetry` prop. */}
             <TelemetryProvider>
               <QueryProvider>
-                {children}
-                <Toaster />
+                <RootTooltipProvider>
+                  {children}
+                  <Toaster />
+                </RootTooltipProvider>
               </QueryProvider>
             </TelemetryProvider>
           </PersonalizationProvider>
