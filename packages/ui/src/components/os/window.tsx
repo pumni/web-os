@@ -4,8 +4,8 @@ import * as React from 'react';
 import { Maximize2, Minus, X } from 'lucide-react';
 import { motion, useReducedMotion, type HTMLMotionProps } from 'motion/react';
 
-import { cn } from '../lib/cn';
-import { transition } from '../lib/motion';
+import { cn } from '../../lib/cn';
+import { transition } from '../../lib/motion';
 
 type WindowProps = Omit<HTMLMotionProps<'section'>, 'title' | 'children'> & {
   title: React.ReactNode;

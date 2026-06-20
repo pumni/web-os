@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
-import { apcaContrast } from '@pumni/ui';
+import { apcaContrast, oklchToSrgb, parseOklch } from '@pumni/ui';
 import { repoRoot, tokenCss } from './token-test-utils';
 
 type Color = {
@@ -14,6 +14,7 @@ type Color = {
 
 type Rgb = [number, number, number];
 
+const brandCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/brand.css'), 'utf8');
 const themeCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/theme.css'), 'utf8');
 const personalizationCss = readFileSync(
   path.join(repoRoot, 'packages/ui/src/styles/personalization.css'),
@@ -51,6 +52,13 @@ function readVariables(css: string, selector: ':root' | '.dark') {
 
 function buildTokenMap(mode: 'light' | 'dark') {
   const tokenMap = readVariables(tokenCss, ':root');
+
+  // Brand contract (brand.css) is read before theme.css: the semantic layer
+  // resolves --primary/--ring/--brand-gradient-* through these inputs.
+  for (const [name, value] of readVariables(brandCss, ':root')) {
+    tokenMap.set(name, value);
+  }
+
   const themeMap = readVariables(themeCss, ':root');
 
   for (const [name, value] of themeMap) {
@@ -58,6 +66,9 @@ function buildTokenMap(mode: 'light' | 'dark') {
   }
 
   if (mode === 'dark') {
+    for (const [name, value] of readVariables(brandCss, '.dark')) {
+      tokenMap.set(name, value);
+    }
     for (const [name, value] of readVariables(themeCss, '.dark')) {
       tokenMap.set(name, value);
     }
@@ -66,52 +77,8 @@ function buildTokenMap(mode: 'light' | 'dark') {
   return tokenMap;
 }
 
-function parseOklch(value: string): Color {
-  const oklchPattern = new RegExp(
-    '^' +
-      'oklch' +
-      '\\(\\s*(?<l>[\\d.]+)\\s+(?<c>[\\d.]+)\\s+(?<h>[\\d.]+)(?:\\s*\\/\\s*(?<alpha>[\\d.]+))?\\s*\\)$',
-  );
-  const match = value.match(oklchPattern);
-
-  if (!match?.groups) {
-    throw new Error(`Expected OKLCH color, received: ${value}`);
-  }
-
-  return {
-    l: Number(match.groups.l),
-    c: Number(match.groups.c),
-    h: Number(match.groups.h),
-    alpha: match.groups.alpha ? Number(match.groups.alpha) : 1,
-  };
-}
-
 function tokenColor(name: string, tokenMap: Map<string, string>) {
   return resolveColor(name, tokenMap);
-}
-
-function oklchToSrgb(color: Color): Rgb {
-  const hueRadians = (color.h * Math.PI) / 180;
-  const a = color.c * Math.cos(hueRadians);
-  const b = color.c * Math.sin(hueRadians);
-
-  const lPrime = color.l + 0.3963377774 * a + 0.2158037573 * b;
-  const mPrime = color.l - 0.1055613458 * a - 0.0638541728 * b;
-  const sPrime = color.l - 0.0894841775 * a - 1.291485548 * b;
-
-  const l = lPrime ** 3;
-  const m = mPrime ** 3;
-  const s = sPrime ** 3;
-
-  return [
-    clamp(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s),
-    clamp(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s),
-    clamp(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s),
-  ];
-}
-
-function clamp(value: number) {
-  return Math.min(1, Math.max(0, value));
 }
 
 function composite(foreground: Color, background: Color): Rgb {

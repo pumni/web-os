@@ -1,0 +1,44 @@
+/*
+ * Pumni OS — Brand contract (project override surface)
+ * ----------------------------------------------------
+ * The ONE place a consuming project rebrands the platform. The semantic layer
+ * (`theme.css`) reads these brand inputs instead of pointing at primitives
+ * directly, so a new project changes its identity by redefining `--brand-*`
+ * here (or under a project-scoped selector imported AFTER the @pumni/ui styles)
+ * WITHOUT editing platform core. See ADR-0010.
+ *
+ * Defaults below are Pumni's own cyan identity. The light/dark split exists
+ * because the brand colour sits at different OKLCH lightness stops per theme to
+ * hold APCA contrast against the white `--primary-foreground` — when overriding,
+ * keep that split (a lighter dark-mode stop, a darker light-mode stop) and let
+ * the glass-contrast test verify the result.
+ *
+ * Scope note: this governs the DEFAULT (attribute-less) appearance only. The
+ * named accents (cyan / indigo / violet / rose) in `personalization.css` are a
+ * fixed Pumni palette a USER can switch to at runtime; they intentionally stay
+ * literal so their swatches show true colours. A project brand is the default;
+ * accents layer on top as an explicit user choice.
+ *
+ * Imported BEFORE theme.css in the app's globals.css.
+ */
+
+:root {
+  /* Core brand colour — drives --primary and everything mixed from it. */
+  --brand-primary: var(--cyan-600);
+  /* Focus ring — usually one lightness stop above --brand-primary. */
+  --brand-ring: var(--cyan-500);
+
+  /* Brand gradient — hero/marketing expression (from → via → to). */
+  --brand-gradient-from: var(--cyan-500);
+  --brand-gradient-via: var(--indigo-500);
+  --brand-gradient-to: var(--violet-500);
+}
+
+.dark {
+  --brand-primary: var(--cyan-500);
+  --brand-ring: var(--cyan-400);
+
+  --brand-gradient-from: var(--cyan-400);
+  --brand-gradient-via: var(--indigo-400);
+  --brand-gradient-to: var(--violet-400);
+}

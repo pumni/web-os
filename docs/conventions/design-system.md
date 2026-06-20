@@ -12,10 +12,31 @@ consume semantic utilities only. Reference tables and recipes live in
 Token source of truth lives in `@pumni/ui`:
 
 - `packages/ui/src/styles/tokens.css`
+- `packages/ui/src/styles/brand.css`
 - `packages/ui/src/styles/theme.css`
 - `packages/ui/src/styles/glass.css`
 
 These are imported once in `apps/web/src/app/globals.css`.
+
+## Brand contract (project override surface)
+
+`brand.css` is the **one place a consuming project rebrands the platform**
+(ADR-0010). The semantic layer reads `--brand-primary` / `--brand-ring` /
+`--brand-gradient-*` (cyan by default) instead of pointing at primitives, so a
+new project changes identity by overriding `--brand-*` — at `:root` or a
+project-scoped selector imported after the `@pumni/ui` styles — without editing
+core. This is the entry surface of the semantic tier, **not a fourth tier**.
+Keep the light/dark stop split when overriding so the `glass-contrast` test
+holds APCA against `--primary-foreground`. The named accents in
+`personalization.css` stay literal (a runtime user palette, not the brand).
+
+To derive an accessible foreground for an overridden brand colour (instead of
+hand-tuning), use `foregroundFor(bg, targetLc)` / `backgroundFor` from
+`@pumni/ui` (`packages/ui/src/lib/apca.ts`). It binary-searches the OKLCH
+lightness axis with the same `apcaContrast` the gate uses — Lc 60 for body text,
+Lc 25 for UI edges — and reports `reachedTarget: false` when a colour cannot
+host the target (e.g. no neutral text reaches Lc 60 over a mid-light ~0.85
+surface).
 
 ## Anti-slop guardrails (read first)
 

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '../lib/cn';
-import { Card } from './card';
-import { Skeleton } from './skeleton';
+import { cn } from '../../lib/cn';
+import { Card } from '../card';
+import { Skeleton } from '../skeleton';
 
 /**
  * BentoGrid — 12-column mathematical layout with tier-based tile sizing.

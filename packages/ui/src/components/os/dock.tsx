@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { cn } from '../lib/cn';
+import { cn } from '../../lib/cn';
 
 /**
  * OS dock — a floating glass bar of launcher items. Renders a real nav with

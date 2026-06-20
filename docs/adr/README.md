@@ -83,3 +83,7 @@ link still fails the gate.
 - `0007-context-efficiency-2026.md` — split design-system reference detail into a UI styling skill, merged risk guidance into agent-behavior, and added package-scoped AGENTS.md coverage for all packages.
 - `0008-refined-command-policy.md` — refined AI command execution instructions to align with harness host shell constraints (variable expansion, operator support) and resolved the internal `&&` contradiction. (Renumbered from a duplicate `0007`.)
 - `0009-context-layer-lean-2026.md` — cut the hand-rolled routing/operating-manual layer and behavioral-eval/meta-metric machinery; kept tool-agnostic `.agents/` skills with a single-file router; fixed validation altitude (code gates vs context gates). Supersedes the meta-process portions of 0005/0006/0007.
+- `0010-frontend-platform-foundation.md` — reframed `@pumni/ui` as a reusable
+  OS skeleton; locked a brand-contract token layer, an inverse-APCA foreground
+  generator, and a granular `exports` map; declined Style Dictionary, Storybook,
+  RTL, and a premature package split as enterprise tax for the current context.

@@ -23,7 +23,7 @@ graph TD
 ## Modular Structure
 
 1. **`apps/web`**: Next.js App Router orchestration layer. Holds routes, page layouts, client-specific providers, and styles.
-2. **`packages/ui`**: Pure React UI primitives. Must never import DB, Server Actions, or business logic.
+2. **`packages/ui`**: Pure React UI primitives. Must never import DB, Server Actions, or business logic. The public surface is exposed two ways (ADR-0010): a root barrel (`@pumni/ui`, a convenience facade tree-shaken by `optimizePackageImports`) and explicit per-module subpaths (`@pumni/ui/button`, `@pumni/ui/glass-surface`, `@pumni/ui/os/window`). OS-shell components (Window, Dock, BentoGrid) live under `components/os/` and the `os/*` subpath namespace, structurally separated from portable primitives so a second project can consume primitives without the desktop shell.
 3. **`packages/env`**: Shared runtime validation of system environment variables.
 4. **`packages/validators`**: Zero-dependency Zod validation schemas shared between Client Forms and Server Actions.
 5. **`packages/supabase`**: Supabase browser and server connection clients.

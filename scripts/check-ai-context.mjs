@@ -538,8 +538,16 @@ function collectFiles(relativeDir, extensions) {
 function checkDesignTokenBoundaries() {
   const allowedTokenFiles = new Set([
     'packages/ui/src/styles/tokens.css',
+    'packages/ui/src/styles/brand.css',
     'packages/ui/src/styles/theme.css',
     'packages/ui/src/styles/personalization.css',
+  ]);
+  // The colour-math library is the one place allowed to parse/construct oklch()
+  // strings programmatically (regex + formatters), not hardcoded design colours.
+  // Exempt it from the raw-colour pattern only — primitive-var rules still apply.
+  const colorMathFiles = new Set([
+    'packages/ui/src/lib/oklch.ts',
+    'packages/ui/src/lib/apca.ts',
   ]);
   const files = [
     ...collectFiles('apps/web/src', ['.css', '.ts', '.tsx']),
@@ -552,7 +560,10 @@ function checkDesignTokenBoundaries() {
     if (allowedTokenFiles.has(relativePath)) continue;
 
     const content = readFile(relativePath);
-    for (const pattern of [rawColorPattern, primitiveVarPattern]) {
+    const patterns = colorMathFiles.has(relativePath)
+      ? [primitiveVarPattern]
+      : [rawColorPattern, primitiveVarPattern];
+    for (const pattern of patterns) {
       pattern.lastIndex = 0;
       let match;
       while ((match = pattern.exec(content)) !== null) {

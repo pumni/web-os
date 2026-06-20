@@ -20,7 +20,7 @@ export {
   AvatarGroupCount,
   AvatarImage,
 } from './components/avatar';
-export { BentoGrid, BentoGridItem, type BentoTier } from './components/bento-grid';
+export { BentoGrid, BentoGridItem, type BentoTier } from './components/os/bento-grid';
 export { Button, buttonVariants } from './components/button';
 export { SubmitButton } from './components/submit-button';
 export {
@@ -65,7 +65,7 @@ export {
   DialogTitle,
   DialogTrigger,
 } from './components/dialog';
-export { Dock, DockItem } from './components/dock';
+export { Dock, DockItem } from './components/os/dock';
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -142,5 +142,14 @@ export { Switch } from './components/switch';
 export { Slider } from './components/slider';
 export { Tabs, TabsContent, TabsList, TabsTrigger } from './components/tabs';
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './components/tooltip';
-export { Window } from './components/window';
-export { apcaContrast, apcaLuminance } from './lib/apca';
+export { Window } from './components/os/window';
+export {
+  apcaContrast,
+  apcaLuminance,
+  backgroundFor,
+  foregroundFor,
+  type ContrastColorOptions,
+  type ContrastColorResult,
+  type Polarity,
+} from './lib/apca';
+export { clamp01, formatOklch, oklchToSrgb, parseOklch, type Oklch } from './lib/oklch';

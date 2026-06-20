@@ -15,7 +15,8 @@
   --popover: color-mix(in oklch, var(--primary) 2%, var(--neutral-0));
   --popover-foreground: var(--neutral-950);
 
-  --primary: var(--cyan-600);
+  /* Brand entry point — reads the brand contract (brand.css), cyan by default. */
+  --primary: var(--brand-primary);
   --primary-foreground: var(--neutral-50);
   --secondary: color-mix(in oklch, var(--primary) 4%, var(--neutral-100));
   --secondary-foreground: var(--neutral-900);
@@ -41,7 +42,7 @@
   --border: color-mix(in oklch, var(--primary) 6%, var(--neutral-200));
   --input: color-mix(in oklch, var(--primary) 4%, var(--neutral-200));
   --field: var(--background);
-  --ring: var(--cyan-500);
+  --ring: var(--brand-ring);
 
   --radius: var(--radius-base);
 
@@ -75,10 +76,7 @@
   --glass-scrim: color-mix(in oklch, var(--neutral-50) 55%, transparent);
   --glass-blur: var(--blur-glass);
 
-  /* Brand expression */
-  --brand-gradient-from: var(--cyan-500);
-  --brand-gradient-via: var(--indigo-500);
-  --brand-gradient-to: var(--violet-500);
+  /* Brand gradient lives in brand.css (the project override surface). */
 
   /* OS desktop ambience */
   --desktop-blob-primary: var(--cyan-500);
@@ -180,10 +178,7 @@
   --glass-scrim: color-mix(in oklch, var(--neutral-950) 50%, transparent);
   --glass-blur: var(--blur-glass);
 
-  /* Brand expression */
-  --brand-gradient-from: var(--cyan-400);
-  --brand-gradient-via: var(--indigo-400);
-  --brand-gradient-to: var(--violet-400);
+  /* Brand gradient lives in brand.css (the project override surface). */
 
   /* OS desktop ambience */
   --desktop-blob-primary: var(--cyan-500);

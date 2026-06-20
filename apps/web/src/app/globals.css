@@ -9,6 +9,7 @@
 
 /* Pumni OS design system — 3-tier tokens + shared surface utilities (see docs/conventions/design-system.md) */
 @import '@pumni/ui/styles/tokens.css';
+@import '@pumni/ui/styles/brand.css';
 @import '@pumni/ui/styles/theme.css';
 @import '@pumni/ui/styles/personalization.css';
 @import '@pumni/ui/styles/glass.css';
