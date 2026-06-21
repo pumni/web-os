@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { RadioGroup as RadioGroupPrimitive } from 'radix-ui';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
 
 import { cn } from '../../lib/cn';
 import { transition } from '../../lib/motion';
@@ -109,9 +109,6 @@ function SegmentedPicker<T extends string>({
   'aria-label': string;
   className?: string;
 }) {
-  // motion runs JS animations the CSS reduced-motion query cannot silence, so
-  // honour the preference explicitly (same pattern as `Window`).
-  const shouldReduce = useReducedMotion();
   // Stable id scopes the shared-layout pill so multiple pickers on one page
   // each animate their own pill (a duplicate `layoutId` would cross-animate).
   const reactId = React.useId();
@@ -169,7 +166,9 @@ function SegmentedPicker<T extends string>({
                 aria-hidden
                 data-slot="segmented-picker-indicator"
                 className="pointer-events-none absolute inset-0 -z-10 rounded-md bg-(--segmented-active) border border-segmented-active-border shadow-segmented-active"
-                {...(!shouldReduce && { layoutId, layout: true, transition: transition.snappy })}
+                layoutId={layoutId}
+                layout
+                transition={transition.snappy}
               />
             )}
             {Icon && <Icon className="shrink-0" />}

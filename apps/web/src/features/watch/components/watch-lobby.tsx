@@ -124,6 +124,9 @@ export function WatchLobby() {
           </Tabs.Trigger>
         </Tabs.List>
 
+        {/* A view-transition-name must be unique across the document snapshot at all times.
+            Since only one watch-lobby renders per page, 'watch-lobby-card' is guaranteed unique.
+            Do not introduce duplicate view-transition-names without a uniqueness guarantee. */}
         <div style={{ viewTransitionName: 'watch-lobby-card' }}>
           {/* Create Room Tab */}
           <Tabs.Content value="create">

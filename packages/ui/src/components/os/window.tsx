@@ -17,6 +17,13 @@ import { transition } from '../../lib/motion';
 // neutralises the JS animation under reduced-motion, since the global CSS
 // media query cannot silence motion's JS animations).
 
+// Divergence rationale: These enter/exit constants intentionally diverge from
+// `recipes.fadeRise` (by adding a subtle scale settle: 0.96 -> 1) because
+// a large OS surface like a window benefits from scale-settle feedback,
+// whereas smaller UI content panels do not. They still read from the same
+// entrance geometry tokens where applicable (scale 0.96 settle is close to
+// --entrance-scale/zoom, and translateY(8) matches --entrance-y).
+
 /** Full-energy entrance — fade + subtle rise + settle. */
 const WINDOW_ENTER = { opacity: 0, scale: 0.96, y: 8 } as const;
 /** Resting state of an active window. */

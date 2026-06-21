@@ -26,6 +26,12 @@
  * rule set in `view-transitions.css` (slide-forward / slide-back / morph-zoom
  * / card-crossfade). The string form is the value set on
  * `ViewTransition.types` (or the `data-vt-type` fallback attribute).
+ *
+ * Types usage:
+ * - slide-forward  — navigate deeper (dashboard → sub-page, dock item click)
+ * - slide-back     — navigate shallower (back button, browser back)
+ * - morph-zoom     — shared-element morph (same element on both pages)
+ * - card-crossfade — same-route content swap (tabs, filters — already used by Tabs)
  */
 export type ViewTransitionType =
   | 'slide-forward'

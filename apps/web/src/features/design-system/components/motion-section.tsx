@@ -20,6 +20,8 @@ import {
   recipes,
   springs,
   staggerBase,
+  staggerFast,
+  staggerSlow,
   transition,
   useReducedMotion,
   withViewTransition,
@@ -361,11 +363,15 @@ export function MotionSection() {
               <span className="text-xs font-semibold text-muted-foreground">stagger cadences</span>
               <div className="flex justify-between text-xs">
                 <code className="font-mono text-foreground">staggerFast</code>
-                <span className="font-mono text-muted-foreground">{staggerBase}</span>
+                <span className="font-mono text-muted-foreground">{staggerFast}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <code className="font-mono text-foreground">staggerBase</code>
                 <span className="font-mono text-muted-foreground">{staggerBase}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <code className="font-mono text-foreground">staggerSlow</code>
+                <span className="font-mono text-muted-foreground">{staggerSlow}</span>
               </div>
             </div>
             <div className="space-y-1.5 border-t pt-3">

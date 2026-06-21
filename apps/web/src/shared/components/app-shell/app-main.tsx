@@ -28,7 +28,7 @@ export function AppMain({ defaultCollapsed, topbar, children }: AppMainProps) {
       )}
     >
       {topbar}
-      <main className="mx-auto w-full max-w-7xl flex-1 animate-in px-4 py-6 duration-(--duration-slower) fade-in slide-in-from-bottom-2 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl flex-1 animate-in px-4 py-6 duration-(--duration-slower) fade-in slide-in-from-bottom-(--entrance-y) sm:px-6 lg:px-8">
         {children}
       </main>
     </div>

@@ -35,6 +35,13 @@ export const pressScale = 0.97;
 export const hoverLiftY = -2;
 export const hoverLiftScale = 1.01;
 
+/**
+ * Entrance geometry — mirrors `--entrance-y` / `--entrance-y-lg` so JS recipes
+ * rise to the same depth as CSS entrances. Kept in sync by `motion-tokens.test.ts`.
+ */
+export const entranceY = 8;
+export const entranceYLarge = 16;
+
 /** cubic-bezier control points, typed as motion's BezierDefinition tuple. */
 export const easing = {
   /** Emphasized decelerate — entrances. Mirrors `--ease-out`. */
@@ -117,15 +124,15 @@ export const recipes = {
   /** Child of `staggerContainer` — fade + rise into place. */
   staggerItem: {
     variants: {
-      hidden: { opacity: 0, y: 8 },
+      hidden: { opacity: 0, y: entranceY },
       visible: { opacity: 1, y: 0, transition: transition.fluid },
     },
   },
   /** Content enter/exit — wrap in `AnimatePresence` for the exit. Entrance curve. */
   fadeRise: {
-    initial: { opacity: 0, y: 8 },
+    initial: { opacity: 0, y: entranceY },
     animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: 8 },
+    exit: { opacity: 0, y: entranceY },
     transition: transition.fluid,
   },
   /**
@@ -189,6 +196,8 @@ export const motionTokens = {
   pressScale,
   hoverLiftY,
   hoverLiftScale,
+  entranceY,
+  entranceYLarge,
   transition,
   recipes,
   springs,

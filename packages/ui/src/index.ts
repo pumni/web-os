@@ -6,6 +6,8 @@ export {
   easing,
   hoverLiftScale,
   hoverLiftY,
+  entranceY,
+  entranceYLarge,
   motionTokens,
   parallaxRate,
   pressScale,
@@ -18,7 +20,7 @@ export {
 } from './lib/motion';
 // Centralise motion presence orchestration so apps don't add their own `motion`
 // dependency (single version, clean package boundary).
-export { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+export { AnimatePresence, motion, useReducedMotion, MotionConfig } from 'motion/react';
 export {
   apcaContrast,
   apcaLuminance,

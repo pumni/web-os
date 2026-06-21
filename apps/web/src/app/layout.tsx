@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { QueryProvider } from '@/shared/components/providers/query-provider';
 import { ThemeProvider } from '@/shared/components/providers/theme-provider';
+import { MotionConfigProvider } from '@/shared/components/providers/motion-config-provider';
 import { RootTooltipProvider } from '@/shared/components/providers/tooltip-provider';
 import { PersonalizationProvider, PersonalizationScript, Toaster } from '@pumni/ui';
 import { TelemetryProvider } from '@/shared/lib/observability';
@@ -65,20 +66,22 @@ export default function RootLayout({
         />
         {/* Pre-paint: reflect stored accent/glass onto <html> before first paint (no FOUC). */}
         <PersonalizationScript />
-        <ThemeProvider>
-          <PersonalizationProvider>
-            {/* Vendor-neutral observability seam (ADR-0011). No-op by default;
-                a consuming project injects a real sink via the `telemetry` prop. */}
-            <TelemetryProvider>
-              <QueryProvider>
-                <RootTooltipProvider>
-                  {children}
-                  <Toaster />
-                </RootTooltipProvider>
-              </QueryProvider>
-            </TelemetryProvider>
-          </PersonalizationProvider>
-        </ThemeProvider>
+        <MotionConfigProvider>
+          <ThemeProvider>
+            <PersonalizationProvider>
+              {/* Vendor-neutral observability seam (ADR-0011). No-op by default;
+                  a consuming project injects a real sink via the `telemetry` prop. */}
+              <TelemetryProvider>
+                <QueryProvider>
+                  <RootTooltipProvider>
+                    {children}
+                    <Toaster />
+                  </RootTooltipProvider>
+                </QueryProvider>
+              </TelemetryProvider>
+            </PersonalizationProvider>
+          </ThemeProvider>
+        </MotionConfigProvider>
       </body>
     </html>
   );

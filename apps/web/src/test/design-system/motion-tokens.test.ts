@@ -5,13 +5,15 @@ import {
   easing,
   hoverLiftScale,
   hoverLiftY,
+  entranceY,
+  entranceYLarge,
   parallaxRate,
   pressScale,
   staggerBase,
   staggerFast,
   staggerSlow,
 } from '@pumni/ui';
-import { readDurationSeconds, readUnitless, tokenCss } from './token-test-utils';
+import { readDurationSeconds, readUnitless, tokenCss, themeCss } from './token-test-utils';
 
 /**
  * Motion bridge guard. `lib/motion.ts` is a hand-kept mirror of the `--duration-*`
@@ -19,9 +21,18 @@ import { readDurationSeconds, readUnitless, tokenCss } from './token-test-utils'
  * must share one source of truth). This test fails if the two drift apart.
  */
 
-function readCubicBezier(name: string): [number, number, number, number] {
-  const match = tokenCss.match(new RegExp(`${name}:\\s*cubic-bezier\\(([^)]+)\\)`));
-  if (!match?.[1]) throw new Error(`Missing easing token: ${name}`);
+function readCubicBezier(name: string, cssContent: string = tokenCss): [number, number, number, number] {
+  const matchVar = cssContent.match(new RegExp(`${name}:\\s*var\\((--[^)]+)\\)`));
+  if (matchVar?.[1]) {
+    return readCubicBezier(matchVar[1], tokenCss);
+  }
+  const match = cssContent.match(new RegExp(`${name}:\\s*cubic-bezier\\(([^)]+)\\)`));
+  if (!match?.[1]) {
+    if (cssContent !== themeCss) {
+      return readCubicBezier(name, themeCss);
+    }
+    throw new Error(`Missing easing token: ${name}`);
+  }
   const parts = match[1].split(',').map((part) => Number(part.trim()));
   if (parts.length !== 4 || parts.some((value) => Number.isNaN(value))) {
     throw new Error(`Malformed cubic-bezier for ${name}: ${match[1]}`);
@@ -65,5 +76,29 @@ describe('motion token bridge stays in sync with tokens.css', () => {
 
   it('parallaxRate mirrors --scroll-parallax-rate', () => {
     expect(parallaxRate).toBeCloseTo(readUnitless('--scroll-parallax-rate'), 5);
+  });
+});
+
+describe('entrance geometry tokens stay in sync', () => {
+  it('entranceY mirrors --entrance-y (px)', () => {
+    // CSS token is in px; JS value is in motion px (1:1). No unit conversion.
+    expect(entranceY).toBeCloseTo(readUnitless('--entrance-y'), 5);
+    expect(entranceYLarge).toBeCloseTo(readUnitless('--entrance-y-lg'), 5);
+  });
+
+  it('entrance-zoom aliases --vt-zoom-scale (one VT zoom value)', () => {
+    expect(readUnitless('--entrance-zoom')).toBeCloseTo(
+      readUnitless('--vt-zoom-scale'),
+      5,
+    );
+  });
+});
+
+describe('semantic easing aliases do not drift from raw tokens', () => {
+  it('--ease-fluid aliases --ease-out', () => {
+    expect(readCubicBezier('--ease-fluid')).toEqual(readCubicBezier('--ease-out'));
+  });
+  it('--ease-snappy aliases --ease-in-out', () => {
+    expect(readCubicBezier('--ease-snappy')).toEqual(readCubicBezier('--ease-in-out'));
   });
 });

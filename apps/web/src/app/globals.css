@@ -14,7 +14,6 @@
 @import '@pumni/ui/styles/personalization.css';
 @import '@pumni/ui/styles/glass.css';
 @import '@pumni/ui/styles/motion.css';
-@import '@pumni/ui/styles/starting-style.css';
 @import '@pumni/ui/styles/desktop.css';
 @import '@pumni/ui/styles/scroll.css';
 @import '@pumni/ui/styles/view-transitions.css';
@@ -37,7 +36,7 @@
 }
 
 .reaction-fly {
-  animation: reaction-fly-up 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: reaction-fly-up var(--duration-ambient) var(--ease-fluid) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -74,7 +73,7 @@
   box-shadow:
     0 0 12px var(--color-primary),
     0 0 24px var(--color-primary);
-  animation: note-hit-pulse 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: note-hit-pulse var(--duration-slow) var(--ease-fluid) forwards;
   pointer-events: none;
 }
 

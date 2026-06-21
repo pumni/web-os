@@ -5,6 +5,8 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { Select as SelectPrimitive } from 'radix-ui';
 import * as React from 'react';
 
+import { OVERLAY_PANEL_MOTION } from '../overlay/_overlay-variants';
+
 import { cn } from '../../lib/cn';
 
 function Select({ ...props }: React.ComponentProps<typeof SelectPrimitive.Root>) {
@@ -71,7 +73,10 @@ function SelectTrigger({
 
 const selectContentVariants = cva(
   // Base: glass floating surface with the open/close motion vocabulary.
-  'glass-panel relative max-h-(--radix-select-content-available-height) min-w-32 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md text-popover-foreground motion-safe:will-change-[opacity,transform] data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+  cn(
+    'glass-panel relative max-h-(--radix-select-content-available-height) min-w-32 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md text-popover-foreground motion-safe:will-change-[opacity,transform]',
+    OVERLAY_PANEL_MOTION,
+  ),
   {
     variants: {
       position: {

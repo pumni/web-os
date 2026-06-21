@@ -44,7 +44,7 @@ export function OsCommand() {
           keywords: item.keywords,
           group: item.group,
           icon: <Icon />,
-          onSelect: () => withViewTransition(() => router.push(item.href)),
+          onSelect: () => withViewTransition(() => router.push(item.href), { type: 'slide-forward' }),
         };
       }),
     [router],

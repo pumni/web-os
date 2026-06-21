@@ -283,6 +283,10 @@
   --duration-slow: 320ms;
   --duration-slower: 480ms;
   /* page / view-transition (~500ms) */
+  /* Long-form animation duration — reaction floats, ambient loops where
+     the motion is the content (not feedback). Distinct from the UI
+     feedback ladder (fast/base/slow/slower). */
+  --duration-ambient: 2500ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -303,14 +307,25 @@
      scale is unitless. */
   --hover-lift-y: -0.5;
   --hover-lift-scale: 1.01;
+
+  /* Entrance geometry — the single source for "content rises into place".
+     Consumed by JS recipes (recipes.fadeRise / staggerItem), the CSS
+     scroll-driven utilities (scroll-fade-in / scroll-slide-up), and hero
+     section entrances. Tokenised so a fade-rise reads identically across
+     CSS-scroll, JS-orchestrated, and View-Transition surfaces. */
+  --entrance-y: 8px; /* fadeRise / staggerItem / scroll-fade-in */
+  --entrance-y-lg: 16px; /* scroll-slide-up (larger travel for scale pair) */
+  --entrance-scale: 0.97; /* scroll-slide-up scale start */
+  --entrance-zoom: 0.95; /* VT zoom-in factor — aliases --vt-zoom-scale */
+
   /* View Transition geometry — distance + zoom factor for the named
      vt-* keyframe groups in view-transitions.css. Tokenised so the
      slide/zoom reads from one vocabulary instead of magic px/% runs. */
   --vt-slide-distance: 30px;
   --vt-zoom-scale: 0.95;
-  /* Overlay entry/exit geometry for @starting-style transitions
-     (starting-style.css). The shared scale + opacity pair read by the
-     `[data-state]` transition rules on every portaled layer. */
+  /* Overlay entry/exit geometry for tw-animate-css transitions
+     (defined via _overlay-variants.ts). The shared scale + opacity pair
+     read by the `[data-state]` transition rules on every portaled layer. */
   --overlay-enter-scale: 0.95;
   --overlay-enter-opacity: 0;
 

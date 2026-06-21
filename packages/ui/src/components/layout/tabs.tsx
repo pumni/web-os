@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Tabs as TabsPrimitive } from 'radix-ui';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
 
 import { cn } from '../../lib/cn';
 import { withViewTransition } from '../../lib/view-transition';
@@ -73,7 +73,7 @@ function TabsRoot({
       if (disableTransition) {
         onValueChange?.(next);
       } else {
-        withViewTransition(() => onValueChange?.(next));
+        withViewTransition(() => onValueChange?.(next), { type: 'card-crossfade' });
       }
     },
     [disableTransition, onValueChange],
@@ -137,7 +137,6 @@ function TabsTrigger({
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
   const { layoutId, activeValue } = React.useContext(TabsLayoutContext);
-  const shouldReduce = useReducedMotion();
   const isActive = value === activeValue;
 
   return (
@@ -152,14 +151,16 @@ function TabsTrigger({
         // Sliding underline indicator — mounted ONLY on the active trigger so
         // motion's shared `layoutId` tweens it between triggers as the active
         // value moves (the previous unmounts, the next mounts, motion bridges
-        // the position). Under reduced-motion we drop `layoutId` so it simply
-        // appears in place. `aria-hidden` + `pointer-events-none` keep it
-        // purely decorative — it cannot pollute the tab role or swallow clicks.
+        // the position). Under reduced-motion `MotionConfig` (set at the app
+        // root) neutralizes the tween, so the indicator jumps instantly without
+        // layout animation. `aria-hidden` + `pointer-events-none` keep it
+        // purely decorative.
         <motion.span
           aria-hidden
           data-slot="tabs-trigger-indicator"
           className="pointer-events-none absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-primary"
-          {...(!shouldReduce && { layoutId, layout: true })}
+          layoutId={layoutId}
+          layout
         />
       )}
       {children}

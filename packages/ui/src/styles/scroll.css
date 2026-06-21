@@ -40,7 +40,9 @@
 @keyframes scroll-fade-in {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    /* Scroll-driven entrances use the larger travel because they play across
+       a full viewport entry, where 8px is imperceptible. */
+    transform: translateY(var(--entrance-y-lg));
   }
   to {
     opacity: 1;
@@ -51,7 +53,8 @@
 @keyframes scroll-slide-up {
   from {
     opacity: 0;
-    transform: translateY(40px) scale(0.97);
+    /* The * 2 gives the larger travel for the paired scale-and-rise entrance. */
+    transform: translateY(calc(var(--entrance-y-lg) * 2)) scale(var(--entrance-scale));
   }
   to {
     opacity: 1;

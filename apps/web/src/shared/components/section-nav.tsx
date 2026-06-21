@@ -59,7 +59,7 @@ export function SectionNav({
       const scroll = () =>
         document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
       if (viewTransition) {
-        withViewTransition(scroll);
+        withViewTransition(scroll, { type: 'card-crossfade' });
       } else {
         scroll();
       }

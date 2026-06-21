@@ -19,6 +19,12 @@ export const tokenCss = readFileSync(
   'utf8',
 );
 
+/** Raw content of `packages/ui/src/styles/theme.css`. */
+export const themeCss = readFileSync(
+  path.join(repoRoot, 'packages/ui/src/styles/theme.css'),
+  'utf8',
+);
+
 /**
  * Reads a duration token (in `ms`) and returns its value in seconds.
  * @example readDurationSeconds('--duration-base') // 0.2
