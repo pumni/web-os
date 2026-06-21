@@ -8,6 +8,13 @@ when-to-load: When writing a Supabase migration, RLS policy, RPC, or touching Su
 Supabase migrations must define schema, RLS, policies, and Data API grants
 together. Do not rely on project defaults for table exposure.
 
+## Migrations
+
+All migrations under `supabase/migrations/` must follow these rules:
+
+- **Immutability:** Existing SQL migration files are historical records and must never be modified once committed or deployed. Any schema, RLS, policy, or permission changes must be written as a new migration file with an incremented prefix (e.g., `021_<name>.sql`).
+- **Cohesiveness:** Put the schema table creation, RLS enablement, policies, and Data API grants together in the same migration file.
+
 ## Tables
 
 For every table in an exposed schema:

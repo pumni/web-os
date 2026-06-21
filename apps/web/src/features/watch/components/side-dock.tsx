@@ -69,16 +69,16 @@ export function SideDock({
     <Card variant="solid" className="flex h-full flex-col overflow-hidden p-0 select-none">
       <div className="flex h-full min-h-0 flex-1 flex-col p-4">
         <Tabs defaultValue="playlist" className="flex h-full min-h-0 w-full flex-1 flex-col">
-          <TabsList variant="underline" className="grid h-9 shrink-0 grid-cols-3">
-            <TabsTrigger value="playlist" variant="underline" className="text-xs">
+          <TabsList className="grid h-9 shrink-0 grid-cols-3">
+            <TabsTrigger value="playlist" className="text-xs">
               <ListVideo className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Danh sách</span>
             </TabsTrigger>
-            <TabsTrigger value="chat" variant="underline" className="text-xs">
+            <TabsTrigger value="chat" className="text-xs">
               <MessageSquare className="size-3.5 shrink-0" />
               Chat
             </TabsTrigger>
-            <TabsTrigger value="participants" variant="underline" className="text-xs">
+            <TabsTrigger value="participants" className="text-xs">
               <Users className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Người</span>
               <span className="text-[11px] font-semibold tabular-nums">{participants.length}</span>

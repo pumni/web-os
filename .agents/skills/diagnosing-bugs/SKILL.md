@@ -104,3 +104,4 @@ Before reporting done:
 - [ ] A regression test was added where a correct seam exists.
 - [ ] Original repro was re-run after the fix.
 - [ ] Temporary debug logs and harnesses were removed or clearly marked.
+- [ ] Verified that the fix passes the regression test or original reproduction loop.

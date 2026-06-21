@@ -3,12 +3,9 @@
 import * as React from 'react';
 import dynamic from 'next/dynamic';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
 import { profileSchema, type ProfileInput } from '@pumni/validators';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import { updateProfile } from './actions';
 import {
   Avatar,
   AvatarFallback,
@@ -25,9 +22,8 @@ import {
   cn,
 } from '@pumni/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui';
-import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 import { Camera, Loader2, Trash2 } from 'lucide-react';
-import { extractStoragePath } from './utils';
+import { useProfileMutation } from './use-profile-mutation';
 
 // Lazy-load the crop dialog — react-easy-crop is Canvas-heavy and not needed
 // on initial page load (only when user clicks "Upload new picture").
@@ -208,7 +204,6 @@ function AvatarUpload({
 // ---------------------------------------------------------------------------
 
 export function ProfileForm({ defaultValues }: ProfileFormProps) {
-  const router = useRouter();
   const form = useForm<ProfileInput>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -219,9 +214,6 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
   });
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [selectedFileBlob, setSelectedFileBlob] = React.useState<Blob | null>(null);
-  const [previewUrl, setPreviewUrl] = React.useState<string | null>(defaultValues.avatarUrl);
-  const [isUploading, setIsUploading] = React.useState(false);
 
   // Crop dialog file state
   const [rawFile, setRawFile] = React.useState<File | null>(null);
@@ -245,7 +237,6 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
   React.useEffect(() => {
     return () => {
       revokeRawFileUrl();
-      if (previewUrl?.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -257,34 +248,19 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
     }
   }, [isCropOpen, rawFile]);
 
-  // ---- Mutation ----
-  const updateProfileMutation = useMutation<
-    Awaited<ReturnType<typeof updateProfile>>,
-    Error,
-    ProfileInput,
-    { previousValues: ProfileInput }
-  >({
-    mutationFn: async (data) => {
-      const result = await updateProfile(data);
-      if (!result.ok) throw new Error(result.message);
-      return result;
-    },
-    onMutate: (nextValues) => {
-      const previousValues = form.getValues();
-      form.reset(nextValues, { keepTouched: true });
-      return { previousValues };
-    },
-    onSuccess: () => {
-      toast.success('Profile updated successfully!');
-      router.refresh();
-    },
-    onError: (error, _variables, context) => {
-      if (context) {
-        form.reset(context.previousValues, { keepTouched: true });
-        setPreviewUrl(context.previousValues.avatarUrl || null);
-      }
-      toast.error(error.message || 'Failed to update profile.');
-    },
+  // ---- Custom Hook for upload/mutation ----
+  const {
+    previewUrl,
+    isUploading,
+    isPending,
+    handleCropConfirm: handleCropConfirmHook,
+    handleRemoveAvatar: handleRemoveAvatarHook,
+    onSubmit,
+  } = useProfileMutation({
+    userId: defaultValues.id,
+    initialAvatarUrl: defaultValues.avatarUrl,
+    resetForm: form.reset,
+    setValueForm: form.setValue,
   });
 
   // ---- Callbacks ----
@@ -302,13 +278,10 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
 
   const handleCropConfirm = React.useCallback(
     (blob: Blob) => {
-      setSelectedFileBlob(blob);
-      const tempUrl = URL.createObjectURL(blob);
-      setPreviewUrl(tempUrl);
-      form.setValue('avatarUrl', tempUrl);
+      handleCropConfirmHook(blob);
       setRawFile(null);
     },
-    [form],
+    [handleCropConfirmHook],
   );
 
   const handleAvatarClick = React.useCallback(() => {
@@ -316,68 +289,9 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
   }, []);
 
   const handleRemoveAvatar = React.useCallback(() => {
-    setSelectedFileBlob(null);
-    setPreviewUrl(null);
-    form.setValue('avatarUrl', '');
+    handleRemoveAvatarHook();
     if (fileInputRef.current) fileInputRef.current.value = '';
-  }, [form]);
-
-  // ---- Submit ----
-  const onSubmit = React.useCallback(
-    async (data: ProfileInput) => {
-      setIsUploading(true);
-      let finalAvatarUrl = data.avatarUrl;
-      let oldFilePathToDelete: string | null = null;
-
-      try {
-        const supabase = createSupabaseBrowserClient();
-
-        if (selectedFileBlob) {
-          const fileName = `avatar-${Date.now()}.webp`;
-          const filePath = `${defaultValues.id}/${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, selectedFileBlob, {
-              contentType: 'image/webp',
-              upsert: true,
-            });
-
-          if (uploadError) throw uploadError;
-
-          const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
-          finalAvatarUrl = urlData.publicUrl;
-
-          if (defaultValues.avatarUrl) {
-            oldFilePathToDelete = extractStoragePath(defaultValues.avatarUrl);
-          }
-        } else if (previewUrl === null && defaultValues.avatarUrl) {
-          finalAvatarUrl = null;
-          oldFilePathToDelete = extractStoragePath(defaultValues.avatarUrl);
-        }
-
-        await updateProfileMutation.mutateAsync({
-          ...data,
-          avatarUrl: finalAvatarUrl,
-        });
-
-        if (oldFilePathToDelete) {
-          await supabase.storage.from('avatars').remove([oldFilePathToDelete]);
-        }
-
-        setSelectedFileBlob(null);
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Failed to save profile.');
-        setPreviewUrl(data.avatarUrl || null);
-      } finally {
-        setIsUploading(false);
-      }
-    },
-    [defaultValues, previewUrl, selectedFileBlob, updateProfileMutation],
-  );
-
-  // ---- Derived ----
-  const isPending = updateProfileMutation.isPending || isUploading;
+  }, [handleRemoveAvatarHook]);
 
   return (
     <>

@@ -35,8 +35,7 @@ need to the canonical doc that owns it.
 | Domain glossary | `docs/ai/domain-language.md` |
 | Local production patterns to copy | `docs/ai/golden-examples.md` |
 | Known ❌/✅ mistake pairs | `docs/ai/common-mistakes.md` |
-| MCP runtime (Next.js dev server) | `docs/ai/mcp-runtime.md` |
-| MCP Postgres schema introspection (read-only) | `docs/ai/mcp-postgres.md` |
+| MCP servers (next-devtools runtime + postgres schema, optional) | `docs/ai/mcp.md` |
 
 ## Skills (reusable procedures in `.agents/skills`)
 

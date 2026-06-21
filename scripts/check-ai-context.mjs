@@ -472,6 +472,33 @@ function checkSkillDescriptionTriggers() {
   }
 }
 
+function checkSkillChecklistVerifiable() {
+  // karpathy "definition of done": every skill's ## Checklist must name how
+  // completion is verified — a gate command or an explicit checkable
+  // criterion — so the exit contract defends against premature completion.
+  const baseDir = resolveRel('.agents/skills');
+  if (!fs.existsSync(baseDir)) return;
+  const verifiable =
+    /bun run |bunx |verification gate|\bverif|\bconfirm|passes\b|scans clean|test seam|acceptance criteria|resolved by/i;
+
+  for (const entry of fs.readdirSync(baseDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const filePath = path.join(baseDir, entry.name, 'SKILL.md');
+    if (!fs.existsSync(filePath)) continue;
+    const content = fs.readFileSync(filePath, 'utf8');
+    const start = content.indexOf('## Checklist');
+    if (start < 0) continue; // missing-section already errors in checkStructuredMarkdown
+    const rest = content.slice(start + '## Checklist'.length);
+    const nextHeading = rest.search(/\n## /);
+    const section = nextHeading === -1 ? rest : rest.slice(0, nextHeading);
+    if (!verifiable.test(section)) {
+      reportError(
+        `${relPath(filePath)} ## Checklist has no verifiable completion anchor (a gate command or explicit checkable criterion). See .agents/skills/README.md.`,
+      );
+    }
+  }
+}
+
 function checkRuleInventory() {
   const inventoryPath = '.agents/workflows/review-gate.md';
   const content = readFile(inventoryPath);
@@ -626,6 +653,7 @@ checkStructuredMarkdown({
   isFileEntry: false,
 });
 checkSkillDescriptionTriggers();
+checkSkillChecklistVerifiable();
 checkAiDocSizes();
 checkEntrypointSizes();
 checkSizeBudgets();

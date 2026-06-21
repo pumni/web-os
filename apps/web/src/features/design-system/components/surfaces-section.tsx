@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { toast } from 'sonner';
-import { HelpCircleIcon, SunIcon, MoonIcon, SettingsIcon } from 'lucide-react';
+import { HelpCircleIcon, SunIcon, SettingsIcon } from 'lucide-react';
 import {
-  Badge,
   Button,
   Card,
   CardHeader,
@@ -23,12 +22,7 @@ import {
 } from '@pumni/ui';
 import { ShowcaseSection } from './showcase-section';
 
-interface SurfacesSectionProps {
-  previewContrast: 'standard' | 'more';
-  setPreviewContrast: React.Dispatch<React.SetStateAction<'standard' | 'more'>>;
-}
-
-export function SurfacesSection({ previewContrast, setPreviewContrast }: SurfacesSectionProps) {
+export function SurfacesSection() {
   return (
     <ShowcaseSection
       id="surfaces-layout"
@@ -151,27 +145,18 @@ export function SurfacesSection({ previewContrast, setPreviewContrast }: Surface
           </CardContent>
         </Card>
 
-        {/* Card composition primitives — Badge / IconBadge / CardWell */}
+        {/* Card composition primitives — IconBadge / CardWell.
+            Badge tones live in the Feedback section (single source of truth);
+            this card owns the surface-role primitives that have no other home. */}
         <Card>
           <CardHeader>
             <CardTitle>Card Composition Primitives</CardTitle>
             <CardDescription>
-              The closed set that replaces hand-rolled status pills, icon chips, and inset
-              wells. Compose these instead of writing <code>border bg-muted</code> by hand.
+              Icon chips and inset wells — compose these instead of writing{' '}
+              <code>border bg-muted</code> by hand.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            {/* Badge tones */}
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge tone="success" pulse>
-                Live
-              </Badge>
-              <Badge tone="primary">In library</Badge>
-              <Badge tone="warning">Syncing</Badge>
-              <Badge tone="destructive">Error</Badge>
-              <Badge tone="neutral">Idle</Badge>
-            </div>
-
             {/* IconBadge tones + sizes */}
             <div className="flex flex-wrap items-center gap-3">
               <IconBadge tone="primary-soft" size="sm" aria-hidden>
@@ -271,35 +256,51 @@ export function SurfacesSection({ previewContrast, setPreviewContrast }: Surface
           <CardHeader>
             <CardTitle>Dock Navigation</CardTitle>
             <CardDescription>
-              Floating macOS-style dock with dynamic magnification.
+              Floating macOS-style dock with dynamic magnification. The{' '}
+              <code>active</code> prop marks the focused app; the others are launchers.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center py-8">
-            <Dock>
-              <DockItem
-                label="Light View"
-                active={previewContrast === 'standard'}
-                onClick={() => setPreviewContrast('standard')}
-              >
-                <SunIcon className="size-5" />
-              </DockItem>
-              <DockItem
-                label="Dark View"
-                active={previewContrast === 'more'}
-                onClick={() => setPreviewContrast('more')}
-              >
-                <MoonIcon className="size-5" />
-              </DockItem>
-              <DockItem
-                label="Settings Actions"
-                onClick={() => toast.info('Dock settings tapped.')}
-              >
-                <SettingsIcon className="size-5" />
-              </DockItem>
-            </Dock>
+            <DockDemo />
           </CardContent>
         </Card>
       </div>
     </ShowcaseSection>
+  );
+}
+
+/**
+ * Self-contained dock launcher demo. The active app is local state (the dock's
+ * real semantic — which running app is focused), decoupled from the
+ * personalization state the rest of the showcase drives.
+ */
+const DOCK_APPS = ['home', 'library', 'settings'] as const;
+type DockApp = (typeof DOCK_APPS)[number];
+const DOCK_APP_LABELS: Record<DockApp, string> = {
+  home: 'Home',
+  library: 'Library',
+  settings: 'Settings',
+};
+
+function DockDemo() {
+  const [activeApp, setActiveApp] = React.useState<DockApp>('home');
+  return (
+    <Dock>
+      {DOCK_APPS.map((app) => (
+        <DockItem
+          key={app}
+          label={DOCK_APP_LABELS[app]}
+          active={activeApp === app}
+          onClick={() => {
+            setActiveApp(app);
+            toast.info(`${DOCK_APP_LABELS[app]} launched.`);
+          }}
+        >
+          {app === 'home' && <SunIcon className="size-5" />}
+          {app === 'library' && <HelpCircleIcon className="size-5" />}
+          {app === 'settings' && <SettingsIcon className="size-5" />}
+        </DockItem>
+      ))}
+    </Dock>
   );
 }

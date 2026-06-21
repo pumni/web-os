@@ -131,6 +131,17 @@
   --switch-width: 2rem;
   --switch-thumb-size: 0.875rem;
 
+  /* Switch visual-role tokens (separate from --input / --background so the
+     track reads as a distinct affordance and the thumb stays high-contrast
+     in BOTH states — see switch.tsx). Light: track sits one stop DARKER than
+     --input (neutral-200 → neutral-300) so it reads as a control, not a
+     flat fill; thumb is pure white over the darker track for parity with
+     dark (bright thumb over a darker track). */
+  --switch-track: var(--neutral-300);
+  --switch-track-checked: var(--primary);
+  --switch-thumb: var(--neutral-0);
+  --switch-thumb-checked: var(--primary-foreground);
+
   /* --- Typography: raw size + paired line-height scale ---
      Distinct names from the Tailwind `--text-*` namespace they bridge into
      (see theme.css) to avoid self-referential `var()` cycles. */
@@ -314,4 +325,12 @@
    as the :root light default above), not theme.css (which is semantic-only). */
 .dark {
   color-scheme: dark;
+
+  /* Dark switch role tokens: track one stop DARKER than --input (neutral-700 →
+     neutral-600) so the track still separates from --card (neutral-880); thumb
+     neutral-50 (off-white) for parity with light's bright-thumb-on-darker-track. */
+  --switch-track: var(--neutral-600);
+  --switch-track-checked: var(--primary);
+  --switch-thumb: var(--neutral-50);
+  --switch-thumb-checked: var(--primary-foreground);
 }

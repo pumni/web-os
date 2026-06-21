@@ -19,8 +19,8 @@ export function BentoSection() {
       id="bento-grid"
       description="Mathematical 12-column grid with tier-based spans (hero/feature/metric/accent/full). `rowHeight` fixes the row track so row-span-2 tiers read as exactly twice a metric — the proportional ratios that make a real bento. Visual contract: Playwright snapshots this section."
     >
-      <BentoGrid id="bento-showcase"rowHeight={110} dense>
-        {/* HERO tier: col-span-6 row-span-2 (desktop), (tablet).
+      <BentoGrid id="bento-showcase" rowHeight={110} dense>
+        {/* HERO tier: col-span-6 row-span-2 (desktop), col-span-12 (tablet).
             With rowHeight=110 the 2-row span fixes the tile at 220px — no
             minHeight needed; the math owns the height. */}
         <BentoGridItem

@@ -40,3 +40,5 @@ skill changes the glossary; merely reading the glossary does not require it.
 - [ ] Existing glossary terms were reused where accurate.
 - [ ] Any contradiction between user language, docs, and code was surfaced.
 - [ ] ADRs were offered only for hard-to-reverse, surprising trade-offs.
+- [ ] `docs/ai/domain-language.md` updated (or explicitly recorded as
+      no-change) and `bun run ai:check` passes.

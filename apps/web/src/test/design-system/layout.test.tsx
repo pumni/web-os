@@ -229,6 +229,7 @@ describe('Tabs', () => {
   // activation through pointerdown + roving focus, which jsdom does not model
   // (no layout, no real focus chain) — the interaction is covered instead by
   // the showcase render asserting initial data-state active/inactive.
+  // Tabs is underline-only (pill was retired in favour of SegmentedPicker).
 });
 
 // ---------------------------------------------------------------------------

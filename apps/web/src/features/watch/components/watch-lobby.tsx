@@ -118,7 +118,7 @@ export function WatchLobby() {
         disableTransition={false}
         className="w-full"
       >
-        <TabsList className="mb-4 grid h-9 w-full grid-cols-2 rounded-lg border border-border bg-muted p-1">
+        <TabsList className="mb-4 grid h-9 w-full grid-cols-2">
           <TabsTrigger value="create" className="h-full text-xs">
             Tạo Phòng Mới
           </TabsTrigger>

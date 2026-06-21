@@ -91,17 +91,17 @@ or `actions.ts`/`queries.ts` (`docs/conventions/feature-module.md`).
 
 ## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`)
 
-All Next.js 16 caching patterns, lifecycles, and invalidations must follow the rules in [apps/web/AGENTS.md](file:///d:/Dev/web-os/apps/web/AGENTS.md).
+Single source of truth: [`.claude/rules/nextjs-cache-components.md`](/.claude/rules/nextjs-cache-components.md) (auto-loads on App Router files).
+The static rules `cache-life-too-short` and `cache-tag-unparameterized` enforce
+the two regex-catchable cases.
 
-❌ `revalidateTag('profile')` (missing second argument).
-✅ `revalidateTag('profile', 'max')` for stale-while-revalidate, or `updateTag('profile')` inside Server Actions.
+## 11. Premature abstraction / speculative features (simplicity — no static rule)
 
-❌ `cacheLife('seconds')` (punches dynamic hole in PPR static shell).
-✅ `cacheLife('minutes')` (minimum safe tier), `'hours'`, or `'days'`.
+The karpathy "simplicity first" principle; a reviewer rule, not a regex.
 
-❌ `cacheTag('profile')` (causes cross-user cache collisions).
-✅ `cacheTag(\`profile:${userId}\`)` (parameterized tag).
-
-❌ `'use cache'` inside wrapper functions (silently becomes dynamic), or `updateTag()` in Route Handlers (throws at runtime).
-✅ `'use cache';` at file/function level, and `updateTag()` in Server Actions only.
+❌ A strategy/factory/registry for one case; an interface with a single
+implementation; caching, validation, or config flags nobody asked for.
+✅ Minimum code that solves today's task; add the abstraction when a second
+real caller appears. Reversible/cosmetic decisions get no ADR
+(`docs/adr/README.md`).
 

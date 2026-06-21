@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Input, Tabs, TabsList, TabsTrigger, cn } from '@pumni/ui';
+import { Button, Input, SegmentedPicker, cn } from '@pumni/ui';
 import { Plus, Trash2, Play, Music, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -223,27 +223,15 @@ export function PlaylistPanel({
           >
             <div className="flex items-center justify-between">
               <span className="type-caption font-medium text-muted-foreground">Nguồn</span>
-              <Tabs
+              <SegmentedPicker
+                aria-label="Video source"
+                options={['youtube', 'url']}
                 value={sourceType}
-                onValueChange={(val) => setSourceType(val as 'youtube' | 'url')}
-              >
-                <TabsList className="h-6 gap-0.5 rounded-md border border-border bg-muted p-0.5">
-                  <TabsTrigger
-                    value="youtube"
-                    disabled={!isMemberReady}
-                    className="h-5 px-2 py-0 text-xs"
-                  >
-                    YT
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="url"
-                    disabled={!isMemberReady}
-                    className="h-5 px-2 py-0 text-xs"
-                  >
-                    URL
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+                onChange={(val) => setSourceType(val as 'youtube' | 'url')}
+                labels={{ youtube: 'YT', url: 'URL' }}
+                size="sm"
+                disabled={!isMemberReady}
+              />
             </div>
 
             <Input

@@ -1,6 +1,7 @@
 import {
   apcaContrast,
   apcaLuminance,
+  backgroundFor,
   Badge,
   Button,
   Card,
@@ -10,9 +11,14 @@ import {
   CardTitle,
   CardWell,
   cn,
+  formatOklch,
+  foregroundFor,
   GlassSurface,
   Input,
   Label,
+  oklchToSrgb,
+  parseOklch,
+  SegmentedPicker,
   Separator,
   Window,
 } from '@pumni/ui';
@@ -23,6 +29,27 @@ interface FoundationsSectionProps {
   previewContrast: 'standard' | 'more';
   setPreviewContrast: React.Dispatch<React.SetStateAction<'standard' | 'more'>>;
 }
+
+type TransparencyOption = 'standard' | 'reduced';
+type ContrastOption = 'standard' | 'more';
+type ApcTarget = 'text' | 'ui';
+
+const TRANSPARENCY_OPTIONS: readonly TransparencyOption[] = ['standard', 'reduced'];
+const TRANSPARENCY_LABELS: Record<TransparencyOption, string> = {
+  standard: 'Standard',
+  reduced: 'Opaque Solid',
+};
+const CONTRAST_OPTIONS: readonly ContrastOption[] = ['standard', 'more'];
+const CONTRAST_LABELS: Record<ContrastOption, string> = {
+  standard: 'Normal Contrast',
+  more: 'High Contrast',
+};
+const APCA_TARGETS: readonly ApcTarget[] = ['text', 'ui'];
+const APCA_TARGET_LABELS: Record<ApcTarget, string> = {
+  text: 'Text (Lc 60)',
+  ui: 'UI (Lc 25)',
+};
+const APCA_TARGET_LC: Record<ApcTarget, number> = { text: 60, ui: 25 };
 
 function hexToRgb(hex: string): [number, number, number] {
   return [
@@ -36,11 +63,12 @@ export function FoundationsSection({
   previewContrast,
   setPreviewContrast,
 }: FoundationsSectionProps) {
-  const [previewTransparency, setPreviewTransparency] = React.useState<'standard' | 'reduced'>(
+  const [previewTransparency, setPreviewTransparency] = React.useState<TransparencyOption>(
     'standard',
   );
   const [apcaFg, setApcaFg] = React.useState('#0a0a0a');
   const [apcaBg, setApcaBg] = React.useState('#fafafa');
+  const [deriveTarget, setDeriveTarget] = React.useState<ApcTarget>('text');
 
   return (
     <ShowcaseSection
@@ -170,6 +198,31 @@ export function FoundationsSection({
             ))}
           </CardContent>
         </Card>
+
+        {/* Color Derivation — covers foregroundFor / backgroundFor / parseOklch /
+            oklchToSrgb / formatOklch. The inverse-APCA pair is the sanctioned
+            path for deriving an accessible brand-override foreground by
+            construction (design-system.md §Brand contract); until now it was
+            not demonstrated anywhere in the showcase. */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Color Derivation</CardTitle>
+            <CardDescription>
+              Inverse-APCA utilities derive a foreground or background that meets
+              a target Lc by construction — the sanctioned path for brand overrides.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <SegmentedPicker
+              aria-label="Derive target"
+              options={APCA_TARGETS}
+              value={deriveTarget}
+              onChange={(v) => setDeriveTarget(v as ApcTarget)}
+              labels={APCA_TARGET_LABELS}
+            />
+            <ColorDerivationDemo targetLc={APCA_TARGET_LC[deriveTarget]} />
+          </CardContent>
+        </Card>
       </div>
 
       {/* APCA Contrast Verification */}
@@ -185,46 +238,20 @@ export function FoundationsSection({
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <div className="inline-flex rounded-md border bg-card p-1">
-              <Button
-                type="button"
-                size="sm"
-                variant={previewTransparency === 'standard' ? 'secondary' : 'ghost'}
-                aria-pressed={previewTransparency === 'standard'}
-                onClick={() => setPreviewTransparency('standard')}
-              >
-                Standard
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={previewTransparency === 'reduced' ? 'secondary' : 'ghost'}
-                aria-pressed={previewTransparency === 'reduced'}
-                onClick={() => setPreviewTransparency('reduced')}
-              >
-                Opaque Solid
-              </Button>
-            </div>
-            <div className="inline-flex rounded-md border bg-card p-1">
-              <Button
-                type="button"
-                size="sm"
-                variant={previewContrast === 'standard' ? 'secondary' : 'ghost'}
-                aria-pressed={previewContrast === 'standard'}
-                onClick={() => setPreviewContrast('standard')}
-              >
-                Normal Contrast
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={previewContrast === 'more' ? 'secondary' : 'ghost'}
-                aria-pressed={previewContrast === 'more'}
-                onClick={() => setPreviewContrast('more')}
-              >
-                High Contrast
-              </Button>
-            </div>
+            <SegmentedPicker
+              aria-label="Glass transparency"
+              options={TRANSPARENCY_OPTIONS}
+              value={previewTransparency}
+              onChange={setPreviewTransparency}
+              labels={TRANSPARENCY_LABELS}
+            />
+            <SegmentedPicker
+              aria-label="Contrast mode"
+              options={CONTRAST_OPTIONS}
+              value={previewContrast}
+              onChange={setPreviewContrast}
+              labels={CONTRAST_LABELS}
+            />
           </div>
         </div>
 
@@ -401,5 +428,86 @@ function RadiusDemo({ label, className }: { label: string; className: string }) 
         {label}
       </span>
     </CardWell>
+  );
+}
+
+/**
+ * Demonstrates the inverse-APCA pair (`foregroundFor` / `backgroundFor`) plus the
+ * OKLCH conversion utilities (`parseOklch`, `oklchToSrgb`, `formatOklch`). Given a
+ * fixed anchor surface, it derives the least-extreme foreground meeting `targetLc`
+ * — the sanctioned path for brand overrides (design-system.md §Brand contract) —
+ * then the dual background under that derived foreground, and verifies the result
+ * with the same `oklchToSrgb` + `apcaContrast` pair the contrast gate uses.
+ */
+function ColorDerivationDemo({ targetLc }: { targetLc: number }) {
+  // Anchor built via formatOklch so no raw `oklch(` literal leaks into source
+  // (pumniNoRawColor guards token boundaries). A mid-light warm surface forces a
+  // non-trivial polarity decision for `auto`.
+  const anchorBg = formatOklch({ l: 0.85, c: 0.02, h: 70 });
+  const bgParsed = parseOklch(anchorBg);
+  const fg = foregroundFor(bgParsed, targetLc, { polarity: 'auto' });
+  const bg = backgroundFor({ l: fg.l, c: fg.c, h: fg.h }, targetLc, { polarity: 'auto' });
+  const verifiedLc = Math.abs(
+    apcaContrast(oklchToSrgb({ l: fg.l, c: fg.c, h: fg.h }), oklchToSrgb(bgParsed)),
+  );
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3">
+        <span className="w-20 text-xs font-medium text-muted-foreground">Anchor bg</span>
+        <div
+          className="size-8 rounded-md border border-border"
+          style={{ backgroundColor: anchorBg }}
+        />
+        <code className="break-all font-mono text-[11px] text-muted-foreground">{anchorBg}</code>
+      </div>
+
+      <div className="space-y-2 rounded-lg border border-border p-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-foreground">
+            foregroundFor → Lc {targetLc}
+          </span>
+          <Badge tone={fg.reachedTarget ? 'success' : 'destructive'} size="sm">
+            {fg.reachedTarget ? `Lc ${fg.lc.toFixed(0)}` : 'Unreachable'}
+          </Badge>
+        </div>
+        <div className="flex items-center gap-3">
+          <div
+            className="flex size-12 items-center justify-center rounded-md border border-border text-sm font-semibold"
+            style={{ backgroundColor: anchorBg, color: fg.oklch }}
+          >
+            Aa
+          </div>
+          <code className="break-all font-mono text-[11px] text-muted-foreground">{fg.oklch}</code>
+        </div>
+      </div>
+
+      <div className="space-y-2 rounded-lg border border-border p-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-semibold text-foreground">
+            backgroundFor → Lc {targetLc}
+          </span>
+          <Badge tone={bg.reachedTarget ? 'success' : 'destructive'} size="sm">
+            {bg.reachedTarget ? `Lc ${bg.lc.toFixed(0)}` : 'Unreachable'}
+          </Badge>
+        </div>
+        <div className="flex items-center gap-3">
+          <div
+            className="flex size-12 items-center justify-center rounded-md border border-border text-sm font-semibold"
+            style={{ backgroundColor: bg.oklch, color: fg.oklch }}
+          >
+            Aa
+          </div>
+          <code className="break-all font-mono text-[11px] text-muted-foreground">{bg.oklch}</code>
+        </div>
+      </div>
+
+      <p className="text-[11px] leading-relaxed text-muted-foreground">
+        Round-trip <code>parseOklch</code> → <code>oklchToSrgb</code> →{' '}
+        <code>apcaContrast</code> verifies{' '}
+        <span className="font-mono">Lc {verifiedLc.toFixed(1)}</span> — the same pair the contrast
+        gate uses.
+      </p>
+    </div>
   );
 }

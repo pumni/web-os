@@ -76,7 +76,7 @@ export function ShortcutsReference() {
     <Window title="Sky Player — Help & Reference" className="w-full shadow-raised">
       <Tabs defaultValue="picker" className="flex w-full flex-col gap-2">
         {/* Tab List */}
-        <div className="-mx-4 -mt-4 border-b border-border bg-muted/10 p-3">
+        <div className="-mx-4 -mt-4 border-b border-transparent bg-muted/10 p-3">
           <TabsList className="flex h-auto flex-wrap gap-1">
             {tabsItems.map((item) => (
               <TabsTrigger key={item.id} value={item.id}>

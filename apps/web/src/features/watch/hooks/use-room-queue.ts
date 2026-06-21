@@ -1,7 +1,6 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 import { watchKeys } from '../query-keys';
 import {
   addQueueItem,
@@ -11,29 +10,15 @@ import {
   transferHost,
   claimHost,
 } from '../actions';
-import { type QueueItem, QUEUE_ITEM_SELECT } from '../types';
+import type { QueueItem } from '../types';
 import { fractionalPosition } from '../sync-math';
 import { WATCH_ROOM_RECOVERY_REFETCH_MS, WATCH_ROOM_STALE_MS } from './use-room-query';
+import { getQueueClient } from '../client-queries';
 
 export function useQueueQuery(roomId: string, initialData: QueueItem[]) {
   return useQuery({
     queryKey: watchKeys.queue(roomId),
-    queryFn: async () => {
-      const supabase = createSupabaseBrowserClient();
-      // fallow-ignore-next-line code-duplication
-      const { data, error } = await supabase
-        .from('watch_queue_items')
-        .select(QUEUE_ITEM_SELECT)
-        .eq('room_id', roomId)
-        .order('position', { ascending: true })
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        throw error;
-      }
-
-      return (data || []) as QueueItem[];
-    },
+    queryFn: () => getQueueClient(roomId),
     initialData,
     staleTime: WATCH_ROOM_STALE_MS,
     refetchInterval: WATCH_ROOM_RECOVERY_REFETCH_MS,

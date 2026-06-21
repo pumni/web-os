@@ -67,6 +67,9 @@ gate that proves the work (`bun run ai:check`, `bun run typecheck`, `bun run
 test`, or `bun run ai:eval`). Sharp criteria defend against premature completion;
 split a long step sequence only if the criteria stay irreducibly fuzzy.
 
+`bun run ai:check` enforces that the section names how completion is verified
+(a gate command or an explicit checkable criterion).
+
 ## Pruning discipline
 
 - Single source of truth per meaning — no duplication across skill and docs.

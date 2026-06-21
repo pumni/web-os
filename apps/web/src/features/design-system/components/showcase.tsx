@@ -101,10 +101,7 @@ export function DesignSystemShowcase() {
 
         <ControlsSection />
 
-        <SurfacesSection
-          previewContrast={previewContrast}
-          setPreviewContrast={setPreviewContrast}
-        />
+        <SurfacesSection />
 
         <OverlaysSection
           onOpenDialog={() => setDialogOpen(true)}

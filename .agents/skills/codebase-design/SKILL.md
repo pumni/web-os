@@ -50,3 +50,5 @@ with complexity kept local to the implementation.
       boundaries.
 - [ ] The design follows nearby production patterns unless there is a concrete
       reason to change them.
+- [ ] The interface is demonstrated by a test through its public seam (a
+      failing-then-passing test, or a named test seam) — `bun run test`.

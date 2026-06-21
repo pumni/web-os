@@ -137,17 +137,17 @@ describe('DesignSystemShowcase', () => {
   it('toggles APCA contrast preview states', () => {
     renderShowcase();
 
-    const solidToggle = screen.getByRole('button', { name: 'Opaque Solid' });
-    const highToggle = screen.getByRole('button', { name: 'High Contrast' });
+    const solidToggle = screen.getByRole('radio', { name: 'Opaque Solid' });
+    const highToggle = screen.getByRole('radio', { name: 'High Contrast' });
 
-    expect(solidToggle).toHaveAttribute('aria-pressed', 'false');
-    expect(highToggle).toHaveAttribute('aria-pressed', 'false');
+    expect(solidToggle).toHaveAttribute('aria-checked', 'false');
+    expect(highToggle).toHaveAttribute('aria-checked', 'false');
 
     fireEvent.click(solidToggle);
     fireEvent.click(highToggle);
 
-    expect(solidToggle).toHaveAttribute('aria-pressed', 'true');
-    expect(highToggle).toHaveAttribute('aria-pressed', 'true');
+    expect(solidToggle).toHaveAttribute('aria-checked', 'true');
+    expect(highToggle).toHaveAttribute('aria-checked', 'true');
     expect(screen.getByText('Contrast Boosted')).toBeInTheDocument();
   });
 
@@ -174,5 +174,39 @@ describe('DesignSystemShowcase', () => {
 
     expect(screen.getByText('APCA Contrast Verification')).toBeInTheDocument();
     expect(screen.getByText('Pass — Text')).toBeInTheDocument();
+  });
+
+  it('renders the Spinner primitive in the Feedback section', () => {
+    renderShowcase();
+
+    expect(screen.getByText('Loading Spinners')).toBeInTheDocument();
+    // Spinner is decorative (aria-hidden) — assert via its data-slot.
+    expect(screen.getAllByLabelText('Loading data')[0]).toBeInTheDocument();
+  });
+
+  it('renders the Highlight primitive in the Controls section', () => {
+    renderShowcase();
+
+    expect(screen.getByText('Text Highlight')).toBeInTheDocument();
+    expect(screen.getByLabelText('Highlight query')).toHaveValue('set');
+    // Default query 'set' wraps the "Set" inside "Settings" in a <mark>.
+    const marks = document.querySelectorAll('mark');
+    expect(marks.length).toBeGreaterThan(0);
+    expect(Array.from(marks).some((m) => m.textContent === 'Set')).toBe(true);
+  });
+
+  it('renders the SegmentedPicker view modes with friendly labels', () => {
+    renderShowcase();
+
+    // The view-mode picker now exposes human labels, not raw keys.
+    expect(screen.getByRole('radio', { name: 'Grid' })).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+    expect(screen.getByRole('radio', { name: 'List' })).toHaveAttribute(
+      'aria-checked',
+      'false',
+    );
+    expect(screen.getByRole('radio', { name: 'Compact' })).toBeInTheDocument();
   });
 });

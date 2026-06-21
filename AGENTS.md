@@ -57,6 +57,19 @@ UI state only), Zod validators.
 State ownership: server state stays in Server Components or TanStack Query cache;
 never mirror server data into Zustand. See `docs/conventions/data-fetching.md`.
 
+## Working Principles
+
+- **Think first.** State assumptions and tradeoffs before coding; when a
+  request has multiple readings, surface them — do not choose silently.
+- **Simplicity.** Minimum code that solves the stated problem. No speculative
+  abstraction for single-use code. Applies to docs too: do not mint an ADR for
+  a reversible/cosmetic decision (see `docs/adr/README.md`).
+- **Surgical.** Touch only what the task needs; clean up only the mess your
+  change made. Do not refactor unrelated, working code.
+- **Goal-driven verification.** Turn the request into a checkable outcome, then
+  run the *narrowest* gate that proves it (a bug fix starts with a failing test
+  that goes green). See the altitude table in `docs/ai/agent-command-policy.md`.
+
 ## Command Discipline
 
 Host shell varies (Windows PowerShell 5.1 / 7, or Git Bash). Avoid `&&`/`||`
@@ -75,8 +88,6 @@ If a command cannot be run, say why.
 
 ## Read Routing
 
-`docs/ai/index.md` maps every need (conventions, architecture, skills, command
-policy, golden examples) to the one canonical doc that owns it. Read
-`apps/web/AGENTS.md` and the relevant `.claude/rules/*` before writing
-Next.js app code. Do not preload broad docs — pull a row only when the task needs
-it.
+`docs/ai/index.md` is the need → canonical-doc router; pull a row only when the
+task needs it, never preload broad docs. Before writing Next.js app code, read
+`apps/web/AGENTS.md` and the relevant `.claude/rules/*`.

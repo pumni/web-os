@@ -2,6 +2,8 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { tokenCss } from './token-test-utils';
+
 beforeAll(() => {
   // Radix Slider uses ResizeObserver internally.
   global.ResizeObserver = class ResizeObserver {
@@ -140,6 +142,22 @@ describe('Switch', () => {
     expect(el).toHaveAttribute('data-slot', 'switch');
     expect(ref.current).toBe(el);
   });
+
+  it('exposes dedicated visual tokens for track and thumb', () => {
+    // Regression guard: switch must NOT fall back to --input / --background.
+    // Confirms tokens.css owns the 4 role tokens that drive switch visual in
+    // both light and dark — removing them would silently regress affordance.
+    expect(tokenCss).toContain('--switch-track');
+    expect(tokenCss).toContain('--switch-track-checked');
+    expect(tokenCss).toContain('--switch-thumb');
+    expect(tokenCss).toContain('--switch-thumb-checked');
+  });
+
+  it('renders the thumb slot for descendant CSS targeting', () => {
+    render(<Switch data-testid="sw" />);
+    const thumb = screen.getByTestId('sw').querySelector('[data-slot="switch-thumb"]');
+    expect(thumb).not.toBeNull();
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -228,6 +246,73 @@ describe('SegmentedPicker', () => {
     expect(options[0]).toHaveTextContent('comfortable');
     expect(options[1]).toHaveAttribute('aria-checked', 'true');
     expect(options[1]).toHaveTextContent('compact');
+  });
+
+  it('renders custom labels via the labels prop', () => {
+    const optionsList = ['standard', 'reduced'] as const;
+    const labels = { standard: 'Standard', reduced: 'Opaque Solid' } as const;
+    render(
+      <SegmentedPicker
+        aria-label="Transparency"
+        options={optionsList}
+        value="reduced"
+        onChange={() => {}}
+        labels={labels}
+      />,
+    );
+
+    const radios = screen.getAllByRole('radio');
+    expect(radios).toHaveLength(2);
+    // Key 'standard' should display the custom label, not raw key
+    expect(radios[0]).toHaveTextContent('Standard');
+    // Key 'reduced' should display "Opaque Solid"
+    expect(radios[1]).toHaveTextContent('Opaque Solid');
+    // Raw keys must NOT appear in the DOM
+    expect(screen.queryByText('reduced')).toBeNull();
+    expect(screen.queryByText('standard')).toBeNull();
+  });
+
+  it('renders data-slot attributes and sliding indicator', () => {
+    render(
+      <SegmentedPicker
+        aria-label="View"
+        options={['list', 'grid']}
+        value="list"
+        onChange={() => {}}
+      />,
+    );
+
+    const group = screen.getByRole('radiogroup');
+    expect(group).toHaveAttribute('data-slot', 'segmented-picker');
+
+    const radios = screen.getAllByRole('radio');
+    expect(radios[0]).toHaveAttribute('data-slot', 'segmented-picker-item');
+
+    // Sliding indicator is decorative (aria-hidden, not a radio).
+    const indicator = group.querySelector('[data-slot="segmented-picker-indicator"]');
+    expect(indicator).toHaveAttribute('aria-hidden', 'true');
+    // Indicator does not count as a radio element
+    expect(screen.getAllByRole('radio')).toHaveLength(2);
+  });
+
+  it('supports fullWidth and size props', () => {
+    render(
+      <SegmentedPicker
+        aria-label="Size"
+        options={['sm', 'default']}
+        value="sm"
+        onChange={() => {}}
+        labels={{ sm: 'Small', default: 'Default' }}
+        size="sm"
+        fullWidth
+      />,
+    );
+
+    const group = screen.getByRole('radiogroup');
+    expect(group).toHaveClass('grid', 'w-full');
+
+    const radios = screen.getAllByRole('radio');
+    expect(radios[0]).toHaveClass('h-8');
   });
 });
 

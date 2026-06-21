@@ -18,6 +18,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  Highlight,
   Input,
   Label,
   Select,
@@ -28,6 +29,7 @@ import {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
+  SegmentedPicker,
   Separator,
   Slider,
   SubmitButton,
@@ -46,6 +48,9 @@ type DemoFormValues = {
 
 export function ControlsSection() {
   const [sliderValue, setSliderValue] = React.useState([45]);
+  const [pickerSize, setPickerSize] = React.useState('default');
+  const [pickerView, setPickerView] = React.useState('grid');
+  const [highlightQuery, setHighlightQuery] = React.useState('set');
 
   const form = useForm<DemoFormValues>({
     defaultValues: {
@@ -264,11 +269,91 @@ export function ControlsSection() {
           </CardContent>
         </Card>
 
-        {/* Tabs */}
+        {/* Segmented Picker */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Segmented Picker</CardTitle>
+            <CardDescription>
+              Single-select value choice with no panel content. The sliding indicator
+              tracks the active option.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-1.5">
+              <Label>Size variants</Label>
+              <SegmentedPicker
+                aria-label="Picker size"
+                options={['default', 'sm']}
+                value={pickerSize}
+                onChange={setPickerSize}
+                labels={{ default: 'Default', sm: 'Small' }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Full-width (view modes)</Label>
+              <SegmentedPicker
+                aria-label="View mode"
+                options={['list', 'grid', 'compact']}
+                value={pickerView}
+                onChange={setPickerView}
+                labels={{ list: 'List', grid: 'Grid', compact: 'Compact' }}
+                fullWidth
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Custom labels</Label>
+              <SegmentedPicker
+                aria-label="Density"
+                options={['standard', 'reduced']}
+                value="standard"
+                onChange={() => {}}
+                labels={{ standard: 'Normal', reduced: 'Enhanced' }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Text Highlight */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Text Highlight</CardTitle>
+            <CardDescription>
+              Case-insensitive substring emphasis for searchable lists and
+              filtered results.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Input
+              value={highlightQuery}
+              onChange={(e) => setHighlightQuery(e.target.value)}
+              placeholder="Type to match…"
+              aria-label="Highlight query"
+            />
+            <ul className="space-y-1.5 text-sm">
+              {['Account Settings Panel', 'User Profile', 'Set Preferences'].map(
+                (text) => (
+                  <li key={text} className="text-muted-foreground">
+                    <Highlight text={text} query={highlightQuery} />
+                  </li>
+                ),
+              )}
+            </ul>
+            <p className="text-[11px] text-muted-foreground">
+              Matches every whitespace-split token. Empty query renders text
+              untouched.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Tabs — section nav (underline only) */}
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Tab Switching</CardTitle>
-            <CardDescription>Sub-content isolation within settings surfaces.</CardDescription>
+            <CardTitle>Section Tabs</CardTitle>
+            <CardDescription>
+              Panel content switching driven by a sliding underline indicator.
+              Each trigger owns a content panel — use this for sections, not for
+              value-only selection (that is SegmentedPicker above).
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="tab-general">

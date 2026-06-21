@@ -89,6 +89,13 @@ Costs:
 - `check-ai-context.mjs` no longer link-rot-checks `docs/adr/` (treated as
   append-only history, like `docs/plans/`).
 
+## Superseded predecessors (archaeology)
+
+ADRs 0005 (context-layer-2026-overhaul), 0006 (context-efficacy-overhaul), and
+0007 (context-efficiency-2026) — all 2026-06-19 — were squashed into this
+record on 2026-06-22; their meta-process narrative is captured in the Context
+section above. Full text is in git history.
+
 ## Alternatives considered
 
 - **Pure native `.claude/skills/` skills (full Matt-Pocock model, content in

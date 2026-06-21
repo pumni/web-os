@@ -23,8 +23,7 @@
     "docs/ai/index.md",
     "docs/ai/agent-command-policy.md",
     "docs/ai/domain-language.md",
-    "docs/ai/mcp-runtime.md",
-    "docs/ai/mcp-postgres.md",
+    "docs/ai/mcp.md",
     "docs/ai/MEMORY.md",
     "docs/ai/golden-examples.md",
     "docs/ai/common-mistakes.md",
@@ -77,8 +76,7 @@
   "frontmatterRequired": [
     "docs/ai/agent-command-policy.md",
     "docs/ai/domain-language.md",
-    "docs/ai/mcp-runtime.md",
-    "docs/ai/mcp-postgres.md",
+    "docs/ai/mcp.md",
     "docs/ai/golden-examples.md",
     "docs/ai/common-mistakes.md",
     "docs/architecture/overview.md",
@@ -105,8 +103,7 @@
     "docs/quality-gates.md",
     "docs/ai/agent-command-policy.md",
     "docs/ai/domain-language.md",
-    "docs/ai/mcp-runtime.md",
-    "docs/ai/mcp-postgres.md",
+    "docs/ai/mcp.md",
     "docs/ai/golden-examples.md",
     "docs/ai/common-mistakes.md",
     ".claude/rules/nextjs-async-apis.md",
@@ -119,8 +116,12 @@
     "markdownRequiredSections": ["Rules", "Checklist"]
   },
   "sizeBudgets": [
-    { "path": "AGENTS.md", "maxBytes": 6000 },
-    { "path": "docs/ai/index.md", "maxBytes": 5000 },
-    { "path": "docs/ai/MEMORY.md", "maxBytes": 5000 }
+    { "path": "AGENTS.md", "maxBytes": 5500 },
+    { "path": "docs/ai/index.md", "maxBytes": 4400 },
+    { "path": "docs/ai/MEMORY.md", "maxBytes": 2200 },
+    { "path": "docs/ai/common-mistakes.md", "maxBytes": 4000 },
+    { "path": ".agents/workflows/review-gate.md", "maxBytes": 2600 },
+    { "path": "docs/ai/agent-command-policy.md", "maxBytes": 5400 },
+    { "path": "docs/ai/mcp.md", "maxBytes": 5000 }
   ]
 }

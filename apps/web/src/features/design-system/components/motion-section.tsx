@@ -11,8 +11,14 @@ import {
   CardWell,
   Window,
   Skeleton,
+  duration,
+  easing,
   motion,
+  motionTokens,
+  pressScale,
   recipes,
+  staggerBase,
+  transition,
   useReducedMotion,
   withViewTransition,
 } from '@pumni/ui';
@@ -217,6 +223,65 @@ export function MotionSection() {
               <code>withViewTransition</code> wraps callbacks in{' '}
               <code>document.startViewTransition()</code>. Falls back to immediate execution
               when unsupported or reduced-motion is preferred.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Motion Tokens — the CSS-mirror exports (duration/easing/transition/
+            pressScale/staggerBase) that underpin every recipe above. Sourced
+            directly from the exports so the table can't drift from the package. */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Motion Tokens</CardTitle>
+            <CardDescription>
+              CSS-bridge exports mirroring <code>--duration-*</code> /{' '}
+              <code>--ease-*</code> — the sanctioned replacements for{' '}
+              <code>ease-out</code> / <code>duration-300</code>.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-1.5">
+              <span className="text-xs font-semibold text-muted-foreground">duration (s)</span>
+              {Object.entries(duration).map(([key, value]) => (
+                <div key={key} className="flex justify-between text-xs">
+                  <code className="font-mono text-foreground">{key}</code>
+                  <span className="font-mono text-muted-foreground">{value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="space-y-1.5">
+              <span className="text-xs font-semibold text-muted-foreground">easing</span>
+              {Object.entries(easing).map(([key, points]) => (
+                <div key={key} className="flex items-center justify-between gap-2 text-xs">
+                  <code className="font-mono text-foreground">{key}</code>
+                  <span className="truncate font-mono text-muted-foreground">
+                    [{(points as number[]).join(', ')}]
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between text-xs">
+              <code className="font-mono text-foreground">pressScale</code>
+              <span className="font-mono text-muted-foreground">{pressScale}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <code className="font-mono text-foreground">staggerBase</code>
+              <span className="font-mono text-muted-foreground">{staggerBase}</span>
+            </div>
+            <div className="space-y-1.5 border-t pt-3">
+              <span className="text-xs font-semibold text-muted-foreground">transition presets</span>
+              {Object.entries(transition).map(([key, value]) => (
+                <div key={key} className="flex justify-between text-xs">
+                  <code className="font-mono text-foreground">{key}</code>
+                  <span className="font-mono text-muted-foreground">
+                    {value.duration}s · ease.{value.ease}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              All exports also bundle under <code>motionTokens</code> ({Object.keys(motionTokens).length}{' '}
+              keys) for one-shot import.
             </p>
           </CardContent>
         </Card>

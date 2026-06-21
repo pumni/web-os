@@ -221,4 +221,36 @@ export const pumniFeatureBoundary = [
   })),
 ];
 
+/**
+ * Feature presentation boundary guard. Enforces that UI components (.tsx)
+ * within feature modules do not import Supabase clients or auth helpers directly,
+ * ensuring they remain pure presentation layers.
+ */
+export const pumniFeaturePresentationBoundary = [
+  {
+    name: 'pumni/feature-presentation-boundary',
+    files: ['src/features/**/*.tsx'],
+    ignores: ['src/test/**', '**/*.test.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '@pumni/supabase',
+                '@pumni/supabase/*',
+                '@pumni/auth',
+                '@pumni/auth/*',
+              ],
+              message:
+                'Presentation boundary violation: UI components (.tsx) must not import Supabase clients or auth helpers directly. Delegate data operations to custom hooks, queries, or Server Actions. See docs/conventions/feature-module.md.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+];
+
 

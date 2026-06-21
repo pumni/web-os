@@ -10,6 +10,7 @@ import {
   CardContent,
   Skeleton,
   Separator,
+  Spinner,
 } from '@pumni/ui';
 import { ShowcaseSection } from './showcase-section';
 
@@ -110,6 +111,44 @@ export function FeedbackSection() {
               <Separator orientation="vertical" />
               <span>Right Element</span>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Spinners */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Loading Spinners</CardTitle>
+            <CardDescription>
+              Owned loading indicator replacing hand-rolled spin rings.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-5">
+              <div className="flex flex-col items-center gap-1.5">
+                <Spinner size="sm" />
+                <span className="font-mono text-[10px] text-muted-foreground">sm</span>
+              </div>
+              <div className="flex flex-col items-center gap-1.5">
+                <Spinner size="md" />
+                <span className="font-mono text-[10px] text-muted-foreground">md</span>
+              </div>
+              <div className="flex flex-col items-center gap-1.5">
+                <Spinner size="lg" />
+                <span className="font-mono text-[10px] text-muted-foreground">lg</span>
+              </div>
+            </div>
+            <Separator />
+            <div className="flex items-center gap-3">
+              <Spinner aria-label="Loading data" />
+              <span className="text-sm text-muted-foreground">
+                Standalone — pass <code>aria-label</code> so the status role
+                announces itself.
+              </span>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Decorative by default (<code>aria-hidden</code>) when paired with a
+              visible label. Reduced-motion shows a static icon.
+            </p>
           </CardContent>
         </Card>
       </div>

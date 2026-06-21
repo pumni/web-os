@@ -84,7 +84,7 @@ export function InstallTabs() {
   return (
     <Window title="Sky Player — Installation" className="w-full shadow-raised">
       <Tabs defaultValue="release" className="flex w-full flex-col gap-2">
-        <div className="-mx-4 -mt-4 border-b border-border bg-muted/10 p-3">
+        <div className="-mx-4 -mt-4 border-b border-transparent bg-muted/10 p-3">
           <TabsList>
             <TabsTrigger value="release">Standalone release</TabsTrigger>
             <TabsTrigger value="source">From source</TabsTrigger>

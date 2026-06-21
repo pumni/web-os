@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
+import { updateHostHeartbeatClient } from '../client-queries';
 
 // Host-only liveness heartbeat. Lets `claim_room_host` detect a dropped host.
 // Writes to the dedicated `watch_room_heartbeats` table (which is NOT realtime-published)
@@ -9,14 +9,10 @@ import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 export function useHostHeartbeat(roomId: string, userId: string, isHost: boolean) {
   useEffect(() => {
     if (!isHost) return;
-    const supabase = createSupabaseBrowserClient();
     const beat = () => {
-      void supabase
-        .from('watch_room_heartbeats')
-        .upsert(
-          { room_id: roomId, host_id: userId, heartbeat_at: new Date().toISOString() },
-          { onConflict: 'room_id' },
-        );
+      updateHostHeartbeatClient(roomId, userId).catch((err) => {
+        console.error('Failed to update host heartbeat:', err.message || err, err.details || '', err.hint || '', err.code || '');
+      });
     };
     beat();
     const interval = setInterval(beat, 20_000);

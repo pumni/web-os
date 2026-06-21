@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, type MutableRefObject, type RefObject } from 'react';
 import type { MediaPlayerInstance } from '@vidstack/react';
-import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 import { useTelemetryRef } from '@/shared/lib/observability';
+import { persistHostAnchorClient } from '../client-queries';
 
 import type { PlaybackAnchor } from '../types';
 
@@ -47,22 +47,9 @@ export function useHostAnchorEmitter({
 
   const persistAnchor = (anchor: PlaybackAnchor, force = false) => {
     if (!isHost && !force) return;
-    const supabase = createSupabaseBrowserClient();
-    supabase
-      .from('watch_rooms')
-      .update({
-        is_playing: anchor.isPlaying,
-        anchor_position: anchor.anchorPosition,
-        anchor_server_ts: new Date(anchor.anchorServerTs).toISOString(),
-        playback_rate: anchor.playbackRate,
-        last_active_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', roomId)
-      .then(({ error }) => {
-        if (error) {
-          telemetryRef.current.error(error, { scope: 'host-anchor-persist', roomId });
-        }
+    persistHostAnchorClient(roomId, anchor)
+      .catch((error) => {
+        telemetryRef.current.error(error, { scope: 'host-anchor-persist', roomId });
       });
   };
 
