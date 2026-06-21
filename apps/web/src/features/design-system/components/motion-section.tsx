@@ -15,8 +15,10 @@ import {
   easing,
   motion,
   motionTokens,
+  parallaxRate,
   pressScale,
   recipes,
+  springs,
   staggerBase,
   transition,
   useReducedMotion,
@@ -29,6 +31,37 @@ export function MotionSection() {
   const [staggerKey, setStaggerKey] = React.useState(0);
   const [fadeRiseVisible, setFadeRiseVisible] = React.useState(true);
   const shouldReduceMotion = useReducedMotion();
+
+  // Parallax demo — scroll-linked transform on a layered card. `useScroll`
+  // returns a MotionValue that tracks the container's scroll progress; we map
+  // it to a Y translate so the back layer drifts against the front. Reduced
+  // motion skips the transform (the section still renders statically).
+  const parallaxRef = React.useRef<HTMLDivElement>(null);
+  const parallaxScrollY = React.useMemo(() => ({ current: 0 }), []);
+  React.useEffect(() => {
+    if (shouldReduceMotion) return;
+    const el = parallaxRef.current;
+    if (!el) return;
+    let frame = 0;
+    function onScroll() {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const node = parallaxRef.current;
+        if (!node) return;
+        const rect = node.getBoundingClientRect();
+        const progress = Math.max(0, Math.min(1, 1 - rect.top / window.innerHeight));
+        parallaxScrollY.current = progress * 40 * parallaxRate;
+        node.style.setProperty('--parallax-y', `${parallaxScrollY.current}px`);
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [shouldReduceMotion, parallaxScrollY]);
 
   return (
     <ShowcaseSection
@@ -201,6 +234,62 @@ export function MotionSection() {
           </CardContent>
         </Card>
 
+        {/* Springs — physics-based motion presets (CSS easing cannot express inertia). */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Spring Presets</CardTitle>
+            <CardDescription>
+              Physics-based motion for tactile settle and playful overshoot.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {(['fluid', 'snappy', 'bouncy'] as const).map((name) => (
+              <motion.button
+                key={name}
+                type="button"
+                onClick={() => toast.info(`spring.${name} released.`)}
+                {...(shouldReduceMotion ? {} : { whileTap: { scale: 0.95 }, transition: springs[name] })}
+                className="w-full rounded-xl bg-card p-3 text-left text-xs border border-border transition-colors hover:border-primary/30"
+              >
+                <p className="font-semibold text-foreground font-mono">springs.{name}</p>
+                <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+                  stiffness {springs[name].stiffness} · damping {springs[name].damping}
+                </p>
+              </motion.button>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Parallax depth — scroll-linked transform (the JS analogue of CSS scroll-parallax). */}
+        <Card ref={parallaxRef as React.RefObject<HTMLDivElement> as never}>
+          <CardHeader>
+            <CardTitle>Parallax Depth</CardTitle>
+            <CardDescription>
+              Scroll-linked layer drift via <code>parallaxRate</code> ({parallaxRate}).
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="relative h-28 overflow-hidden rounded-xl border border-border bg-muted">
+              <div
+                className="absolute inset-0 grid place-items-center text-xs text-muted-foreground"
+                style={{ transform: 'translateY(var(--parallax-y, 0px))' }}
+              >
+                <span className="rounded-md bg-background/60 px-2 py-1 backdrop-blur-sm">
+                  back layer (drifts)
+                </span>
+              </div>
+              <div className="absolute inset-0 grid place-items-center">
+                <span className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground">
+                  front layer (fixed)
+                </span>
+              </div>
+            </div>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Scroll the page to see the back layer drift against the front.
+            </p>
+          </CardContent>
+        </Card>
+
         {/* View Transitions */}
         <Card>
           <CardHeader>
@@ -265,8 +354,30 @@ export function MotionSection() {
               <span className="font-mono text-muted-foreground">{pressScale}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <code className="font-mono text-foreground">staggerBase</code>
-              <span className="font-mono text-muted-foreground">{staggerBase}</span>
+              <code className="font-mono text-foreground">parallaxRate</code>
+              <span className="font-mono text-muted-foreground">{parallaxRate}</span>
+            </div>
+            <div className="space-y-1.5">
+              <span className="text-xs font-semibold text-muted-foreground">stagger cadences</span>
+              <div className="flex justify-between text-xs">
+                <code className="font-mono text-foreground">staggerFast</code>
+                <span className="font-mono text-muted-foreground">{staggerBase}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <code className="font-mono text-foreground">staggerBase</code>
+                <span className="font-mono text-muted-foreground">{staggerBase}</span>
+              </div>
+            </div>
+            <div className="space-y-1.5 border-t pt-3">
+              <span className="text-xs font-semibold text-muted-foreground">spring presets</span>
+              {Object.entries(springs).map(([key, value]) => (
+                <div key={key} className="flex items-center justify-between gap-2 text-xs">
+                  <code className="font-mono text-foreground">springs.{key}</code>
+                  <span className="truncate font-mono text-muted-foreground">
+                    {value.stiffness}/{value.damping}
+                  </span>
+                </div>
+              ))}
             </div>
             <div className="space-y-1.5 border-t pt-3">
               <span className="text-xs font-semibold text-muted-foreground">transition presets</span>

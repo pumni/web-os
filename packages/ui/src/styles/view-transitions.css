@@ -38,32 +38,34 @@
     }
     @keyframes vt-slide-to-left {
       to {
-        transform: translateX(-30px);
+        transform: translateX(calc(var(--vt-slide-distance) * -1));
       }
     }
     @keyframes vt-slide-from-right {
       from {
-        transform: translateX(30px);
+        transform: translateX(var(--vt-slide-distance));
       }
     }
     @keyframes vt-slide-to-right {
       to {
-        transform: translateX(30px);
+        transform: translateX(var(--vt-slide-distance));
       }
     }
     @keyframes vt-slide-from-left {
       from {
-        transform: translateX(-30px);
+        transform: translateX(calc(var(--vt-slide-distance) * -1));
       }
     }
     @keyframes vt-zoom-out {
       to {
-        transform: scale(0.95);
+        transform: scale(var(--vt-zoom-scale));
       }
     }
     @keyframes vt-zoom-in {
       from {
-        transform: scale(1.05);
+        /* zoom-in factor is the reciprocal of --vt-zoom-scale so the morph
+           reads as a symmetric scale across the crossfade. */
+        transform: scale(calc(1 / var(--vt-zoom-scale)));
       }
     }
 
@@ -130,6 +132,109 @@
 
     ::view-transition-new(watch-lobby-card) {
       animation: var(--duration-base) var(--ease-fluid) both vt-fade-in;
+    }
+
+    /* ---- Type-tagged root transitions -----------------------------------
+       `withViewTransition(cb, { type })` tags the transition. Engines with
+       `ViewTransition.types` (Chrome 125+) match `:active-view-transition-type`;
+       older engines fall back to the `data-vt-type` attribute on <html>. Each
+       type remaps the ROOT crossfade (the default UA snapshot) to one of the
+       named keyframe groups above, so a single callback can opt into a
+       directional slide without a per-element `view-transition-name`. */
+    html[data-vt-type='slide-forward'] {
+      &::view-transition-old(root) {
+        animation:
+          var(--duration-slow) var(--ease-fluid) both vt-slide-to-left,
+          var(--duration-base) var(--ease-out) both vt-fade-out-light;
+      }
+      &::view-transition-new(root) {
+        animation:
+          var(--duration-slow) var(--ease-fluid) both vt-slide-from-right,
+          var(--duration-base) var(--ease-out) both vt-fade-in-light;
+      }
+    }
+
+    html[data-vt-type='slide-back'] {
+      &::view-transition-old(root) {
+        animation:
+          var(--duration-slow) var(--ease-fluid) both vt-slide-to-right,
+          var(--duration-base) var(--ease-out) both vt-fade-out-light;
+      }
+      &::view-transition-new(root) {
+        animation:
+          var(--duration-slow) var(--ease-fluid) both vt-slide-from-left,
+          var(--duration-base) var(--ease-out) both vt-fade-in-light;
+      }
+    }
+
+    html[data-vt-type='morph-zoom'] {
+      &::view-transition-old(root) {
+        animation: var(--duration-base) var(--ease-out) both vt-fade-out;
+      }
+      &::view-transition-new(root) {
+        animation:
+          var(--duration-slow) var(--ease-spring) both vt-zoom-in,
+          var(--duration-base) var(--ease-out) both vt-fade-in;
+      }
+    }
+
+    html[data-vt-type='card-crossfade'] {
+      &::view-transition-old(root) {
+        animation: var(--duration-base) var(--ease-out) both vt-fade-out;
+      }
+      &::view-transition-new(root) {
+        animation: var(--duration-base) var(--ease-fluid) both vt-fade-in;
+      }
+    }
+
+    /* Modern engines: `:active-view-transition-type` (no DOM attribute). Mirrors
+       the attribute rules above for engines that support native typing. */
+    @supports selector(::view-transition-group(root)) {
+      :active-view-transition-type(slide-forward) {
+        &::view-transition-old(root) {
+          animation:
+            var(--duration-slow) var(--ease-fluid) both vt-slide-to-left,
+            var(--duration-base) var(--ease-out) both vt-fade-out-light;
+        }
+        &::view-transition-new(root) {
+          animation:
+            var(--duration-slow) var(--ease-fluid) both vt-slide-from-right,
+            var(--duration-base) var(--ease-out) both vt-fade-in-light;
+        }
+      }
+
+      :active-view-transition-type(slide-back) {
+        &::view-transition-old(root) {
+          animation:
+            var(--duration-slow) var(--ease-fluid) both vt-slide-to-right,
+            var(--duration-base) var(--ease-out) both vt-fade-out-light;
+        }
+        &::view-transition-new(root) {
+          animation:
+            var(--duration-slow) var(--ease-fluid) both vt-slide-from-left,
+            var(--duration-base) var(--ease-out) both vt-fade-in-light;
+        }
+      }
+
+      :active-view-transition-type(morph-zoom) {
+        &::view-transition-old(root) {
+          animation: var(--duration-base) var(--ease-out) both vt-fade-out;
+        }
+        &::view-transition-new(root) {
+          animation:
+            var(--duration-slow) var(--ease-spring) both vt-zoom-in,
+            var(--duration-base) var(--ease-out) both vt-fade-in;
+        }
+      }
+
+      :active-view-transition-type(card-crossfade) {
+        &::view-transition-old(root) {
+          animation: var(--duration-base) var(--ease-out) both vt-fade-out;
+        }
+        &::view-transition-new(root) {
+          animation: var(--duration-base) var(--ease-fluid) both vt-fade-in;
+        }
+      }
     }
   }
 }

@@ -162,6 +162,59 @@ export const pumniNoAdHocSurface = [
   },
 ];
 
+/*
+ * Timing-first guard. The design system owns its easing and duration vocabulary
+ * (docs/conventions/design-system.md): components use `ease-fluid` / `ease-snappy`
+ * and `duration-(--duration-base)` instead of raw Tailwind `duration-200` /
+ * `duration-300` / `ease-out` / `ease-in-out`. Until now this lived only in prose.
+ *
+ * Uses esquery regex attribute matchers on string Literals and TemplateElements
+ * (where className strings live). Patterns are intentionally narrow to avoid false
+ * positives on legitimate tw-animate-css utilities (fade-in, zoom-in, etc.) and
+ * non-duration values.
+ */
+const RAW_TIMING_PATTERNS = [
+  // Tailwind duration utilities (numeric milliseconds) — the owned form is
+  // `duration-(--duration-base)` etc. Allow tw-animate-css `animation-duration-*`
+  // and `delay-*` (those are stagger, not transition timing).
+  '\\bduration-(?:100|150|200|300|500|700|1000)\\b',
+  // Tailwind easing utilities — the owned form is `ease-fluid` / `ease-snappy`.
+  // The negative lookbehind `(?<![-(])` excludes token references like
+  // `var(--ease-in-out)` or `ease-(--ease-in-out)` (the owned Tailwind v4 form
+  // that bridges to a CSS var). NOTE: `ease-linear` is intentionally allowed —
+  // it has no design-system token equivalent yet.
+  '(?<![-(])\\bease-(?:out|in-out|in)\\b',
+];
+
+const RAW_TIMING_MESSAGE =
+  'Timing is token-first: use a design-system easing (ease-fluid, ease-snappy) and duration (duration-(--duration-base), duration-(--duration-slow), duration-(--duration-fast)) instead of raw Tailwind duration-{N} or ease-{curve}. See docs/conventions/design-system.md §Motion.';
+
+export const restrictedRawTiming = [
+  'error',
+  ...RAW_TIMING_PATTERNS.flatMap((pattern) => [
+    { selector: `Literal[value=/${pattern}/]`, message: RAW_TIMING_MESSAGE },
+    { selector: `TemplateElement[value.raw=/${pattern}/]`, message: RAW_TIMING_MESSAGE },
+  ]),
+];
+
+export const pumniNoRawTiming = [
+  {
+    name: 'pumni/no-raw-timing',
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      'src/test/**',
+      '**/*.test.{ts,tsx}',
+      // CSS files are excluded from this rule (timing tokens live in CSS).
+      '**/*.css',
+      // Motion-section showcases the old tokens as documentation — safe.
+      '**/motion-section.tsx',
+    ],
+    rules: {
+      'no-restricted-syntax': restrictedRawTiming,
+    },
+  },
+];
+
 const FEATURES = ['design-system', 'design-trends', 'profile', 'sky-player', 'watch'];
 
 /**

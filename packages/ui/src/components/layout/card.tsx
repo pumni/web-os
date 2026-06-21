@@ -55,7 +55,7 @@ const cardVariants = cva('flex flex-col gap-6 py-6 text-card-foreground', {
       spotlight: 'border bg-card surface-raised card-spotlight group',
     },
     interactive: {
-      true: 'cursor-pointer transition-[transform,box-shadow,border-color] duration-(--duration-base) ease-snappy hover:shadow-interactive-hover hover:border-primary/30 motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-(--press-scale)',
+      true: 'cursor-pointer transition-[transform,box-shadow,border-color] duration-(--duration-base) ease-snappy hover:shadow-interactive-hover hover:border-primary/30 motion-safe:hover:-translate-y-(--hover-lift-y) motion-safe:hover:scale-(--hover-lift-scale) motion-safe:active:scale-(--press-scale)',
       false: '',
     },
     radius: {

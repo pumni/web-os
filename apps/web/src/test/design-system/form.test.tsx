@@ -314,6 +314,30 @@ describe('SegmentedPicker', () => {
     const radios = screen.getAllByRole('radio');
     expect(radios[0]).toHaveClass('h-8');
   });
+
+  it('exposes dedicated visual tokens for the track well and active pill', () => {
+    // Regression guard: the picker must NOT fall back to --muted (which
+    // collapsed against --background in light and inverted the well in dark).
+    // Confirms tokens.css owns the track/active pair that drives the "selected
+    // value rises out of the well" affordance in both themes.
+    expect(tokenCss).toContain('--segmented-track');
+    expect(tokenCss).toContain('--segmented-active');
+  });
+
+  it('renders the active pill on the checked option using the active token', () => {
+    render(
+      <SegmentedPicker
+        aria-label="View"
+        options={['list', 'grid']}
+        value="grid"
+        onChange={() => {}}
+      />,
+    );
+    const indicator = screen
+      .getByRole('radiogroup')
+      .querySelector('[data-slot="segmented-picker-indicator"]');
+    expect(indicator?.className).toContain('bg-(--segmented-active)');
+  });
 });
 
 // ---------------------------------------------------------------------------

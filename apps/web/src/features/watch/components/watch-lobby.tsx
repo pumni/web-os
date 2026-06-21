@@ -13,9 +13,6 @@ import {
   Input,
   Label,
   Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
   motion,
   useReducedMotion,
   recipes,
@@ -118,18 +115,18 @@ export function WatchLobby() {
         disableTransition={false}
         className="w-full"
       >
-        <TabsList className="mb-4 grid h-9 w-full grid-cols-2">
-          <TabsTrigger value="create" className="h-full text-xs">
+        <Tabs.List className="mb-4 grid h-9 w-full grid-cols-2">
+          <Tabs.Trigger value="create" className="h-full text-xs">
             Tạo Phòng Mới
-          </TabsTrigger>
-          <TabsTrigger value="join" className="h-full text-xs">
+          </Tabs.Trigger>
+          <Tabs.Trigger value="join" className="h-full text-xs">
             Tham Gia Phòng
-          </TabsTrigger>
-        </TabsList>
+          </Tabs.Trigger>
+        </Tabs.List>
 
         <div style={{ viewTransitionName: 'watch-lobby-card' }}>
           {/* Create Room Tab */}
-          <TabsContent value="create">
+          <Tabs.Content value="create">
             <Card variant="solid">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -182,10 +179,10 @@ export function WatchLobby() {
                 </form>
               </CardContent>
             </Card>
-          </TabsContent>
+          </Tabs.Content>
 
           {/* Join Room Tab */}
-          <TabsContent value="join">
+          <Tabs.Content value="join">
             <Card variant="solid">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
@@ -225,7 +222,7 @@ export function WatchLobby() {
                 </form>
               </CardContent>
             </Card>
-          </TabsContent>
+          </Tabs.Content>
         </div>
       </Tabs>
     </motion.div>

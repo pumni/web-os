@@ -25,7 +25,11 @@ function Slider({
       </SliderPrimitive.Track>
       <SliderPrimitive.Thumb
         data-slot="slider-thumb"
-        className="block size-4 rounded-full border border-primary bg-background shadow-control transition-transform outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 motion-safe:hover:scale-110 motion-safe:active:scale-(--press-scale) cursor-pointer"
+        className={cn(
+          'block size-4 rounded-full border border-primary bg-slider-thumb shadow-slider-thumb outline-none focus-ring',
+          'disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
+          'transition-[color,background-color] duration-(--duration-base) ease-(--ease-snappy)',
+        )}
       />
     </SliderPrimitive.Root>
   );

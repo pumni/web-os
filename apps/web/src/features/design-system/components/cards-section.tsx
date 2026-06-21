@@ -1,12 +1,11 @@
-import * as React from 'react';
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardSpotlight,
   Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardSpotlight,
+  CardTitle,
   Skeleton,
 } from '@pumni/ui';
 import { ShowcaseSection } from './showcase-section';
@@ -70,13 +69,11 @@ export function CardsSection() {
         <CardSpotlight interactive className="p-6">
           <CardHeader className="px-0 pt-0">
             <CardTitle>Spotlight Variant</CardTitle>
-            <CardDescription>
-              Hover to see the pointer-tracked radial highlight.
-            </CardDescription>
+            <CardDescription>Hover to see the pointer-tracked radial highlight.</CardDescription>
           </CardHeader>
           <CardContent className="px-0 text-sm text-muted-foreground">
-            The highlight uses <code>color-mix(oklch, --primary 12%)</code> — a semantic token
-            expression, not a raw color. Reduced-motion hides it entirely.
+            The highlight uses a semantic token expression, not a raw color. Reduced-motion hides it
+            entirely.
           </CardContent>
         </CardSpotlight>
 

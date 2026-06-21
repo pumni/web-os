@@ -142,6 +142,25 @@
   --switch-thumb: var(--neutral-0);
   --switch-thumb-checked: var(--primary-foreground);
 
+  /* SegmentedPicker visual-role tokens. The well/track must read as a RECESSED
+     surface (darker than its surroundings) and the active pill must LIFT out of
+     it (lighter than the track) — so the affordance "selected value rises out
+     of the well" holds in BOTH themes. --muted alone cannot do this: in light,
+     muted (neutral-100) sits too close to --background (neutral-50), so the
+     pill vanishes; in dark, muted (neutral-800) is LIGHTER than the card it
+     sits on, inverting the well. Dedicated stops give a guaranteed delta: the
+     track drops one neutral stop below the host surface, the pill rises one
+     above the track. See segmented-picker.tsx + form.test.tsx. */
+  --segmented-track: color-mix(in oklch, var(--neutral-950) 6%, transparent);
+  --segmented-active: var(--card);
+  --segmented-active-border: color-mix(in oklch, var(--neutral-950) 4%, transparent);
+  --shadow-segmented-active: 0 1px 2px 0 oklch(0 0 0 / 0.05), 0 1px 1px 0 oklch(0 0 0 / 0.03);
+
+  --slider-thumb: var(--neutral-0);
+  --shadow-slider-thumb: 0 2px 4px 0 oklch(0 0 0 / 0.08), 0 0 1px 0 oklch(0 0 0 / 0.15);
+
+  --window-control-icon: oklch(0 0 0 / 0.65);
+
   /* --- Typography: raw size + paired line-height scale ---
      Distinct names from the Tailwind `--text-*` namespace they bridge into
      (see theme.css) to avoid self-referential `var()` cycles. */
@@ -271,8 +290,29 @@
   /* Tactile press depress for interactive surfaces (CSS micro-feedback, gated
      behind `motion-safe`). Unitless = uniform scale. */
   --press-scale: 0.97;
+  --stagger-fast: 30ms;
+  /* quick cascade — dropdown menus, command palette rows            */
   --stagger-base: 50ms;
-  /* token hoá cadence stagger (report: 50ms) */
+  /* token hoá cadence stagger (report: 50ms) — default              */
+  --stagger-slow: 80ms;
+  /* languid cascade — hero sections, onboarding sequences           */
+  /* Hover lift geometry for interactive surfaces (CSS micro-feedback
+     + the JS hoverLift recipe read the same knobs so a card rises to
+     the same depth whether it is animated by CSS or motion). The `y`
+     is a Tailwind translate unit (-0.5 = -2px at the 4px scale); the
+     scale is unitless. */
+  --hover-lift-y: -0.5;
+  --hover-lift-scale: 1.01;
+  /* View Transition geometry — distance + zoom factor for the named
+     vt-* keyframe groups in view-transitions.css. Tokenised so the
+     slide/zoom reads from one vocabulary instead of magic px/% runs. */
+  --vt-slide-distance: 30px;
+  --vt-zoom-scale: 0.95;
+  /* Overlay entry/exit geometry for @starting-style transitions
+     (starting-style.css). The shared scale + opacity pair read by the
+     `[data-state]` transition rules on every portaled layer. */
+  --overlay-enter-scale: 0.95;
+  --overlay-enter-opacity: 0;
 
   /* ---- Focus ring metric tokens ----------------------------- */
   /* Single knob for all interactive control focus indicators.   */
@@ -333,4 +373,18 @@
   --switch-track-checked: var(--primary);
   --switch-thumb: var(--neutral-50);
   --switch-thumb-checked: var(--primary-foreground);
+
+  /* Dark SegmentedPicker: the well sits one stop DARKER than --card (neutral-880
+     → neutral-900) so it still reads recessed against the card, and the active
+     pill lifts to --muted (neutral-800, lighter than the track) so the selected
+     value rises out of the well — never inverts. */
+  --segmented-track: color-mix(in oklch, var(--neutral-1000) 40%, transparent);
+  --segmented-active: var(--card);
+  --segmented-active-border: color-mix(in oklch, var(--neutral-50) 8%, transparent);
+  --shadow-segmented-active: 0 4px 8px 0 oklch(0 0 0 / 0.25), 0 1px 2px 0 oklch(0 0 0 / 0.15);
+
+  --slider-thumb: var(--neutral-50);
+  --shadow-slider-thumb: 0 2px 4px 0 oklch(0 0 0 / 0.25), 0 0 1px 0 oklch(0 0 0 / 0.4);
+
+  --window-control-icon: oklch(0 0 0 / 0.65);
 }

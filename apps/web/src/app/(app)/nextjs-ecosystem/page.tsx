@@ -149,7 +149,7 @@ function LTSTimeline() {
         <div key={m.version} className="relative z-10 flex flex-col items-center gap-2 text-center">
           <div
             className={cn(
-              'flex size-10 items-center justify-center rounded-full border-2 text-sm font-bold transition-all duration-200',
+              'flex size-10 items-center justify-center rounded-full border-2 text-sm font-bold transition-all duration-(--duration-base)',
               m.status === 'active'
                 ? 'border-primary bg-primary text-primary-foreground shadow-md'
                 : 'border-muted-foreground/30 bg-muted text-muted-foreground',

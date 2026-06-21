@@ -6,9 +6,6 @@ import {
   Window,
   CardWell,
   Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
   motion,
   recipes,
   useReducedMotion,
@@ -77,29 +74,29 @@ export function ShortcutsReference() {
       <Tabs defaultValue="picker" className="flex w-full flex-col gap-2">
         {/* Tab List */}
         <div className="-mx-4 -mt-4 border-b border-transparent bg-muted/10 p-3">
-          <TabsList className="flex h-auto flex-wrap gap-1">
+          <Tabs.List className="flex h-auto flex-wrap gap-1">
             {tabsItems.map((item) => (
-              <TabsTrigger key={item.id} value={item.id}>
+              <Tabs.Trigger key={item.id} value={item.id}>
                 {item.label}
-              </TabsTrigger>
+              </Tabs.Trigger>
             ))}
-          </TabsList>
+          </Tabs.List>
         </div>
 
         {/* Tab Contents */}
         <div className="min-h-70 p-5 pt-4">
           {SHORTCUT_GROUPS.map((group) => (
-            <TabsContent
+            <Tabs.Content
               key={group.id}
               value={group.id}
               className="mt-0 focus-visible:outline-none"
             >
               <ShortcutList groupId={group.id} />
-            </TabsContent>
+            </Tabs.Content>
           ))}
-          <TabsContent value="add_songs" className="mt-0 focus-visible:outline-none">
+          <Tabs.Content value="add_songs" className="mt-0 focus-visible:outline-none">
             <AddSongsCallout />
-          </TabsContent>
+          </Tabs.Content>
         </div>
       </Tabs>
     </Window>

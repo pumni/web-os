@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card } from '@pumni/ui';
+import { Tabs, Card } from '@pumni/ui';
 import { Users, ListVideo, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { ParticipantRail } from './participant-rail';
@@ -69,24 +69,24 @@ export function SideDock({
     <Card variant="solid" className="flex h-full flex-col overflow-hidden p-0 select-none">
       <div className="flex h-full min-h-0 flex-1 flex-col p-4">
         <Tabs defaultValue="playlist" className="flex h-full min-h-0 w-full flex-1 flex-col">
-          <TabsList className="grid h-9 shrink-0 grid-cols-3">
-            <TabsTrigger value="playlist" className="text-xs">
+          <Tabs.List className="grid h-9 shrink-0 grid-cols-3">
+            <Tabs.Trigger value="playlist" className="text-xs">
               <ListVideo className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Danh sách</span>
-            </TabsTrigger>
-            <TabsTrigger value="chat" className="text-xs">
+            </Tabs.Trigger>
+            <Tabs.Trigger value="chat" className="text-xs">
               <MessageSquare className="size-3.5 shrink-0" />
               Chat
-            </TabsTrigger>
-            <TabsTrigger value="participants" className="text-xs">
+            </Tabs.Trigger>
+            <Tabs.Trigger value="participants" className="text-xs">
               <Users className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Người</span>
               <span className="text-[11px] font-semibold tabular-nums">{participants.length}</span>
-            </TabsTrigger>
-          </TabsList>
+            </Tabs.Trigger>
+          </Tabs.List>
 
           {/* Playlist Tab */}
-          <TabsContent value="playlist" className="mt-3 flex-1 focus-visible:outline-none">
+          <Tabs.Content value="playlist" className="mt-3 flex-1 focus-visible:outline-none">
             <PlaylistPanel
               roomId={roomId}
               items={queueItems}
@@ -96,10 +96,10 @@ export function SideDock({
               broadcastQueueEvent={broadcastQueueEvent}
               broadcastRoomEvent={broadcastRoomEvent}
             />
-          </TabsContent>
+          </Tabs.Content>
 
           {/* Chat Tab */}
-          <TabsContent
+          <Tabs.Content
             value="chat"
             className="mt-3 flex min-h-0 flex-1 flex-col focus-visible:outline-none"
           >
@@ -111,10 +111,10 @@ export function SideDock({
               onReact={onReact}
               reactionOverlayRef={reactionOverlayRef}
             />
-          </TabsContent>
+          </Tabs.Content>
 
           {/* Participants Tab */}
-          <TabsContent
+          <Tabs.Content
             value="participants"
             className="mt-3 flex min-h-0 flex-1 flex-col gap-3 overflow-hidden focus-visible:outline-none"
           >
@@ -126,7 +126,7 @@ export function SideDock({
               onTransferHost={handleTransferHost}
               isPending={isPending}
             />
-          </TabsContent>
+          </Tabs.Content>
         </Tabs>
       </div>
     </Card>

@@ -124,7 +124,7 @@ function AvatarUpload({
       <div className="flex items-center gap-4">
         <div
           className={cn(
-            'group relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-border bg-muted transition-all duration-200 hover:opacity-90',
+            'group relative flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-border bg-muted transition-all duration-(--duration-base) hover:opacity-90',
             isDragging && 'scale-105 border-primary bg-primary/10 ring-2 ring-primary/20',
           )}
           onClick={onChangeClick}
@@ -141,7 +141,7 @@ function AvatarUpload({
             <AvatarFallback className="text-xl font-semibold">{initial}</AvatarFallback>
           </Avatar>
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-overlay opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-overlay opacity-0 transition-opacity duration-(--duration-base) group-hover:opacity-100">
             <Camera className="h-5 w-5" style={{ color: 'white' }} />
             <span className="mt-1 text-[10px] font-medium" style={{ color: 'white' }}>
               Change

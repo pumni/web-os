@@ -51,7 +51,7 @@ surface).
 | `bg-neutral-900`, `text-white`, raw `oklch(...)` | Semantic utilities: `bg-card`, `text-muted-foreground` | `pumniNoRawColor` ESLint rule blocks it |
 | `bg-black/40` for scrims | `bg-overlay` | One owned scrim token, theme-aware |
 | `rounded-[14px]`, `rounded-2xl` everywhere | Named radius utilities off `--radius-base` | One personalizable knob, not magic px |
-| `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-(--duration-base)` | Brand curves + owned timing |
+| `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-(--duration-base)` | Brand curves + owned timing (`pumniNoRawTiming` blocks it) |
 | Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
 | Glass on hero / page backgrounds, or glass cards on flat surfaces | Glass only on floating layers with a colourful backdrop (ADR-0012); opaque shell + raised solid cards. Dense content (forms/tables) always uses solid | `backdrop-filter` is GPU-heavy; glassmorphism reads only over a backdrop |
 | Eyeballing contrast on glass/accents | Trust gated tokens; verify APCA Lc 60 / Lc 25 | `glass-contrast` test owns the cascade |

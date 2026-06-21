@@ -111,13 +111,19 @@
 
 /* Bordered bar variant for FLOATING elements (docks, floating toolbars).
    Carries the full hairline glass border on all four sides so the element
-   reads as a distinct floating surface against the background. */
+   reads as a distinct floating surface against the background. Uses
+   --shadow-glass as the real delineator (same directional drop shadow as
+   glass-panel / glass-window) — the white border alone collapses on light
+   backgrounds where --glass-edge (0.45 alpha white) vanishes against the
+   near-white page surface. */
 @utility glass-bar-bordered {
   background-color: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1px solid var(--glass-edge);
-  box-shadow: inset 0 1px 0 0 var(--surface-rim-top);
+  box-shadow:
+    var(--shadow-glass),
+    inset 0 1px 0 0 var(--surface-rim-top);
 }
 
 /* Shell chrome variant — glass bar base + right-side glass edge + ambient depth.
@@ -305,6 +311,15 @@
   position: relative;
   overflow: hidden;
 
+  /* Component tokens: customizable locally, defaults provided */
+  --spotlight-size: 200px;
+  --spotlight-color: color-mix(in oklch, var(--primary) 12%, transparent);
+
+  .dark & {
+    /* Deeper spotlight intensity for dark mode since dark surfaces swallow light */
+    --spotlight-color: color-mix(in oklch, var(--primary) 16%, transparent);
+  }
+
   &::before {
     content: '';
     position: absolute;
@@ -313,16 +328,18 @@
     opacity: 0;
     border-radius: inherit;
     background: radial-gradient(
-      200px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-      color-mix(in oklch, var(--primary) 12%, transparent),
+      var(--spotlight-size) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      var(--spotlight-color),
       transparent 70%
     );
     transition: opacity var(--duration-base) var(--ease-out);
   }
 
-  /* Show highlight on hover — gated via group-hover (applied by Card interactive). */
-  &:hover::before {
-    opacity: 1;
+  /* Show highlight on hover — gated via hover capability (preventing sticky touch hover). */
+  @media (hover: hover) {
+    &:hover::before {
+      opacity: 1;
+    }
   }
 }
 

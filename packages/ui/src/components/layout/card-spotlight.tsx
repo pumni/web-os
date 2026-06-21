@@ -56,6 +56,17 @@ function CardSpotlight({
 }: CardSpotlightProps) {
   const rectRef = React.useRef<DOMRect | null>(null);
   const scrollRef = React.useRef({ x: 0, y: 0 });
+  const coordsRef = React.useRef<{ x?: string; y?: string }>({});
+  const frameIdRef = React.useRef<number | null>(null);
+  const pendingCoordsRef = React.useRef<{ clientX: number; clientY: number } | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (frameIdRef.current !== null) {
+        cancelAnimationFrame(frameIdRef.current);
+      }
+    };
+  }, []);
 
   const handlePointerEnter = React.useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -69,6 +80,11 @@ function CardSpotlight({
   const handlePointerLeave = React.useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       rectRef.current = null;
+      if (frameIdRef.current !== null) {
+        cancelAnimationFrame(frameIdRef.current);
+        frameIdRef.current = null;
+      }
+      pendingCoordsRef.current = null;
       onPointerLeave?.(e);
     },
     [onPointerLeave],
@@ -76,26 +92,55 @@ function CardSpotlight({
 
   const handlePointerMove = React.useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!rectRef.current) {
-        rectRef.current = e.currentTarget.getBoundingClientRect();
-        scrollRef.current = { x: window.scrollX, y: window.scrollY };
-      }
-      const rect = rectRef.current;
-      const scrollDiffX = window.scrollX - scrollRef.current.x;
-      const scrollDiffY = window.scrollY - scrollRef.current.y;
-      
-      const x = ((e.clientX - (rect.left - scrollDiffX)) / rect.width) * 100;
-      const y = ((e.clientY - (rect.top - scrollDiffY)) / rect.height) * 100;
+      const element = e.currentTarget;
+      const clientX = e.clientX;
+      const clientY = e.clientY;
 
-      // Update CSS vars inline; the CSS utility reads them for gradient position.
-      e.currentTarget.style.setProperty('--spot-x', `${x}%`);
-      e.currentTarget.style.setProperty('--spot-y', `${y}%`);
-      
+      pendingCoordsRef.current = { clientX, clientY };
+
       // Forward to any consumer-provided handler.
       onPointerMove?.(e);
+
+      if (frameIdRef.current !== null) {
+        return;
+      }
+
+      frameIdRef.current = requestAnimationFrame(() => {
+        frameIdRef.current = null;
+        if (!pendingCoordsRef.current) return;
+
+        const { clientX: cX, clientY: cY } = pendingCoordsRef.current;
+        pendingCoordsRef.current = null;
+
+        if (!rectRef.current) {
+          rectRef.current = element.getBoundingClientRect();
+          scrollRef.current = { x: window.scrollX, y: window.scrollY };
+        }
+        const rect = rectRef.current;
+        const scrollDiffX = window.scrollX - scrollRef.current.x;
+        const scrollDiffY = window.scrollY - scrollRef.current.y;
+        
+        const x = ((cX - (rect.left - scrollDiffX)) / rect.width) * 100;
+        const y = ((cY - (rect.top - scrollDiffY)) / rect.height) * 100;
+
+        const xStr = `${x}%`;
+        const yStr = `${y}%`;
+
+        coordsRef.current = { x: xStr, y: yStr };
+
+        // Update CSS vars inline; the CSS utility reads them for gradient position.
+        element.style.setProperty('--spot-x', xStr);
+        element.style.setProperty('--spot-y', yStr);
+      });
     },
     [onPointerMove],
   );
+
+  const mergedStyle = {
+    ...style,
+    ...(coordsRef.current.x ? { '--spot-x': coordsRef.current.x } : {}),
+    ...(coordsRef.current.y ? { '--spot-y': coordsRef.current.y } : {}),
+  } as React.CSSProperties;
 
   return (
     <Card
@@ -104,7 +149,7 @@ function CardSpotlight({
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
       onPointerMove={handlePointerMove}
-      style={style}
+      style={mergedStyle}
       className={className}
       {...props}
     />

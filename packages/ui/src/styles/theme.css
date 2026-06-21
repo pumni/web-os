@@ -278,6 +278,10 @@
   --color-field: var(--field);
   --color-ring: var(--ring);
 
+  --color-segmented-active-border: var(--segmented-active-border);
+  --color-slider-thumb: var(--slider-thumb);
+  --color-window-control-icon: var(--window-control-icon);
+
   /* Glass tokens, also usable as Tailwind color utilities when needed */
   --color-glass: var(--glass-tint);
   --color-glass-border: var(--glass-edge);
@@ -343,6 +347,8 @@
      blur is intentionally NOT exposed as a standalone utility. */
   --shadow-card: var(--shadow-card-raised);
   --shadow-control: var(--shadow-control);
+  --shadow-slider-thumb: var(--shadow-slider-thumb);
+  --shadow-segmented-active: var(--shadow-segmented-active);
   --shadow-raised: var(--shadow-2);
   --shadow-interactive-hover: var(--shadow-interactive-hover);
 

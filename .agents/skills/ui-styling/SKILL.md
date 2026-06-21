@@ -37,7 +37,9 @@ reference detail.
 - Motion: CSS for micro-feedback (`motion-safe:`), JS motion only for
   orchestration. JS motion must call `useReducedMotion()`. Use
   `recipes.hoverLift`, `pressScale`, and `staggerItem` instead of hand-rolled
-  `whileHover`. Motion tokens mirror in `lib/motion.ts`.
+  `whileHover`. Motion tokens mirror in `lib/motion.ts`. CSS-only stagger
+  via `css-stagger` utility (starting-style.css) for cases where JS motion
+  bundle is unnecessary.
 - Personalization: accent (`indigo`/`violet`/`rose`), glass
   (`soft`/`default`/`strong`), density (`comfortable`/`compact`).
   `PersonalizationScript` must be first child of `<body>` to avoid FOUC.

@@ -39,7 +39,7 @@ const TabsLayoutContext = React.createContext<TabsLayoutContextValue>({
 
 /**
  * TabsList — the underline track. Flat and transparent; the bottom border
- * reads as the rail the active underline sits on. Override `w-fit` (default)
+ * reads as the rail the active sits on. Override`w-fit` (default)
  * with `w-full` + a grid/flex to lay triggers across the container.
  */
 const tabsListVariants =
@@ -53,7 +53,7 @@ const tabsListVariants =
 const tabsTriggerVariants =
   "relative inline-flex h-full flex-1 items-center justify-center gap-1.5 border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color] outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 not-data-[state=active]:state-hover not-data-[state=active]:state-pressed data-[state=active]:text-foreground";
 
-function Tabs({
+function TabsRoot({
   ref,
   className,
   onValueChange,
@@ -181,6 +181,13 @@ function TabsContent({
     />
   );
 }
+
+const Tabs = Object.assign(TabsRoot, {
+  Root: TabsRoot,
+  List: TabsList,
+  Trigger: TabsTrigger,
+  Content: TabsContent,
+});
 
 export {
   Tabs,

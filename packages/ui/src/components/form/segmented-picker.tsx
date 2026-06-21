@@ -6,6 +6,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { motion, useReducedMotion } from 'motion/react';
 
 import { cn } from '../../lib/cn';
+import { transition } from '../../lib/motion';
 
 /**
  * SegmentedPicker — the single primitive for "choose one of N" with NO panel
@@ -14,10 +15,13 @@ import { cn } from '../../lib/cn';
  * Built on Radix RadioGroup so arrow-key navigation + roving tabindex are
  * correct WAI-ARIA out of the box (the previous self-rolled `role="radio"`
  * row had no keyboard model). Visual language is the modern segmented control:
- * a recessed `bg-muted` well with a sliding `bg-background` pill that lifts
- * onto the active option — the affordance is "the selected value rises out
- * of the well", which reads correctly in BOTH light and dark (the legacy
- * `bg-secondary` fill inverted the affordance in dark mode).
+ * a recessed `--segmented-track` well with a sliding `--segmented-active` pill
+ * that lifts onto the active option — the affordance is "the selected value
+ * rises out of the well". The dedicated track/active tokens (tokens.css)
+ * guarantee that delta in BOTH themes: in light, `--muted` sat too close to
+ * `--background` (neutral-100 vs neutral-50) so the pill vanished; in dark,
+ * `--muted` was LIGHTER than the host card, inverting the well. The
+ * `--segmented-*` stops fix both.
  *
  * The sliding pill uses `motion`'s shared-`layoutId` animation: the pill
  * element lives inside whichever item is `checked`, and motion tweens its
@@ -87,6 +91,7 @@ function SegmentedPicker<T extends string>({
   labels,
   size,
   fullWidth,
+  orientation = 'horizontal',
   disabled,
   'aria-label': ariaLabel,
   className,
@@ -98,6 +103,8 @@ function SegmentedPicker<T extends string>({
   size?: VariantProps<typeof segmentedItemVariants>['size'];
   /** Stretch the track to fill its container (each option gets equal width). */
   fullWidth?: boolean;
+  /** Layout orientation. Defaults to 'horizontal'. */
+  orientation?: 'horizontal' | 'vertical';
   disabled?: boolean;
   'aria-label': string;
   className?: string;
@@ -114,7 +121,7 @@ function SegmentedPicker<T extends string>({
   // Inline style drives the grid column count so a `fullWidth` track lays its
   // options out evenly regardless of label length (avoids `grid-cols-N` utility
   // generation for arbitrary N).
-  const trackStyle = fullWidth ? { gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` } : undefined;
+  const trackStyle = fullWidth && orientation === 'horizontal' ? { gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` } : undefined;
 
   return (
     <RadioGroupPrimitive.Root
@@ -123,12 +130,16 @@ function SegmentedPicker<T extends string>({
       value={value}
       onValueChange={(next) => onChange(next as T)}
       disabled={disabled}
+      orientation={orientation}
       className={cn(
-        // The recessed well: muted fill (one stop darker than `--background` in
-        // both themes), rounded track, inner padding. No outer border — the
-        // muted/background luminance gap already separates it from the surface.
-        'inline-grid auto-cols-min gap-1 rounded-lg bg-muted p-0.75',
-        fullWidth && 'grid w-full',
+        // The recessed well: --segmented-track is a dedicated stop guaranteed
+        // DARKER than the host surface in both themes (neutral-200 light /
+        // neutral-900 dark), so the well reads as recessed — `--muted` alone
+        // collapsed against `--background` in light and inverted in dark. No
+        // outer border: the track/surface luminance gap separates it.
+        'inline-grid gap-1 rounded-lg bg-(--segmented-track) p-0.75',
+        orientation === 'horizontal' ? 'grid-flow-col auto-cols-max' : 'grid-flow-row auto-rows-max',
+        fullWidth && orientation === 'horizontal' && 'grid w-full',
         className,
       )}
       style={trackStyle}
@@ -157,8 +168,8 @@ function SegmentedPicker<T extends string>({
               <motion.span
                 aria-hidden
                 data-slot="segmented-picker-indicator"
-                className="pointer-events-none absolute inset-0 -z-10 rounded-md bg-background shadow-control"
-                {...(!shouldReduce && { layoutId, layout: true })}
+                className="pointer-events-none absolute inset-0 -z-10 rounded-md bg-(--segmented-active) border border-segmented-active-border shadow-segmented-active"
+                {...(!shouldReduce && { layoutId, layout: true, transition: transition.snappy })}
               />
             )}
             {Icon && <Icon className="shrink-0" />}

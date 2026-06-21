@@ -4,10 +4,16 @@ export { withViewTransition } from './lib/view-transition';
 export {
   duration,
   easing,
+  hoverLiftScale,
+  hoverLiftY,
   motionTokens,
+  parallaxRate,
   pressScale,
   recipes,
+  springs,
   staggerBase,
+  staggerFast,
+  staggerSlow,
   transition,
 } from './lib/motion';
 // Centralise motion presence orchestration so apps don't add their own `motion`

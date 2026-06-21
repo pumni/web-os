@@ -1,86 +1,80 @@
 /*
- * Pumni OS — @starting-style reference (NOT ACTIVE)
- * --------------------------------------------------
- * This file documents the @starting-style progressive enhancement
- * pattern for overlay entry animations. It is NOT currently imported
- * in globals.css because the existing tw-animate-css data-state
- * animations already handle entry/exit correctly.
+ * Pumni OS — @starting-style overlay transitions (ACTIVE)
+ * ------------------------------------------------------
+ * Progressive enhancement: uses `@starting-style` + `transition-behavior:
+ * allow-discrete` (Chrome 117+, Safari 17.5+, Firefox 129+) for overlays
+ * whose open/closed state is driven by Radix `data-state`.
  *
- * When browser support for transition-behavior: allow-discrete is
- * universal (Chrome 117+, Safari 18+, Firefox TBD), the migration
- * plan is:
+ * Why NOT replace tw-animate-css?
+ * tw-animate-css (v1.4) uses `@property` registered CSS custom properties
+ * (`--tw-enter-*`, `--tw-exit-*`) + `enter`/`exit` keyframes. This mechanism
+ * works reliably with Radix's open/closed lifecycle: `data-state="open"` mounts
+ * the element → `animate-in` runs; `data-state="closed"` starts the exit
+ * animation before Radix unmounts. The animation is fill-mode-none so the
+ * element lands at its computed value after the animation ends.
  *
- * 1. Gate tw-animate-css animations behind:
- *      @supports not (transition-behavior: allow-discrete) { ... }
- * 2. Activate @starting-style transitions as the primary system
- * 3. Target data-slot attributes instead of custom classes:
- *      [data-slot="dialog-content"][data-state="open"] { ... }
+ * @starting-style solves a DIFFERENT problem: animating INTO a `display: none`
+ * ↔ `display: block` transition without JavaScript. Radix controls visibility
+ * via `data-state`, not `display`, so the @starting-style gain is marginal for
+ * Radix overlays. The tw-animate-css approach is the industry standard for
+ * Radix-powered design systems in 2026 (shadcn, Primitives, etc.).
  *
- * The patterns below are written as reference for that migration.
- * Do NOT add these classes to TSX components — they conflict with
- * the active tw-animate-css keyframe animations.
- *
- * Key insight: @starting-style requires CSS `transition`, while
- * tw-animate-css uses CSS `animation`. They cannot coexist on the
- * same element because transition and animation fight for control
- * of the same properties (transform, opacity).
+ * This file provides:
+ * 1. CSS-only stagger utilities (no JS bundle needed for staggered entrance).
+ * 2. A reference @starting-style pattern if future non-Radix overlays need it.
  */
 
-/* ==================== REFERENCE PATTERNS ==================== */
+/* ============================================================
+   CSS-only stagger utilities
+   ============================================================
+   Pure-CSS stagger via `animation-delay` + `:nth-child`. No JS motion
+   library needed. Children auto-delay based on index. Uses the project
+   motion tokens (`--duration-base`, `--ease-out`, `--stagger-*`).
+   ============================================================ */
 
-/*
- * Overlay scrim — fade entrance
- *
- * .overlay-scrim-entrance {
- *   opacity: 0;
- *   transition: opacity var(--duration-base) var(--ease-out),
- *               display var(--duration-base) allow-discrete,
- *               overlay var(--duration-base) allow-discrete;
- *   @starting-style { opacity: 0; }
- *   &[data-state="open"] { opacity: 1; }
- * }
- */
+@keyframes css-stagger-fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-/*
- * Dialog content — zoom + fade entrance (centered)
- *
- * .dialog-entrance {
- *   opacity: 0;
- *   transform: scale(0.95);
- *   transition: opacity var(--duration-base) var(--ease-out),
- *               transform var(--duration-base) var(--ease-spring),
- *               display var(--duration-base) allow-discrete,
- *               overlay var(--duration-base) allow-discrete;
- *   @starting-style { opacity: 0; transform: scale(0.92); }
- *   &[data-state="open"] { opacity: 1; transform: scale(1); }
- * }
- */
+/* Stagger container — set on the parent. Children must be direct items.
+   Pair with `css-stagger-item` on each child, or `css-stagger-item-fast` /
+   `css-stagger-item-slow` for different cadences. */
+@utility css-stagger {
+  & > .css-stagger-item,
+  & > .css-stagger-item-fast,
+  & > .css-stagger-item-slow {
+    animation: css-stagger-fade-rise var(--duration-base) var(--ease-out) both;
+  }
 
-/*
- * Popover content — zoom + fade entrance
- * (same pattern as dialog, applies to Popover, DropdownMenu,
- *  ContextMenu, Select, Tooltip)
- *
- * .popover-entrance {
- *   opacity: 0;
- *   transform: scale(0.95);
- *   transition: opacity var(--duration-base) var(--ease-out),
- *               transform var(--duration-base) var(--ease-spring),
- *               display var(--duration-base) allow-discrete,
- *               overlay var(--duration-base) allow-discrete;
- *   @starting-style { opacity: 0; transform: scale(0.92); }
- *   &[data-state="open"] { opacity: 1; transform: scale(1); }
- * }
- */
+  /* Default cadence: --stagger-base (50ms). */
+  & > .css-stagger-item {
+    animation-delay: calc(var(--stagger-base) * var(--css-stagger-i, 0));
+  }
 
-/*
- * Sheet slide — directional entrance
- *
- * .sheet-slide-right {
- *   transform: translateX(100%);
- *   transition: transform var(--duration-slow) var(--ease-fluid),
- *               display var(--duration-slow) allow-discrete;
- *   @starting-style { transform: translateX(100%); }
- *   &[data-state="open"] { transform: translateX(0); }
- * }
- */
+  /* Fast cadence: --stagger-fast (30ms) — dropdown menus, command palette. */
+  & > .css-stagger-item-fast {
+    animation-delay: calc(var(--stagger-fast) * var(--css-stagger-i, 0));
+  }
+
+  /* Slow cadence: --stagger-slow (80ms) — hero, onboarding. */
+  & > .css-stagger-item-slow {
+    animation-delay: calc(var(--stagger-slow) * var(--css-stagger-i, 0));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .css-stagger-item,
+  .css-stagger-item-fast,
+  .css-stagger-item-slow {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

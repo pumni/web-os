@@ -39,7 +39,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
   return (
     <aside
       className={cn(
-        'fixed inset-y-0 left-0 z-sidebar hidden glass-bar-edge-r transition-[width] duration-300 ease-out lg:block',
+        'fixed inset-y-0 left-0 z-sidebar hidden glass-bar-edge-r transition-[width] duration-(--duration-slow) ease-fluid lg:block',
         collapsed ? SIDEBAR_WIDTH.collapsed.rail : SIDEBAR_WIDTH.expanded.rail,
       )}
     >

@@ -23,12 +23,12 @@ export function AppMain({ defaultCollapsed, topbar, children }: AppMainProps) {
   return (
     <div
       className={cn(
-        'relative flex min-h-dvh flex-col transition-[padding] duration-300 ease-out',
+        'relative flex min-h-dvh flex-col transition-[padding] duration-(--duration-slow) ease-fluid',
         collapsed ? SIDEBAR_WIDTH.collapsed.pad : SIDEBAR_WIDTH.expanded.pad,
       )}
     >
       {topbar}
-      <main className="mx-auto w-full max-w-7xl flex-1 animate-in px-4 py-6 duration-500 fade-in slide-in-from-bottom-2 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl flex-1 animate-in px-4 py-6 duration-(--duration-slower) fade-in slide-in-from-bottom-2 sm:px-6 lg:px-8">
         {children}
       </main>
     </div>

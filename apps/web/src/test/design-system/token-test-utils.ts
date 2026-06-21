@@ -30,11 +30,13 @@ export function readDurationSeconds(name: string): number {
 }
 
 /**
- * Reads a unitless numeric token (first numeric run in the value).
+ * Reads a unitless numeric token (first numeric run in the value, with optional
+ * leading sign). Handles both positive (`0.97`) and negative (`-0.5`) tokens.
  * @example readUnitless('--press-scale') // 0.97
+ * @example readUnitless('--hover-lift-y') // -0.5
  */
 export function readUnitless(name: string): number {
-  const match = tokenCss.match(new RegExp(`${name}:\\s*([\\d.]+)`));
+  const match = tokenCss.match(new RegExp(`${name}:\\s*(-?[\\d.]+)`));
   if (!match?.[1]) throw new Error(`Missing token: ${name}`);
   return Number(match[1]);
 }

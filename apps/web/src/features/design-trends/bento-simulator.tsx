@@ -213,7 +213,7 @@ export function BentoSimulator() {
             {/* The preview viewport is a real width-clamped container, not a
                 faked span override. BentoGrid's own cascade handles 12→6→1. */}
             <div
-              className="mx-auto overflow-hidden rounded-xl border bg-background shadow-sm transition-[max-width] duration-500 ease-snappy"
+              className="mx-auto overflow-hidden rounded-xl border bg-background shadow-sm transition-[max-width] duration-(--duration-slower) ease-snappy"
               style={{ maxWidth: BREAKPOINT_MAX_WIDTH[simulatedBreakpoint] }}
             >
               {/* Viewport Address Bar Chrome */}

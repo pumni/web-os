@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import {
@@ -15,9 +15,6 @@ import {
   ScrollBar,
   Separator,
   Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
 } from '@pumni/ui';
 
 // Radix ScrollArea / Tabs use ResizeObserver internally.
@@ -182,12 +179,12 @@ describe('Tabs', () => {
   it('renders trigger/tablist roles and active state', () => {
     render(
       <Tabs defaultValue="general">
-        <TabsList>
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
-        </TabsList>
-        <TabsContent value="general">General content</TabsContent>
-        <TabsContent value="appearance">Appearance content</TabsContent>
+        <Tabs.List>
+          <Tabs.Trigger value="general">General</Tabs.Trigger>
+          <Tabs.Trigger value="appearance">Appearance</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="general">General content</Tabs.Content>
+        <Tabs.Content value="appearance">Appearance content</Tabs.Content>
       </Tabs>,
     );
 
@@ -209,14 +206,14 @@ describe('Tabs', () => {
     const contentRef = React.createRef<HTMLDivElement>();
     render(
       <Tabs ref={rootRef} defaultValue="a" data-testid="tabs">
-        <TabsList>
-          <TabsTrigger ref={triggerRef} value="a">
+        <Tabs.List>
+          <Tabs.Trigger ref={triggerRef} value="a">
             A
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent ref={contentRef} value="a">
+          </Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content ref={contentRef} value="a">
           body
-        </TabsContent>
+        </Tabs.Content>
       </Tabs>,
     );
     expect(screen.getByTestId('tabs')).toHaveAttribute('data-slot', 'tabs');
@@ -290,4 +287,55 @@ describe('CardSpotlight', () => {
     render(<CardSpotlight ref={ref} data-testid="spot" />);
     expect(ref.current).toBe(screen.getByTestId('spot'));
   });
+
+  it('updates and preserves --spot-x and --spot-y custom properties on pointer move and re-render', () => {
+    const originalRAF = window.requestAnimationFrame;
+    window.requestAnimationFrame = (cb) => {
+      cb(0);
+      return 0;
+    };
+
+    try {
+      const { rerender } = render(
+        <CardSpotlight data-testid="spot" style={{ color: 'red' }}>
+          <h3>Content</h3>
+        </CardSpotlight>,
+      );
+      const el = screen.getByTestId('spot');
+
+      // Mock getBoundingClientRect
+      el.getBoundingClientRect = () =>
+        ({
+          left: 10,
+          top: 20,
+          width: 100,
+          height: 200,
+        }) as DOMRect;
+
+      // Simulate pointer move
+      fireEvent.pointerMove(el, {
+        clientX: 60, // (60 - 10) / 100 * 100 = 50%
+        clientY: 120, // (120 - 20) / 200 * 100 = 50%
+      });
+
+      expect(el.style.getPropertyValue('--spot-x')).toBe('50%');
+      expect(el.style.getPropertyValue('--spot-y')).toBe('50%');
+      expect(el.style.color).toBe('red');
+
+      // Re-render component (e.g. parent updates state/props)
+      rerender(
+        <CardSpotlight data-testid="spot" style={{ color: 'blue' }}>
+          <h3>Content</h3>
+        </CardSpotlight>,
+      );
+
+      // Verify properties are preserved and other styles are updated correctly
+      expect(el.style.getPropertyValue('--spot-x')).toBe('50%');
+      expect(el.style.getPropertyValue('--spot-y')).toBe('50%');
+      expect(el.style.color).toBe('blue');
+    } finally {
+      window.requestAnimationFrame = originalRAF;
+    }
+  });
 });
+

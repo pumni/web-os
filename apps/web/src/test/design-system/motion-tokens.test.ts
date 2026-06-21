@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { duration, easing, pressScale, staggerBase } from '@pumni/ui';
+import {
+  duration,
+  easing,
+  hoverLiftScale,
+  hoverLiftY,
+  parallaxRate,
+  pressScale,
+  staggerBase,
+  staggerFast,
+  staggerSlow,
+} from '@pumni/ui';
 import { readDurationSeconds, readUnitless, tokenCss } from './token-test-utils';
 
 /**
@@ -39,7 +49,21 @@ describe('motion token bridge stays in sync with tokens.css', () => {
     expect(pressScale).toBeCloseTo(readUnitless('--press-scale'), 5);
   });
 
-  it('staggerBase mirrors --stagger-base (50ms → 0.05s)', () => {
+  it('stagger cadences mirror --stagger-fast/base/slow', () => {
+    expect(staggerFast).toBeCloseTo(readDurationSeconds('--stagger-fast'), 5);
     expect(staggerBase).toBeCloseTo(readDurationSeconds('--stagger-base'), 5);
+    expect(staggerSlow).toBeCloseTo(readDurationSeconds('--stagger-slow'), 5);
+  });
+
+  it('hover-lift geometry mirrors --hover-lift-y (Tailwind unit → px) + --hover-lift-scale', () => {
+    // CSS `--hover-lift-y` is a Tailwind translate unit at the 4px spacing scale
+    // (-0.5 = -2px); the JS recipe works in px. Convert before comparing.
+    const cssYUnit = readUnitless('--hover-lift-y');
+    expect(hoverLiftY).toBeCloseTo(cssYUnit * 4, 5);
+    expect(hoverLiftScale).toBeCloseTo(readUnitless('--hover-lift-scale'), 5);
+  });
+
+  it('parallaxRate mirrors --scroll-parallax-rate', () => {
+    expect(parallaxRate).toBeCloseTo(readUnitless('--scroll-parallax-rate'), 5);
   });
 });

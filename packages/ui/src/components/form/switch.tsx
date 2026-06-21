@@ -13,7 +13,7 @@ function Switch({ ref, className, ...props }: React.ComponentProps<typeof Switch
       className={cn(
         'peer inline-flex h-(--switch-height) w-(--switch-width) shrink-0 cursor-pointer items-center rounded-full p-0.5',
         'bg-(--switch-track) data-[state=checked]:bg-(--switch-track-checked)',
-        'transition-colors duration-200 ease-in-out focus-ring outline-none',
+        'transition-colors duration-(--duration-base) ease-snappy focus-ring outline-none',
         'disabled:cursor-not-allowed disabled:opacity-50',
         className,
       )}

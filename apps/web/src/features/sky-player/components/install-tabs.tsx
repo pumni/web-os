@@ -5,9 +5,6 @@ import * as React from 'react';
 import {
   Window,
   Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
   Button,
   motion,
   recipes,
@@ -85,18 +82,18 @@ export function InstallTabs() {
     <Window title="Sky Player — Installation" className="w-full shadow-raised">
       <Tabs defaultValue="release" className="flex w-full flex-col gap-2">
         <div className="-mx-4 -mt-4 border-b border-transparent bg-muted/10 p-3">
-          <TabsList>
-            <TabsTrigger value="release">Standalone release</TabsTrigger>
-            <TabsTrigger value="source">From source</TabsTrigger>
-          </TabsList>
+          <Tabs.List>
+            <Tabs.Trigger value="release">Standalone release</Tabs.Trigger>
+            <Tabs.Trigger value="source">From source</Tabs.Trigger>
+          </Tabs.List>
         </div>
 
-        <TabsContent value="release" className="mt-0 min-h-70 focus-visible:outline-none">
+        <Tabs.Content value="release" className="mt-0 min-h-70 focus-visible:outline-none">
           <ReleasePanel />
-        </TabsContent>
-        <TabsContent value="source" className="mt-0 min-h-70 focus-visible:outline-none">
+        </Tabs.Content>
+        <Tabs.Content value="source" className="mt-0 min-h-70 focus-visible:outline-none">
           <SourcePanel />
-        </TabsContent>
+        </Tabs.Content>
       </Tabs>
     </Window>
   );

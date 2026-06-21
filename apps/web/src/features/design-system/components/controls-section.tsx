@@ -35,9 +35,6 @@ import {
   SubmitButton,
   Switch,
   Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
 } from '@pumni/ui';
 import { ShowcaseSection } from './showcase-section';
 
@@ -357,26 +354,26 @@ export function ControlsSection() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="tab-general">
-              <TabsList className="w-full justify-start sm:w-auto">
-                <TabsTrigger value="tab-general">General</TabsTrigger>
-                <TabsTrigger value="tab-appearance">Appearance</TabsTrigger>
-                <TabsTrigger value="tab-advanced">Advanced</TabsTrigger>
-              </TabsList>
-              <TabsContent value="tab-general" className="pt-4 text-sm text-muted-foreground">
+              <Tabs.List className="w-full justify-start sm:w-auto">
+                <Tabs.Trigger value="tab-general">General</Tabs.Trigger>
+                <Tabs.Trigger value="tab-appearance">Appearance</Tabs.Trigger>
+                <Tabs.Trigger value="tab-advanced">Advanced</Tabs.Trigger>
+              </Tabs.List>
+              <Tabs.Content value="tab-general" className="pt-4 text-sm text-muted-foreground">
                 Manage primary workspace credentials, regional defaults, and collaboration
                 schedules.
-              </TabsContent>
-              <TabsContent
+              </Tabs.Content>
+              <Tabs.Content
                 value="tab-appearance"
                 className="pt-4 text-sm text-muted-foreground"
               >
                 Personalize the background canvas, accent color palettes, and surface
                 transparency levels.
-              </TabsContent>
-              <TabsContent value="tab-advanced" className="pt-4 text-sm text-muted-foreground">
+              </Tabs.Content>
+              <Tabs.Content value="tab-advanced" className="pt-4 text-sm text-muted-foreground">
                 Configure hotkeys, hardware acceleration override, and view runtime diagnostic
                 statistics.
-              </TabsContent>
+              </Tabs.Content>
             </Tabs>
           </CardContent>
         </Card>
