@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   reactCompiler: true,
   cacheComponents: true,
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+    browserToTerminal: true,
+  },
 
   experimental: {
     staleTimes: { static: 180, dynamic: 30 },

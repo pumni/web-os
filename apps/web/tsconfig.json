@@ -17,7 +17,9 @@
       "@pumni/supabase/browser": ["../../packages/supabase/src/browser.ts"],
       "@pumni/supabase/server": ["../../packages/supabase/src/server.ts"],
       "@pumni/supabase/service-role": ["../../packages/supabase/src/service-role.ts"],
-      "@pumni/validators": ["../../packages/validators/src/index.ts"]
+      "@pumni/validators": ["../../packages/validators/src/index.ts"],
+      "@pumni/test-utils": ["../../packages/test-utils/src/index.ts"],
+      "@pumni/workflows": ["../../packages/workflows/src/index.ts"]
     },
     "plugins": [
       {

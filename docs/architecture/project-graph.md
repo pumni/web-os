@@ -29,6 +29,7 @@ graph TD
   TestUtils[@pumni/test-utils]
   Ui[@pumni/ui]
   Validators[@pumni/validators]
+  Workflows[@pumni/workflows]
   Web[apps/web]
   Auth --> Supabase
   Supabase --> Env
@@ -37,8 +38,10 @@ graph TD
   Web --> Config
   Web --> Env
   Web --> Supabase
+  Web --> TestUtils
   Web --> Ui
   Web --> Validators
+  Web --> Workflows
 ```
 
 <!-- END:auto-generated-graph -->

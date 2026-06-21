@@ -26,6 +26,7 @@
         "@pumni/supabase": "workspace:*",
         "@pumni/ui": "workspace:*",
         "@pumni/validators": "workspace:*",
+        "@pumni/workflows": "workspace:*",
         "@supabase/ssr": "^0.12.0",
         "@supabase/supabase-js": "^2.108.1",
         "@tanstack/react-query": "^5.101.0",
@@ -45,6 +46,7 @@
       "devDependencies": {
         "@playwright/test": "^1.60.0",
         "@pumni/config": "workspace:*",
+        "@pumni/test-utils": "workspace:*",
         "@tailwindcss/postcss": "^4",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.2",
@@ -149,6 +151,14 @@
         "zod": "^4.4.3",
       },
       "devDependencies": {
+        "typescript": "^5",
+      },
+    },
+    "packages/workflows": {
+      "name": "@pumni/workflows",
+      "version": "0.1.0",
+      "devDependencies": {
+        "@types/node": "^20",
         "typescript": "^5",
       },
     },
@@ -383,6 +393,8 @@
     "@pumni/ui": ["@pumni/ui@workspace:packages/ui"],
 
     "@pumni/validators": ["@pumni/validators@workspace:packages/validators"],
+
+    "@pumni/workflows": ["@pumni/workflows@workspace:packages/workflows"],
 
     "@radix-ui/number": ["@radix-ui/number@1.1.2", "", {}, "sha512-ceTwaxc4I5IOi97DgCotl3pqiyRGvffcc0oOsE2dQYaJOFIDsDt4VWG6xEbg1QePv9QWausCEIppud/tJ1wNig=="],
 
