@@ -7,60 +7,64 @@
  * here (or under a project-scoped selector imported AFTER the @pumni/ui styles)
  * WITHOUT editing platform core. See ADR-0010.
  *
- * Defaults below are Pumni's own cyan identity. Both themes share the cyan-500
- * stop: the APCA gate against the white `--primary-foreground` has so much
- * headroom (Lc ~93–94) that no per-theme lightness split is needed. When
- * overriding with a higher-chroma or lighter brand, keep enough lightness that
- * white foreground clears the gate and let the glass-contrast test verify.
+ * Defaults below are Pumni's own warm coral/clay identity (Claude "book cloth"
+ * family). Light uses the deeper coral-600 and dark the slightly lighter
+ * coral-500 so the white `--primary-foreground` clears the APCA gate in BOTH
+ * themes (glass-contrast.test.ts verifies). When overriding with a higher-chroma
+ * or lighter brand, keep enough lightness that white foreground clears the gate
+ * and let the glass-contrast test verify.
  *
  * Scope note: this governs the DEFAULT (attribute-less) appearance only. The
  * named accents (cyan / indigo / violet / rose) in `personalization.css` are a
  * fixed Pumni palette a USER can switch to at runtime; they intentionally stay
- * literal so their swatches show true colours. A project brand is the default;
- * accents layer on top as an explicit user choice.
+ * literal so their swatches show true colours. The warm coral brand is the
+ * default; accents layer on top as an explicit user choice. (cyan — the former
+ * default — is now one of those selectable accents.)
  *
  * Imported BEFORE theme.css in the app's globals.css.
  */
 
 :root {
   /* Core brand colour — drives --primary and everything mixed from it.
-     cyan-500 (not the darker cyan-600): sRGB caps cyan chroma hard at this hue,
-     so the lighter stop renders a more vivid brand while white --primary-foreground
-     still clears the APCA gate with huge headroom (Lc ~94). */
-  --brand-primary: var(--cyan-500);
+     coral-600 (the deeper clay stop): a literal book-cloth coral (L≈0.64) drops
+     white --primary-foreground below the APCA Lc 60 gate, so light leans on the
+     darker stop while still reading as a vivid warm clay. */
+  --brand-primary: var(--coral-600);
   /* Focus ring — one lightness stop above --brand-primary. */
-  --brand-ring: var(--cyan-400);
+  --brand-ring: var(--coral-500);
 
-  /* Brand gradient — hero/marketing expression (from → via → to). */
-  --brand-gradient-from: var(--cyan-500);
-  --brand-gradient-via: var(--indigo-500);
-  --brand-gradient-to: var(--violet-500);
+  /* Brand gradient — warm hero/marketing expression (from → via → to). */
+  --brand-gradient-from: var(--coral-500);
+  --brand-gradient-via: var(--amber-500);
+  --brand-gradient-to: var(--rose-500);
 }
 
 .dark {
-  --brand-primary: var(--cyan-500);
-  --brand-ring: var(--cyan-400);
+  /* Dark backgrounds let the brand sit one stop lighter (coral-500) and still
+     clear the white-foreground gate with headroom. */
+  --brand-primary: var(--coral-500);
+  --brand-ring: var(--coral-400);
 
-  --brand-gradient-from: var(--cyan-400);
-  --brand-gradient-via: var(--indigo-400);
-  --brand-gradient-to: var(--violet-400);
+  --brand-gradient-from: var(--coral-400);
+  --brand-gradient-via: var(--amber-400);
+  --brand-gradient-to: var(--rose-400);
 }
 
 /*
- * Wide-gamut (Display P3) boost. sRGB clips cyan hard at this lightness, so on
- * P3 screens we push the brand chroma past the sRGB boundary for a richer cyan.
- * Same lightness + hue as the sRGB stops above — only chroma rises — so every
- * APCA pair is unchanged (the gate runs in sRGB, which stays the authority).
- * Only the `--brand-*` inputs are lifted; the semantic layer reads them via
- * var(), so light and dark `--primary` / `--ring` both inherit the P3 value.
+ * Wide-gamut (Display P3) boost. sRGB clips warm coral chroma at this lightness,
+ * so on P3 screens we push the brand chroma past the sRGB boundary for a richer
+ * clay. Same lightness + hue as the sRGB stops above — only chroma rises — so
+ * every APCA pair is unchanged (the gate runs in sRGB, which stays the
+ * authority). Only the `--brand-*` inputs are lifted; the semantic layer reads
+ * them via var(), so light and dark `--primary` / `--ring` both inherit it.
  */
 @media (color-gamut: p3) {
   :root {
-    --brand-primary: oklch(0.555 0.14 202);
-    --brand-ring: oklch(0.7 0.15 201);
+    --brand-primary: oklch(0.545 0.16 38);
+    --brand-ring: oklch(0.61 0.15 40);
   }
   .dark {
-    --brand-primary: oklch(0.555 0.14 202);
-    --brand-ring: oklch(0.7 0.15 201);
+    --brand-primary: oklch(0.61 0.15 40);
+    --brand-ring: oklch(0.71 0.14 41);
   }
 }

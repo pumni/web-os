@@ -14,13 +14,42 @@
  */
 
 /*
- * The default cyan accent sets NO root attribute (the provider removes it), so
- * `:root`/`.dark` already carry the cyan `--primary`. These explicit
- * `[data-accent="…"]` rules let a SCOPED element (e.g. the appearance accent
- * swatch) opt into a specific accent regardless of the live root accent. They
- * mirror the per-accent `--primary`/`--ring` from theme.css. Indigo is kept as a
- * selectable accent (the previous brand hue).
+ * The default coral accent sets NO root attribute (the provider removes it), so
+ * `:root`/`.dark` already carry the coral `--primary` (via brand.css). These
+ * explicit `[data-accent="…"]` rules let a SCOPED element (e.g. the appearance
+ * accent swatch) opt into a specific accent regardless of the live root accent.
+ * They mirror the brand contract / theme.css per-accent values. The explicit
+ * `[data-accent='coral']` block reproduces the default so the swatch renders the
+ * true brand colour. Cyan and indigo are kept as selectable accents (both former
+ * brand hues).
  */
+[data-accent='coral'] {
+  --primary: var(--coral-600);
+  --ring: var(--coral-500);
+  --desktop-blob-primary: var(--coral-500);
+  --desktop-blob-secondary: var(--amber-500);
+  --brand-gradient-from: var(--coral-500);
+  --brand-gradient-via: var(--amber-500);
+  --brand-gradient-to: var(--rose-500);
+  --chart-1: var(--coral-500);
+  --chart-2: color-mix(in oklch, var(--coral-500) 65%, var(--amber-500));
+  --chart-3: var(--amber-500);
+  --chart-4: color-mix(in oklch, var(--amber-500) 65%, var(--rose-500));
+  --chart-5: var(--rose-500);
+}
+.dark[data-accent='coral'] {
+  --primary: var(--coral-500);
+  --ring: var(--coral-400);
+  --brand-gradient-from: var(--coral-400);
+  --brand-gradient-via: var(--amber-400);
+  --brand-gradient-to: var(--rose-400);
+  --chart-1: var(--coral-400);
+  --chart-2: color-mix(in oklch, var(--coral-400) 65%, var(--amber-400));
+  --chart-3: var(--amber-400);
+  --chart-4: color-mix(in oklch, var(--amber-400) 65%, var(--rose-400));
+  --chart-5: var(--rose-400);
+}
+
 [data-accent='cyan'] {
   --primary: var(--cyan-500);
   --ring: var(--cyan-400);
@@ -135,7 +164,7 @@
 /*
  * Derive the subtle accent surface + on-accent text from the active primary, so
  * hover/selected states track whichever accent is live without per-accent stops.
- * The default (indigo) keeps its hand-tuned `--accent` from theme.css untouched
+ * The default (coral) keeps its hand-tuned `--accent` from theme.css untouched
  * because the provider sets no attribute for it.
  */
 [data-accent] {

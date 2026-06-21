@@ -10,25 +10,29 @@
   --background: var(--neutral-50);
   --foreground: var(--neutral-950);
 
-  --card: color-mix(in oklch, var(--primary) 2%, var(--neutral-0));
+  /* Surfaces stay NEUTRAL (warm-neutral via the neutral scale) — no brand mix, so
+     cards read as a clean cream/white, never tinted coral. Brand colour lives on
+     accent elements (primary, ring, links, charts), not on resting surfaces. */
+  --card: var(--neutral-0);
   --card-foreground: var(--neutral-950);
-  --popover: color-mix(in oklch, var(--primary) 2%, var(--neutral-0));
+  --popover: var(--neutral-0);
   --popover-foreground: var(--neutral-950);
 
-  /* Brand entry point — reads the brand contract (brand.css), cyan by default. */
+  /* Brand entry point — reads the brand contract (brand.css), warm coral by default. */
   --primary: var(--brand-primary);
   --primary-foreground: var(--neutral-50);
-  --secondary: color-mix(in oklch, var(--primary) 4%, var(--neutral-100));
+  --secondary: var(--neutral-100);
   --secondary-foreground: var(--neutral-900);
-  --muted: color-mix(in oklch, var(--primary) 3%, var(--neutral-100));
+  --muted: var(--neutral-100);
   --muted-foreground: var(--neutral-500);
-  --accent: var(--cyan-50);
-  --accent-foreground: var(--cyan-700);
+  --accent: var(--coral-50);
+  --accent-foreground: var(--coral-700);
 
   /* red-600's 10%-tint chip sits right at the APCA pin (Lc ~58 on its own), so
      the primary mix is load-bearing here: it must darken destructive enough to
      clear the status-tint gate. Carries a heavier 4% (vs 2% on the other
-     statuses) because the cyan-500 brand stop is lighter than the old cyan-600. */
+     statuses); the coral brand stop is itself a warm red-adjacent hue, so the
+     mix nudges destructive without skewing it off-red. */
   --destructive: color-mix(in oklch, var(--primary) 4%, var(--red-600));
   --destructive-foreground: var(--neutral-50);
   --success: color-mix(in oklch, var(--primary) 2%, var(--emerald-600));
@@ -36,15 +40,16 @@
   --warning: color-mix(in oklch, var(--primary) 2%, var(--amber-500));
   --warning-foreground: var(--neutral-950);
 
-  /* Chart (data visualization) */
-  --chart-1: var(--cyan-500);
+  /* Chart (data visualization) — warm coral lead, kept distinct in lightness
+     for CVD safety (glass-contrast.test.ts). */
+  --chart-1: var(--coral-500);
   --chart-2: var(--indigo-500);
   --chart-3: var(--emerald-500);
   --chart-4: var(--amber-500);
   --chart-5: var(--rose-500);
 
-  --border: color-mix(in oklch, var(--primary) 6%, var(--neutral-200));
-  --input: color-mix(in oklch, var(--primary) 4%, var(--neutral-200));
+  --border: var(--neutral-200);
+  --input: var(--neutral-200);
   --field: var(--background);
   --ring: var(--brand-ring);
 
@@ -92,11 +97,12 @@
 
   /* Brand gradient lives in brand.css (the project override surface). */
 
-  /* OS desktop ambience */
-  --desktop-blob-primary: var(--cyan-500);
-  --desktop-blob-secondary: var(--indigo-500);
+  /* OS desktop ambience — warm coral glows (the `-cyan` token name is retained
+     for the test/consumer contract; it now carries a warm amber tone). */
+  --desktop-blob-primary: var(--coral-500);
+  --desktop-blob-secondary: var(--amber-500);
   --desktop-blob-accent: var(--brand-gradient-to);
-  --desktop-blob-cyan: var(--cyan-400);
+  --desktop-blob-cyan: var(--coral-400);
 
   /* Modal / sheet scrim */
   --overlay: oklch(0 0 0 / 0.4);
@@ -123,24 +129,31 @@
 }
 
 .dark {
-  --background: var(--neutral-950);
+  /* Warm dark gray calibrated to Claude Code's background (neutral-890 ≈ #141413),
+     not near-black — lifts off the harsh pure-black base (dark-mode best practice
+     + the warm Claude direction). */
+  --background: var(--neutral-890);
   --foreground: var(--neutral-50);
 
-  --card: color-mix(in oklch, var(--primary) 3%, var(--neutral-900));
+  /* Card matches Claude Code's card surface (neutral-880 ≈ #1A1918), sitting one
+     legible step above the background. */
+  --card: var(--neutral-880);
   --card-foreground: var(--neutral-50);
-  --popover: color-mix(in oklch, var(--primary) 3%, var(--neutral-880));
+  /* Popover floats one stop above card (860 L=0.245 > 880 L=0.215). */
+  --popover: var(--neutral-860);
   --popover-foreground: var(--neutral-50);
 
   /* Reads the brand contract (brand.css) like :root does, so the P3 wide-gamut
      boost flows through both themes instead of pinning dark to a literal stop. */
   --primary: var(--brand-primary);
   --primary-foreground: var(--neutral-50);
-  --secondary: color-mix(in oklch, var(--primary) 6%, var(--neutral-800));
+  /* Pure neutral — removes brand tint from hover/subdued surfaces. */
+  --secondary: var(--neutral-800);
   --secondary-foreground: var(--neutral-50);
-  --muted: color-mix(in oklch, var(--primary) 5%, var(--neutral-800));
+  --muted: var(--neutral-800);
   --muted-foreground: var(--neutral-300);
-  --accent: var(--cyan-950);
-  --accent-foreground: var(--cyan-100);
+  --accent: var(--coral-950);
+  --accent-foreground: var(--coral-100);
 
   --destructive: color-mix(in oklch, var(--primary) 3%, var(--red-500));
   --destructive-foreground: var(--neutral-50);
@@ -149,16 +162,18 @@
   --warning: color-mix(in oklch, var(--primary) 3%, var(--amber-400));
   --warning-foreground: var(--neutral-950);
 
-  /* Chart */
-  --chart-1: var(--cyan-400);
+  /* Chart — warm coral lead (see :root note). */
+  --chart-1: var(--coral-400);
   --chart-2: var(--indigo-400);
   --chart-3: var(--emerald-400);
   --chart-4: var(--amber-400);
   --chart-5: var(--rose-400);
 
-  --border: color-mix(in oklch, var(--primary) 8%, var(--neutral-800));
-  --input: color-mix(in oklch, var(--primary) 6%, var(--neutral-800));
-  --field: color-mix(in oklch, var(--primary) 4%, var(--neutral-900));
+  /* Pure neutral borders + input — no brand tint on resting surfaces. Focus
+     affordance comes from the coral --ring, not a resting fill tint. */
+  --border: var(--neutral-800);
+  --input: var(--neutral-700);
+  --field: var(--neutral-880);
   --ring: var(--brand-ring);
 
   /* Typographic compensation - counter halation */
@@ -195,11 +210,11 @@
 
   /* Brand gradient lives in brand.css (the project override surface). */
 
-  /* OS desktop ambience */
-  --desktop-blob-primary: var(--cyan-500);
-  --desktop-blob-secondary: var(--indigo-500);
+  /* OS desktop ambience — warm coral glows (see note in :root). */
+  --desktop-blob-primary: var(--coral-500);
+  --desktop-blob-secondary: var(--amber-500);
   --desktop-blob-accent: var(--brand-gradient-to);
-  --desktop-blob-cyan: var(--cyan-400);
+  --desktop-blob-cyan: var(--coral-400);
 
   /* Deeper scrim reads better over a dark backdrop. */
   --overlay: oklch(0 0 0 / 0.6);

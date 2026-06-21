@@ -21,7 +21,7 @@ const personalizationCss = readFileSync(
   'utf8',
 );
 
-const ACCENTS = ['cyan', 'indigo', 'violet', 'rose'] as const;
+const ACCENTS = ['coral', 'cyan', 'indigo', 'violet', 'rose'] as const;
 type Accent = (typeof ACCENTS)[number];
 
 const desktopBlobTokens = [
@@ -136,11 +136,12 @@ describe('Glass contrast tokens', () => {
 
 /* ------------------------------------------------------------------ *
  * Accent personalization contrast
- * Gates the claim in personalization.css that every accent (cyan / indigo / violet /
- * rose) keeps the white `--primary-foreground` readable on `--primary`, and that
- * the color-mix-derived accent surface keeps `--accent-foreground` readable on
- * `--accent`. Mirrors the real cascade: cyan = no attribute (hand-tuned theme.css
- * values), violet/rose = `[data-accent]` overrides + derived surface.
+ * Gates the claim in personalization.css that every accent (coral / cyan / indigo /
+ * violet / rose) keeps the white `--primary-foreground` readable on `--primary`, and
+ * that the color-mix-derived accent surface keeps `--accent-foreground` readable on
+ * `--accent`. Mirrors the real cascade: coral = no attribute (default brand from
+ * brand.css + hand-tuned theme.css values), cyan/violet/rose = `[data-accent]`
+ * overrides + derived surface.
  * ------------------------------------------------------------------ */
 
 function stripComments(css: string) {
@@ -165,7 +166,8 @@ function readBlock(css: string, selector: string): Map<string, string> {
 
 function buildAccentTokenMap(mode: 'light' | 'dark', accent: Accent) {
   const map = buildTokenMap(mode);
-  if (accent === 'cyan') return map;
+  // coral is the default brand (no attribute): the base map already carries it.
+  if (accent === 'coral') return map;
 
   for (const [name, value] of readBlock(personalizationCss, `[data-accent="${accent}"]`)) {
     map.set(name, value);

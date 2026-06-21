@@ -22,17 +22,19 @@ These are imported once in `apps/web/src/app/globals.css`.
 
 `brand.css` is the **one place a consuming project rebrands the platform**
 (ADR-0010). The semantic layer reads `--brand-primary` / `--brand-ring` /
-`--brand-gradient-*` (cyan by default) instead of pointing at primitives, so a
-new project changes identity by overriding `--brand-*` — at `:root` or a
-project-scoped selector imported after the `@pumni/ui` styles — without editing
-core. This is the entry surface of the semantic tier, **not a fourth tier**.
-Both themes share the cyan-500 brand stop (the APCA gate against white
-`--primary-foreground` has ~Lc 93 headroom, so no per-theme lightness split is
-needed); a wide-gamut `@media (color-gamut: p3)` block lifts only chroma for a
-richer cyan on capable displays while the sRGB values stay the gated authority.
-When overriding, keep enough lightness that white foreground clears the
-`glass-contrast` gate. The named accents in `personalization.css` stay literal
-(a runtime user palette, not the brand).
+`--brand-gradient-*` (a warm coral/clay by default) instead of pointing at
+primitives, so a new project changes identity by overriding `--brand-*` — at
+`:root` or a project-scoped selector imported after the `@pumni/ui` styles —
+without editing core. This is the entry surface of the semantic tier, **not a
+fourth tier**. The coral brand splits its stop per theme (light uses the deeper
+`coral-600`, dark the lighter `coral-500`) so the white `--primary-foreground`
+clears the APCA gate in both — a literal book-cloth coral (L≈0.64) would fail
+it; a wide-gamut `@media (color-gamut: p3)` block lifts only chroma for a richer
+clay on capable displays while the sRGB values stay the gated authority. When
+overriding, keep enough lightness that white foreground clears the
+`glass-contrast` gate. The named accents in `personalization.css` (coral / cyan
+/ indigo / violet / rose) stay literal (a runtime user palette, not the brand);
+cyan — the former default — is now one of those selectable accents.
 
 To derive an accessible foreground for an overridden brand colour (instead of
 hand-tuning), use `foregroundFor(bg, targetLc)` / `backgroundFor` from

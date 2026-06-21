@@ -37,7 +37,8 @@
     );
 }
 
-/* Dark surfaces swallow colour, so let the glows read a touch stronger. */
+/* Dark surfaces swallow colour, so let the glows read a touch stronger — but
+   still far below the old values, which tinted floating glass coral. */
 .dark .os-desktop::before {
   background-image:
     radial-gradient(

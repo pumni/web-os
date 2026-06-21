@@ -142,14 +142,15 @@ function PersonalizeMetric() {
     getServerReadySnapshot,
   );
 
-  const accentValue: string = mounted ? (accent ?? 'indigo') : 'cyan';
+  const accentValue: string = mounted ? (accent ?? 'coral') : 'coral';
   const swatch: Record<string, string> = {
+    coral: 'CO',
     cyan: 'CY',
     indigo: 'IN',
     violet: 'VI',
     rose: 'RO',
   };
-  const titleValue = mounted ? (swatch[accentValue] ?? 'CY') : '--';
+  const titleValue = mounted ? (swatch[accentValue] ?? 'CO') : '--';
   const accentLabel = mounted
     ? accentValue.charAt(0).toUpperCase() + accentValue.slice(1)
     : 'Loading';

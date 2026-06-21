@@ -108,7 +108,7 @@ export function IdentitySection() {
               Applies <code>data-accent</code> attribute to scope color mixes. Accent is
               currently:{' '}
               <span className="font-mono font-semibold text-foreground capitalize">
-                {accent || 'cyan (default)'}
+                {accent || 'coral (default)'}
               </span>
               .
             </p>

@@ -17,6 +17,9 @@ function Consumer() {
       <button type="button" onClick={() => setAccent('cyan')}>
         cyan
       </button>
+      <button type="button" onClick={() => setAccent('coral')}>
+        coral
+      </button>
       <button type="button" onClick={() => setGlass('strong')}>
         strong
       </button>
@@ -38,14 +41,14 @@ afterEach(() => {
 });
 
 describe('PersonalizationProvider', () => {
-  it('defaults to cyan + default glass + comfortable density and writes no root attributes', () => {
+  it('defaults to coral + default glass + comfortable density and writes no root attributes', () => {
     render(
       <PersonalizationProvider>
         <Consumer />
       </PersonalizationProvider>,
     );
 
-    expect(screen.getByTestId('accent')).toHaveTextContent('cyan');
+    expect(screen.getByTestId('accent')).toHaveTextContent('coral');
     expect(screen.getByTestId('glass')).toHaveTextContent('default');
     expect(screen.getByTestId('density')).toHaveTextContent('comfortable');
     expect(document.documentElement.hasAttribute('data-accent')).toBe(false);
@@ -75,8 +78,13 @@ describe('PersonalizationProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'comfortable' }));
     expect(document.documentElement.hasAttribute('data-density')).toBe(false);
 
-    // Returning to the default accent clears the attribute (base theme applies).
+    // cyan is now a selectable accent (no longer the default): it SETS the attribute.
     fireEvent.click(screen.getByRole('button', { name: 'cyan' }));
+    expect(document.documentElement.getAttribute('data-accent')).toBe('cyan');
+    expect(window.localStorage.getItem('pumni-accent')).toBe('cyan');
+
+    // Returning to the default accent (coral) clears the attribute (base theme applies).
+    fireEvent.click(screen.getByRole('button', { name: 'coral' }));
     expect(document.documentElement.hasAttribute('data-accent')).toBe(false);
   });
 

@@ -53,21 +53,57 @@
   --violet-500: oklch(0.606 0.15 292.717);
   --violet-600: oklch(0.541 0.15 293.009);
 
-  /* --- Neutrals: Obsidian Slate --- */
+  /* --- Brand: Coral / clay (primary, ~40°) ---
+     The default brand hue — a warm terracotta in the Claude "book cloth" family.
+     Like cyan, the primary stops (500/600) are pulled dark enough that the WHITE
+     `--primary-foreground` clears the APCA Lc 60 gate (glass-contrast.test.ts);
+     a literal book-cloth #cc785c (L≈0.64) would fail it, so the brand stop runs
+     a touch deeper while still reading as a vivid warm clay. Lighter stops
+     (50–300) drive the warm accent surfaces and tints. */
+  --coral-50: oklch(0.971 0.013 50);
+  --coral-100: oklch(0.936 0.027 48);
+  --coral-200: oklch(0.881 0.05 46);
+  --coral-300: oklch(0.806 0.083 43);
+  --coral-400: oklch(0.71 0.115 41);
+  --coral-500: oklch(0.61 0.134 40);
+  --coral-600: oklch(0.545 0.14 38);
+  --coral-700: oklch(0.487 0.122 36);
+  --coral-800: oklch(0.42 0.102 35);
+  --coral-900: oklch(0.37 0.083 34);
+  --coral-950: oklch(0.27 0.056 34);
+
+  /* --- Neutrals: Warm Sand (ấm rất nhẹ, hue ~70 — paper-warm, NOT coral) ---
+     Claude #1A1918-style near-neutrals: a whisper of warmth (low chroma ~0.003–
+     0.007) at a yellow-warm hue ~70 deliberately kept AWAY from the coral accent
+     hue (~40) so dark surfaces never read as "accent tinted". Light stops are a
+     soft cream; dark stops a warm near-black. Lightness ladder is unchanged from
+     the old Obsidian Slate scale, so every APCA pair and the dark elevation gaps
+     (background→card→popover) stay exactly as tuned — only the warmth is dialed
+     in at a near-neutral chroma. */
   --neutral-0: oklch(1 0 0);
-  --neutral-50: oklch(0.985 0.003 247.858);
-  --neutral-100: oklch(0.968 0.007 247.896);
-  --neutral-200: oklch(0.929 0.013 255.508);
-  --neutral-300: oklch(0.869 0.022 252.894);
-  --neutral-400: oklch(0.704 0.035 256.788);
-  --neutral-500: oklch(0.554 0.04 257.417);
-  --neutral-600: oklch(0.446 0.038 257.281);
-  --neutral-700: oklch(0.33 0.028 260);
-  --neutral-800: oklch(0.22 0.024 260);
-  --neutral-860: oklch(0.195 0.022 260);
-  --neutral-880: oklch(0.165 0.02 260);
-  --neutral-900: oklch(0.13 0.02 260);
-  --neutral-950: oklch(0.085 0.015 260);
+  --neutral-50: oklch(0.985 0.005 75);
+  --neutral-100: oklch(0.968 0.006 74);
+  --neutral-200: oklch(0.929 0.006 73);
+  --neutral-300: oklch(0.884 0.006 72);
+  --neutral-400: oklch(0.704 0.007 71);
+  --neutral-500: oklch(0.554 0.008 70);
+  --neutral-600: oklch(0.446 0.007 70);
+  /* Dark elevation ladder, calibrated to Claude Code's dark surfaces
+     (background #141413 ≈ L0.19, card #1A1918 ≈ L0.214). NOTE OKLCH L is
+     ~perceptual: L0.085 renders ≈ #020202 (near-black), so a readable dark
+     surface needs L ≈ 0.19+. background uses --neutral-890 (≈ #141413, warm dark
+     gray — NOT near-black) so white text loses its harsh halation and surfaces
+     elevate above it; card (880 ≈ #1A1918), popover/secondary (860/800) and
+     input (700) step up in tandem to keep the bg→card→popover→fill gaps legible.
+     These 700–890 stops are dark-only (no light-mode role), so light contrast and
+     the APCA gate are untouched (muted-fg/muted stays Lc ~59). */
+  --neutral-700: oklch(0.33 0.006 70);
+  --neutral-800: oklch(0.275 0.005 70);
+  --neutral-860: oklch(0.245 0.0045 70);
+  --neutral-880: oklch(0.215 0.004 70);
+  --neutral-890: oklch(0.19 0.0035 70);
+  --neutral-900: oklch(0.13 0.0035 70);
+  --neutral-950: oklch(0.085 0.003 70);
   --neutral-1000: oklch(0 0 0);
 
   /* --- Status --- */

@@ -2,13 +2,13 @@
 
 import * as React from 'react';
 
-export type Accent = 'cyan' | 'indigo' | 'violet' | 'rose';
+export type Accent = 'coral' | 'cyan' | 'indigo' | 'violet' | 'rose';
 export type GlassLevel = 'soft' | 'default' | 'strong';
 export type Density = 'comfortable' | 'compact';
 
-// `cyan` is the brand default (no root attribute); `indigo` is kept as the
-// previous brand hue, now a selectable accent.
-export const ACCENTS: readonly Accent[] = ['cyan', 'indigo', 'violet', 'rose'];
+// `coral` is the brand default (no root attribute); `cyan` and `indigo` are kept
+// as selectable accents (both former brand hues).
+export const ACCENTS: readonly Accent[] = ['coral', 'cyan', 'indigo', 'violet', 'rose'];
 export const GLASS_LEVELS: readonly GlassLevel[] = ['soft', 'default', 'strong'];
 export const DENSITIES: readonly Density[] = ['comfortable', 'compact'];
 
@@ -27,9 +27,9 @@ const ACCENT_KEY = 'pumni-accent';
 const GLASS_KEY = 'pumni-glass';
 const DENSITY_KEY = 'pumni-density';
 
-// Accent/glass values that set a root attribute (the defaults — cyan / default —
+// Accent/glass values that set a root attribute (the defaults — coral / default —
 // are represented by the ABSENCE of the attribute, matching the provider effects).
-const ATTR_ACCENTS = ACCENTS.filter((accent) => accent !== 'cyan');
+const ATTR_ACCENTS = ACCENTS.filter((accent) => accent !== 'coral');
 const ATTR_GLASS = GLASS_LEVELS.filter((level) => level !== 'default');
 
 /*
@@ -71,7 +71,7 @@ function readStored<T extends string>(key: string, allowed: readonly T[], fallba
 
 function PersonalizationProvider({
   children,
-  defaultAccent = 'cyan',
+  defaultAccent = 'coral',
   defaultGlass = 'default',
   defaultDensity = 'comfortable',
 }: {
@@ -95,7 +95,7 @@ function PersonalizationProvider({
   React.useEffect(() => {
     const root = document.documentElement;
 
-    if (accent === 'cyan') root.removeAttribute('data-accent');
+    if (accent === 'coral') root.removeAttribute('data-accent');
     else root.setAttribute('data-accent', accent);
 
     if (glass === 'default') root.removeAttribute('data-glass');
