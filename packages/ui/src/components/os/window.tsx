@@ -48,11 +48,18 @@ function WindowControl({
       type="button"
       aria-label={label}
       title={label}
+      // Mirrors DockItem's OS-chrome vocabulary so the two window-shell control
+      // sets read as one system: accent fill + foreground on hover, owned
+      // timing/curves, and the same tactile press depress. `cn()` runs through
+      // tailwind-merge, so a later `hover:text-*` (e.g. Close's destructive)
+      // overrides this `hover:text-accent-foreground` base.
       className={cn(
         'inline-flex size-6 items-center justify-center rounded-md text-muted-foreground',
-        'transition-colors hover:text-foreground focus-visible:outline-2',
-        'focus-visible:outline-offset-2 focus-visible:outline-ring [&_svg]:size-3.5',
-        'state-hover',
+        'transition-[transform,color,background-color] duration-(--duration-base) ease-snappy',
+        'hover:bg-accent hover:text-accent-foreground',
+        'motion-safe:active:scale-(--press-scale)',
+        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
+        '[&_svg]:size-3.5',
         className,
       )}
       {...props}
@@ -93,10 +100,18 @@ function Window({
       className={cn('glass-window flex flex-col overflow-hidden rounded-xl', className)}
       {...props}
     >
+      {/* Header sits INSIDE the `glass-window` shell with no surface of its own
+          (no `glass-titlebar`, no `bg-*`, no `border-bottom`): the shell's
+          backdrop-filter, tint, and top highlight rim show through here, so the
+          titlebar reads as the glass region of ONE continuous window surface
+          rather than an iOS-style translucent toolbar divided from its content.
+          The opaque `bg-popover` body below provides the natural fill shift that
+          separates header from content — the Pumni way (fill shift, not divider).
+          Avoids a second stacked backdrop-filter pass (ADR-0014 ≤2-layer rule). */}
       <header
         data-slot="window-titlebar"
         id={titleId}
-        className="glass-titlebar flex h-10 shrink-0 items-center gap-3 px-3"
+        className="flex h-10 shrink-0 items-center gap-3 px-3"
       >
         <div className="flex items-center gap-2">
           <WindowControl
@@ -118,7 +133,7 @@ function Window({
         </div>
         <div className="flex shrink-0 items-center gap-1">{toolbar}</div>
       </header>
-      <div data-slot="window-body" className="min-h-0 flex-1 overflow-auto bg-card p-4">
+      <div data-slot="window-body" className="min-h-0 flex-1 overflow-auto bg-popover p-4">
         {children}
       </div>
     </motion.section>

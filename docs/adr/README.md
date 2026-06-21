@@ -107,7 +107,8 @@ link still fails the gate.
 - `0014-glassmorphism-surface-treatment.md` — amended the glass *visual
   treatment* of ADR-0012 toward modern glassmorphism (landed 2026-06-20,
   amended 2026-06-21 by ADR-0016): vibrancy (`--glass-saturate` 1.4) + a
-  luminous edge pair (`--glass-highlight` / `--glass-shadow-edge`) +
+  luminous edge pair (`--surface-rim-top` / `--glass-shadow-edge`, top rim
+  unified with solid by [ADR-0018](0018-unify-surface-rim-top.md)) +
   volumetric rim pair on `glass-panel`/`glass-window`, all layered so the
   APCA gate still reads single fill/border colours. 5-element model (sheen
   removed by ADR-0016). Perf discipline: `will-change` scoped to overlay
@@ -133,3 +134,25 @@ link still fails the gate.
   in sync via the named container; deferred subgrid (large `Card` refactor,
   small cosmetic win). Thresholds match legacy `sm`/`lg` so full-width
   consumers render identically.
+- `0018-unify-surface-rim-top.md` — unified the "lit top rim" concept (the 1px
+  specular inset-top edge) from two drifted tokens — `--glass-highlight` (glass)
+  and `--card-rim-top` (solid) — into one surface-agnostic `--surface-rim-top`
+  (light 0.5 / dark 0.2). `surface-raised` and every `glass-*` utility now read
+  the same token; dark-mode solid cards gain a visible rim (0.05 → 0.2). Bottom
+  rim (`--glass-shadow-edge`) stays glass-only. Drift guard `glass-rim` updated.
+  **Amended by [ADR-0020](0020-solid-cards-drop-specular-rim.md):** the solid
+  half of the seam was dropped — `surface-raised` is structural-only; glass
+  keeps the rim.
+- `0019-border-consumption-flow.md` — canonized the border-consumption decision
+  tree: "border" is three concepts (structural hairline / specular rim / status
+  tint) with exactly three hairline tokens (`--border` dark, `--input` dark,
+  `--glass-edge` white) plus the ADR-0018 shared `--surface-rim-top` seam; status
+  tint `/20` only via `Badge` / `Card state`. Added the `border-consumption` CSS
+  drift guard so the solid-vs-glass hairline separation cannot cross silently.
+- `0020-solid-cards-drop-specular-rim.md` — dropped the specular top rim
+  (`--surface-rim-top`) from `surface-raised` so solid cards are structural-only
+  (`--border` + `--shadow-card-raised`, no inset highlight), matching the
+  ADR-0019 contract ("solid = structural only"). Amends the solid half of
+  ADR-0018's shared seam; the glass half (all 8 `glass-*` utilities) is
+  unchanged and the token stays defined as glass-owned. Inverts the
+  `border-consumption` guard's solid-rim assertion.

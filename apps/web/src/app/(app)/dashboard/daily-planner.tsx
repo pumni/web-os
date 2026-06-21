@@ -141,7 +141,7 @@ export function DailyPlanner() {
           tasks.map((task) => (
             <div
               key={task.id}
-              className="group flex items-center gap-2 rounded-lg border bg-card p-2.5 transition-colors hover:border-primary/30"
+              className="group flex items-center gap-2 rounded-lg border border-border bg-card p-2.5 transition-colors hover:border-primary/30"
             >
               <button
                 type="button"
@@ -155,7 +155,7 @@ export function DailyPlanner() {
                     'inline-flex size-4 shrink-0 items-center justify-center rounded-sm border transition-colors',
                     task.completed
                       ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-input bg-background group-hover:border-primary/60',
+                      : 'border-input bg-background',
                   )}
                 >
                   {task.completed ? <Check className="size-3 stroke-3" /> : null}

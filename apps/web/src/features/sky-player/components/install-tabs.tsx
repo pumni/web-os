@@ -30,7 +30,7 @@ function InstallStep({
       {index < total - 1 ? (
         <span aria-hidden className="absolute inset-s-4 top-8 bottom-0 w-px bg-border" />
       ) : null}
-      <div className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-xs font-bold text-primary">
+      <div className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-primary/10 text-xs font-bold text-primary">
         {index + 1}
       </div>
       <p className="pt-1.5 text-sm leading-relaxed text-foreground">{text}</p>

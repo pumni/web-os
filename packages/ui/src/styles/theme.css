@@ -71,10 +71,16 @@
      Fallback — opaque surface when transparency/blur is unavailable. */
   --glass-tint: color-mix(in oklch, var(--neutral-0) 54%, transparent);
   --glass-edge: oklch(1 0 0 / 0.45);
-  /* Subtle 1px top highlight kept close to the border alpha so the edge reads as
-     ONE uniform luminous hairline, not a brighter/thicker top. Standard web
-     glassmorphism: equal-weight rim on all sides + soft drop shadow. */
-  --glass-highlight: oklch(1 0 0 / 0.5);
+  /* The lit top rim. Glass-only since ADR-0020 (which amended ADR-0018):
+     every floating glass surface reads it as the inset-top specular highlight.
+     Solid cards previously shared it via `surface-raised` (ADR-0018's shared
+     seam), but ADR-0020 dropped the solid half — `surface-raised` is now
+     structural-only (`--shadow-card-raised`, no rim). The token stays defined
+     (glass-owned); only its name is retained from ADR-0018. Kept close to the
+     --glass-edge alpha so the edge reads as ONE uniform luminous hairline,
+     not a brighter/thicker top. Standard web glassmorphism: equal-weight rim on
+     all sides + soft drop shadow. */
+  --surface-rim-top: oklch(1 0 0 / 0.5);
   /* Light glass carries NO dark inner edge / contour (Hype4/Malewicz glassmorphism,
      Apple Liquid Glass, Tailwind glass all rely on the light rim + drop shadow).
      Bottom shadow-edge held at zero alpha so the pinned box-shadow layer + the
@@ -108,10 +114,7 @@
   --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.06);
   --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.06);
 
-  /* Solid card top highlight — lit top edge on the opaque raised surface.
-     Applied by the `surface-raised` utility alongside --shadow-card-raised so
-     solid cards carry real lift + a faint specular top rim. */
-  --card-rim-top: oklch(1 0 0 / 0.6);
+  /* (--surface-rim-top above is glass-only since ADR-0020; solid cards carry no rim.) */
 
   /* Interactive card hover shadow with dynamic accent ambient glow */
   --shadow-interactive-hover:
@@ -173,8 +176,10 @@
   --glass-edge: oklch(1 0 0 / 0.14);
   /* Near-uniform luminous rim on dark glass — top highlight kept only a touch
      above the border so it reads as one even hairline (no thick/asymmetric top
-     band), still visible against the dark blobs. */
-  --glass-highlight: oklch(1 0 0 / 0.2);
+     band), still visible against the dark blobs. Shared with solid cards
+     (ADR-0018): dark surfaces amplify bright edges, so a visible 0.2 rim now
+     lifts solid cards too (was 0.05 when the concept was split). */
+  --surface-rim-top: oklch(1 0 0 / 0.2);
   /* Dark bottom rim — stronger than light (0.06 → 0.22) because dark surfaces
      amplify bright highlights but swallow dark shadows, so the bottom shadow-
      edge needs a higher alpha to read as a real volumetric edge. */
@@ -211,9 +216,7 @@
   --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.18);
   --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.18);
 
-  /* Solid card top highlight — darker backdrop, so a much fainter rim reads as
-     the lit top edge (mirrors the glass rim-top calibration). */
-  --card-rim-top: oklch(1 0 0 / 0.05);
+  /* (--surface-rim-top above is glass-only since ADR-0020; solid cards carry no rim.) */
 
   /* Interactive card hover shadow with dynamic accent ambient glow */
   --shadow-interactive-hover:
@@ -393,12 +396,12 @@
   letter-spacing: var(--tracking-normal);
 }
 
-/* Solid raised surface — multi-layer soft elevation + a faint lit top rim so
-   opaque cards carry real depth (not the flat --shadow-1 hairline). This keeps
-   glass reserved for true floating layers. Consumed by the Card solid/spotlight
-   variants via `surface-raised` instead of a magic-value box-shadow in TSX. */
+/* Solid raised surface — multi-layer soft elevation only (NOT the flat
+   --shadow-1 hairline). Solid cards carry real lift so glass stays reserved
+   for true floating layers. The specular top rim is glass-only (ADR-0020,
+   amending ADR-0018): solid surfaces are structural — `border-border` does
+   the delineation, this shadow does the elevation, no inset highlight.
+   Consumed by the Card solid/spotlight variants and IconBadge raised. */
 @utility surface-raised {
-  box-shadow:
-    var(--shadow-card-raised),
-    inset 0 1px 0 0 var(--card-rim-top);
+  box-shadow: var(--shadow-card-raised);
 }

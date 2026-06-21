@@ -11,6 +11,19 @@
 > discipline remains as a doc/skill rule (render-pass cost). Dark blur was tuned
 > 12px → 16px. The structural decisions in this ADR (rim pair, vibrancy, perf
 > discipline, APCA gate, fallback paths) all **stand**.
+>
+> **Rim token renamed by [ADR-0018](0018-unify-surface-rim-top.md):** the top rim
+> token this ADR calls `--glass-highlight` is now `--surface-rim-top`, unified with
+> the solid-card rim (`--card-rim-top`, deleted) so glass and solid share one
+> calibrated lit-top-edge value. The bottom rim (`--glass-shadow-edge`) is
+> unchanged (glass-only). Token names in the body below are the historical 0014
+> names; read them through that lens.
+>
+> **Solid half reversed by [ADR-0020](0020-solid-cards-drop-specular-rim.md):** the
+> "glass and solid share one calibrated lit-top-edge value" above no longer holds
+> on solid — `surface-raised` dropped the rim so solid cards are structural-only.
+> `--surface-rim-top` is glass-owned again (the shared seam lives on in name only).
+> The glass visual treatment in this ADR stands unchanged.
 
 ## Context
 

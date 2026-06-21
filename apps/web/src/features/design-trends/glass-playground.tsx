@@ -161,7 +161,7 @@ export function GlassPlayground() {
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass),
-    inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 1px 0 0 var(--surface-rim-top),
     inset 0 -1px 0 0 var(--glass-shadow-edge);
 }
 /* MUST float over a colourful backdrop (desktop blobs / media). */`;

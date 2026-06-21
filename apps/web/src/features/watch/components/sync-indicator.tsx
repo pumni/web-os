@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { cn } from '@pumni/ui';
+import { Badge } from '@pumni/ui';
 
 interface SyncIndicatorProps {
   status: 'host' | 'in-sync' | 'catching-up';
@@ -11,43 +11,26 @@ export function SyncIndicator({ status }: SyncIndicatorProps) {
   const configs = {
     host: {
       label: 'Host',
-      className: 'bg-primary/10 text-primary border-primary/20',
-      dotClass: '',
+      tone: 'primary' as const,
+      pulse: false,
     },
     'in-sync': {
       label: 'Đồng bộ',
-      className: 'bg-success/10 text-success border-success/20',
-      dotClass: '',
+      tone: 'success' as const,
+      pulse: false,
     },
     'catching-up': {
       label: 'Cân bằng...',
-      className: 'bg-warning/10 text-warning border-warning/20',
-      dotClass: 'motion-safe:animate-ping',
+      tone: 'warning' as const,
+      pulse: true,
     },
   };
 
   const config = configs[status];
 
   return (
-    <span
-      role="status"
-      aria-live="polite"
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 type-caption font-medium transition-colors select-none',
-        config.className,
-      )}
-    >
-      <span className="relative flex size-1.5">
-        <span
-          className={cn(
-            'absolute inline-flex h-full w-full rounded-full opacity-75',
-            config.dotClass,
-            'bg-current',
-          )}
-        />
-        <span className="relative inline-flex size-1.5 rounded-full bg-current" />
-      </span>
+    <Badge tone={config.tone} pulse={config.pulse} size="sm" role="status" aria-live="polite">
       {config.label}
-    </span>
+    </Badge>
   );
 }

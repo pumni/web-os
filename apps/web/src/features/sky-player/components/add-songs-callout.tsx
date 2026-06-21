@@ -67,7 +67,7 @@ export function AddSongsCallout() {
               className="flex flex-col justify-between gap-0"
             >
               <div>
-                <code className="mb-1.5 inline-block rounded-md border border-primary/20 bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-bold text-primary">
+                <code className="mb-1.5 inline-block rounded-md border border-border bg-primary/10 px-1.5 py-0.5 font-mono text-xs font-bold text-primary">
                   {format.ext}
                 </code>
                 <p className="text-xs leading-relaxed text-muted-foreground">{format.note}</p>

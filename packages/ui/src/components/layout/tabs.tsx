@@ -2,9 +2,61 @@
 
 import * as React from 'react';
 import { Tabs as TabsPrimitive } from 'radix-ui';
+import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../../lib/cn';
 import { withViewTransition } from '../../lib/view-transition';
+
+/**
+ * TabsList styling — two visual variants:
+ *
+ * - `pill` (default): the original segmented-control style. Rounded track with
+ *   `bg-muted`, active trigger fills with `bg-background` + `shadow-control`.
+ * - `underline`: a bottom-border underline style. Flat transparent track with
+ *   a `border-b-2` active indicator. Use for side-docks, section navs, and any
+ *   context where a pill fill would look heavy.
+ */
+const tabsListVariants = cva(
+  'inline-flex h-control w-fit items-center justify-center text-muted-foreground',
+  {
+    variants: {
+      variant: {
+        /** Segmented-control pill (default — the original style). */
+        pill: 'rounded-lg bg-muted p-0.75',
+        /** Bottom-border underline indicator. Pair with `TabsTrigger variant="underline"`. */
+        underline: 'gap-0 border-b border-border bg-transparent p-0',
+      },
+    },
+    defaultVariants: {
+      variant: 'pill',
+    },
+  },
+);
+
+/**
+ * TabsTrigger styling — mirrors `TabsList` variants:
+ *
+ * - `pill` (default): rounded trigger with filled active state.
+ * - `underline`: flat trigger with `border-b-2` active indicator. The default
+ *   pill fill/shadow/rounded classes are suppressed; a `border-primary` bottom
+ *   border appears on `data-[state=active]`.
+ */
+const tabsTriggerVariants = cva(
+  "inline-flex h-full flex-1 items-center justify-center gap-1.5 border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      variant: {
+        /** Segmented-control pill (default — the original style). */
+        pill: "rounded-md not-data-[state=active]:state-hover not-data-[state=active]:state-pressed data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-control dark:text-muted-foreground dark:data-[state=active]:border-input dark:data-[state=active]:bg-background dark:data-[state=active]:text-foreground",
+        /** Bottom-border underline indicator. Pair with `TabsList variant="underline"`. */
+        underline: "border-b-2 rounded-none bg-transparent shadow-none not-data-[state=active]:state-hover not-data-[state=active]:state-pressed data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-primary dark:data-[state=active]:bg-transparent dark:data-[state=active]:text-foreground",
+      },
+    },
+    defaultVariants: {
+      variant: 'pill',
+    },
+  },
+);
 
 function Tabs({
   ref,
@@ -43,16 +95,16 @@ function Tabs({
 function TabsList({
   ref,
   className,
+  variant,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List>) {
+}: React.ComponentProps<typeof TabsPrimitive.List> &
+  VariantProps<typeof tabsListVariants>) {
   return (
     <TabsPrimitive.List
       ref={ref}
       data-slot="tabs-list"
-      className={cn(
-        'inline-flex h-control w-fit items-center justify-center rounded-lg bg-muted p-0.75 text-muted-foreground',
-        className,
-      )}
+      data-variant={variant}
+      className={cn(tabsListVariants({ variant }), className)}
       {...props}
     />
   );
@@ -61,16 +113,16 @@ function TabsList({
 function TabsTrigger({
   ref,
   className,
+  variant,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
+}: React.ComponentProps<typeof TabsPrimitive.Trigger> &
+  VariantProps<typeof tabsTriggerVariants>) {
   return (
     <TabsPrimitive.Trigger
       ref={ref}
       data-slot="tabs-trigger"
-      className={cn(
-        "inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 not-data-[state=active]:state-hover not-data-[state=active]:state-pressed data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-control dark:text-muted-foreground dark:data-[state=active]:border-input dark:data-[state=active]:bg-background dark:data-[state=active]:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className,
-      )}
+      data-variant={variant}
+      className={cn(tabsTriggerVariants({ variant }), className)}
       {...props}
     />
   );
@@ -91,4 +143,11 @@ function TabsContent({
   );
 }
 
-export { Tabs, TabsList, TabsTrigger, TabsContent };
+export {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  tabsListVariants,
+  tabsTriggerVariants,
+};

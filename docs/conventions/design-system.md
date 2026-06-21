@@ -79,19 +79,23 @@ shell surfaces stay opaque.
 **Surface identity = glassmorphism for floating layers (ADR-0014, amending
 ADR-0012, amended by ADR-0016).** A glass surface is a frosted translucent fill
 (`--glass-tint`) tuned to the APCA gate edge, with: a **luminous light top edge +
-dark bottom edge** (`--glass-highlight` / `--glass-shadow-edge`, inset box-shadows
+dark bottom edge** (`--surface-rim-top` / `--glass-shadow-edge`, inset box-shadows
 in the `glass-*` utilities) and **vibrancy** via the single `--glass-saturate`
 knob (≈1.4; the `glass-saturate.test.ts` guard locks the tokenization, not the
 value). Blur is frosted (`--blur-glass` 8–16px; dark uses 16px). Float depth is
 the directional `--shadow-glass`. The luminous border read comes from
-`--glass-highlight` (specular, ungated) — a pure-light `--glass-edge` fails the
+`--surface-rim-top` (specular, ungated) — a pure-light `--glass-edge` fails the
 Lc 25 gate on light surfaces, so the border token stays a gated definition line.
 **Perf discipline:** `will-change` is scoped to overlay transitions only
 (`[data-state=open|closed]`); stacked glass is capped at 2 layers (each layer
 forces a separate backdrop render pass — a doc/skill rule).
 Solid cards are NOT glass — they carry real elevation via `surface-raised`
-(`--shadow-card-raised` + `--card-rim-top`); content stays solid, glass is only
-for floating layers (it earns its `backdrop-filter` cost there). The OS
+(`--shadow-card-raised` only); content stays solid, glass is only for floating
+layers (it earns its `backdrop-filter` cost there). Solid surfaces are
+**structural-only** (ADR-0020): `--border` hairline + elevation shadow, no
+specular rim — the luminous top rim (`--surface-rim-top`) is **glass-only**
+(amending ADR-0018's shared seam), so a solid card reads crisp and structural
+while glass reads luminous and floating. The OS
 `Window`/Dock are presentational chrome (neutral window controls, no macOS
 traffic lights).
 
@@ -133,6 +137,70 @@ the APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
 5. Radius via named utilities only (`rounded-md/lg/xl`, `rounded-full`). No
    `rounded-[Npx]`.
 6. No new color tokens. Reuse existing semantic tokens.
+
+## Border consumption flow (ADR-0019)
+
+"Border" is three distinct concepts — do not conflate them:
+
+| Concept | Mechanism | Where it applies |
+| --- | --- | --- |
+| **Structural hairline** | `border: 1px solid var(--token)` — a real 1px edge | Card, CardWell, controls, glass |
+| **Specular rim** | `inset 0 1px 0 0 var(--token)` box-shadow — a light effect, NOT a real border | Top/bottom lit edges of raised surfaces |
+| **Status tint** | `border-{tone}/20` — state signalling | Badge, Card `state` |
+
+**Three structural hairline tokens, no fourth** (ADR-0019):
+
+- `--border` — dark, builds contrast against the fill. Card solid/inset,
+  `CardWell`. The real delineator for solid surfaces.
+- `--input` — dark, one shade deeper than `--border`. Form controls only. Flat,
+  no specular rim.
+- `--glass-edge` — **white** (light `0.45` / dark `0.14`). Glass surfaces only.
+  On glass the *structural* hairline is specular; the **drop shadow**
+  (`--shadow-glass`) is the real delineator.
+
+**`--surface-rim-top` is glass-only (ADR-0020).** ADR-0018 originally made it
+the shared seam — one calibrated lit-top-edge value read by both glass and
+solid. ADR-0020 reversed the solid half: `surface-raised` is now
+structural-only, so the rim is glass-owned again. Solid cards carry
+**no rim at all** — `--border` (hairline) + `--shadow-card-raised` (elevation)
+only. The bottom rim (`--glass-shadow-edge`) stays glass-only by design.
+
+| | Solid card (`surface-raised`) | Glass card (`glass-panel`) |
+| --- | --- | --- |
+| Structural hairline | `--border` (dark) | `--glass-edge` (white) |
+| Top rim | none (deliberate, ADR-0020) | `--surface-rim-top` |
+| Bottom rim | none (deliberate) | `--glass-shadow-edge` |
+| Real delineator | the hairline itself | `--shadow-glass` (drop shadow) |
+
+**Decision tree** — pick the path that matches the element, never write a border
+or inset rim in TSX:
+
+```
+GLASS surface (floats over a blob/media backdrop)?
+  → Use a glass-* utility. hairline = --glass-edge, rim pair = --surface-rim-top
+    + --glass-shadow-edge, delineator = --shadow-glass. [glass.css owns this]
+SOLID surface (content card, well)?
+  → Card variant="solid" / CardWell. hairline = --border, no top rim
+    (structural-only, ADR-0020 — surface-raised dropped the specular rim),
+    no bottom rim. [no inset rim in TSX]
+FORM CONTROL (input, button, select)?
+  → --input. No specular rim. aria-invalid → border-destructive.
+STATUS INDICATOR (badge, error/success card)?
+  → border-{tone}/20 via Badge or Card state — the one valid /20 exception.
+SHELL CHROME (sidebar rail, topbar, dock)?
+  → glass-bar / glass-bar-edge-r/b. vertical rim = --glass-edge-rim. [no 4-sided border]
+```
+
+**Golden rules:**
+
+1. Never write `border: 1px solid <colour>` or an inset rim box-shadow in TSX —
+   go through a utility (`glass-*`, `surface-raised`) or component (`Card`,
+   `CardWell`, `Badge`).
+2. Status tint `/20` is reached **only** via `Badge` or `Card state`. No
+   hand-rolled `border-{tone}/20`, no `border-2`, no `border-l-4` in features.
+
+The solid-vs-glass hairline separation is pinned by the `border-consumption`
+drift guard (`apps/web/src/test/design-system/border-consumption.test.ts`).
 
 ## Tailwind v4 variant syntax (canonical form)
 

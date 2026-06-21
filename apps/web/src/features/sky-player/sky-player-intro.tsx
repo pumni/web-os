@@ -6,7 +6,7 @@ import { Badge, Card, CardContent, CardWell, motion, recipes, useReducedMotion }
 
 import { PreviewWindow } from './preview-window';
 import { HERO_HIGHLIGHTS, SKY_PLAYER_VERSION } from './content';
-import { SectionNav } from './components/section-nav';
+import { SkyPlayerSectionNav } from './components/section-nav';
 import { PageSection } from './components/page-section';
 import { SectionHeader } from './components/section-header';
 import { SkyPlayerCta } from './components/sky-player-cta';
@@ -98,7 +98,7 @@ export function SkyPlayerIntro() {
       </section>
 
       {/* ── Sticky section nav ───────────────────────────────────────────── */}
-      <SectionNav />
+      <SkyPlayerSectionNav />
 
       {/* ── Main content ─────────────────────────────────────────────────── */}
       <motion.div
@@ -147,7 +147,7 @@ export function SkyPlayerIntro() {
         {/* Responsible use */}
         <motion.div {...(shouldReduce ? {} : recipes.staggerItem)}>
           <PageSection id="responsible-use">
-            <Card className="border-warning/20 bg-warning/5">
+            <Card className="border border-border bg-warning/5">
               <CardContent className="flex items-start gap-4 p-6 md:p-7">
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-warning/10">
                   <AlertTriangle className="h-5 w-5 text-warning" />

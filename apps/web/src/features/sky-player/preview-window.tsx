@@ -545,7 +545,7 @@ function NoteKey({
       className={cn(
         'relative aspect-square min-h-12 rounded-xl border transition-[background-color,border-color,box-shadow] duration-(--duration-base) ease-fluid sm:min-h-0',
         isActive
-          ? 'motion-safe:note-hit-glow scale-105 border-primary/30 bg-linear-to-br from-(--brand-gradient-from) to-(--brand-gradient-via) shadow-[0_0_20px_var(--primary)]'
+          ? 'motion-safe:note-hit-glow scale-105 border-primary bg-linear-to-br from-(--brand-gradient-from) to-(--brand-gradient-via) shadow-[0_0_20px_var(--primary)]'
           : 'border-border bg-muted hover:bg-muted/80',
       )}
       aria-label={`Note ${label}`}

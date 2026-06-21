@@ -185,14 +185,14 @@ function SoftLockBanner({ onResync }: { onResync: () => void }) {
     <div
       role="status"
       aria-live="polite"
-      className="flex w-full items-center justify-between rounded-md border border-warning/20 bg-warning/10 px-3 py-1.5 text-xs text-warning select-none"
+      className="flex w-full items-center justify-between rounded-md border border-border bg-warning/10 px-3 py-1.5 text-xs text-warning select-none"
     >
       <span className="leading-snug">Bạn đang xem lệch tiến trình của phòng.</span>
       <Button
         variant="ghost"
         size="sm"
         onClick={onResync}
-        className="ml-2 h-6 shrink-0 border border-warning/20 px-2.5 text-xs font-semibold text-warning motion-safe:hover:bg-warning/10"
+        className="ml-2 h-6 shrink-0 border border-border px-2.5 text-xs font-semibold text-warning motion-safe:hover:bg-warning/10"
       >
         Đồng bộ lại
       </Button>
@@ -280,7 +280,7 @@ function HostActionGroup({
 
       {/* Playback Rate / Speed Selector — host only authoritative */}
       <Select value={playbackRate.toString()} onValueChange={onSpeedChange} disabled={!isHost}>
-        <SelectTrigger className="h-7 w-14 border-foreground/20 bg-transparent px-1.5 text-xs text-foreground focus:ring-foreground/30">
+        <SelectTrigger className="h-7 w-14 bg-transparent px-1.5 text-xs text-foreground">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

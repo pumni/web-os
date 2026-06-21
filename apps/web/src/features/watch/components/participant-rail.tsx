@@ -64,12 +64,12 @@ function ParticipantRow({
   const rowClass = cn(
     'flex items-center justify-between p-2 rounded-md border text-xs transition-colors duration-(--duration-fast)',
     isHost
-      ? 'border-primary/20 bg-primary/10'
+      ? 'border-border bg-primary/10'
       : 'border-border bg-muted motion-safe:hover:bg-muted/80',
   );
   const avatarClass = cn(
     'size-7 border shrink-0',
-    isHost ? 'border-primary/40 ring-2 ring-primary/20' : 'border-border',
+    isHost ? 'border-primary ring-2 ring-primary/20' : 'border-border',
   );
   const fallbackClass = cn(
     'text-[10px] font-bold uppercase select-none',

@@ -71,7 +71,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
           </TooltipTrigger>
           <TooltipContent side="right" className="flex items-center gap-2">
             {collapsed ? 'Mở rộng' : 'Thu gọn'}
-            <kbd className="rounded border border-border/60 bg-muted/60 px-1.5 font-mono text-[0.7rem] text-muted-foreground">
+            <kbd className="rounded border border-border bg-muted px-1.5 font-mono text-[0.7rem] text-muted-foreground">
               {modKey()} B
             </kbd>
           </TooltipContent>

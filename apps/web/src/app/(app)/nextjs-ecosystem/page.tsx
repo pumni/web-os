@@ -26,7 +26,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { Card, CardContent, Separator, cn } from '@pumni/ui';
-import { SectionNav } from './section-nav';
+import { EcosystemSectionNav } from './section-nav';
 
 export const metadata: Metadata = {
   title: 'Next.js 16.2.9 Ecosystem',
@@ -52,10 +52,10 @@ function InfoBox({
   variant?: 'default' | 'highlight' | 'warning' | 'info';
 }) {
   const variants = {
-    default: 'border',
-    highlight: 'border-primary/20 bg-primary/5',
-    warning: 'border-amber-500/20 bg-amber-500/5',
-    info: 'border-sky-500/20 bg-sky-500/5',
+    default: 'border border-border',
+    highlight: 'border border-border bg-primary/10',
+    warning: 'border border-border bg-warning/10',
+    info: 'border border-border bg-accent',
   };
   return (
     <div className={`space-y-2 rounded-md ${variants[variant]} p-3`}>
@@ -68,7 +68,7 @@ function InfoBox({
 // ── Callout / blockquote ──
 function Callout({ children }: { children: React.ReactNode }) {
   return (
-    <blockquote className="border-l-4 border-primary/60 bg-muted/40 px-4 py-3 text-muted-foreground italic">
+    <blockquote className="border-l-2 border-primary bg-muted px-4 py-3 text-muted-foreground italic">
       {children}
     </blockquote>
   );
@@ -200,7 +200,7 @@ export default function NextjsEcosystemPage() {
       </div>
 
       {/* ── Sticky Section Nav ── */}
-      <SectionNav />
+      <EcosystemSectionNav />
 
       {/* ══════════════════════════════════════
           SECTION 1: TỔNG QUAN
@@ -364,7 +364,7 @@ export default function NextjsEcosystemPage() {
 
           <Card>
             <CardContent className="space-y-4 pt-6">
-              <div className="space-y-2 rounded-md border-primary/20 bg-primary/5 p-4">
+              <div className="space-y-2 rounded-md border border-border bg-primary/10 p-4">
                 <p className="text-sm font-semibold">Vai trò của proxy.ts</p>
                 <ul className="list-inside list-disc space-y-1 text-muted-foreground">
                   <li>

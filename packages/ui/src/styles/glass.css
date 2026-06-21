@@ -11,7 +11,7 @@
  * 5-element model (ADR-0014, amended by ADR-0016): tint (`--glass-tint`,
  * doubles as the text scrim), blur + saturation (`--glass-blur` /
  * `--glass-saturate`), the volumetric edge pair (`--glass-edge` + inset top
- * `--glass-highlight` paired with inset bottom `--glass-shadow-edge`), drop
+ * `--surface-rim-top` paired with inset bottom `--glass-shadow-edge`), drop
  * shadow (`--shadow-glass`, the real delineator), and an opaque
  * `--glass-fallback-bg`. `glass-panel` / `glass-window` are GPU-promoted
  * (`translateZ(0)`).
@@ -30,7 +30,7 @@
   /* Glassmorphism — 5-element model (ADR-0014, amended by ADR-0016): a
      never-fully-transparent tint (APCA-gated), frosted blur + saturation
      vibrancy, a luminous white edge, the top-lit / bottom-shaded inset rim pair
-     (`--glass-highlight` / `--glass-shadow-edge`) for a volumetric cut-edge
+     (`--surface-rim-top` / `--glass-shadow-edge`) for a volumetric cut-edge
      read, and a soft directional drop shadow that does the real panel
      delineation. Promoted to its own GPU composite layer so the per-pixel
      backdrop blur does not bottleneck the CPU on scroll. `will-change` is
@@ -47,7 +47,7 @@
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass),
-    inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 1px 0 0 var(--surface-rim-top),
     inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
 }
@@ -62,7 +62,7 @@
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass-glow),
-    inset 0 1px 0 0 var(--glass-highlight),
+    inset 0 1px 0 0 var(--surface-rim-top),
     inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
 }
@@ -89,7 +89,7 @@
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass-glow-soft),
-    inset 0 1px 0 0 var(--glass-highlight);
+    inset 0 1px 0 0 var(--surface-rim-top);
 }
 
 .glass-window[data-active='false'] .glass-titlebar {
@@ -106,7 +106,7 @@
   background-color: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+  box-shadow: inset 0 1px 0 0 var(--surface-rim-top);
 }
 
 /* Bordered bar variant for FLOATING elements (docks, floating toolbars).
@@ -117,7 +117,7 @@
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1px solid var(--glass-edge);
-  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+  box-shadow: inset 0 1px 0 0 var(--surface-rim-top);
 }
 
 /* Shell chrome variant — glass bar base + right-side glass edge + ambient depth.
@@ -134,7 +134,7 @@
   box-shadow:
     var(--shadow-shell-depth),
     var(--glass-edge-rim),
-    inset 0 1px 0 0 var(--glass-highlight);
+    inset 0 1px 0 0 var(--surface-rim-top);
 }
 
 /* Shell chrome variant — glass bar base + bottom-side glass edge + depth.
@@ -146,7 +146,7 @@
   box-shadow:
     var(--shadow-shell-depth-bottom),
     var(--glass-edge-rim-bottom),
-    inset 0 1px 0 0 var(--glass-highlight);
+    inset 0 1px 0 0 var(--surface-rim-top);
 }
 
 @utility glass-titlebar {
@@ -154,7 +154,7 @@
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border-bottom: 1px solid var(--glass-edge);
-  box-shadow: inset 0 1px 0 0 var(--glass-highlight);
+  box-shadow: inset 0 1px 0 0 var(--surface-rim-top);
 }
 
 /*

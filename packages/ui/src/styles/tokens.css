@@ -7,6 +7,14 @@
  */
 
 :root {
+  /* color-scheme tells the UA to render its built-in chrome (scrollbars,
+     <select>, date/color pickers, checkboxes, autofill) in the matching palette.
+     Without it, next-themes' `.dark` class swaps our tokens but leaves native
+     controls light — a visible mismatch. Pinned at the document root so it
+     pairs with the `.dark` override below. Modern best practice (Tailwind v4 +
+     next-themes docs). */
+  color-scheme: light;
+
   /* --- Brand: Indigo --- */
   --indigo-50: oklch(0.962 0.018 272.314);
   --indigo-100: oklch(0.93 0.034 272.788);
@@ -165,8 +173,9 @@
 
   /* Solid content elevation — soft multi-layer, modern depth (NOT the flat
      --shadow-1 hairline). Lets solid cards carry real lift so glass is reserved
-     for true floating layers. The inset top rim is applied alongside this in
-     the `surface-raised` utility (theme.css) to read as a lit top edge. */
+     for true floating layers. Applied standalone in `surface-raised` (theme.css)
+     — the inset top rim is no longer applied there (ADR-0020); solid surfaces
+     are structural-only (`border-border` + this elevation, no specular rim). */
   --shadow-card-raised:
     0 1px 2px -1px oklch(0 0 0 / 0.05),
     0 4px 10px -3px oklch(0 0 0 / 0.07);
@@ -260,4 +269,13 @@
   --switch-height: 1rem;
   --switch-width: 1.75rem;
   --switch-thumb-size: 0.75rem;
+}
+
+/* Switch native UA chrome to the dark palette. next-themes toggles the `.dark`
+   class on <html>; this mirrors it at the document level so scrollbars,
+   <select> dropdowns, date/color pickers, checkboxes, and autofill all render
+   dark when the theme is dark. Lives in tokens.css (same document-level scope
+   as the :root light default above), not theme.css (which is semantic-only). */
+.dark {
+  color-scheme: dark;
 }

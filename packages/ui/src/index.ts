@@ -148,6 +148,7 @@ export { Highlight } from './components/layout/highlight';
 // feedback — transient status
 export { Badge, badgeVariants } from './components/feedback/badge';
 export { Skeleton, skeletonVariants } from './components/feedback/skeleton';
+export { Spinner, spinnerVariants } from './components/feedback/spinner';
 export { Toaster } from './components/feedback/sonner';
 
 // identity — Pumni brand tier (glass, personalization)

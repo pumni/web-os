@@ -12,6 +12,18 @@
 > structural decisions in this ADR (solid cards for content, glass only for floating
 > layers, de-Appled OS chrome, APCA gate authoritative, a11y fallbacks) **still
 > stand**.
+>
+> **Rim tokens renamed by [ADR-0018](0018-unify-surface-rim-top.md):** the top rim
+> token this ADR calls `--glass-rim-top` (later `--glass-highlight`) is now
+> `--surface-rim-top`, unified across glass and solid surfaces. The bottom rim
+> (`--glass-shadow-edge`) keeps its name. Token names in the body below are the
+> historical 0012 names; read them through that lens.
+>
+> **Solid half reversed by [ADR-0020](0020-solid-cards-drop-specular-rim.md):**
+> ADR-0018's "shared seam" (solid + glass reading one rim token) was partially
+> reversed — `surface-raised` dropped the specular top rim so solid cards are
+> structural-only (`--border` + `--shadow-card-raised`). `--surface-rim-top` is
+> glass-owned again; only its surface-agnostic name is retained.
 
 ## Context
 

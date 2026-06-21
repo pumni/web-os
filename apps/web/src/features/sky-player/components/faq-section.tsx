@@ -23,7 +23,7 @@ function FaqCard({
 }) {
   const cardClass = cn(
     'overflow-hidden gap-0 py-0 transition-colors duration-(--duration-base) ease-fluid',
-    isOpen ? 'border-primary/30' : '',
+    isOpen ? 'border-primary' : '',
   );
   const badgeClass = cn(
     'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors',

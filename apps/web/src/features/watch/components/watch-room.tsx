@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import type { MediaPlayerInstance } from '@vidstack/react';
 import {
+  Badge,
   Button,
   Input,
   Label,
@@ -19,6 +20,7 @@ import {
   SheetHeader,
   SheetTitle,
   GlassSurface,
+  Spinner,
   cn,
 } from '@pumni/ui';
 import { toast } from 'sonner';
@@ -296,7 +298,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
           variant="panel"
           className="flex w-full max-w-xs flex-col items-center justify-center gap-4 rounded-xl px-8 py-10 select-none"
         >
-          <div className="size-10 rounded-full border-2 border-primary border-t-transparent motion-safe:animate-spin" />
+          <Spinner size="lg" />
           <span className="type-caption text-muted-foreground">Đang đồng bộ với máy chủ...</span>
         </GlassSurface>
       </div>
@@ -326,13 +328,15 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             <h2 className="truncate type-heading text-sm">Phòng xem chung</h2>
             <SyncIndicator status={syncStatus} />
             {channelStatus !== 'connected' && (
-              <span
+              <Badge
+                tone="destructive"
+                size="sm"
                 role="status"
                 aria-live="polite"
-                className="hidden items-center rounded-sm border border-destructive/20 bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive motion-safe:animate-pulse sm:inline-flex"
+                className="hidden sm:inline-flex motion-safe:animate-pulse"
               >
                 Mất kết nối
-              </span>
+              </Badge>
             )}
           </div>
         </div>

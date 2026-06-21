@@ -69,25 +69,16 @@ export function SideDock({
     <Card variant="solid" className="flex h-full flex-col overflow-hidden p-0 select-none">
       <div className="flex h-full min-h-0 flex-1 flex-col p-4">
         <Tabs defaultValue="playlist" className="flex h-full min-h-0 w-full flex-1 flex-col">
-          <TabsList className="grid h-9 shrink-0 grid-cols-3 gap-0 border-b border-border bg-transparent p-0 text-muted-foreground">
-            <TabsTrigger
-              value="playlist"
-              className="h-full rounded-none border-0 border-b-2 border-transparent bg-transparent text-xs shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-primary dark:data-[state=active]:bg-transparent"
-            >
+          <TabsList variant="underline" className="grid h-9 shrink-0 grid-cols-3">
+            <TabsTrigger value="playlist" variant="underline" className="text-xs">
               <ListVideo className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Danh sách</span>
             </TabsTrigger>
-            <TabsTrigger
-              value="chat"
-              className="h-full rounded-none border-0 border-b-2 border-transparent bg-transparent text-xs shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-primary dark:data-[state=active]:bg-transparent"
-            >
+            <TabsTrigger value="chat" variant="underline" className="text-xs">
               <MessageSquare className="size-3.5 shrink-0" />
               Chat
             </TabsTrigger>
-            <TabsTrigger
-              value="participants"
-              className="h-full rounded-none border-0 border-b-2 border-transparent bg-transparent text-xs shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-primary dark:data-[state=active]:bg-transparent"
-            >
+            <TabsTrigger value="participants" variant="underline" className="text-xs">
               <Users className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Người</span>
               <span className="text-[11px] font-semibold tabular-nums">{participants.length}</span>

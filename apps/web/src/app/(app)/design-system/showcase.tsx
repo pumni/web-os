@@ -1614,7 +1614,7 @@ export function DesignSystemShowcase() {
               <CardContent className="space-y-3">
                 <motion.div
                   {...(shouldReduceMotion ? {} : recipes.hoverLift)}
-                  className="cursor-default rounded-xl border bg-card p-4 text-xs transition-colors hover:border-primary/50"
+                  className="cursor-default rounded-xl border border-border bg-card p-4 text-xs transition-colors hover:border-primary/30"
                 >
                   <p className="font-semibold text-foreground">hoverLift Recipe</p>
                   <p className="mt-1 text-muted-foreground">

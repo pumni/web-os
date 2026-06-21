@@ -45,7 +45,7 @@ export function DashboardHeaderCard({ user }: DashboardHeaderCardProps) {
         <div className="flex min-w-0 items-center gap-4">
           <Avatar
             size="lg"
-            className="shrink-0 self-start border-2 border-primary/20 shadow-sm sm:self-auto"
+            className="shrink-0 self-start border border-border shadow-sm sm:self-auto"
           >
             {user.user_metadata?.avatar_url ? (
               <AvatarImage src={user.user_metadata.avatar_url} alt={user.email || 'User'} />
