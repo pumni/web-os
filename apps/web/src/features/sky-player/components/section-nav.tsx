@@ -1,6 +1,7 @@
 'use client';
 
-import { SectionNav } from '@/components/section-nav';
+import { SectionNav } from '@/shared/components/section-nav';
+
 import { PAGE_SECTIONS } from '../content';
 
 export function SkyPlayerSectionNav() {

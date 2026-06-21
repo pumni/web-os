@@ -46,7 +46,8 @@ import { TapToPlayOverlay } from './tap-to-play-overlay';
 import { HostClaimBanner } from './host-claim-banner';
 import { useHostHeartbeat } from '../hooks/use-host-heartbeat';
 import { useMemberProfiles } from '../hooks/use-room-members';
-import { useAppUiStore } from '@/stores/app-ui-store';
+import { useAppUiStore } from '@/shared/stores/app-ui-store';
+
 import { useRoomMembership } from '../hooks/use-room-membership';
 
 // Phase 6 imports

@@ -26,7 +26,8 @@ import {
   usePersonalization,
 } from '@pumni/ui';
 
-import type { Room } from '@/features/watch/types';
+import type { Room } from '@/features/watch';
+
 
 interface DashboardBentoProps {
   recentRooms: ReadonlyArray<Room>;

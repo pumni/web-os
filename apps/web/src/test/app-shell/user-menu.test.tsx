@@ -2,7 +2,8 @@ import * as React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { UserMenu } from '@/components/app-shell/user-menu';
+import { UserMenu } from '@/shared/components/app-shell/user-menu';
+
 
 const signOut = vi.hoisted(() => vi.fn(async () => ({ error: null })));
 const push = vi.hoisted(() => vi.fn());

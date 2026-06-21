@@ -2,7 +2,8 @@ import { Suspense } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { getCurrentUser } from '@pumni/auth';
 import { redirect } from 'next/navigation';
-import { AppShell } from '@/components/app-shell/app-shell';
+import { AppShell } from '@/shared/components/app-shell/app-shell';
+
 
 export default function ProtectedLayout({
   children,

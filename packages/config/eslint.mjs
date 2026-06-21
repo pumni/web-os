@@ -161,3 +161,64 @@ export const pumniNoAdHocSurface = [
     },
   },
 ];
+
+const FEATURES = ['design-system', 'design-trends', 'profile', 'sky-player', 'watch'];
+
+/**
+ * Feature boundary guard. Enforces that:
+ * 1. Features do not import from the routing layer (src/app/**) to ensure portability.
+ * 2. Code outside a specific feature (including other features) must not import its internal files,
+ *    forcing them to use the public API (root index.ts of the feature).
+ * Test files are exempted from these rules.
+ */
+export const pumniFeatureBoundary = [
+  {
+    name: 'pumni/feature-no-app-imports',
+    files: ['src/features/**/*.{ts,tsx}'],
+    ignores: ['src/test/**', '**/*.test.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                '**/app/**',
+                '@/app/**',
+              ],
+              message:
+                'Feature portability violation: Features must not import from the routing layer (@/app). Keep features fully self-contained.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  ...FEATURES.map((feature) => ({
+    name: `pumni/feature-boundary-${feature}`,
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      `src/features/${feature}/**`,
+      'src/test/**',
+      '**/*.test.{ts,tsx}',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: [
+                `**/features/${feature}/*`,
+                `**/features/${feature}/**/*`,
+              ],
+              message: `Feature boundary violation: Do not import internals of "${feature}" feature. Only import from the public API "@/features/${feature}".`,
+            },
+          ],
+        },
+      ],
+    },
+  })),
+];
+
+

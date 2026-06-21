@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
-import { ensureRoomMembership } from '@/features/watch/queries';
+import { ensureRoomMembership } from '@/features/watch';
+
 
 export async function POST(
   request: NextRequest,

@@ -5,8 +5,9 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui';
-import { cn } from '@/lib/utils';
-import { useAppUiStore, useSidebarCollapsed } from '@/stores/app-ui-store';
+import { cn } from '@/shared/lib/utils';
+import { useAppUiStore, useSidebarCollapsed } from '@/shared/stores/app-ui-store';
+
 import { navItems } from './nav-items';
 import { SIDEBAR_WIDTH } from './sidebar-config';
 

@@ -17,7 +17,8 @@ import type {
 } from '../types';
 import { watchKeys } from '../query-keys';
 import { getStructuralSignature } from '../sync-math';
-import { useTelemetryRef } from '@/lib/observability';
+import { useTelemetryRef } from '@/shared/lib/observability';
+
 
 function getPlaybackSignature(room: Room): string {
   return `${room.is_playing}|${room.anchor_position}|${room.anchor_server_ts}|${room.playback_rate}`;

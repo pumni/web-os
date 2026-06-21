@@ -2,7 +2,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 
-import { pumniNoRawColor, pumniNoAdHocSurface } from '@pumni/config/eslint';
+import { pumniNoRawColor, pumniNoAdHocSurface, pumniFeatureBoundary } from '@pumni/config/eslint';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -11,6 +11,9 @@ const eslintConfig = defineConfig([
   ...pumniNoRawColor,
   // Surface-first guard: forbid ad-hoc surfaces.
   ...pumniNoAdHocSurface,
+  // Feature boundary guard: forbid importing feature internals from outside the feature.
+  ...pumniFeatureBoundary,
+
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

@@ -1,7 +1,8 @@
 import { Suspense } from 'react';
 import { getCurrentUser } from '@pumni/auth';
 import { redirect } from 'next/navigation';
-import { DesktopBackground } from '@/components/app-shell/desktop-background';
+import { DesktopBackground } from '@/shared/components/app-shell/desktop-background';
+
 
 export default function WatchLayout({
   children,

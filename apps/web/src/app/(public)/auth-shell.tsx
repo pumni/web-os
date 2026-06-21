@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { DesktopBackground } from '@/components/app-shell/desktop-background';
+import { DesktopBackground } from '@/shared/components/app-shell/desktop-background';
+
 import {
   CardContent,
   CardDescription,

@@ -5,8 +5,9 @@ import { Calendar, Clock } from 'lucide-react';
 
 import { Badge, CardSpotlight, CardContent, Avatar, AvatarImage, AvatarFallback } from '@pumni/ui';
 
-import { useClock } from '@/hooks/use-clock';
-import { dateFormatter } from '@/lib/formatters';
+import { useClock } from '@/shared/hooks/use-clock';
+import { dateFormatter } from '@/shared/lib/formatters';
+
 
 function getGreeting(hour: number): string {
   if (hour < 12) return 'Good morning';

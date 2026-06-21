@@ -23,7 +23,8 @@ import {
   type SyncEvent,
   type SyncState,
 } from '../sync-machine';
-import { useTelemetryRef } from '@/lib/observability';
+import { useTelemetryRef } from '@/shared/lib/observability';
+
 import { useHostAnchorEmitter } from './use-host-anchor-emitter';
 
 // ---------------------------------------------------------------------------

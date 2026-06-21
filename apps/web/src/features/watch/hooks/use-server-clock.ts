@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useTelemetryRef } from '@/lib/observability';
+import { useTelemetryRef } from '@/shared/lib/observability';
+
 import { selectBestClockSample, type ClockSample } from '../sync-math';
 
 // Probe the server several times per sync and keep the lowest-RTT sample; a

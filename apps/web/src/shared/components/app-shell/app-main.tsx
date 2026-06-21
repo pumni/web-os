@@ -1,8 +1,9 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
-import { useSidebarCollapsed } from '@/stores/app-ui-store';
+import { cn } from '@/shared/lib/utils';
+import { useSidebarCollapsed } from '@/shared/stores/app-ui-store';
+
 import { SIDEBAR_WIDTH } from './sidebar-config';
 
 type AppMainProps = Readonly<{

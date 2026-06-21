@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { toast } from 'sonner';
-import { useActiveSection } from '@/hooks/use-active-section';
+import { useActiveSection } from '@/shared/hooks/use-active-section';
+
 import {
   CommandIcon,
   UserIcon,

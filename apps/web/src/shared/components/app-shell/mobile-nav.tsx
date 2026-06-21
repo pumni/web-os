@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@pumni/ui';
-import { cn } from '@/lib/utils';
-import { useAppUiStore } from '@/stores/app-ui-store';
+import { cn } from '@/shared/lib/utils';
+import { useAppUiStore } from '@/shared/stores/app-ui-store';
+
 import { navItems } from './nav-items';
 
 /**

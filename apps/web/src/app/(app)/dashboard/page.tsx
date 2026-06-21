@@ -9,8 +9,8 @@ import { DailyPlanner } from './daily-planner';
 import { DashboardBento, DashboardBentoSkeleton } from './dashboard-bento';
 import { DashboardDock } from './dashboard-dock';
 import { DashboardHeaderCard } from './dashboard-header-card';
-import { RecentRoomsCard } from '@/features/watch/components/recent-rooms-card';
-import { getRecentRooms } from '@/features/watch/queries';
+import { RecentRoomsCard, getRecentRooms } from '@/features/watch';
+
 
 export const metadata: Metadata = {
   title: 'Dashboard',

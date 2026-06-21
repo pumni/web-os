@@ -3,7 +3,8 @@
 import { useEffect, useRef, type MutableRefObject, type RefObject } from 'react';
 import type { MediaPlayerInstance } from '@vidstack/react';
 import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
-import { useTelemetryRef } from '@/lib/observability';
+import { useTelemetryRef } from '@/shared/lib/observability';
+
 import type { PlaybackAnchor } from '../types';
 
 interface UseHostAnchorEmitterOptions {

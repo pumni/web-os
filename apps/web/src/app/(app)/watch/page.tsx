@@ -1,5 +1,6 @@
 import { requireUser } from '@pumni/auth';
-import { WatchLobby } from '@/features/watch/components/watch-lobby';
+import { WatchLobby } from '@/features/watch';
+
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

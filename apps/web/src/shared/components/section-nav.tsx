@@ -4,7 +4,8 @@ import * as React from 'react';
 
 import { cn, withViewTransition } from '@pumni/ui';
 
-import { useActiveSection } from '@/hooks/use-active-section';
+import { useActiveSection } from '@/shared/hooks/use-active-section';
+
 
 /**
  * SectionNav — sticky scroll-spy underline navigation.
