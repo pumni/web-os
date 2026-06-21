@@ -2,7 +2,7 @@ import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { DesignSystemShowcase } from '@/app/(app)/design-system/showcase';
+import { DesignSystemShowcase } from '@/features/design-system';
 import { PersonalizationProvider, TooltipProvider } from '@pumni/ui';
 
 const toast = vi.hoisted(() => ({

@@ -74,8 +74,8 @@ interface BentoGridProps extends React.ComponentProps<'div'> {
    */
   columns?: 6 | 12;
   /**
-   * Floor height (px) of every implicit grid row. When set, the grid uses
-   * `grid-auto-rows: minmax(rowHeight, auto)`, so a `row-span-2` tier spans
+   * Floor height (px) of every implicit grid row. When set, the uses
+   *`grid-auto-rows: minmax(rowHeight, auto)`, so a `row-span-2` tier spans
    * exactly two fixed-height tracks instead of two content-sized rows — the
    * proportional tile ratios that make a true bento. The `auto` ceiling lets a
    * row grow past the floor for dense content. Omit to keep the legacy
@@ -98,12 +98,12 @@ export function BentoGrid({ className, children, columns = 12, rowHeight, dense,
   // here (consistent with how `BentoGridItem.minHeight` is already handled).
   const gridStyle: React.CSSProperties = {
     ...(rowHeight !== undefined ? { gridAutoRows: `minmax(${rowHeight}px, auto)` } : {}),
-    ...(dense ? { gridAutoFlow: 'dense' } : {}),
+    ...(dense ? { gridAutoFlow: 'dense'} : {}),
     ...style,
   };
   return (
-    // Named container lives on this WRAPPER, not the grid. A container can never
-    // respond to its OWN container query — CSS only restyles a container's
+    // Named container lives on this WRAPPER, not the grid. A can never
+    // respond to its OWN query — CSS only restyles a's
     // descendants by its size, never the container itself (the rule the CSS WG
     // keeps unbreakable to avoid infinite resize loops). So `@container/bento`
     // is declared here and the grid below — its descendant — reads this
@@ -145,11 +145,11 @@ export function BentoGrid({ className, children, columns = 12, rowHeight, dense,
  *
  * | tier    | @[64rem] (12-col)            | @[40rem] (6-col) | base |
  * | ------- | ---------------------------- | --------------- | ---- |
- * | hero    | col-span-6 row-span-2        | col-span-6      | 1 col |
- * | feature | col-span-4 row-span-2        | col-span-6      | 1 col |
- * | metric  | col-span-3                   | col-span-3      | 1 col |
- * | accent  | col-span-2                   | col-span-2      | 1 col |
- * | full    | col-span-12                  | col-span-6      | 1 col |
+ * | hero    | col-span-6 row-span-2        |      | 1 col |
+ * | feature |        |      | 1 col |
+ * | metric  |                   |      | 1 col |
+ * | accent  |                   |      | 1 col |
+ * | full    |                  |      | 1 col |
  */
 const bentoTierVariants = cva('', {
   variants: {

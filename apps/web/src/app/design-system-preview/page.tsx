@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 
-import { DesignSystemShowcase } from '@/app/(app)/design-system/showcase';
+import { DesignSystemShowcase } from '@/features/design-system';
 
 /**
  * Public, isolated render of the design-system showcase used purely as a stable

@@ -138,6 +138,7 @@ export const pumniNoAdHocSurface = [
       '**/profile-form.tsx',
       '**/app-shell/**',
       '**/showcase.tsx',
+      '**/features/design-system/**',
       // Core UI package components that house overlay scrim blurs or OS window body transparency.
       '**/dialog.tsx',
       '**/sheet.tsx',

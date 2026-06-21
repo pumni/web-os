@@ -1,4 +1,4 @@
-import { DesignSystemShowcase } from './showcase';
+import { DesignSystemShowcase } from '@/features/design-system';
 
 export const metadata = {
   title: 'Design System',

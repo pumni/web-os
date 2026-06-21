@@ -76,7 +76,7 @@ function copyToClipboard(text: string, label: string) {
 const ROW_HEIGHT = 140;
 
 // The preview viewport is clamped to a real width. Because BentoGrid is now a
-// container-query grid (`@container/bento`), clamping its width directly drives
+// container-query (`@container/bento`), clamping its width directly drives
 // the 1 → 6 → 12 column collapse — the SAME code path production takes when
 // nested in a narrow sidebar/dialog. No faked per-item spans, no viewport
 // tricks: this is the real container-query responsive behaviour.
