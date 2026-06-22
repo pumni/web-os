@@ -35,7 +35,25 @@
       "vitest": "^4.1.8",
       "@playwright/test": "^1.60.0",
       "@testing-library/react": "^16.3.2",
-      "jsdom": "^29.1.1"
+      "jsdom": "^29.1.1",
+      "@dnd-kit/core": "^6.3.1",
+      "@dnd-kit/sortable": "^10.0.0",
+      "@dnd-kit/utilities": "^3.2.2",
+      "@vidstack/react": "^1.15.6",
+      "hls.js": "^1.6.16",
+      "react-easy-crop": "^6.0.2",
+      "match-sorter": "^8.3.0",
+      "@tailwindcss/postcss": "^4",
+      "tw-animate-css": "^1.0.3",
+      "babel-plugin-react-compiler": "^1.0.0",
+      "@testing-library/jest-dom": "^6.9.1",
+      "typescript-eslint": "^8",
+      "eslint-config-next": "16.2.9",
+      "prettier": "^3.8.4",
+      "prettier-plugin-tailwindcss": "^0.8.0",
+      "tailwind-lint": "^0.12.0",
+      "tailwindcss": "^4",
+      "turbo": "2.9.18"
     }
   },
   "scripts": {
@@ -57,21 +75,20 @@
     "ps:search": "pwsh -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/search.ps1",
     "ai:local": "bun run ai:check && bun run typecheck",
     "ai:premerge": "bun run ai:check && bun run ai:eval && bun run lint && bun run typecheck && bun run test && bun run build",
-    "clean": "git clean -xdf node_modules .next dist .turbo"
+    "clean": "bun run clean:node && bun run clean:build",
+    "clean:node": "rm -rf node_modules .turbo",
+    "clean:build": "rm -rf apps/web/.next apps/web/dist packages/*/dist"
   },
   "devDependencies": {
-    "prettier": "^3.8.4",
-    "prettier-plugin-tailwindcss": "^0.8.0",
-    "tailwind-lint": "^0.12.0",
-    "tailwindcss": "^4",
-    "turbo": "2.9.18"
+    "prettier": "catalog:",
+    "prettier-plugin-tailwindcss": "catalog:",
+    "tailwind-lint": "catalog:",
+    "tailwindcss": "catalog:",
+    "turbo": "catalog:"
   },
   "engines": {
     "node": ">=22",
     "bun": ">=1.3"
-  },
-  "overrides": {
-    "@types/node": "^22"
   },
   "packageManager": "bun@1.3.14"
 }

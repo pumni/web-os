@@ -56,7 +56,7 @@
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "lucide-react": "catalog:",
-    "match-sorter": "^8.3.0",
+    "match-sorter": "catalog:",
     "motion": "catalog:",
     "next-themes": "catalog:",
     "radix-ui": "catalog:",
@@ -74,6 +74,6 @@
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "typescript-eslint": "^8"
+    "typescript-eslint": "catalog:"
   }
 }

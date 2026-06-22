@@ -13,16 +13,20 @@
     },
     "build": {
       "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "dist/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "inputs": ["src/**/*.{ts,tsx,js,mjs}", "eslint.config.mjs", "tsconfig.json"]
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["^typecheck"],
+      "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json", "tsconfig.base.json"]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.{ts,tsx}", "vitest.config.ts", "tsconfig.json"]
     },
     "format": {
       "cache": false

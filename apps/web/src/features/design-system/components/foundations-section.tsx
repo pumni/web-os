@@ -439,7 +439,7 @@ function RadiusDemo({ label, className }: { label: string; className: string }) 
  * with the same `oklchToSrgb` + `apcaContrast` pair the contrast gate uses.
  */
 function ColorDerivationDemo({ targetLc }: { targetLc: number }) {
-  // Anchor built via formatOklch so no raw `oklch(` literal leaks into source
+  // Anchor built via formatOklch so no raw oklch literal leaks into source
   // (pumniNoRawColor guards token boundaries). A mid-light warm surface forces a
   // non-trivial polarity decision for `auto`.
   const anchorBg = formatOklch({ l: 0.85, c: 0.02, h: 70 });
