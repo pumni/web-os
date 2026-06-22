@@ -2,6 +2,7 @@
   "name": "@pumni/supabase",
   "private": true,
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./browser": "./src/browser.ts",
@@ -13,12 +14,15 @@
   },
   "dependencies": {
     "@pumni/env": "workspace:*",
-    "@supabase/ssr": "^0.12.0",
-    "@supabase/supabase-js": "^2.108.1",
-    "next": "16.2.9",
-    "server-only": "^0.0.1"
+    "@supabase/ssr": "catalog:",
+    "@supabase/supabase-js": "catalog:",
+    "server-only": "catalog:"
+  },
+  "peerDependencies": {
+    "next": "catalog:",
+    "react": "catalog:"
   },
   "devDependencies": {
-    "typescript": "^6"
+    "typescript": "catalog:"
   }
 }

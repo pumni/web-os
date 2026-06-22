@@ -27,6 +27,7 @@ describe('withViewTransition Freeze Coordinator', () => {
       };
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (document as any).startViewTransition = startViewTransitionMock;
 
     let called = false;
@@ -44,7 +45,9 @@ describe('withViewTransition Freeze Coordinator', () => {
     expect(document.documentElement.dataset.vtFreeze).toBeUndefined();
 
     // Cleanup mocks
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (document as any).startViewTransition;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (window as any).matchMedia;
   });
 });

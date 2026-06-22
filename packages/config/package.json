@@ -2,6 +2,7 @@
   "name": "@pumni/config",
   "private": true,
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./eslint": "./eslint.mjs"
@@ -10,6 +11,6 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^6"
+    "typescript": "catalog:"
   }
 }
