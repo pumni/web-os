@@ -7,10 +7,16 @@
  */
 
 :root {
+  /* ========================================================================
+     CATEGORY I: CORE BRAND & INTERFACE SURFACES
+     ======================================================================== */
+
+  /* --- Base Background & Foreground --- */
   --background: var(--neutral-50);
   --foreground: var(--neutral-950);
 
-  /* Surfaces stay NEUTRAL (warm-neutral via the neutral scale) — no brand mix, so
+  /* --- Neutral UI Surfaces ---
+     Surfaces stay NEUTRAL (warm-neutral via the neutral scale) — no brand mix, so
      cards read as a clean cream/white, never tinted coral. Brand colour lives on
      accent elements (primary, ring, links, charts), not on resting surfaces. */
   --card: var(--neutral-0);
@@ -18,9 +24,12 @@
   --popover: var(--neutral-0);
   --popover-foreground: var(--neutral-950);
 
-  /* Brand entry point — reads the brand contract (brand.css), warm coral by default. */
+  /* --- Primary Accent & Brand ---
+     Brand entry point — reads the brand contract (brand.css), warm coral by default. */
   --primary: var(--brand-primary);
   --primary-foreground: var(--neutral-50);
+
+  /* --- Secondary & Muted Utilities --- */
   --secondary: var(--neutral-100);
   --secondary-foreground: var(--neutral-900);
   --muted: var(--neutral-100);
@@ -28,7 +37,8 @@
   --accent: var(--coral-50);
   --accent-foreground: var(--coral-700);
 
-  /* red-600's 10%-tint chip sits right at the APCA pin (Lc ~58 on its own), so
+  /* --- Status Indicators ---
+     red-600's 10%-tint chip sits right at the APCA pin (Lc ~58 on its own), so
      the primary mix is load-bearing here: it must darken destructive enough to
      clear the status-tint gate. Carries a heavier 4% (vs 2% on the other
      statuses); the coral brand stop is itself a warm red-adjacent hue, so the
@@ -40,7 +50,8 @@
   --warning: color-mix(in oklch, var(--primary) 2%, var(--amber-500));
   --warning-foreground: var(--neutral-950);
 
-  /* Chart (data visualization) — warm coral lead, kept distinct in lightness
+  /* --- Data Visualization (Charts) ---
+     Chart (data visualization) — warm coral lead, kept distinct in lightness
      for CVD safety (glass-contrast.test.ts). */
   --chart-1: var(--coral-500);
   --chart-2: var(--indigo-500);
@@ -48,21 +59,31 @@
   --chart-4: var(--amber-500);
   --chart-5: var(--rose-500);
 
+  /* ========================================================================
+     CATEGORY II: BORDERS, RING, AND CORNER RADII
+     ======================================================================== */
+
   --border: var(--neutral-200);
   --input: var(--neutral-200);
   --field: var(--background);
   --ring: var(--brand-ring);
-
   --radius: var(--radius-base);
 
+  /* ========================================================================
+     CATEGORY III: TYPOGRAPHY
+     ======================================================================== */
+
   /* Typographic compensation (no-op in light) */
-  --font-weight-body: var(--weight-normal);
-  /* 400 */
-  --font-weight-heading: var(--weight-semibold);
-  /* 600 */
+  --font-weight-body: var(--weight-normal); /* 400 */
+  --font-weight-heading: var(--weight-semibold); /* 600 */
   --tracking-body: var(--letter-spacing-normal);
 
-  /* Glassmorphism tokens — 5-element model (ADR-0014, amended by ADR-0016):
+  /* ========================================================================
+     CATEGORY IV: GLASSMORPHISM & DEPTH EFFECTS
+     ======================================================================== */
+
+  /* --- Glassmorphism Properties ---
+     Glassmorphism tokens — 5-element model (ADR-0014, amended by ADR-0016):
      1. Tint — base fill, never fully transparent; tuned so --foreground holds
         APCA Lc 60 over the worst desktop blob (glass-contrast.test.ts). Verified
         margin: text Lc 53.3.
@@ -76,6 +97,7 @@
      Fallback — opaque surface when transparency/blur is unavailable. */
   --glass-tint: color-mix(in oklch, var(--neutral-0) 54%, transparent);
   --glass-edge: oklch(1 0 0 / 0.45);
+
   /* The lit top rim. Glass-only since ADR-0020 (which amended ADR-0018):
      every floating glass surface reads it as the inset-top specular highlight.
      Solid cards previously shared it via `surface-raised` (ADR-0018's shared
@@ -86,6 +108,7 @@
      not a brighter/thicker top. Standard web glassmorphism: equal-weight rim on
      all sides + soft drop shadow. */
   --surface-rim-top: oklch(1 0 0 / 0.5);
+
   /* Light glass carries NO dark inner edge / contour (Hype4/Malewicz glassmorphism,
      Apple Liquid Glass, Tailwind glass all rely on the light rim + drop shadow).
      Bottom shadow-edge held at zero alpha so the pinned box-shadow layer + the
@@ -95,23 +118,19 @@
   --glass-scrim: color-mix(in oklch, var(--neutral-50) 55%, transparent);
   --glass-blur: var(--blur-glass);
 
-  /* Brand gradient lives in brand.css (the project override surface). */
-
-  /* OS desktop ambience — warm coral glows (the `-cyan` token name is retained
+  /* --- OS Desktop Ambience & Blobs ---
+     OS desktop ambience — warm coral glows (the `-cyan` token name is retained
      for the test/consumer contract; it now carries a warm amber tone). */
   --desktop-blob-primary: var(--coral-500);
   --desktop-blob-secondary: var(--amber-500);
   --desktop-blob-accent: var(--brand-gradient-to);
   --desktop-blob-cyan: var(--coral-400);
 
-  /* Modal / sheet scrim */
+  /* --- Scrim Overlay --- */
   --overlay: oklch(0 0 0 / 0.4);
 
-  /* Active window shadow with dynamic accent border */
-  --shadow-glass-glow:
-    var(--shadow-glass-glow-base), 0 0 0 1px color-mix(in oklch, var(--primary) 6%, transparent);
-
-  /* Shell chrome — unified glass edge + ambient depth.
+  /* --- Shell Chrome Depth ---
+     Shell chrome — unified glass edge + ambient depth.
      Same design language in both themes (glass rim + soft shadow), value
      calibration adapts to background luminance so perceived separation
      stays consistent. */
@@ -120,22 +139,36 @@
   --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.06);
   --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.06);
 
-  /* (--surface-rim-top above is glass-only since ADR-0020; solid cards carry no rim.) */
+  /* ========================================================================
+     CATEGORY V: SHADOWS & ELEVATION GLOW
+     ======================================================================== */
 
-  /* Interactive card hover shadow with dynamic accent ambient glow */
+  /* --- Window Elevation Glow ---
+     Active window shadow with dynamic accent border */
+  --shadow-glass-glow:
+    var(--shadow-glass-glow-base), 0 0 0 1px color-mix(in oklch, var(--primary) 6%, transparent);
+
+  /* --- Interactive Surface Hovers ---
+     Interactive card hover shadow with dynamic accent ambient glow */
   --shadow-interactive-hover:
     0 4px 12px -2px color-mix(in oklch, var(--primary) 12%, oklch(0 0 0 / 0.08)),
     0 2px 4px -2px color-mix(in oklch, var(--primary) 8%, oklch(0 0 0 / 0.04));
 }
 
 .dark {
-  /* Warm dark gray calibrated to Claude Code's background (neutral-890 ≈ #141413),
+  /* ========================================================================
+     CATEGORY I: CORE BRAND & INTERFACE SURFACES (Dark Override)
+     ======================================================================== */
+
+  /* --- Base Background & Foreground ---
+     Warm dark gray calibrated to Claude Code's background (neutral-890 ≈ #141413),
      not near-black — lifts off the harsh pure-black base (dark-mode best practice
      + the warm Claude direction). */
   --background: var(--neutral-890);
   --foreground: var(--neutral-50);
 
-  /* Card matches Claude Code's card surface (neutral-880 ≈ #1A1918), sitting one
+  /* --- Neutral UI Surfaces ---
+     Card matches Claude Code's card surface (neutral-880 ≈ #1A1918), sitting one
      legible step above the background. */
   --card: var(--neutral-880);
   --card-foreground: var(--neutral-50);
@@ -143,11 +176,14 @@
   --popover: var(--neutral-860);
   --popover-foreground: var(--neutral-50);
 
-  /* Reads the brand contract (brand.css) like :root does, so the P3 wide-gamut
+  /* --- Primary Accent & Brand ---
+     Reads the brand contract (brand.css) like :root does, so the P3 wide-gamut
      boost flows through both themes instead of pinning dark to a literal stop. */
   --primary: var(--brand-primary);
   --primary-foreground: var(--neutral-50);
-  /* Pure neutral — removes brand tint from hover/subdued surfaces. */
+
+  /* --- Secondary & Muted Utilities ---
+     Pure neutral — removes brand tint from hover/subdued surfaces. */
   --secondary: var(--neutral-800);
   --secondary-foreground: var(--neutral-50);
   --muted: var(--neutral-800);
@@ -155,6 +191,7 @@
   --accent: var(--coral-950);
   --accent-foreground: var(--coral-100);
 
+  /* --- Status Indicators --- */
   --destructive: color-mix(in oklch, var(--primary) 3%, var(--red-500));
   --destructive-foreground: var(--neutral-50);
   --success: color-mix(in oklch, var(--primary) 3%, var(--emerald-500));
@@ -162,12 +199,17 @@
   --warning: color-mix(in oklch, var(--primary) 3%, var(--amber-400));
   --warning-foreground: var(--neutral-950);
 
-  /* Chart — warm coral lead (see :root note). */
+  /* --- Data Visualization (Charts) ---
+     Chart — warm coral lead (see :root note). */
   --chart-1: var(--coral-400);
   --chart-2: var(--indigo-400);
   --chart-3: var(--emerald-400);
   --chart-4: var(--amber-400);
   --chart-5: var(--rose-400);
+
+  /* ========================================================================
+     CATEGORY II: BORDERS, RING, AND CORNER RADII (Dark Override)
+     ======================================================================== */
 
   /* Pure neutral borders + input — no brand tint on resting surfaces. Focus
      affordance comes from the coral --ring, not a resting fill tint. */
@@ -176,31 +218,40 @@
   --field: var(--neutral-880);
   --ring: var(--brand-ring);
 
-  /* Typographic compensation - counter halation */
-  --font-weight-body: var(--font-weight-body-dark);
-  /* 350 */
-  --font-weight-heading: var(--font-weight-heading-dark);
-  /* 550 */
-  --tracking-body: var(--tracking-body-dark);
-  /* 0.01em */
+  /* ========================================================================
+     CATEGORY III: TYPOGRAPHY (Dark Override)
+     ======================================================================== */
 
-  /* Dark glassmorphism — neutral-900 tint stays darker than the mid-tone blobs,
+  /* Typographic compensation - counter halation */
+  --font-weight-body: var(--font-weight-body-dark); /* 350 */
+  --font-weight-heading: var(--font-weight-heading-dark); /* 550 */
+  --tracking-body: var(--tracking-body-dark); /* 0.01em */
+
+  /* ========================================================================
+     CATEGORY IV: GLASSMORPHISM & DEPTH EFFECTS (Dark Override)
+     ======================================================================== */
+
+  /* --- Glassmorphism Properties ---
+     Dark glassmorphism — neutral-900 tint stays darker than the mid-tone blobs,
      so white text clears Lc 60 with huge headroom (verified Lc 88.8). The white
      edge + inset highlight read as the lit glass edge over the dark fill. */
   --glass-tint: color-mix(in oklch, var(--neutral-900) 34%, transparent);
   --glass-edge: oklch(1 0 0 / 0.14);
+
   /* Near-uniform luminous rim on dark glass — top highlight kept only a touch
      above the border so it reads as one even hairline (no thick/asymmetric top
      band), still visible against the dark blobs. Shared with solid cards
      (ADR-0018): dark surfaces amplify bright edges, so a visible 0.2 rim now
      lifts solid cards too (was 0.05 when the concept was split). */
   --surface-rim-top: oklch(1 0 0 / 0.2);
+
   /* Dark bottom rim — stronger than light (0.06 → 0.22) because dark surfaces
      amplify bright highlights but swallow dark shadows, so the bottom shadow-
      edge needs a higher alpha to read as a real volumetric edge. */
   --glass-shadow-edge: oklch(0 0 0 / 0.22);
   --glass-fallback-bg: var(--popover);
   --glass-scrim: color-mix(in oklch, var(--neutral-950) 50%, transparent);
+
   /* Dark frost runs one step heavier (16px = --blur-glass-lg) than the 12px
      light default: dark backdrops read muddier at low blur, so the deeper frost
      restores the glassmorphism read iOS/visionOS dark glass is known for. Still
@@ -208,22 +259,18 @@
      cheap on mobile (ADR-0016). */
   --glass-blur: var(--blur-glass-lg);
 
-  /* Brand gradient lives in brand.css (the project override surface). */
-
-  /* OS desktop ambience — warm coral glows (see note in :root). */
+  /* --- OS Desktop Ambience & Blobs --- */
   --desktop-blob-primary: var(--coral-500);
   --desktop-blob-secondary: var(--amber-500);
   --desktop-blob-accent: var(--brand-gradient-to);
   --desktop-blob-cyan: var(--coral-400);
 
-  /* Deeper scrim reads better over a dark backdrop. */
+  /* --- Scrim Overlay ---
+     Deeper scrim reads better over a dark backdrop. */
   --overlay: oklch(0 0 0 / 0.6);
 
-  /* Active window shadow with dynamic accent border */
-  --shadow-glass-glow:
-    var(--shadow-glass-glow-base), 0 0 0 1px color-mix(in oklch, var(--primary) 10%, transparent);
-
-  /* Shell chrome — dark-adapted calibration (same glass rim + depth language).
+  /* --- Shell Chrome Depth ---
+     Shell chrome — dark-adapted calibration (same glass rim + depth language).
      Dark surfaces swallow shadows but amplify bright edges, so the rim gets
      a 2× boost (3→6%) while the shadow gets 3× (6→18%) to stay perceivable. */
   --glass-edge-rim: inset -1px 0 0 0 oklch(1 0 0 / 0.06);
@@ -231,13 +278,23 @@
   --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.18);
   --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.18);
 
-  /* (--surface-rim-top above is glass-only since ADR-0020; solid cards carry no rim.) */
+  /* ========================================================================
+     CATEGORY V: SHADOWS & ELEVATION GLOW (Dark Override)
+     ======================================================================== */
 
-  /* Interactive card hover shadow with dynamic accent ambient glow */
+  /* --- Window Elevation Glow --- */
+  --shadow-glass-glow:
+    var(--shadow-glass-glow-base), 0 0 0 1px color-mix(in oklch, var(--primary) 10%, transparent);
+
+  /* --- Interactive Surface Hovers --- */
   --shadow-interactive-hover:
     0 4px 14px -1px color-mix(in oklch, var(--primary) 18%, oklch(0 0 0 / 0.2)),
     0 2px 5px -2px color-mix(in oklch, var(--primary) 12%, oklch(0 0 0 / 0.1));
 }
+
+/* ========================================================================
+   TAILWIND V4 CONFIGURATION
+   ======================================================================== */
 
 /*
  * Expose semantic tokens to Tailwind v4 as utilities.
@@ -245,6 +302,7 @@
  * value) so utilities switch correctly between light/dark at runtime.
  */
 @theme inline {
+  /* --- Colors Mapping --- */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -266,27 +324,30 @@
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
 
-  /* Chart */
+  /* --- Data Visualization (Charts) --- */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
+  /* --- Borders & Focus Rings --- */
   --color-border: var(--border);
   --color-input: var(--input);
   --color-field: var(--field);
   --color-ring: var(--ring);
 
+  /* --- Component UI Roles --- */
   --color-segmented-active-border: var(--segmented-active-border);
   --color-slider-thumb: var(--slider-thumb);
   --color-window-control-icon: var(--window-control-icon);
 
-  /* Glass tokens, also usable as Tailwind color utilities when needed */
+  /* --- Glassmorphism UI Roles --- */
   --color-glass: var(--glass-tint);
   --color-glass-border: var(--glass-edge);
   --color-overlay: var(--overlay);
 
+  /* --- Corner Radii --- */
   --radius-xs: calc(var(--radius) - 6px);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -295,15 +356,12 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 16px);
 
-  /* Nested radius - R_child = R_parent - gap */
-  --radius-nested-xl: calc(var(--radius-xl) - var(--radius-nest-gap));
-  /* card child */
-  --radius-nested-lg: calc(var(--radius-lg) - var(--radius-nest-gap));
-  /* dialog child */
-  --radius-nested-2xl: calc(var(--radius-2xl) - var(--radius-nest-gap));
-  /* hero child */
+  /* --- Nested Radii --- */
+  --radius-nested-xl: calc(var(--radius-xl) - var(--radius-nest-gap)); /* card child */
+  --radius-nested-lg: calc(var(--radius-lg) - var(--radius-nest-gap)); /* dialog child */
+  --radius-nested-2xl: calc(var(--radius-2xl) - var(--radius-nest-gap)); /* hero child */
 
-  /* Type scale — owned size + paired line-height (text-xs … text-4xl). */
+  /* --- Typography Sizes & Line Heights --- */
   --text-xs: var(--font-size-xs);
   --text-xs--line-height: var(--line-height-xs);
   --text-sm: var(--font-size-sm);
@@ -321,30 +379,31 @@
   --text-4xl: var(--font-size-4xl);
   --text-4xl--line-height: var(--line-height-4xl);
 
+  /* --- Typography Weights --- */
   --font-weight-normal: var(--weight-normal);
   --font-weight-medium: var(--weight-medium);
   --font-weight-semibold: var(--weight-semibold);
   --font-weight-bold: var(--weight-bold);
 
-  /* Dark-mode typographic compensation */
+  /* --- Dark-mode Typographic Compensation --- */
   --font-weight-body: var(--font-weight-body);
   --font-weight-heading: var(--font-weight-heading);
 
+  /* --- Letter Spacing --- */
   --tracking-tight: var(--letter-spacing-tight);
   --tracking-normal: var(--letter-spacing-normal);
   --tracking-wide: var(--letter-spacing-wide);
 
-  /* Motion — surface the primitive easings as utilities (ease-fluid /
-     ease-snappy). Durations stay as `--duration-*` CSS vars (tokens.css) and
-     the JS bridge in lib/motion.ts; Tailwind has no `--duration-*` namespace. */
+  /* --- Motion Easings ---
+     Durations stay as `--duration-*` CSS vars (tokens.css) and the JS bridge in
+     lib/motion.ts; Tailwind has no `--duration-*` namespace. */
   --ease-fluid: var(--ease-out);
   --ease-snappy: var(--ease-in-out);
 
-  /* Elevation — the owned shadow ladder as first-class utilities. Solid content
-     surfaces use `shadow-card` / `shadow-raised` (on-brand depth) instead of
-     Tailwind's built-in `shadow-*`. Floating glass depth stays inside the
-     `glass-*` utilities (glass.css), which also carry the a11y fallbacks — so
-     blur is intentionally NOT exposed as a standalone utility. */
+  /* --- Elevation & Shadows ---
+     Solid content surfaces use `shadow-card` / `shadow-raised` (on-brand depth)
+     instead of Tailwind's built-in `shadow-*`. Floating glass depth stays inside
+     the `glass-*` utilities (glass.css), which also carry the a11y fallbacks. */
   --shadow-card: var(--shadow-card-raised);
   --shadow-control: var(--shadow-control);
   --shadow-slider-thumb: var(--shadow-slider-thumb);
@@ -352,9 +411,7 @@
   --shadow-raised: var(--shadow-2);
   --shadow-interactive-hover: var(--shadow-interactive-hover);
 
-  /* Z-index — the OS layering scale as named utilities (z-window, z-topbar,
-     z-sidebar, …). Chrome and floating layers consume these instead of raw
-     `z-40`, so the rendered order always matches the scale in tokens.css. */
+  /* --- OS Layering (Z-Index) --- */
   --z-index-window: var(--z-window);
   --z-index-window-active: var(--z-window-active);
   --z-index-sidebar: var(--z-sidebar);
@@ -367,14 +424,20 @@
   --z-index-tooltip: var(--z-tooltip);
   --z-index-toast: var(--z-toast);
 
-  /* Spacing and control heights for dynamic density support */
+  /* --- Control Heights & Spacing --- */
   --spacing-control: var(--control-height);
   --spacing-control-y: var(--control-py);
 
+  /* --- Fonts --- */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
+/* ========================================================================
+   UTILITY CLASSES
+   ======================================================================== */
+
+/* --- Core Typography Utilities --- */
 @utility type-display {
   font-size: var(--text-4xl);
   line-height: var(--text-4xl--line-height);
@@ -417,7 +480,8 @@
   letter-spacing: var(--tracking-normal);
 }
 
-/* Solid raised surface — multi-layer soft elevation only (NOT the flat
+/* --- Core Structural Surface Utilities ---
+   Solid raised surface — multi-layer soft elevation only (NOT the flat
    --shadow-1 hairline). Solid cards carry real lift so glass stays reserved
    for true floating layers. The specular top rim is glass-only (ADR-0020,
    amending ADR-0018): solid surfaces are structural — `border-border` does

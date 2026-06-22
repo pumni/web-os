@@ -15,6 +15,10 @@
      next-themes docs). */
   color-scheme: light;
 
+  /* ========================================================================
+     CATEGORY I: COLOR SYSTEM (Primitives)
+     ======================================================================== */
+
   /* --- Brand: Indigo --- */
   --indigo-50: oklch(0.962 0.018 272.314);
   --indigo-100: oklch(0.93 0.034 272.788);
@@ -118,48 +122,9 @@
   --amber-400: oklch(0.828 0.189 84.429);
   --amber-500: oklch(0.769 0.188 70.08);
 
-  /* --- Radius scale --- */
-  --radius-base: 0.625rem;
-  /* 10px — slightly softer than legacy 8px */
-
-  /* ---- Nested radius spacing -------------------------------- */
-  /* Default inner padding for nested-radius calc.
-     R_child = R_parent - padding (per the geometric nesting rule). */
-  --radius-nest-gap: 0.75rem;
-  /* 12px - typical card padding */
-  --switch-height: 1.15rem;
-  --switch-width: 2rem;
-  --switch-thumb-size: 0.875rem;
-
-  /* Switch visual-role tokens (separate from --input / --background so the
-     track reads as a distinct affordance and the thumb stays high-contrast
-     in BOTH states — see switch.tsx). Light: track sits one stop DARKER than
-     --input (neutral-200 → neutral-300) so it reads as a control, not a
-     flat fill; thumb is pure white over the darker track for parity with
-     dark (bright thumb over a darker track). */
-  --switch-track: var(--neutral-300);
-  --switch-track-checked: var(--primary);
-  --switch-thumb: var(--neutral-0);
-  --switch-thumb-checked: var(--primary-foreground);
-
-  /* SegmentedPicker visual-role tokens. The well/track must read as a RECESSED
-     surface (darker than its surroundings) and the active pill must LIFT out of
-     it (lighter than the track) — so the affordance "selected value rises out
-     of the well" holds in BOTH themes. --muted alone cannot do this: in light,
-     muted (neutral-100) sits too close to --background (neutral-50), so the
-     pill vanishes; in dark, muted (neutral-800) is LIGHTER than the card it
-     sits on, inverting the well. Dedicated stops give a guaranteed delta: the
-     track drops one neutral stop below the host surface, the pill rises one
-     above the track. See segmented-picker.tsx + form.test.tsx. */
-  --segmented-track: color-mix(in oklch, var(--neutral-950) 6%, transparent);
-  --segmented-active: var(--card);
-  --segmented-active-border: color-mix(in oklch, var(--neutral-950) 4%, transparent);
-  --shadow-segmented-active: 0 1px 2px 0 oklch(0 0 0 / 0.05), 0 1px 1px 0 oklch(0 0 0 / 0.03);
-
-  --slider-thumb: var(--neutral-0);
-  --shadow-slider-thumb: 0 2px 4px 0 oklch(0 0 0 / 0.08), 0 0 1px 0 oklch(0 0 0 / 0.15);
-
-  --window-control-icon: oklch(0 0 0 / 0.65);
+  /* ========================================================================
+     CATEGORY II: TYPOGRAPHY SYSTEM
+     ======================================================================== */
 
   /* --- Typography: raw size + paired line-height scale ---
      Distinct names from the Tailwind `--text-*` namespace they bridge into
@@ -204,44 +169,19 @@
   --leading-compensation-dark: 0.075;
   /* extra line-height    */
 
-  /* --- Glass blur (glassmorphism: frosted, content shows through softly) ---
-     The production-2026 sweet spot is 8–16px: enough frost to read as glass,
-     low enough that the per-pixel backdrop blur stays cheap on mobile (glass is
-     only ever applied to floating layers, never large backgrounds). */
-  --blur-glass-sm: 8px;
-  --blur-glass: 12px;
-  --blur-glass-lg: 16px;
-  --blur-scrim: 4px;
+  /* ========================================================================
+     CATEGORY III: LAYOUT & ELEVATION
+     ======================================================================== */
 
-  /* Glassmorphism vibrancy pump — saturates the backdrop showing through the
-     frost so colours read richer (the signature glassmorphism look). The single
-     knob consumed by every `glass-*` utility (drift guard: glass-saturate.test.ts). */
-  --glass-saturate: 1.4;
+  /* --- Radius scale --- */
+  --radius-base: 0.625rem;
+  /* 10px — slightly softer than legacy 8px */
 
-  /* --- Elevation shadows (tuned for floating glass layers) --- */
-  --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
-  --shadow-control: var(--shadow-1);
-  --shadow-2: 0 4px 12px -2px oklch(0 0 0 / 0.12), 0 2px 4px -2px oklch(0 0 0 / 0.08);
-  /* Directional elevation for floating glass — key light from the top with a
-     slight downward bias, instead of a symmetric ambient halo. Reads as a
-     real lit object rather than a flat frosted plane. */
-  --shadow-glass:
-    0 1px 2px -1px oklch(0 0 0 / 0.07), 0 8px 16px -6px oklch(0 0 0 / 0.12),
-    0 20px 40px -14px oklch(0 0 0 / 0.16);
-  --shadow-glass-glow-soft:
-    0 1px 1px -0.5px oklch(0 0 0 / 0.04), 0 6px 14px -6px oklch(0 0 0 / 0.1),
-    0 18px 36px -14px oklch(0 0 0 / 0.16);
-  /* Active windows: deeper layered shadow. Outline added dynamically in theme.css. */
-  --shadow-glass-glow-base:
-    0 2px 4px -1px oklch(0 0 0 / 0.06), 0 12px 28px -8px oklch(0 0 0 / 0.18),
-    0 28px 56px -18px oklch(0 0 0 / 0.22);
-
-  /* Solid content elevation — soft multi-layer, modern depth (NOT the flat
-     --shadow-1 hairline). Lets solid cards carry real lift so glass is reserved
-     for true floating layers. Applied standalone in `surface-raised` (theme.css)
-     — the inset top rim is no longer applied there (ADR-0020); solid surfaces
-     are structural-only (`border-border` + this elevation, no specular rim). */
-  --shadow-card-raised: 0 1px 2px -1px oklch(0 0 0 / 0.05), 0 4px 10px -3px oklch(0 0 0 / 0.07);
+  /* ---- Nested radius spacing -------------------------------- */
+  /* Default inner padding for nested-radius calc.
+     R_child = R_parent - padding (per the geometric nesting rule). */
+  --radius-nest-gap: 0.75rem;
+  /* 12px - typical card padding */
 
   /* --- Z-index: single owned OS layering scale (see design-system.md).
      EVERY cross-component layer — shell chrome AND floating primitives —
@@ -273,6 +213,49 @@
   /* NEW: tooltip — above command palette, below toast */
   --z-toast: 1200;
   /* toasts — always frontmost */
+
+  /* --- Elevation shadows (tuned for floating glass layers) --- */
+  --shadow-1: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+  --shadow-control: var(--shadow-1);
+  --shadow-2: 0 4px 12px -2px oklch(0 0 0 / 0.12), 0 2px 4px -2px oklch(0 0 0 / 0.08);
+  /* Directional elevation for floating glass — key light from the top with a
+     slight downward bias, instead of a symmetric ambient halo. Reads as a
+     real lit object rather than a flat frosted plane. */
+  --shadow-glass:
+    0 1px 2px -1px oklch(0 0 0 / 0.07), 0 8px 16px -6px oklch(0 0 0 / 0.12),
+    0 20px 40px -14px oklch(0 0 0 / 0.16);
+  --shadow-glass-glow-soft:
+    0 1px 1px -0.5px oklch(0 0 0 / 0.04), 0 6px 14px -6px oklch(0 0 0 / 0.1),
+    0 18px 36px -14px oklch(0 0 0 / 0.16);
+  /* Active windows: deeper layered shadow. Outline added dynamically in theme.css. */
+  --shadow-glass-glow-base:
+    0 2px 4px -1px oklch(0 0 0 / 0.06), 0 12px 28px -8px oklch(0 0 0 / 0.18),
+    0 28px 56px -18px oklch(0 0 0 / 0.22);
+
+  /* Solid content elevation — soft multi-layer, modern depth (NOT the flat
+     --shadow-1 hairline). Lets solid cards carry real lift so glass is reserved
+     for true floating layers. Applied standalone in `surface-raised` (theme.css)
+     — the inset top rim is no longer applied there (ADR-0020); solid surfaces
+     are structural-only (`border-border` + this elevation, no specular rim). */
+  --shadow-card-raised: 0 1px 2px -1px oklch(0 0 0 / 0.05), 0 4px 10px -3px oklch(0 0 0 / 0.07);
+
+  /* --- Glass blur (glassmorphism: frosted, content shows through softly) ---
+     The production-2026 sweet spot is 8–16px: enough frost to read as glass,
+     low enough that the per-pixel backdrop blur stays cheap on mobile (glass is
+     only ever applied to floating layers, never large backgrounds). */
+  --blur-glass-sm: 8px;
+  --blur-glass: 12px;
+  --blur-glass-lg: 16px;
+  --blur-scrim: 4px;
+
+  /* Glassmorphism vibrancy pump — saturates the backdrop showing through the
+     frost so colours read richer (the signature glassmorphism look). The single
+     knob consumed by every `glass-*` utility (drift guard: glass-saturate.test.ts). */
+  --glass-saturate: 1.4;
+
+  /* ========================================================================
+     CATEGORY IV: MOTION & INTERACTION SYSTEM
+     ======================================================================== */
 
   /* --- Motion --- */
   --duration-fast: 120ms;
@@ -351,7 +334,11 @@
   --state-selected: 10%;
   /* lớp phủ selected/active */
 
-  /* --- Density & Spacing --- */
+  /* ========================================================================
+     CATEGORY V: DENSITY, SPACING & COMPONENT GEOMETRY
+     ======================================================================== */
+
+  /* --- Spacing & Density Layout --- */
   --control-height-comfortable: 2.25rem; /* 36px (h-9) */
   --control-height-compact: 2rem; /* 32px (h-8) */
   --control-height: var(--control-height-comfortable);
@@ -359,7 +346,48 @@
   --control-py-comfortable: 0.5rem; /* 8px (py-2) */
   --control-py-compact: 0.375rem; /* 6px (py-1.5) */
   --control-py: var(--control-py-comfortable);
+
+  /* --- Switch Component Tokens --- */
+  --switch-height: 1.15rem;
+  --switch-width: 2rem;
+  --switch-thumb-size: 0.875rem;
+  /* Switch visual-role tokens (separate from --input / --background so the
+     track reads as a distinct affordance and the thumb stays high-contrast
+     in BOTH states — see switch.tsx). Light: track sits one stop DARKER than
+     --input (neutral-200 → neutral-300) so it reads as a control, not a
+     flat fill; thumb is pure white over the darker track for parity with
+     dark (bright thumb over a darker track). */
+  --switch-track: var(--neutral-300);
+  --switch-track-checked: var(--primary);
+  --switch-thumb: var(--neutral-0);
+  --switch-thumb-checked: var(--primary-foreground);
+
+  /* --- SegmentedPicker Component Tokens ---
+     SegmentedPicker visual-role tokens. The well/track must read as a RECESSED
+     surface (darker than its surroundings) and the active pill must LIFT out of
+     it (lighter than the track) — so the affordance "selected value rises out
+     of the well" holds in BOTH themes. --muted alone cannot do this: in light,
+     muted (neutral-100) sits too close to --background (neutral-50), so the
+     pill vanishes; in dark, muted (neutral-800) is LIGHTER than the card it
+     sits on, inverting the well. Dedicated stops give a guaranteed delta: the
+     track drops one neutral stop below the host surface, the pill rises one
+     above the track. See segmented-picker.tsx + form.test.tsx. */
+  --segmented-track: color-mix(in oklch, var(--neutral-950) 6%, transparent);
+  --segmented-active: var(--card);
+  --segmented-active-border: color-mix(in oklch, var(--neutral-950) 4%, transparent);
+  --shadow-segmented-active: 0 1px 2px 0 oklch(0 0 0 / 0.05), 0 1px 1px 0 oklch(0 0 0 / 0.03);
+
+  /* --- Slider Component Tokens --- */
+  --slider-thumb: var(--neutral-0);
+  --shadow-slider-thumb: 0 2px 4px 0 oklch(0 0 0 / 0.08), 0 0 1px 0 oklch(0 0 0 / 0.15);
+
+  /* --- Window Controls --- */
+  --window-control-icon: oklch(0 0 0 / 0.65);
 }
+
+/* ========================================================================
+   DENSITY OVERRIDES
+   ======================================================================== */
 
 /* Document-level override for compact density */
 [data-density='compact'] {
@@ -370,6 +398,10 @@
   --switch-thumb-size: 0.75rem;
 }
 
+/* ========================================================================
+   DARK MODE OVERRIDES
+   ======================================================================== */
+
 /* Switch native UA chrome to the dark palette. next-themes toggles the `.dark`
    class on <html>; this mirrors it at the document level so scrollbars,
    <select> dropdowns, date/color pickers, checkboxes, and autofill all render
@@ -378,7 +410,8 @@
 .dark {
   color-scheme: dark;
 
-  /* Dark switch role tokens: track one stop DARKER than --input (neutral-700 →
+  /* --- Switch Role Tokens ---
+     Dark switch role tokens: track one stop DARKER than --input (neutral-700 →
      neutral-600) so the track still separates from --card (neutral-880); thumb
      neutral-50 (off-white) for parity with light's bright-thumb-on-darker-track. */
   --switch-track: var(--neutral-600);
@@ -386,7 +419,8 @@
   --switch-thumb: var(--neutral-50);
   --switch-thumb-checked: var(--primary-foreground);
 
-  /* Dark SegmentedPicker: the well sits one stop DARKER than --card (neutral-880
+  /* --- SegmentedPicker Role Tokens ---
+     Dark SegmentedPicker: the well sits one stop DARKER than --card (neutral-880
      → neutral-900) so it still reads recessed against the card, and the active
      pill lifts to --muted (neutral-800, lighter than the track) so the selected
      value rises out of the well — never inverts. */
@@ -395,8 +429,10 @@
   --segmented-active-border: color-mix(in oklch, var(--neutral-50) 8%, transparent);
   --shadow-segmented-active: 0 4px 8px 0 oklch(0 0 0 / 0.25), 0 1px 2px 0 oklch(0 0 0 / 0.15);
 
+  /* --- Slider Role Tokens --- */
   --slider-thumb: var(--neutral-50);
   --shadow-slider-thumb: 0 2px 4px 0 oklch(0 0 0 / 0.25), 0 0 1px 0 oklch(0 0 0 / 0.4);
 
+  /* --- Window Controls --- */
   --window-control-icon: oklch(0 0 0 / 0.65);
 }

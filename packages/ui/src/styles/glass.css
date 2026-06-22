@@ -26,6 +26,11 @@
  * Accessibility fallbacks below honour user system preferences.
  */
 
+/* ========================================================================
+   SECTION 1: GLASSMORPHISM SURFACES & COMPONENT CHROME
+   ======================================================================== */
+
+/* --- Frosted Glass Panels --- */
 @utility glass-panel {
   /* Glassmorphism — 5-element model (ADR-0014, amended by ADR-0016): a
      never-fully-transparent tint (APCA-gated), frosted blur + saturation
@@ -82,6 +87,7 @@
   will-change: transform, opacity;
 }
 
+/* --- Glass Window Active/Inactive States --- */
 .glass-window[data-active='false'] {
   background-color: color-mix(in oklch, var(--glass-tint) 80%, var(--popover));
   border-color: var(--border);
@@ -98,6 +104,8 @@
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 }
+
+/* --- Viewport-Docked Shell Chrome Bars --- */
 
 /* Bar variant for shell chrome (sidebar rails, topbars): glass look, NO
    border — shell edges that touch the viewport should be seamless. Edge
@@ -163,11 +171,13 @@
   box-shadow: inset 0 1px 0 0 var(--surface-rim-top);
 }
 
-/*
- * Accessibility — reduced transparency.
- * Some users (and OS "Reduce transparency" settings) need solid surfaces.
- * Fall back to an opaque popover surface and drop the blur entirely.
- */
+/* ========================================================================
+   SECTION 2: ACCESSIBILITY & COMPATIBILITY FALLBACKS
+   ======================================================================== */
+
+/* --- Accessibility — Reduced Transparency ---
+   Some users (and OS "Reduce transparency" settings) need solid surfaces.
+   Fall back to an opaque popover surface and drop the blur entirely. */
 @media (prefers-reduced-transparency: reduce) {
   .glass-panel,
   .glass-window,
@@ -187,10 +197,9 @@
   }
 }
 
-/*
- * Browser fallback — backdrop-filter reached modern baseline recently, so keep
- * glass layers readable on older browsers by using the opaque surface path.
- */
+/* --- Browser Fallback ---
+   backdrop-filter reached modern baseline recently, so keep glass layers
+   readable on older browsers by using the opaque surface path. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-panel,
   .glass-window,
@@ -205,11 +214,9 @@
   }
 }
 
-/*
- * Accessibility — higher contrast.
- * Keep the glass role but raise the translucent fill toward the opaque
- * popover surface and use a solid semantic border for clearer edges.
- */
+/* --- Accessibility — Higher Contrast ---
+   Keep the glass role but raise the translucent fill toward the opaque
+   popover surface and use a solid semantic border for clearer edges. */
 @media (prefers-contrast: more) {
   .glass-panel,
   .glass-window,
@@ -224,11 +231,9 @@
   }
 }
 
-/*
- * Accessibility — Windows forced colors.
- * System colors preserve visible surfaces and focus even when gradients,
- * shadows, and Tailwind ring box-shadows are ignored.
- */
+/* --- Accessibility — Windows Forced Colors ---
+   System colors preserve visible surfaces and focus even when gradients,
+   shadows, and Tailwind ring box-shadows are ignored. */
 @media (forced-colors: active) {
   .glass-panel,
   .glass-window,
@@ -252,6 +257,7 @@
   }
 }
 
+/* --- Accessibility — In-App Theme & Transparency Previews --- */
 .glass-a11y-preview[data-transparency='reduced'] .glass-panel,
 .glass-a11y-preview[data-transparency='reduced'] .glass-window,
 .glass-a11y-preview[data-transparency='reduced'] .glass-bar,
@@ -279,26 +285,90 @@
   border-color: var(--border);
 }
 
-/* Brand gradient text for hero headings. */
-@utility text-gradient-brand {
-  background-image: linear-gradient(
-    110deg,
-    var(--brand-gradient-from),
-    var(--brand-gradient-via) 55%,
-    var(--brand-gradient-to)
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+/* ========================================================================
+   SECTION 3: INTERACTIVE STATE LAYERS & AFFORDANCES
+   ======================================================================== */
+
+/* --- Focus Ring Indicators --- */
+@utility focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  box-shadow:
+    0 0 0 var(--ring-offset) var(--background),
+    0 0 0 calc(var(--ring-offset) + var(--ring-width))
+      color-mix(in oklch, var(--ring) 50%, transparent);
+  border-color: var(--ring);
 }
 
+/*
+ * State-layer utilities (Material-3 / §3 of layering-interaction-2026-upgrade plan).
+ * These produce a transient colour overlay on an interactive fill, NOT a
+ * persistent surface opacity (bg-card/NN is banned; this is not that).
+ * Consumes the `--state-*` intensity tokens from tokens.css.
+ *
+ * Usage: add `state-hover` / `state-pressed` / `state-selected` to interactive
+ * elements that need a unified hover/press/selected dimming layer.
+ */
+@utility state-hover {
+  &:hover,
+  &:focus,
+  &[data-highlighted],
+  &[data-active='true'] {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
+  }
+}
+
+@utility state-pressed {
+  &:active,
+  &[data-state='open'] {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-pressed), transparent);
+  }
+}
+
+@utility state-selected {
+  &,
+  &[data-state='active'],
+  &[data-state='selected'] {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-selected), transparent);
+  }
+}
+
+/* Forced-colors: color-mix overlays are system-color context — safe, no override needed.
+   Reduced-motion: state layers are colour-only (no transform/animation) — no extra handling. */
+
+/* --- Scrim Overlays --- */
+@utility overlay-scrim {
+  background-color: var(--overlay);
+  -webkit-backdrop-filter: blur(var(--blur-scrim));
+  backdrop-filter: blur(var(--blur-scrim));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .overlay-scrim {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .overlay-scrim {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* ========================================================================
+   SECTION 4: GEOMETRY, EFFECTS & SHIMMERS
+   ======================================================================== */
+
+/* --- Nested Corner Radius --- */
 /* Nested radius utility for concentric rounding */
 @utility rounded-nested {
   border-radius: calc(var(--parent-radius, var(--radius-xl)) - var(--radius-nest-gap));
 }
 
-/*
+/* --- Card Spotlight Highlight ---
  * Card spotlight utility — pointer-tracked radial highlight.
  * Consumer: CardSpotlight client wrapper injects --spot-x / --spot-y via
  * onPointerMove. The gradient uses color-mix with the semantic --primary token
@@ -350,73 +420,21 @@
   }
 }
 
-@utility focus-ring {
-  outline: none;
-}
-.focus-ring:focus-visible {
-  box-shadow:
-    0 0 0 var(--ring-offset) var(--background),
-    0 0 0 calc(var(--ring-offset) + var(--ring-width))
-      color-mix(in oklch, var(--ring) 50%, transparent);
-  border-color: var(--ring);
-}
-
-/*
- * State-layer utilities (Material-3 / §3 of layering-interaction-2026-upgrade plan).
- * These produce a transient colour overlay on an interactive fill, NOT a
- * persistent surface opacity (bg-card/NN is banned; this is not that).
- * Consumes the `--state-*` intensity tokens from tokens.css.
- *
- * Usage: add `state-hover` / `state-pressed` / `state-selected` to interactive
- * elements that need a unified hover/press/selected dimming layer.
- */
-@utility state-hover {
-  &:hover,
-  &:focus,
-  &[data-highlighted],
-  &[data-active='true'] {
-    background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
-  }
+/* --- Brand Gradient Text Headings --- */
+@utility text-gradient-brand {
+  background-image: linear-gradient(
+    110deg,
+    var(--brand-gradient-from),
+    var(--brand-gradient-via) 55%,
+    var(--brand-gradient-to)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
-@utility state-pressed {
-  &:active,
-  &[data-state='open'] {
-    background-color: color-mix(in oklch, var(--foreground) var(--state-pressed), transparent);
-  }
-}
-
-@utility state-selected {
-  &,
-  &[data-state='active'],
-  &[data-state='selected'] {
-    background-color: color-mix(in oklch, var(--foreground) var(--state-selected), transparent);
-  }
-}
-
-/* Forced-colors: color-mix overlays are system-color context — safe, no override needed.
-   Reduced-motion: state layers are colour-only (no transform/animation) — no extra handling. */
-
-@utility overlay-scrim {
-  background-color: var(--overlay);
-  -webkit-backdrop-filter: blur(var(--blur-scrim));
-  backdrop-filter: blur(var(--blur-scrim));
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .overlay-scrim {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .overlay-scrim {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
+/* --- Skeleton Loading Shimmer --- */
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
@@ -443,6 +461,10 @@
 }
 
 /* Forced-colors: gradient is naturally ignored — no extra handling needed. */
+
+/* ========================================================================
+   SECTION 5: GLOBAL MOTION SAFETY NET
+   ======================================================================== */
 
 /*
  * Accessibility — reduced motion.

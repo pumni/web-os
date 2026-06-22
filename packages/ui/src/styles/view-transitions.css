@@ -7,6 +7,10 @@
 
 @supports (view-transition-name: none) {
   @media (prefers-reduced-motion: no-preference) {
+    /* ========================================================================
+       SECTION 1: INITIALIZATION & KEYFRAMES
+       ======================================================================== */
+
     /* Disable default full-page root cross-fade to prevent flashing during component transitions */
     ::view-transition-old(root),
     ::view-transition-new(root) {
@@ -15,7 +19,6 @@
     }
 
     /* ---- Keyframes ---- */
-
     @keyframes vt-fade-out {
       to {
         opacity: 0;
@@ -69,9 +72,9 @@
       }
     }
 
-    /* ============================================================
-       Named transition groups
-       ============================================================ */
+    /* ========================================================================
+       SECTION 2: NAMED TRANSITION GROUPS (Named Elements)
+       ======================================================================== */
 
     /* ---- slide-forward: navigate deeper (forward navigation) ---- */
     ::view-transition-old(slide-forward) {
@@ -125,22 +128,24 @@
       object-fit: none !important;
       object-position: top center !important;
     }
-
     ::view-transition-old(watch-lobby-card) {
       animation: var(--duration-base) var(--ease-fluid) both vt-fade-out;
     }
-
     ::view-transition-new(watch-lobby-card) {
       animation: var(--duration-base) var(--ease-fluid) both vt-fade-in;
     }
 
-    /* ---- Type-tagged root transitions -----------------------------------
-       `withViewTransition(cb, { type })` tags the transition. Engines with
-       `ViewTransition.types` (Chrome 125+) match `:active-view-transition-type`;
-       older engines fall back to the `data-vt-type` attribute on <html>. Each
-       type remaps the ROOT crossfade (the default UA snapshot) to one of the
-       named keyframe groups above, so a single callback can opt into a
-       directional slide without a per-element `view-transition-name`. */
+    /* ========================================================================
+       SECTION 3: TYPE-TAGGED ROOT TRANSITIONS (Attribute Fallback)
+       ======================================================================== */
+
+    /*
+     * `withViewTransition(cb, { type })` tags the transition.
+     * Older engines fall back to the `data-vt-type` attribute on <html>. Each
+     * type remaps the ROOT crossfade (the default UA snapshot) to one of the
+     * named keyframe groups above, so a single callback can opt into a
+     * directional slide without a per-element `view-transition-name`.
+     */
     html[data-vt-type='slide-forward'] {
       &::view-transition-old(root) {
         animation:
@@ -186,6 +191,10 @@
         animation: var(--duration-base) var(--ease-fluid) both vt-fade-in;
       }
     }
+
+    /* ========================================================================
+       SECTION 4: ACTIVE VIEW TRANSITION TYPE (Modern Native Type Matching)
+       ======================================================================== */
 
     /* Modern engines: `:active-view-transition-type` (no DOM attribute). Mirrors
        the attribute rules above for engines that support native typing. */
@@ -237,8 +246,11 @@
       }
     }
 
-    /* ---- Freeze Coordinator ----
-       Pauses all infinite CSS animations and transitions when data-vt-freeze is set
+    /* ========================================================================
+       SECTION 5: FREEZE COORDINATOR UTILITY
+       ======================================================================== */
+
+    /* Pauses all infinite CSS animations and transitions when data-vt-freeze is set
        on <html>, ensuring a clean static snapshot and preventing blur. */
     html[data-vt-freeze],
     html[data-vt-freeze] *,
