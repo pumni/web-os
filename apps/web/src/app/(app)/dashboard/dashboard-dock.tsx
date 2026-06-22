@@ -5,7 +5,8 @@ import type { ComponentType } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Palette, Settings, User, Music } from 'lucide-react';
 
-import { Dock, DockItem, withViewTransition } from '@pumni/ui';
+import { Dock, DockItem } from '@pumni/ui/os';
+import { withViewTransition } from '@pumni/ui/lib/view-transition';
 
 const dockItems: ReadonlyArray<{
   href: Route;

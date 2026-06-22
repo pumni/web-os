@@ -1,1 +1,1 @@
-export { cn } from '@pumni/ui';
+export { cn } from '@pumni/ui/lib/cn';

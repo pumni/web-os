@@ -1,25 +1,11 @@
 import * as React from 'react';
 import { toast } from 'sonner';
 import { HelpCircleIcon, SunIcon, SettingsIcon } from 'lucide-react';
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardAction,
-  CardDescription,
-  CardContent,
-  CardFooter,
-  CardWell,
-  Dock,
-  DockItem,
-  GlassSurface,
-  IconBadge,
-  ScrollArea,
-  ScrollBar,
-  Skeleton,
-  Window,
-} from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
+import { Card, CardHeader, CardTitle, CardAction, CardDescription, CardContent, CardFooter, CardWell, IconBadge, ScrollArea, ScrollBar } from '@pumni/ui/layout';
+import { Dock, DockItem, Window } from '@pumni/ui/os';
+import { GlassSurface } from '@pumni/ui/identity';
+import { Skeleton } from '@pumni/ui/feedback';
 import { ShowcaseSection } from './showcase-section';
 
 export function SurfacesSection() {

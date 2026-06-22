@@ -3,22 +3,12 @@
 import * as React from 'react';
 import { cn } from '@/shared/lib/utils';
 
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardWell,
-  GlassSurface,
-  Slider,
-  Switch,
-  apcaContrast,
-  formatOklch,
-  oklchToSrgb,
-} from '@pumni/ui';
+import { Badge } from '@pumni/ui/feedback';
+import { Button, Slider, Switch } from '@pumni/ui/form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardWell } from '@pumni/ui/layout';
+import { GlassSurface } from '@pumni/ui/identity';
+import { apcaContrast } from '@pumni/ui/lib/apca';
+import { formatOklch, oklchToSrgb } from '@pumni/ui/lib/oklch';
 import { Check, Copy, Gauge, Info, Layers, Palette, Sliders, X } from 'lucide-react';
 import { toast } from 'sonner';
 

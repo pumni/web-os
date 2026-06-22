@@ -1,7 +1,8 @@
 import { Suspense } from 'react';
 import { getCurrentProfile, ProfileForm } from '@/features/profile';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Skeleton } from '@pumni/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui/layout';
+import { Skeleton } from '@pumni/ui/feedback';
 
 export default function ProfileSettingsPage() {
   return (

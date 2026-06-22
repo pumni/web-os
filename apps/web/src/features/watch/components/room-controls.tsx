@@ -2,7 +2,9 @@
 
 import React from 'react';
 import { useMediaState, useMediaRemote, type MediaPlayerInstance } from '@vidstack/react';
-import { Button, Slider, GlassSurface, Switch, cn } from '@pumni/ui';
+import { Button, Slider, Switch } from '@pumni/ui/form';
+import { GlassSurface } from '@pumni/ui/identity';
+import { cn } from '@pumni/ui/lib/cn';
 import {
   Play,
   Pause,
@@ -13,7 +15,7 @@ import {
   Clapperboard,
   SkipForward,
 } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@pumni/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@pumni/ui/form';
 import { useControlsVisibility } from '../hooks/use-controls-visibility';
 
 interface RoomControlsProps {

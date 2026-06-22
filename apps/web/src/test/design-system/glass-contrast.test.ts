@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
-import { apcaContrast, oklchToSrgb, parseOklch } from '@pumni/ui';
+import { apcaContrast } from '@pumni/ui/lib/apca';
+import { oklchToSrgb, parseOklch } from '@pumni/ui/lib/oklch';
 import { repoRoot, tokenCss } from './token-test-utils';
 
 type Color = {

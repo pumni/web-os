@@ -15,16 +15,11 @@ import {
   Users,
 } from 'lucide-react';
 
-import {
-  Badge,
-  BentoGrid,
-  BentoGridItem,
-  Button,
-  CardWell,
-  IconBadge,
-  Input,
-  usePersonalization,
-} from '@pumni/ui';
+import { Badge } from '@pumni/ui/feedback';
+import { BentoGrid, BentoGridItem } from '@pumni/ui/os';
+import { Button, Input } from '@pumni/ui/form';
+import { CardWell, IconBadge } from '@pumni/ui/layout';
+import { usePersonalization } from '@pumni/ui/identity';
 
 import type { Room } from '@/features/watch';
 

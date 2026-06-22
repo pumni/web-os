@@ -6,23 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { profileSchema, type ProfileInput } from '@pumni/validators';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Button,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Spinner,
-  SubmitButton,
-  cn,
-} from '@pumni/ui';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui';
+import { Avatar, AvatarFallback, AvatarImage } from '@pumni/ui/layout';
+import { Button, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, SubmitButton } from '@pumni/ui/form';
+import { Spinner } from '@pumni/ui/feedback';
+import { cn } from '@pumni/ui/lib/cn';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui/layout';
 import { Camera, Trash2 } from 'lucide-react';
 import { useProfileMutation } from './use-profile-mutation';
 

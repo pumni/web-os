@@ -3,20 +3,10 @@
 import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  Button,
-  Input,
-  Label,
-  Tabs,
-  motion,
-  useReducedMotion,
-  recipes,
-} from '@pumni/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs } from '@pumni/ui/layout';
+import { Button, Input, Label } from '@pumni/ui/form';
+import { motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
+import { recipes } from '@pumni/ui/lib/motion';
 import { createRoom, joinByCode } from '../actions';
 import { toast } from 'sonner';
 import { Clapperboard, LogIn, Sparkles } from 'lucide-react';

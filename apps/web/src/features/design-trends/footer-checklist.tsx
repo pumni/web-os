@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui/layout';
 import { CheckCircle2 } from 'lucide-react';
 
 export function DesignTrendsFooter() {

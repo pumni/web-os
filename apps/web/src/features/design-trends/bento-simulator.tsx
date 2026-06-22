@@ -3,19 +3,10 @@
 import * as React from 'react';
 import { cn } from '@/shared/lib/utils';
 
-import {
-  Badge,
-  BentoGrid,
-  BentoGridItem,
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardWell,
-  IconBadge,
-} from '@pumni/ui';
+import { Badge } from '@pumni/ui/feedback';
+import { BentoGrid, BentoGridItem } from '@pumni/ui/os';
+import { Button } from '@pumni/ui/form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardWell, IconBadge } from '@pumni/ui/layout';
 import {
   ChevronRight,
   Code,
@@ -53,7 +44,7 @@ import { toast } from 'sonner';
 
 type Breakpoint = 'desktop' | 'tablet' | 'mobile';
 
-const bentoGridRecipeCode = `import { BentoGrid, BentoGridItem } from '@pumni/ui';
+const bentoGridRecipeCode = `import { BentoGrid, BentoGridItem } from '@pumni/ui/os';
 
 export default function MyBento() {
   return (

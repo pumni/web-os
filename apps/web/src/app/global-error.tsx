@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 import './globals.css';
 
 export default function GlobalError({

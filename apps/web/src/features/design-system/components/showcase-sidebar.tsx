@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@pumni/ui';
+import { cn } from '@pumni/ui/lib/cn';
 
 export const SHOWCASE_SECTIONS = [
   { id: 'foundations', label: 'Foundations' },

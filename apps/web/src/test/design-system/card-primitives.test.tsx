@@ -2,7 +2,8 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { Badge, CardWell, IconBadge } from '@pumni/ui';
+import { Badge } from '@pumni/ui/feedback';
+import { CardWell, IconBadge } from '@pumni/ui/layout';
 
 describe('Badge', () => {
   it('renders a span with the neutral tone by default', () => {

@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Sparkles } from 'lucide-react';
 
 import { requireUser } from '@pumni/auth';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@pumni/ui';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@pumni/ui/layout';
 
 import { DailyPlanner } from './daily-planner';
 import { DashboardBento, DashboardBentoSkeleton } from './dashboard-bento';

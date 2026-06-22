@@ -1,17 +1,8 @@
 import * as React from 'react';
 import { toast } from 'sonner';
-import {
-  Badge,
-  Button,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  Skeleton,
-  Separator,
-  Spinner,
-} from '@pumni/ui';
+import { Badge, Skeleton, Spinner } from '@pumni/ui/feedback';
+import { Button } from '@pumni/ui/form';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, Separator } from '@pumni/ui/layout';
 import { ShowcaseSection } from './showcase-section';
 
 export function FeedbackSection() {

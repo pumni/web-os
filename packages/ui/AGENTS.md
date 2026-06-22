@@ -7,31 +7,30 @@ package-specific boundary.
 ## Summary
 
 Framework-neutral React UI primitives (Radix, cva, motion, tailwind-merge). No
-database, no auth, no server logic. Consumers import components and styles only.
+database, no auth, no server logic. Consumers import via subpath only.
 
 ## Architecture
 
-- Exports raw TS/TSX from `./src/index.ts` and styles from `./src/styles/*`.
-- `optimizePackageImports: ['@pumni/ui']` in `apps/web/next.config.ts` relies on
-  the barrel being tree-shakeable — keep the index re-exporting components only.
-- Components are grouped by functional role under `src/components/` so the
-  directory reflects the ADR-0010 concern split (primitive / identity / shell):
+- **No barrel file.** Import via subpath: `@pumni/ui/form`, `@pumni/ui/overlay`,
+  `@pumni/ui/layout`, `@pumni/ui/feedback`, `@pumni/ui/identity`, `@pumni/ui/os`,
+  or `@pumni/ui/lib/<name>`. There is no `@pumni/ui` entry point.
+- The `exports` map in `package.json` is auto-generated from the filesystem by
+  `bun run generate-exports` (or validated in CI with `--check`).
+- Components are grouped by functional role under `src/components/`:
   - `form/` — inputs, controls, form scaffolding (button, input, select, form…)
   - `overlay/` — floating/portaled layers (dialog, popover, dropdown-menu…)
   - `layout/` — structural & presentational primitives (card, separator, tabs…)
   - `feedback/` — transient status (skeleton, sonner)
   - `identity/` — Pumni brand tier (glass-surface, personalization-provider)
   - `os/` — desktop shell (window, dock, bento-grid)
-  When adding a component, place it in the matching group, add the barrel export
-  in `src/index.ts`, and add/point the `exports` entry in `package.json` (subpath
-  keys do NOT encode the folder — `@pumni/ui/button` stays `./button`). A new
-  component without an `exports` entry is unreachable via subpath import. The
-  shadcn CLI (`npx shadcn add`) drops files at `src/components/` root — move the
-  result into the right group before committing.
-- Design tokens live in `packages/ui/src/styles/tokens.css`, `theme.css`, and
-  `personalization.css` only. Raw `oklch()` and primitive color vars
-  (`--indigo-*`, `--violet-*`, etc.) anywhere else fail
-  `checkDesignTokenBoundaries` in `bun run ai:check`.
+- When adding a component:
+  1. Place the file in the matching group folder.
+  2. Export it from that group's `index.ts` barrel (e.g. `src/components/form/index.ts`).
+  3. The `exports` map is auto-generated — run `bun run generate-exports` or
+     `bun run generate-exports --check` in CI.
+- Design tokens live in `src/styles/tokens.css`, `theme.css`, and
+  `personalization.css`. Raw `oklch()` and primitive color vars (`--indigo-*`,
+  `--violet-*`, etc.) elsewhere fail `checkDesignTokenBoundaries`.
 
 ## Stack
 
@@ -42,7 +41,9 @@ react-hook-form, sonner. Peer deps: React 19. Workspace dep: `@pumni/config`.
 
 - `bun --filter @pumni/ui typecheck`
 - `bun --filter @pumni/ui lint`
-- `bun run ai:check` (enforces the import + token boundaries below statically)
+- `bun run generate-exports --check` (validate exports map in CI)
+- `bun run generate-exports` (regenerate exports map)
+- `bun run ai:check` (enforces the import + token boundaries)
 
 ## Pitfalls
 
@@ -51,3 +52,6 @@ react-hook-form, sonner. Peer deps: React 19. Workspace dep: `@pumni/config`.
   `checkUiPackageBoundaries` blocks these and they break the "pure UI" contract.
 - Do not add Server Actions, route handlers, or Supabase calls here.
 - Do not introduce a new raw color or token; add it to the token files first.
+- Consumers **must** use subpath imports — barrel imports (`@pumni/ui`) are
+  unsupported. The group barrel (`form/index.ts`, `overlay/index.ts`, etc.) is
+  the single source of truth for each group's public API.

@@ -3,22 +3,11 @@
 import * as React from 'react';
 import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import {
-  ACCENTS,
-  Button,
-  Card,
-  CardContent,
-  cn,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-  usePersonalization,
-  SegmentedPicker,
-  DENSITIES,
-  GLASS_LEVELS,
-} from '@pumni/ui';
+import { ACCENTS, usePersonalization, DENSITIES, GLASS_LEVELS } from '@pumni/ui/identity';
+import { Button, SegmentedPicker } from '@pumni/ui/form';
+import { Card, CardContent } from '@pumni/ui/layout';
+import { cn } from '@pumni/ui/lib/cn';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@pumni/ui/overlay';
 
 const themeOptions = [
   { value: 'system', label: 'System', icon: MonitorIcon },

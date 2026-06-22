@@ -1,4 +1,4 @@
-import { Skeleton } from '@pumni/ui';
+import { Skeleton } from '@pumni/ui/feedback';
 
 export default function Loading() {
   return (

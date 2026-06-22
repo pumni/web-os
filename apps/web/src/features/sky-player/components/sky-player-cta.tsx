@@ -1,6 +1,6 @@
 import { Download, GitFork, ExternalLink } from 'lucide-react';
 
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 
 import { SKY_PLAYER_LINKS } from '../content';
 

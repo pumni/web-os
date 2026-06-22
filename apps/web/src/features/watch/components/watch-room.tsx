@@ -4,25 +4,11 @@ import React, { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';
 import type { MediaPlayerInstance } from '@vidstack/react';
-import {
-  Badge,
-  Button,
-  Input,
-  Label,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  GlassSurface,
-  Spinner,
-  cn,
-} from '@pumni/ui';
+import { Badge, Spinner } from '@pumni/ui/feedback';
+import { Button, Input, Label } from '@pumni/ui/form';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Sheet, SheetContent, SheetHeader, SheetTitle } from '@pumni/ui/overlay';
+import { GlassSurface } from '@pumni/ui/identity';
+import { cn } from '@pumni/ui/lib/cn';
 import { toast } from 'sonner';
 import { ArrowLeft, ListVideo, Link2, Hash, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';

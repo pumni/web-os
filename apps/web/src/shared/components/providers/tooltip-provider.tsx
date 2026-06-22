@@ -1,6 +1,6 @@
 'use client';
 
-import { TooltipProvider } from '@pumni/ui';
+import { TooltipProvider } from '@pumni/ui/overlay';
 
 /**
  * Single root provider for every `<Tooltip>` in the app. Radix requires exactly

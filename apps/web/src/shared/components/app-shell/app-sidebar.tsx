@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { Button, Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui/overlay';
 import { cn } from '@/shared/lib/utils';
 import { useAppUiStore, useSidebarCollapsed } from '@/shared/stores/app-ui-store';
 

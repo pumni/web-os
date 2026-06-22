@@ -57,15 +57,8 @@ function normalizeOptions<T extends string>(
 
 const segmentedItemVariants = cva(
   cn(
-    'relative z-10 inline-flex flex-1 items-center justify-center gap-1.5 rounded-md',
-    'font-medium whitespace-nowrap transition-colors duration-(--duration-base) ease-(--ease-snappy)',
-    'outline-none focus-ring',
-    // Inactive affordance: muted text + state overlay on hover/press. The
-    // `not-data-[state=checked]` guard keeps the overlay off the active item
-    // (mirrors the Tabs inactive-trigger pattern).
-    'not-data-[state=checked]:text-muted-foreground',
-    'not-data-[state=checked]:state-hover not-data-[state=checked]:state-pressed',
-    'data-[state=checked]:text-foreground',
+    'relative z-10 inline-flex flex-1 items-center justify-center rounded-md',
+    'whitespace-nowrap outline-none focus-ring',
     'disabled:cursor-not-allowed disabled:opacity-50',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
   ),
@@ -171,8 +164,29 @@ function SegmentedPicker<T extends string>({
                 transition={transition.snappy}
               />
             )}
-            {Icon && <Icon className="shrink-0" />}
-            {label}
+            <span className="relative inline-flex items-center justify-center">
+              {/* Inactive layer */}
+              <span
+                aria-hidden
+                className={cn(
+                  'inline-flex items-center justify-center gap-1.5 transition-opacity duration-(--duration-fast) ease-(--ease-out)',
+                  !checked ? 'text-muted-foreground font-normal opacity-100' : 'opacity-0',
+                )}
+              >
+                {Icon && <Icon className="shrink-0" />}
+                {label}
+              </span>
+              {/* Active layer */}
+              <span
+                className={cn(
+                  'absolute inset-0 inline-flex items-center justify-center gap-1.5 transition-opacity duration-(--duration-fast) ease-(--ease-out) font-medium text-foreground',
+                  checked ? 'opacity-100' : 'opacity-0',
+                )}
+              >
+                {Icon && <Icon className="shrink-0" />}
+                {label}
+              </span>
+            </span>
           </RadioGroupPrimitive.Item>
         );
       })}

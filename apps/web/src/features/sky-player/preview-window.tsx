@@ -4,7 +4,11 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Play, Pause, RefreshCw, Volume2, VolumeX } from 'lucide-react';
 
-import { Window, Button, motion, recipes, useReducedMotion, cn } from '@pumni/ui';
+import { Window } from '@pumni/ui/os';
+import { Button } from '@pumni/ui/form';
+import { motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
+import { recipes } from '@pumni/ui/lib/motion';
+import { cn } from '@pumni/ui/lib/cn';
 
 // C Major scale frequencies for the 15-key grid
 const NOTE_FREQS = [

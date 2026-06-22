@@ -2,7 +2,10 @@
 
 import { AlertTriangle, Sparkles, Download, Keyboard, HelpCircle } from 'lucide-react';
 
-import { Badge, Card, CardContent, CardWell, motion, recipes, useReducedMotion } from '@pumni/ui';
+import { Badge } from '@pumni/ui/feedback';
+import { Card, CardContent, CardWell } from '@pumni/ui/layout';
+import { motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
+import { recipes } from '@pumni/ui/lib/motion';
 
 import { PreviewWindow } from './preview-window';
 import { HERO_HIGHLIGHTS, SKY_PLAYER_VERSION } from './content';

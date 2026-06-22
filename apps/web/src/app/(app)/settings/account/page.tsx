@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui/layout';
 
 export default function AccountSettingsPage() {
   return (

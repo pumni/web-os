@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getCurrentUser } from '@pumni/auth';
 import { redirect } from 'next/navigation';
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 
 export default async function LandingPage() {
   const user = await getCurrentUser();

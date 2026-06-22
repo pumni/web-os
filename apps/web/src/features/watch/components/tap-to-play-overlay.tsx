@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 import { Play } from 'lucide-react';
 
 interface TapToPlayOverlayProps {

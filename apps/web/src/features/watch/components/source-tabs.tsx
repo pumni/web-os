@@ -1,6 +1,6 @@
 'use client';
 
-import { SegmentedPicker } from '@pumni/ui';
+import { SegmentedPicker } from '@pumni/ui/form';
 
 type SourceType = 'youtube' | 'url';
 

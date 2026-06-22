@@ -25,7 +25,8 @@ import {
   Wrench,
   Layers,
 } from 'lucide-react';
-import { Card, CardContent, Separator, cn } from '@pumni/ui';
+import { Card, CardContent, Separator } from '@pumni/ui/layout';
+import { cn } from '@pumni/ui/lib/cn';
 import { EcosystemSectionNav } from './section-nav';
 
 export const metadata: Metadata = {

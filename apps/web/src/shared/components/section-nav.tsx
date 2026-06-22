@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 
-import { cn, withViewTransition } from '@pumni/ui';
+import { cn } from '@pumni/ui/lib/cn';
+import { withViewTransition } from '@pumni/ui/lib/view-transition';
 
 import { useActiveSection } from '@/shared/hooks/use-active-section';
 

@@ -2,16 +2,8 @@ import type { Route } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight, Clapperboard, Tv } from 'lucide-react';
 
-import {
-  Badge,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardWell,
-  IconBadge,
-} from '@pumni/ui';
+import { Badge } from '@pumni/ui/feedback';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardWell, IconBadge } from '@pumni/ui/layout';
 
 import type { Room } from '../types';
 

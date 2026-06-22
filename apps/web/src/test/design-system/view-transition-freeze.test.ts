@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { withViewTransition } from '@pumni/ui';
+import { withViewTransition } from '@pumni/ui/lib/view-transition';
 
 describe('withViewTransition Freeze Coordinator', () => {
   it('sets and removes vtFreeze during transition lifecycle', async () => {

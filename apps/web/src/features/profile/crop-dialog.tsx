@@ -1,15 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@pumni/ui/overlay';
 import { toast } from 'sonner';
 import Cropper from 'react-easy-crop';
 import { cropAvatar } from './utils';

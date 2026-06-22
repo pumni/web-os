@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthField } from '@pumni/ui';
+import { AuthField } from '@pumni/ui/form';
 import Link from 'next/link';
 import { useActionState } from 'react';
 import { signUpAction, type AuthFormState } from '../auth-actions';

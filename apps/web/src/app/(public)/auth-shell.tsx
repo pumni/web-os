@@ -2,14 +2,8 @@ import * as React from 'react';
 
 import { DesktopBackground } from '@/shared/components/app-shell/desktop-background';
 
-import {
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  GlassSurface,
-} from '@pumni/ui';
+import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@pumni/ui/layout';
+import { GlassSurface } from '@pumni/ui/identity';
 
 type AuthShellProps = {
   subtitle: React.ReactNode;

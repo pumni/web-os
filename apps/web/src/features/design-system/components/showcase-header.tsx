@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 import { toast } from 'sonner';
 import { BellIcon, CommandIcon, SunIcon, MoonIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 
 export default function NotFound() {
   return (

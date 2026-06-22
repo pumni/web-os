@@ -3,7 +3,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { DesignSystemShowcase } from '@/features/design-system';
-import { PersonalizationProvider, TooltipProvider } from '@pumni/ui';
+import { PersonalizationProvider } from '@pumni/ui/identity';
+import { TooltipProvider } from '@pumni/ui/overlay';
 
 const toast = vi.hoisted(() => ({
   success: vi.fn(),

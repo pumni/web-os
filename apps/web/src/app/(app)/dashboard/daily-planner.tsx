@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { Check, Plus, Trash2 } from 'lucide-react';
-import { Button, Input, cn } from '@pumni/ui';
+import { Button, Input } from '@pumni/ui/form';
+import { cn } from '@pumni/ui/lib/cn';
 
 type Task = {
   id: string;

@@ -3,7 +3,10 @@
 import * as React from 'react';
 import { Plus, Minus } from 'lucide-react';
 
-import { AnimatePresence, motion, useReducedMotion, cn, Card, CardContent, recipes } from '@pumni/ui';
+import { AnimatePresence, motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
+import { cn } from '@pumni/ui/lib/cn';
+import { Card, CardContent } from '@pumni/ui/layout';
+import { recipes } from '@pumni/ui/lib/motion';
 
 import { FAQ_ITEMS, type FaqItem as FaqItemType } from '../content';
 

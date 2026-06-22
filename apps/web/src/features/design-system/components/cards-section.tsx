@@ -1,13 +1,6 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardSpotlight,
-  CardTitle,
-  Skeleton,
-} from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
+import { Card, CardContent, CardDescription, CardHeader, CardSpotlight, CardTitle } from '@pumni/ui/layout';
+import { Skeleton } from '@pumni/ui/feedback';
 import { ShowcaseSection } from './showcase-section';
 
 export function CardsSection() {

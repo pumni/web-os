@@ -2,7 +2,10 @@
 
 import * as React from 'react';
 
-import { Window, CardWell, Tabs, motion, recipes, useReducedMotion } from '@pumni/ui';
+import { Window } from '@pumni/ui/os';
+import { CardWell, Tabs } from '@pumni/ui/layout';
+import { motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
+import { recipes } from '@pumni/ui/lib/motion';
 
 import { SHORTCUT_GROUPS } from '../content';
 import { AddSongsCallout } from './add-songs-callout';

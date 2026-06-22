@@ -4,7 +4,7 @@ import { useActionState } from 'react';
 import Link from 'next/link';
 import { forgotPasswordAction, type AuthFormState } from '../auth-actions';
 import { AuthShell } from '../auth-shell';
-import { AuthField, SubmitButton } from '@pumni/ui';
+import { AuthField, SubmitButton } from '@pumni/ui/form';
 
 const initialState: AuthFormState = {};
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Tabs, Card } from '@pumni/ui';
+import { Tabs, Card } from '@pumni/ui/layout';
 import { Users, ListVideo, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { ParticipantRail } from './participant-rail';

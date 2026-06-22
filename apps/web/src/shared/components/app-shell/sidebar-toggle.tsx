@@ -1,7 +1,7 @@
 'use client';
 
 import { Menu } from 'lucide-react';
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 import { useAppUiStore } from '@/shared/stores/app-ui-store';
 
 /** Topbar hamburger that opens the mobile drawer on small screens. */

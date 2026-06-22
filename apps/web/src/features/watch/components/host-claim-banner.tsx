@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 import { Crown, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useClaimHost } from '../hooks/use-room-queue';

@@ -1,6 +1,6 @@
 import { Download, Monitor, Terminal } from 'lucide-react';
 
-import { CardWell } from '@pumni/ui';
+import { CardWell } from '@pumni/ui/layout';
 
 import { ADD_SONGS_STEPS, SKY_PLAYER_LINKS, SUPPORTED_FORMATS } from '../content';
 

@@ -9,7 +9,8 @@ import {
   PlusIcon,
   ExternalLinkIcon,
 } from 'lucide-react';
-import { BentoGrid, BentoGridItem, Skeleton } from '@pumni/ui';
+import { BentoGrid, BentoGridItem } from '@pumni/ui/os';
+import { Skeleton } from '@pumni/ui/feedback';
 import { ShowcaseSection } from './showcase-section';
 
 export function BentoSection() {

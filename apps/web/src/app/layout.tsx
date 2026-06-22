@@ -4,7 +4,8 @@ import { QueryProvider } from '@/shared/components/providers/query-provider';
 import { ThemeProvider } from '@/shared/components/providers/theme-provider';
 import { MotionConfigProvider } from '@/shared/components/providers/motion-config-provider';
 import { RootTooltipProvider } from '@/shared/components/providers/tooltip-provider';
-import { PersonalizationProvider, PersonalizationScript, Toaster } from '@pumni/ui';
+import { PersonalizationProvider, PersonalizationScript } from '@pumni/ui/identity';
+import { Toaster } from '@pumni/ui/feedback';
 import { TelemetryProvider } from '@/shared/lib/observability';
 
 import './globals.css';

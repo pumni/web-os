@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 import { SmilePlus } from 'lucide-react';
 
 interface ReactionBarProps {

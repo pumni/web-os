@@ -2,7 +2,7 @@ import type { Route } from 'next';
 import type { ComponentType } from 'react';
 import { ComponentIcon, Music, Settings, Sparkles, User } from 'lucide-react';
 
-import type { BentoTier } from '@pumni/ui';
+import type { BentoTier } from '@pumni/ui/os';
 
 /**
  * Single source of truth for the dashboard tile catalog.

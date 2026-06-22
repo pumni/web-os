@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { apcaContrast, backgroundFor, foregroundFor, oklchToSrgb } from '@pumni/ui';
+import { apcaContrast, backgroundFor, foregroundFor } from '@pumni/ui/lib/apca';
+import { oklchToSrgb } from '@pumni/ui/lib/oklch';
 
 /*
  * Inverse-APCA generator (ADR-0010, pillar #2).

@@ -2,7 +2,8 @@ import Link from 'next/link';
 import type { Route } from 'next';
 import { Clapperboard, Plus } from 'lucide-react';
 
-import { Button, Card, CardContent, IconBadge } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
+import { Card, CardContent, IconBadge } from '@pumni/ui/layout';
 
 export function EmptyRoomsCard() {
   return (

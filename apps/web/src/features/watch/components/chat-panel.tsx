@@ -1,16 +1,9 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import {
-  Button,
-  Input,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from '@pumni/ui';
+import { Button, Input } from '@pumni/ui/form';
+import { Avatar, AvatarFallback, AvatarImage } from '@pumni/ui/layout';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@pumni/ui/overlay';
 import { Send, MessageSquare } from 'lucide-react';
 import type { ChatMessage } from '../types';
 import { ReactionBar } from './reaction-bar';

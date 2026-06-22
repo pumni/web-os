@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@pumni/ui';
+import { Button } from '@pumni/ui/form';
 
 interface WatchRoomErrorProps {
   error: Error & { digest?: string };

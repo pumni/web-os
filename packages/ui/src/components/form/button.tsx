@@ -19,6 +19,13 @@ const buttonVariants = cva(
         secondary: 'bg-secondary text-secondary-foreground state-hover state-pressed',
         ghost: 'state-hover state-pressed',
         link: 'text-primary underline-offset-4 hover:underline',
+        /** Transparent surface — no padding, no bg, no border. Keeps only the
+         *  shared focus ring + disabled state. Use for inline triggers that
+         *  need to spread external listeners (e.g. dnd-kit's drag handle)
+         *  onto a real, accessible <button>. Pair with `size="icon-*"` to
+         *  control the click area. */
+        unstyled:
+          'h-auto w-auto gap-0 rounded-none bg-transparent p-0 shadow-none motion-safe:active:scale-100 hover:bg-transparent hover:text-inherit focus-visible:ring-1',
       },
       size: {
         default: 'h-control px-4 py-control-y has-[>svg]:px-3',

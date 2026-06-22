@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthField, SubmitButton } from '@pumni/ui';
+import { AuthField, SubmitButton } from '@pumni/ui/form';
 
 interface PasswordFieldsProps {
   pending: boolean;

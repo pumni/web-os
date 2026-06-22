@@ -3,7 +3,8 @@
 import type { User } from '@supabase/supabase-js';
 import { Calendar, Clock } from 'lucide-react';
 
-import { Badge, CardSpotlight, CardContent, Avatar, AvatarImage, AvatarFallback } from '@pumni/ui';
+import { Badge } from '@pumni/ui/feedback';
+import { CardSpotlight, CardContent, Avatar, AvatarImage, AvatarFallback } from '@pumni/ui/layout';
 
 import { useClock } from '@/shared/hooks/use-clock';
 import { dateFormatter } from '@/shared/lib/formatters';

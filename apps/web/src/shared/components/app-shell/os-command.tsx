@@ -5,7 +5,9 @@ import type { Route } from 'next';
 import { useRouter } from 'next/navigation';
 import { SearchIcon } from 'lucide-react';
 
-import { CommandPalette, type CommandItem, withViewTransition } from '@pumni/ui';
+import { CommandPalette } from '@pumni/ui/overlay';
+import type { CommandItem } from '@pumni/ui/overlay';
+import { withViewTransition } from '@pumni/ui/lib/view-transition';
 import { navItems } from './nav-items';
 
 /** Turns a route path into a DOM-safe id: "/settings/account" -> "settings-account". */

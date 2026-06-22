@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Input, SegmentedPicker, cn } from '@pumni/ui';
+import { Button, Input, SegmentedPicker } from '@pumni/ui/form';
+import { cn } from '@pumni/ui/lib/cn';
 import { Plus, Trash2, Play, Music, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import {

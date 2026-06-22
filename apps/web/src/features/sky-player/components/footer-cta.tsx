@@ -1,6 +1,8 @@
 'use client';
 
-import { Card, CardContent, motion, recipes, useReducedMotion } from '@pumni/ui';
+import { Card, CardContent } from '@pumni/ui/layout';
+import { motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
+import { recipes } from '@pumni/ui/lib/motion';
 
 import { SkyPlayerCta } from './sky-player-cta';
 

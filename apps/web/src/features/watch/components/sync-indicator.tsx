@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Badge } from '@pumni/ui';
+import { Badge } from '@pumni/ui/feedback';
 
 interface SyncIndicatorProps {
   status: 'host' | 'in-sync' | 'catching-up';

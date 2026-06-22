@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import { cn } from '@pumni/ui';
+import { cn } from '@pumni/ui/lib/cn';
 
 type PageSectionProps = {
   id: string;

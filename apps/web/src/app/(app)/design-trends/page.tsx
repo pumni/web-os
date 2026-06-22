@@ -1,7 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Badge, Button, IconBadge, Separator } from '@pumni/ui';
+import { Badge } from '@pumni/ui/feedback';
+import { Button } from '@pumni/ui/form';
+import { IconBadge, Separator } from '@pumni/ui/layout';
 import { Layers, LayoutGrid, Sliders, Sparkles } from 'lucide-react';
 import { GlassPlayground, BentoSimulator, DesignTrendsFooter } from '@/features/design-trends';
 
