@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Plus, Minus } from 'lucide-react';
 
-import { AnimatePresence, motion, useReducedMotion, cn, Card, CardContent } from '@pumni/ui';
+import { AnimatePresence, motion, useReducedMotion, cn, Card, CardContent, recipes } from '@pumni/ui';
 
 import { FAQ_ITEMS, type FaqItem as FaqItemType } from '../content';
 
@@ -29,9 +29,14 @@ function FaqCard({
     'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors',
     isOpen ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
   );
-  const initial = shouldReduce ? false : { height: 0, opacity: 0 };
-  const exit = shouldReduce ? undefined : { height: 0, opacity: 0 };
-  const transition = shouldReduce ? { duration: 0 } : { duration: 0.2, ease: 'easeOut' as const };
+  const collapseProps = shouldReduce
+    ? {
+        initial: false,
+        animate: { height: 'auto', opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0 },
+      }
+    : recipes.collapse;
 
   return (
     <Card key={faq.question} className={cardClass}>
@@ -54,10 +59,7 @@ function FaqCard({
         {isOpen ? (
           <motion.div
             key="content"
-            initial={initial}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={exit}
-            transition={transition}
+            {...collapseProps}
             className="overflow-hidden"
           >
             <CardContent className="border-t border-border pt-4 pb-5">

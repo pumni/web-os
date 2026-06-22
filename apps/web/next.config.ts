@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
     // Progressive enhancement — gated at the browser level via
     // @supports (view-transition-name: none) in CSS.
     viewTransition: true,
+    scrollRestoration: true,
   },
 };
 

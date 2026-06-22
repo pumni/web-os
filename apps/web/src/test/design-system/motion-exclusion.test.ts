@@ -95,4 +95,32 @@ describe('Animation Identity Exclusivity (Conformity Guard)', () => {
 
     expect(allViolations.length).toBe(0);
   });
+
+  it('ensures all glass utilities defined in glass.css have a prefers-reduced-transparency fallback', () => {
+    const glassCssPath = path.join(repoRoot, 'packages/ui/src/styles/glass.css');
+    const content = readFileSync(glassCssPath, 'utf8');
+
+    // Find all utility definitions starting with glass-
+    const utilityRegex = /@utility\s+(glass-[a-zA-Z0-9-]+)/g;
+    const utilities: string[] = [];
+    let match;
+    while ((match = utilityRegex.exec(content)) !== null) {
+      const utilityName = match[1];
+      if (utilityName) {
+        utilities.push(utilityName);
+      }
+    }
+
+    // Find the prefers-reduced-transparency media query block
+    const mediaQueryRegex = /@media\s*\(\s*prefers-reduced-transparency\s*:\s*reduce\s*\)\s*\{([^}]+)\}/g;
+    const mediaQueryMatch = mediaQueryRegex.exec(content);
+    
+    expect(mediaQueryMatch).not.toBeNull();
+    const fallbackBlock = mediaQueryMatch?.[1] ?? '';
+
+    for (const utility of utilities) {
+      const classSelector = `.${utility}`;
+      expect(fallbackBlock).toContain(classSelector);
+    }
+  });
 });

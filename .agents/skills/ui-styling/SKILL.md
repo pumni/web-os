@@ -38,8 +38,9 @@ reference detail.
   orchestration. JS motion must call `useReducedMotion()`. Use
   `recipes.hoverLift`, `pressScale`, and `staggerItem` instead of hand-rolled
   `whileHover`. Motion tokens mirror in `lib/motion.ts`. CSS-only stagger
-  via `css-stagger` utility (starting-style.css) for cases where JS motion
-  bundle is unnecessary.
+  uses `recipes.staggerContainer*` from `@pumni/ui` (the
+  `starting-style.css` `css-stagger` utility was retired in animation-system-refactor Phase 2;
+  see ADR-missing linked plan for the audit trail).
 - Personalization: accent (`indigo`/`violet`/`rose`), glass
   (`soft`/`default`/`strong`), density (`comfortable`/`compact`).
   `PersonalizationScript` must be first child of `<body>` to avoid FOUC.

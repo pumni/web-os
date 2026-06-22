@@ -135,6 +135,20 @@ export const recipes = {
     exit: { opacity: 0, y: entranceY },
     transition: transition.fluid,
   },
+  /** Collapse / Expand animation for accordions and panels. height-auto friendly. */
+  collapse: {
+    initial: { height: 0, opacity: 0 },
+    animate: { height: 'auto', opacity: 1 },
+    exit: { height: 0, opacity: 0 },
+    transition: { duration: duration.base, ease: easing.fluid },
+  },
+  /** Window-specific entrance/exit (deliberate divergence from fadeRise for large OS windows). */
+  window: {
+    initial: { opacity: 0, scale: 0.96, y: entranceY },
+    animate: { opacity: 1, scale: 1, y: 0 },
+    exit: { opacity: 0, scale: 0.96, y: entranceY },
+    transition: transition.fluid,
+  },
   /**
    * Draggable surface — for OS-style windows and panels that follow the cursor
    * with momentum. Spread onto a `motion.*` element paired with `useDragControls`

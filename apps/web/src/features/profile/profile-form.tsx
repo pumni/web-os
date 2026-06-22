@@ -18,11 +18,12 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Spinner,
   SubmitButton,
   cn,
 } from '@pumni/ui';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui';
-import { Camera, Loader2, Trash2 } from 'lucide-react';
+import { Camera, Trash2 } from 'lucide-react';
 import { useProfileMutation } from './use-profile-mutation';
 
 // Lazy-load the crop dialog — react-easy-crop is Canvas-heavy and not needed
@@ -150,7 +151,7 @@ function AvatarUpload({
 
           {isUploading && (
             <div className="absolute inset-0 flex items-center justify-center bg-overlay">
-              <Loader2 className="h-6 w-6 animate-spin" style={{ color: 'white' }} />
+              <Spinner className="text-white" />
             </div>
           )}
         </div>

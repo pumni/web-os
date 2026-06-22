@@ -5,7 +5,7 @@ import { Maximize2, Minus, Plus, X } from 'lucide-react';
 import { motion, useReducedMotion, type HTMLMotionProps } from 'motion/react';
 
 import { cn } from '../../lib/cn';
-import { transition } from '../../lib/motion';
+import { transition, recipes } from '../../lib/motion';
 
 // ---------------------------------------------------------------------------
 // Motion vocabulary (module scope).
@@ -17,23 +17,14 @@ import { transition } from '../../lib/motion';
 // neutralises the JS animation under reduced-motion, since the global CSS
 // media query cannot silence motion's JS animations).
 
-// Divergence rationale: These enter/exit constants intentionally diverge from
+// Divergence rationale: The window entry/exit animations are now promoted to the
+// central `recipes.window` (in `lib/motion.ts`). They intentionally diverge from
 // `recipes.fadeRise` (by adding a subtle scale settle: 0.96 -> 1) because
 // a large OS surface like a window benefits from scale-settle feedback,
-// whereas smaller UI content panels do not. They still read from the same
-// entrance geometry tokens where applicable (scale 0.96 settle is close to
-// --entrance-scale/zoom, and translateY(8) matches --entrance-y).
+// whereas smaller UI content panels do not.
 
-/** Full-energy entrance — fade + subtle rise + settle. */
-const WINDOW_ENTER = { opacity: 0, scale: 0.96, y: 8 } as const;
-/** Resting state of an active window. */
-const WINDOW_VISIBLE = { opacity: 1, scale: 1, y: 0 } as const;
 /** Slightly dimmed resting state for an inactive window. */
 const WINDOW_INACTIVE = { opacity: 0.95, scale: 1, y: 0 } as const;
-/** Exit mirrors the entrance for a symmetric hand-off. */
-const WINDOW_EXIT = { opacity: 0, scale: 0.96, y: 8 } as const;
-/** Reduced-motion exit — opacity-only so the window never pops out. */
-const WINDOW_EXIT_REDUCED = { opacity: 0 } as const;
 
 type WindowControlProps = React.ComponentProps<'button'> & {
   label: string;
@@ -114,10 +105,10 @@ function Window({
       data-active={active}
       aria-labelledby={titleId}
       style={{ zIndex: active ? 'var(--z-window-active)' : 'var(--z-window)', ...style }}
-      initial={shouldReduce ? false : WINDOW_ENTER}
-      animate={active ? WINDOW_VISIBLE : WINDOW_INACTIVE}
-      exit={shouldReduce ? WINDOW_EXIT_REDUCED : WINDOW_EXIT}
-      transition={shouldReduce ? { duration: 0 } : transition.fluid}
+      initial={shouldReduce ? false : recipes.window.initial}
+      animate={active ? recipes.window.animate : WINDOW_INACTIVE}
+      exit={shouldReduce ? { opacity: 0 } : recipes.window.exit}
+      transition={shouldReduce ? { duration: 0 } : recipes.window.transition}
       className={cn('glass-window group/window flex flex-col overflow-hidden rounded-xl', className)}
       {...props}
     >

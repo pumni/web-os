@@ -125,8 +125,7 @@
     /* ---- Scoped card transitions (prevent text stretching during height morphing) ---- */
     ::view-transition-old(watch-lobby-card),
     ::view-transition-new(watch-lobby-card) {
-      object-fit: none !important;
-      object-position: top center !important;
+      overflow: clip !important;
     }
     ::view-transition-old(watch-lobby-card) {
       animation: var(--duration-base) var(--ease-fluid) both vt-fade-out;
