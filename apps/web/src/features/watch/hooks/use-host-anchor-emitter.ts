@@ -47,10 +47,9 @@ export function useHostAnchorEmitter({
 
   const persistAnchor = (anchor: PlaybackAnchor, force = false) => {
     if (!isHost && !force) return;
-    persistHostAnchorClient(roomId, anchor)
-      .catch((error) => {
-        telemetryRef.current.error(error, { scope: 'host-anchor-persist', roomId });
-      });
+    persistHostAnchorClient(roomId, anchor).catch((error) => {
+      telemetryRef.current.error(error, { scope: 'host-anchor-persist', roomId });
+    });
   };
 
   const persistAnchorRef = useRef(persistAnchor);

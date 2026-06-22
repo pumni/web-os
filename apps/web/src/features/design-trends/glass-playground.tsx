@@ -19,16 +19,7 @@ import {
   formatOklch,
   oklchToSrgb,
 } from '@pumni/ui';
-import {
-  Check,
-  Copy,
-  Gauge,
-  Info,
-  Layers,
-  Palette,
-  Sliders,
-  X,
-} from 'lucide-react';
+import { Check, Copy, Gauge, Info, Layers, Palette, Sliders, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 /** Copy text to the clipboard with a success toast. */
@@ -126,21 +117,14 @@ export function GlassPlayground() {
     // Built via the colour-math formatter (not a hand-written oklch literal) so
     // the preview keeps the token boundary: this is a runtime slider value,
     // not a hardcoded design colour.
-    ['--glass-tint' as string]: formatOklch(
-      { l: tintL, c: tintC, h: tintH },
-      { alpha: tintAlpha },
-    ),
+    ['--glass-tint' as string]: formatOklch({ l: tintL, c: tintC, h: tintH }, { alpha: tintAlpha }),
   };
 
-  const fgOklch = isDark
-    ? { l: 0.985, c: 0.003, h: 247.858 }
-    : { l: 0.085, c: 0.015, h: 260 };
+  const fgOklch = isDark ? { l: 0.985, c: 0.003, h: 247.858 } : { l: 0.085, c: 0.015, h: 260 };
 
   const blobOklch = { l: 0.555, c: 0.115, h: 202 };
-  
-  const bgOklch = isDark
-    ? { l: 0.085, c: 0.015, h: 260 }
-    : { l: 1.0, c: 0.0, h: 0 };
+
+  const bgOklch = isDark ? { l: 0.085, c: 0.015, h: 260 } : { l: 1.0, c: 0.0, h: 0 };
 
   const fgSrgb = oklchToSrgb(fgOklch);
   const blobSrgb = oklchToSrgb(blobOklch);
@@ -183,8 +167,8 @@ export function GlassPlayground() {
                 Chỉ dùng cho lớp nổi (Floating Layers)
               </h4>
               <p className="pl-4 leading-relaxed text-muted-foreground">
-                Đặt kính ở Dialog, Popover, Dropdown, Topbar, Dock, OS Window/Titlebar. Không bao giờ áp
-                dụng cho khối nền lớn hoặc card phẳng để bảo toàn hiệu năng.
+                Đặt kính ở Dialog, Popover, Dropdown, Topbar, Dock, OS Window/Titlebar. Không bao
+                giờ áp dụng cho khối nền lớn hoặc card phẳng để bảo toàn hiệu năng.
               </p>
             </div>
 
@@ -194,9 +178,9 @@ export function GlassPlayground() {
                 BẮT BUỘC nổi trên backdrop nhiều màu (ADR-0015)
               </h4>
               <p className="pl-4 leading-relaxed text-muted-foreground">
-                Kính chỉ đọc được glassmorphism khi có màu ở phía sau để khúc xạ. Trên nền phẳng đặc, nó
-                biến thành hộp xám nhạt. Dùng pattern 2-blob (xem playground) hoặc để overlay/scrim cung
-                cấp backdrop.
+                Kính chỉ đọc được glassmorphism khi có màu ở phía sau để khúc xạ. Trên nền phẳng
+                đặc, nó biến thành hộp xám nhạt. Dùng pattern 2-blob (xem playground) hoặc để
+                overlay/scrim cung cấp backdrop.
               </p>
             </div>
 
@@ -302,33 +286,49 @@ export function GlassPlayground() {
           </CardHeader>
           <CardContent className="space-y-6 p-6">
             <div className="relative flex h-80 w-full items-center justify-center overflow-hidden rounded-xl border border-border p-8">
-              {showBackdrop ? <GlassBackdrop /> : <div className="absolute inset-0 bg-background" />}
+              {showBackdrop ? (
+                <GlassBackdrop />
+              ) : (
+                <div className="absolute inset-0 bg-background" />
+              )}
 
               <div className="relative z-10 w-full max-w-sm">
-                <GlassSurface variant={glow ? 'window' : 'panel'} className="rounded-2xl" style={previewCssVars}>
+                <GlassSurface
+                  variant={glow ? 'window' : 'panel'}
+                  className="rounded-2xl"
+                  style={previewCssVars}
+                >
                   <div className="space-y-3 p-5">
                     <div className="flex items-center justify-between">
                       <Badge tone="primary" size="sm">
                         Pumni OS Glass Element
                       </Badge>
                       <div className="flex items-center gap-1.5">
-                        <Badge 
-                          tone={sampleLc >= 60 ? 'success' : sampleLc >= 45 ? 'warning' : 'destructive'} 
-                          size="sm" 
+                        <Badge
+                          tone={
+                            sampleLc >= 60 ? 'success' : sampleLc >= 45 ? 'warning' : 'destructive'
+                          }
+                          size="sm"
                           className="font-mono"
                         >
                           APCA Lc {sampleLc.toFixed(1)}
                         </Badge>
-                        <span className={cn(
-                          "flex size-2 rounded-full animate-pulse",
-                          sampleLc >= 60 ? "bg-success" : sampleLc >= 45 ? "bg-warning" : "bg-destructive"
-                        )} />
+                        <span
+                          className={cn(
+                            'flex size-2 animate-pulse rounded-full',
+                            sampleLc >= 60
+                              ? 'bg-success'
+                              : sampleLc >= 45
+                                ? 'bg-warning'
+                                : 'bg-destructive',
+                          )}
+                        />
                       </div>
                     </div>
                     <h3 className="text-lg font-bold text-foreground">Bản mô phỏng Kính</h3>
                     <p className="text-xs leading-relaxed text-muted-foreground">
-                      Viền bắt sáng ở góc trên, đổ bóng bên dưới, nền blob nhiều màu phía sau tạo hiệu
-                      ứng khúc xạ. Tắt backdrop để thấy kính mất hiệu ứng.
+                      Viền bắt sáng ở góc trên, đổ bóng bên dưới, nền blob nhiều màu phía sau tạo
+                      hiệu ứng khúc xạ. Tắt backdrop để thấy kính mất hiệu ứng.
                     </p>
 
                     {showNested && (
@@ -348,21 +348,21 @@ export function GlassPlayground() {
             </div>
 
             {/* Detailed Color Metrics & Verification */}
-            <div className="rounded-xl border border-border bg-muted/20 p-4 space-y-4 text-xs">
-              <h4 className="font-bold text-foreground flex items-center gap-1.5">
-                <Gauge className="size-3.5 text-primary animate-pulse" />
+            <div className="space-y-4 rounded-xl border border-border bg-muted/20 p-4 text-xs">
+              <h4 className="flex items-center gap-1.5 font-bold text-foreground">
+                <Gauge className="size-3.5 animate-pulse text-primary" />
                 Chỉ số Màu sắc & Tương phản (APCA over OKLCH Primitives)
               </h4>
-              
+
               <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-                <div className="rounded-lg border bg-card p-3 space-y-1.5">
-                  <div className="text-muted-foreground font-semibold">Tương phản APCA</div>
+                <div className="space-y-1.5 rounded-lg border bg-card p-3">
+                  <div className="font-semibold text-muted-foreground">Tương phản APCA</div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xl font-bold font-mono text-foreground">
+                    <span className="font-mono text-xl font-bold text-foreground">
                       Lc {sampleLc.toFixed(1)}
                     </span>
-                    <Badge 
-                      tone={sampleLc >= 60 ? 'success' : sampleLc >= 45 ? 'warning' : 'destructive'} 
+                    <Badge
+                      tone={sampleLc >= 60 ? 'success' : sampleLc >= 45 ? 'warning' : 'destructive'}
                       size="sm"
                     >
                       {sampleLc >= 60 ? 'Pass (Body)' : sampleLc >= 45 ? 'Pass (Large)' : 'Fail'}
@@ -373,9 +373,9 @@ export function GlassPlayground() {
                   </p>
                 </div>
 
-                <div className="rounded-lg border bg-card p-3 space-y-1.5">
-                  <div className="text-muted-foreground font-semibold">OKLCH Tint Color</div>
-                  <div className="font-mono text-foreground font-medium select-all">
+                <div className="space-y-1.5 rounded-lg border bg-card p-3">
+                  <div className="font-semibold text-muted-foreground">OKLCH Tint Color</div>
+                  <div className="font-mono font-medium text-foreground select-all">
                     {formatOklch(
                       { l: tintL, c: tintC, h: tintH },
                       { precision: 3, alpha: tintAlpha },
@@ -386,25 +386,32 @@ export function GlassPlayground() {
                   </p>
                 </div>
 
-                <div className="rounded-lg border bg-card p-3 space-y-1.5">
-                  <div className="text-muted-foreground font-semibold flex items-center gap-1">
-                     Linear sRGB (Tint)
-                    <span className="inline-flex cursor-help" title="Linear light sRGB values scaled 0.0 - 1.0 (intentional gamma-less matrix outputs for APCA accuracy)">
+                <div className="space-y-1.5 rounded-lg border bg-card p-3">
+                  <div className="flex items-center gap-1 font-semibold text-muted-foreground">
+                    Linear sRGB (Tint)
+                    <span
+                      className="inline-flex cursor-help"
+                      title="Linear light sRGB values scaled 0.0 - 1.0 (intentional gamma-less matrix outputs for APCA accuracy)"
+                    >
                       <Info className="size-3 text-muted-foreground" />
                     </span>
                   </div>
-                  <div className="font-mono text-foreground font-medium select-all">
-                    rgb({glassSrgb[0].toFixed(4)} {glassSrgb[1].toFixed(4)} {glassSrgb[2].toFixed(4)})
+                  <div className="font-mono font-medium text-foreground select-all">
+                    rgb({glassSrgb[0].toFixed(4)} {glassSrgb[1].toFixed(4)}{' '}
+                    {glassSrgb[2].toFixed(4)})
                   </div>
                   <p className="text-[10px] leading-snug text-muted-foreground">
                     Không dùng sRGB 0-255 tiêu chuẩn. Giá trị tuyến tính trực tiếp (0.0-1.0).
                   </p>
                 </div>
 
-                <div className="rounded-lg border bg-card p-3 space-y-1.5">
-                  <div className="text-muted-foreground font-semibold">Nền Tổng hợp (Composite)</div>
-                  <div className="font-mono text-foreground font-medium select-all">
-                    rgb({compositeBgSrgb[0].toFixed(4)} {compositeBgSrgb[1].toFixed(4)} {compositeBgSrgb[2].toFixed(4)})
+                <div className="space-y-1.5 rounded-lg border bg-card p-3">
+                  <div className="font-semibold text-muted-foreground">
+                    Nền Tổng hợp (Composite)
+                  </div>
+                  <div className="font-mono font-medium text-foreground select-all">
+                    rgb({compositeBgSrgb[0].toFixed(4)} {compositeBgSrgb[1].toFixed(4)}{' '}
+                    {compositeBgSrgb[2].toFixed(4)})
                   </div>
                   <p className="text-[10px] leading-snug text-muted-foreground">
                     Kết quả hòa trộn kênh tuyến tính giữa lớp Kính (Tint) và nền phía sau (Blob).
@@ -416,7 +423,7 @@ export function GlassPlayground() {
             {/* Playground Controls */}
             <div className="grid gap-6 text-xs md:grid-cols-3">
               <div className="space-y-4">
-                <h4 className="font-bold text-foreground flex items-center gap-1.5 border-b pb-1">
+                <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
                   <Sliders className="size-3.5" /> Backdrop Filters
                   <SpecBadge />
                 </h4>
@@ -433,14 +440,16 @@ export function GlassPlayground() {
                     onValueChange={(val) => setBlurPx(val[0] ?? 12)}
                   />
                   <p className="text-[10px] leading-snug text-muted-foreground">
-                    Spec {SPECS.blur.min}–{SPECS.blur.max}px (product: {SPECS.blur.production}). Trên 16px tăng
-                    GPU cost trên mobile không tương xứng.
+                    Spec {SPECS.blur.min}–{SPECS.blur.max}px (product: {SPECS.blur.production}).
+                    Trên 16px tăng GPU cost trên mobile không tương xứng.
                   </p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="font-semibold">Saturation (Bão hòa)</span>
-                    <span className="font-mono text-muted-foreground">{saturateBoost.toFixed(1)}x</span>
+                    <span className="font-mono text-muted-foreground">
+                      {saturateBoost.toFixed(1)}x
+                    </span>
                   </div>
                   <Slider
                     min={SPECS.saturate.min}
@@ -450,20 +459,21 @@ export function GlassPlayground() {
                     onValueChange={(val) => setSaturateBoost(val[0] ?? 1.4)}
                   />
                   <p className="text-[10px] leading-snug text-muted-foreground">
-                    Spec {SPECS.saturate.min.toFixed(1)}–{SPECS.saturate.max.toFixed(1)}x (product: {SPECS.saturate.production}).
-                    Vibrancy cao hơn đè màu backdrop quá mức.
+                    Spec {SPECS.saturate.min.toFixed(1)}–{SPECS.saturate.max.toFixed(1)}x (product:{' '}
+                    {SPECS.saturate.production}). Vibrancy cao hơn đè màu backdrop quá mức.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-bold text-foreground flex items-center gap-1.5 border-b pb-1">
+                <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
                   <Palette className="size-3.5" /> OKLCH Primitives (Tint)
                 </h4>
                 <p className="text-[10px] leading-snug text-muted-foreground">
-                  Trình diễn cách token Tier-1 được mix thành <code>--glass-tint</code> (Tier-2). Mặc định
-                  khớp token production ({isDark ? 'neutral-900 34%' : 'neutral-0 54%'}). Component thật luôn
-                  dùng <code>bg-glass</code> / <code>GlassSurface</code>, không bao giờ ref primitive trực tiếp.
+                  Trình diễn cách token Tier-1 được mix thành <code>--glass-tint</code> (Tier-2).
+                  Mặc định khớp token production ({isDark ? 'neutral-900 34%' : 'neutral-0 54%'}).
+                  Component thật luôn dùng <code>bg-glass</code> / <code>GlassSurface</code>, không
+                  bao giờ ref primitive trực tiếp.
                 </p>
                 <div className="space-y-2">
                   <div className="flex justify-between">
@@ -507,7 +517,9 @@ export function GlassPlayground() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="font-semibold">Tint Opacity (Opacity)</span>
-                    <span className="font-mono text-muted-foreground">{(tintAlpha * 100).toFixed(0)}%</span>
+                    <span className="font-mono text-muted-foreground">
+                      {(tintAlpha * 100).toFixed(0)}%
+                    </span>
                   </div>
                   <Slider
                     min={0.0}
@@ -520,7 +532,7 @@ export function GlassPlayground() {
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-bold text-foreground flex items-center gap-1.5 border-b pb-1">
+                <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
                   <Layers className="size-3.5" /> Style Toggles
                 </h4>
                 <div className="space-y-3">
@@ -568,8 +580,8 @@ export function GlassPlayground() {
               <Info className="mt-0.5 size-4 shrink-0 text-primary" />
               <p className="text-muted-foreground">
                 <strong className="text-foreground">Active Glow</strong> dùng{' '}
-                <code>--shadow-glass-glow</code> (cho OS Window đang focus). Nó là lớp đổ bóng sâu hơn,
-                không phải tăng blur — vẫn tuân thủ kỷ luật không animate backdrop-filter.
+                <code>--shadow-glass-glow</code> (cho OS Window đang focus). Nó là lớp đổ bóng sâu
+                hơn, không phải tăng blur — vẫn tuân thủ kỷ luật không animate backdrop-filter.
               </p>
             </CardContent>
           </Card>

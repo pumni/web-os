@@ -63,9 +63,7 @@ function ParticipantRow({
 
   const rowClass = cn(
     'flex items-center justify-between p-2 rounded-md border text-xs transition-colors duration-(--duration-fast)',
-    isHost
-      ? 'border-border bg-primary/10'
-      : 'border-border bg-muted motion-safe:hover:bg-muted/80',
+    isHost ? 'border-border bg-primary/10' : 'border-border bg-muted motion-safe:hover:bg-muted/80',
   );
   const avatarClass = cn(
     'size-7 border shrink-0',

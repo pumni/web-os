@@ -3,7 +3,6 @@
 import { useClock } from '@/shared/hooks/use-clock';
 import { dateFormatter } from '@/shared/lib/formatters';
 
-
 export function ClockWidget() {
   const timestamp = useClock();
 

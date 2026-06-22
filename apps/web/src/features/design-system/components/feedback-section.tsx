@@ -64,10 +64,7 @@ export function FeedbackSection() {
             <Button variant="outline" onClick={() => toast.info('Workspace sync initiated.')}>
               Info
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => toast.success('Changes saved successfully.')}
-            >
+            <Button variant="outline" onClick={() => toast.success('Changes saved successfully.')}>
               Success
             </Button>
             <Button variant="outline" onClick={() => toast.warning('Low memory warning.')}>
@@ -99,9 +96,7 @@ export function FeedbackSection() {
               <Badge tone="destructive" pulse>
                 Alert
               </Badge>
-              <Badge tone="neutral">
-                Offline
-              </Badge>
+              <Badge tone="neutral">Offline</Badge>
             </div>
             <Separator />
             <div className="flex h-8 items-center gap-2.5 text-sm">
@@ -141,13 +136,12 @@ export function FeedbackSection() {
             <div className="flex items-center gap-3">
               <Spinner aria-label="Loading data" />
               <span className="text-sm text-muted-foreground">
-                Standalone — pass <code>aria-label</code> so the status role
-                announces itself.
+                Standalone — pass <code>aria-label</code> so the status role announces itself.
               </span>
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Decorative by default (<code>aria-hidden</code>) when paired with a
-              visible label. Reduced-motion shows a static icon.
+              Decorative by default (<code>aria-hidden</code>) when paired with a visible label.
+              Reduced-motion shows a static icon.
             </p>
           </CardContent>
         </Card>

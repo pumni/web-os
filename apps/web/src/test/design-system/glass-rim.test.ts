@@ -41,9 +41,7 @@ function stripComments(css: string): string {
 function readRuleBody(css: string, selector: string): string {
   const stripped = stripComments(css);
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const startMatch = stripped.match(
-    new RegExp(`(?:^|\\})\\s*${escaped}\\s*\\{`, 'm'),
-  );
+  const startMatch = stripped.match(new RegExp(`(?:^|\\})\\s*${escaped}\\s*\\{`, 'm'));
   if (startMatch?.index == null) return '';
   const openIdx = startMatch.index + startMatch[0].lastIndexOf('{');
   let depth = 0;
@@ -62,14 +60,12 @@ describe('the glass rim pair is tokenized', () => {
     const lightBody = readRuleBody(themeCss, ':root');
     const darkBody = readRuleBody(themeCss, '.dark');
 
-    expect(
-      lightBody,
-      'light mode must define --glass-shadow-edge',
-    ).toMatch(/--glass-shadow-edge:\s*oklch\(/);
-    expect(
-      darkBody,
-      'dark mode must define --glass-shadow-edge',
-    ).toMatch(/--glass-shadow-edge:\s*oklch\(/);
+    expect(lightBody, 'light mode must define --glass-shadow-edge').toMatch(
+      /--glass-shadow-edge:\s*oklch\(/,
+    );
+    expect(darkBody, 'dark mode must define --glass-shadow-edge').toMatch(
+      /--glass-shadow-edge:\s*oklch\(/,
+    );
   });
 
   it('keeps the shadow-edge darker on light surfaces and stronger on dark', () => {

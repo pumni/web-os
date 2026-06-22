@@ -21,7 +21,10 @@ import { readDurationSeconds, readUnitless, tokenCss, themeCss } from './token-t
  * must share one source of truth). This test fails if the two drift apart.
  */
 
-function readCubicBezier(name: string, cssContent: string = tokenCss): [number, number, number, number] {
+function readCubicBezier(
+  name: string,
+  cssContent: string = tokenCss,
+): [number, number, number, number] {
   const matchVar = cssContent.match(new RegExp(`${name}:\\s*var\\((--[^)]+)\\)`));
   if (matchVar?.[1]) {
     return readCubicBezier(matchVar[1], tokenCss);
@@ -87,10 +90,7 @@ describe('entrance geometry tokens stay in sync', () => {
   });
 
   it('entrance-zoom aliases --vt-zoom-scale (one VT zoom value)', () => {
-    expect(readUnitless('--entrance-zoom')).toBeCloseTo(
-      readUnitless('--vt-zoom-scale'),
-      5,
-    );
+    expect(readUnitless('--entrance-zoom')).toBeCloseTo(readUnitless('--vt-zoom-scale'), 5);
   });
 });
 

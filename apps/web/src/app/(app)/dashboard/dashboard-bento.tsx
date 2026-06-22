@@ -28,7 +28,6 @@ import {
 
 import type { Room } from '@/features/watch';
 
-
 interface DashboardBentoProps {
   recentRooms: ReadonlyArray<Room>;
 }

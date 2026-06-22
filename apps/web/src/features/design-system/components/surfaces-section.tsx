@@ -89,8 +89,8 @@ export function SurfacesSection() {
           <CardHeader>
             <CardTitle>Glassmorphism Surfaces</CardTitle>
             <CardDescription>
-              Frosted translucent floating surfaces with dedicated layout roles — float them
-              over a backdrop.
+              Frosted translucent floating surfaces with dedicated layout roles — float them over a
+              backdrop.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -117,9 +117,7 @@ export function SurfacesSection() {
                   <div className="font-semibold text-foreground">
                     Dialog / popover panel role (<code>.glass-panel</code>)
                   </div>
-                  <div className="text-muted-foreground">
-                    Maximum readability over gradients.
-                  </div>
+                  <div className="text-muted-foreground">Maximum readability over gradients.</div>
                 </GlassSurface>
                 <GlassSurface variant="window" className="overflow-hidden rounded-xl p-0">
                   <GlassSurface
@@ -256,8 +254,8 @@ export function SurfacesSection() {
           <CardHeader>
             <CardTitle>Dock Navigation</CardTitle>
             <CardDescription>
-              Floating macOS-style dock with dynamic magnification. The{' '}
-              <code>active</code> prop marks the focused app; the others are launchers.
+              Floating macOS-style dock with dynamic magnification. The <code>active</code> prop
+              marks the focused app; the others are launchers.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center py-8">

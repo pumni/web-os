@@ -166,7 +166,7 @@ describe('DesignSystemShowcase', () => {
     renderShowcase();
 
     expect(screen.getByText('View Transitions')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Trigger withViewTransition' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Default crossfade' })).toBeInTheDocument();
   });
 
   it('renders APCA contrast calculator with pass/fail indicator', () => {
@@ -199,14 +199,8 @@ describe('DesignSystemShowcase', () => {
     renderShowcase();
 
     // The view-mode picker now exposes human labels, not raw keys.
-    expect(screen.getByRole('radio', { name: 'Grid' })).toHaveAttribute(
-      'aria-checked',
-      'true',
-    );
-    expect(screen.getByRole('radio', { name: 'List' })).toHaveAttribute(
-      'aria-checked',
-      'false',
-    );
+    expect(screen.getByRole('radio', { name: 'Grid' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('radio', { name: 'List' })).toHaveAttribute('aria-checked', 'false');
     expect(screen.getByRole('radio', { name: 'Compact' })).toBeInTheDocument();
   });
 });

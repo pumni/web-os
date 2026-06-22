@@ -82,13 +82,17 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => withViewTransition(() => router.push('/settings/profile'), { type: 'slide-forward' })}
+          onClick={() =>
+            withViewTransition(() => router.push('/settings/profile'), { type: 'slide-forward' })
+          }
         >
           <UserIcon className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => withViewTransition(() => router.push('/settings/account'), { type: 'slide-forward' })}
+          onClick={() =>
+            withViewTransition(() => router.push('/settings/account'), { type: 'slide-forward' })
+          }
         >
           <Settings className="mr-2 h-4 w-4" />
           <span>Account</span>

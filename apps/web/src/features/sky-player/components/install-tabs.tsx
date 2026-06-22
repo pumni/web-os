@@ -2,14 +2,7 @@
 
 import * as React from 'react';
 
-import {
-  Window,
-  Tabs,
-  Button,
-  motion,
-  recipes,
-  useReducedMotion,
-} from '@pumni/ui';
+import { Window, Tabs, Button, motion, recipes, useReducedMotion } from '@pumni/ui';
 
 import { RELEASE_INSTALL_STEPS, SOURCE_INSTALL_STEPS, SKY_PLAYER_LINKS } from '../content';
 

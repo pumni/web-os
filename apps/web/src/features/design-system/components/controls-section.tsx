@@ -193,11 +193,7 @@ export function ControlsSection() {
               <Label htmlFor="input-invalid" className="text-destructive">
                 Invalid Input
               </Label>
-              <Input
-                id="input-invalid"
-                placeholder="Invalid data entered"
-                aria-invalid="true"
-              />
+              <Input id="input-invalid" placeholder="Invalid data entered" aria-invalid="true" />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="input-disabled" className="opacity-50">
@@ -271,8 +267,8 @@ export function ControlsSection() {
           <CardHeader>
             <CardTitle>Segmented Picker</CardTitle>
             <CardDescription>
-              Single-select value choice with no panel content. The sliding indicator
-              tracks the active option.
+              Single-select value choice with no panel content. The sliding indicator tracks the
+              active option.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -315,8 +311,7 @@ export function ControlsSection() {
           <CardHeader>
             <CardTitle>Text Highlight</CardTitle>
             <CardDescription>
-              Case-insensitive substring emphasis for searchable lists and
-              filtered results.
+              Case-insensitive substring emphasis for searchable lists and filtered results.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -327,17 +322,14 @@ export function ControlsSection() {
               aria-label="Highlight query"
             />
             <ul className="space-y-1.5 text-sm">
-              {['Account Settings Panel', 'User Profile', 'Set Preferences'].map(
-                (text) => (
-                  <li key={text} className="text-muted-foreground">
-                    <Highlight text={text} query={highlightQuery} />
-                  </li>
-                ),
-              )}
+              {['Account Settings Panel', 'User Profile', 'Set Preferences'].map((text) => (
+                <li key={text} className="text-muted-foreground">
+                  <Highlight text={text} query={highlightQuery} />
+                </li>
+              ))}
             </ul>
             <p className="text-[11px] text-muted-foreground">
-              Matches every whitespace-split token. Empty query renders text
-              untouched.
+              Matches every whitespace-split token. Empty query renders text untouched.
             </p>
           </CardContent>
         </Card>
@@ -347,9 +339,9 @@ export function ControlsSection() {
           <CardHeader>
             <CardTitle>Section Tabs</CardTitle>
             <CardDescription>
-              Panel content switching driven by a sliding underline indicator.
-              Each trigger owns a content panel — use this for sections, not for
-              value-only selection (that is SegmentedPicker above).
+              Panel content switching driven by a sliding underline indicator. Each trigger owns a
+              content panel — use this for sections, not for value-only selection (that is
+              SegmentedPicker above).
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -363,12 +355,9 @@ export function ControlsSection() {
                 Manage primary workspace credentials, regional defaults, and collaboration
                 schedules.
               </Tabs.Content>
-              <Tabs.Content
-                value="tab-appearance"
-                className="pt-4 text-sm text-muted-foreground"
-              >
-                Personalize the background canvas, accent color palettes, and surface
-                transparency levels.
+              <Tabs.Content value="tab-appearance" className="pt-4 text-sm text-muted-foreground">
+                Personalize the background canvas, accent color palettes, and surface transparency
+                levels.
               </Tabs.Content>
               <Tabs.Content value="tab-advanced" className="pt-4 text-sm text-muted-foreground">
                 Configure hotkeys, hardware acceleration override, and view runtime diagnostic

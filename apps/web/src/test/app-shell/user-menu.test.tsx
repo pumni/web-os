@@ -4,7 +4,6 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { UserMenu } from '@/shared/components/app-shell/user-menu';
 
-
 const signOut = vi.hoisted(() => vi.fn(async () => ({ error: null })));
 const push = vi.hoisted(() => vi.fn());
 const refresh = vi.hoisted(() => vi.fn());

@@ -2,7 +2,13 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 
-import { pumniNoRawColor, pumniNoAdHocSurface, pumniNoRawTiming, pumniFeatureBoundary, pumniFeaturePresentationBoundary } from '@pumni/config/eslint';
+import {
+  pumniNoRawColor,
+  pumniNoAdHocSurface,
+  pumniNoRawTiming,
+  pumniFeatureBoundary,
+  pumniFeaturePresentationBoundary,
+} from '@pumni/config/eslint';
 
 const eslintConfig = defineConfig([
   ...nextVitals,

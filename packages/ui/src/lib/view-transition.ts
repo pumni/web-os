@@ -64,6 +64,10 @@ export function withViewTransition(
   // unavailable. Cleared on `finished` so it never leaks past the transition.
   if (type) document.documentElement.dataset.vtType = type;
 
+  // Add the freeze coordinator attribute to pause infinite CSS animations
+  // and transitions during the view transition snapshot phase.
+  document.documentElement.dataset.vtFreeze = '';
+
   const transition = document.startViewTransition(callback);
 
   // Native per-transition typing (Chrome 125+): set on `types` so
@@ -75,6 +79,7 @@ export function withViewTransition(
 
   const cleanup = () => {
     if (type) delete document.documentElement.dataset.vtType;
+    delete document.documentElement.dataset.vtFreeze;
   };
   transition.ready.catch((error) => {
     cleanup();

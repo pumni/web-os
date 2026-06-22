@@ -63,9 +63,8 @@ export function FoundationsSection({
   previewContrast,
   setPreviewContrast,
 }: FoundationsSectionProps) {
-  const [previewTransparency, setPreviewTransparency] = React.useState<TransparencyOption>(
-    'standard',
-  );
+  const [previewTransparency, setPreviewTransparency] =
+    React.useState<TransparencyOption>('standard');
   const [apcaFg, setApcaFg] = React.useState('#0a0a0a');
   const [apcaBg, setApcaBg] = React.useState('#fafafa');
   const [deriveTarget, setDeriveTarget] = React.useState<ApcTarget>('text');
@@ -208,8 +207,8 @@ export function FoundationsSection({
           <CardHeader>
             <CardTitle>Color Derivation</CardTitle>
             <CardDescription>
-              Inverse-APCA utilities derive a foreground or background that meets
-              a target Lc by construction — the sanctioned path for brand overrides.
+              Inverse-APCA utilities derive a foreground or background that meets a target Lc by
+              construction — the sanctioned path for brand overrides.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -459,7 +458,7 @@ function ColorDerivationDemo({ targetLc }: { targetLc: number }) {
           className="size-8 rounded-md border border-border"
           style={{ backgroundColor: anchorBg }}
         />
-        <code className="break-all font-mono text-[11px] text-muted-foreground">{anchorBg}</code>
+        <code className="font-mono text-[11px] break-all text-muted-foreground">{anchorBg}</code>
       </div>
 
       <div className="space-y-2 rounded-lg border border-border p-3">
@@ -478,7 +477,7 @@ function ColorDerivationDemo({ targetLc }: { targetLc: number }) {
           >
             Aa
           </div>
-          <code className="break-all font-mono text-[11px] text-muted-foreground">{fg.oklch}</code>
+          <code className="font-mono text-[11px] break-all text-muted-foreground">{fg.oklch}</code>
         </div>
       </div>
 
@@ -498,15 +497,14 @@ function ColorDerivationDemo({ targetLc }: { targetLc: number }) {
           >
             Aa
           </div>
-          <code className="break-all font-mono text-[11px] text-muted-foreground">{bg.oklch}</code>
+          <code className="font-mono text-[11px] break-all text-muted-foreground">{bg.oklch}</code>
         </div>
       </div>
 
       <p className="text-[11px] leading-relaxed text-muted-foreground">
-        Round-trip <code>parseOklch</code> → <code>oklchToSrgb</code> →{' '}
-        <code>apcaContrast</code> verifies{' '}
-        <span className="font-mono">Lc {verifiedLc.toFixed(1)}</span> — the same pair the contrast
-        gate uses.
+        Round-trip <code>parseOklch</code> → <code>oklchToSrgb</code> → <code>apcaContrast</code>{' '}
+        verifies <span className="font-mono">Lc {verifiedLc.toFixed(1)}</span> — the same pair the
+        contrast gate uses.
       </p>
     </div>
   );

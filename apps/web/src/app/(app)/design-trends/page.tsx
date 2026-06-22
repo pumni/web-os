@@ -1,23 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Badge,
-  Button,
-  IconBadge,
-  Separator,
-} from '@pumni/ui';
-import {
-  Layers,
-  LayoutGrid,
-  Sliders,
-  Sparkles,
-} from 'lucide-react';
-import {
-  GlassPlayground,
-  BentoSimulator,
-  DesignTrendsFooter,
-} from '@/features/design-trends';
+import { Badge, Button, IconBadge, Separator } from '@pumni/ui';
+import { Layers, LayoutGrid, Sliders, Sparkles } from 'lucide-react';
+import { GlassPlayground, BentoSimulator, DesignTrendsFooter } from '@/features/design-trends';
 
 // ────────────────────────────────────────────────────────────────────────────
 // Gold reference for the glassmorphism surface rule (ADR-0015).
@@ -39,7 +25,10 @@ export default function DesignTrendsPage() {
     <div className="mx-auto max-w-6xl space-y-8 py-6">
       {/* ── HERO BANNER ── */}
       <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 surface-raised md:p-8">
-        <div aria-hidden className="absolute -top-16 -right-16 size-64 rounded-full bg-primary/10 blur-3xl" />
+        <div
+          aria-hidden
+          className="absolute -top-16 -right-16 size-64 rounded-full bg-primary/10 blur-3xl"
+        />
         <div className="relative max-w-3xl space-y-4">
           <Badge tone="primary" className="px-3 py-1">
             <Sparkles className="size-3.5" />
@@ -97,7 +86,9 @@ export default function DesignTrendsPage() {
               <Layers className="size-5" />
             </IconBadge>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">1. Hiệu Ứng Kính Mờ (Glassmorphism)</h2>
+              <h2 className="text-2xl font-bold tracking-tight">
+                1. Hiệu Ứng Kính Mờ (Glassmorphism)
+              </h2>
               <p className="text-sm text-muted-foreground">
                 Mô hình 6 thành phần (ADR-0014) + kỷ luật backdrop (ADR-0015).
               </p>

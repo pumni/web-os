@@ -118,9 +118,9 @@ export function BentoSimulator() {
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
             <p className="leading-relaxed text-muted-foreground">
-              Bento Grid lấy cảm hứng từ hộp cơm Nhật Bản, chia không gian thành các ô chữ nhật tỉ lệ
-              cân đối. Trong Pumni OS, <code>BentoGridItem</code> chỉ chịu layout (spanning) và render
-              qua <code>Card</code> / <code>CardWell</code> — không tự hand-roll surface.
+              Bento Grid lấy cảm hứng từ hộp cơm Nhật Bản, chia không gian thành các ô chữ nhật tỉ
+              lệ cân đối. Trong Pumni OS, <code>BentoGridItem</code> chỉ chịu layout (spanning) và
+              render qua <code>Card</code> / <code>CardWell</code> — không tự hand-roll surface.
             </p>
             <hr className="border-border" />
             <h4 className="font-semibold text-foreground">Hệ thống Tiers mặc định (12 cột):</h4>
@@ -139,9 +139,10 @@ export function BentoSimulator() {
               ))}
             </div>
             <hr className="border-border" />
-            <p className="text-[11px] italic text-muted-foreground">
-              💡 Responsive: grid tự ép về 6 cột ở Tablet và xếp dọc 1 cột ở Mobile, bảo toàn nội dung.
-              Ô <code>hero</code>/<code>feature</code> cao đúng 2 hàng metric nhờ <code>rowHeight</code>.
+            <p className="text-[11px] text-muted-foreground italic">
+              💡 Responsive: grid tự ép về 6 cột ở Tablet và xếp dọc 1 cột ở Mobile, bảo toàn nội
+              dung. Ô <code>hero</code>/<code>feature</code> cao đúng 2 hàng metric nhờ{' '}
+              <code>rowHeight</code>.
             </p>
           </CardContent>
         </Card>
@@ -223,13 +224,13 @@ export function BentoSimulator() {
                   <span className="size-2 rounded-full bg-border" />
                   <span className="size-2 rounded-full bg-border" />
                 </div>
-                <div className="mx-auto select-none rounded-md border bg-background px-8 py-0.5 font-mono text-[10px]">
+                <div className="mx-auto rounded-md border bg-background px-8 py-0.5 font-mono text-[10px] select-none">
                   pumni.os/dashboard?view={simulatedBreakpoint}
                 </div>
               </div>
 
               {/* Simulated Page Content Area */}
-              <div className="bg-muted p-4 space-y-4">
+              <div className="space-y-4 bg-muted p-4">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-muted-foreground">
                     MẶT BẰNG GRID{' '}
@@ -308,7 +309,7 @@ export function BentoSimulator() {
                     ariaLabel={`${userCount.toLocaleString()} người dùng đang hoạt động`}
                   >
                     <div className="flex items-start justify-between">
-                      <div className="text-[10px] font-medium uppercase text-muted-foreground">
+                      <div className="text-[10px] font-medium text-muted-foreground uppercase">
                         Active Users
                       </div>
                       <Badge tone="success" size="sm">
@@ -319,7 +320,9 @@ export function BentoSimulator() {
                       <div className="text-2xl font-bold tracking-tight text-foreground">
                         {userCount.toLocaleString()}
                       </div>
-                      <div className="mt-0.5 text-[9px] text-muted-foreground">Tải thực tế mỗi 4 giây</div>
+                      <div className="mt-0.5 text-[9px] text-muted-foreground">
+                        Tải thực tế mỗi 4 giây
+                      </div>
                     </div>
                   </BentoGridItem>
 
@@ -347,7 +350,7 @@ export function BentoSimulator() {
                             'size-4 cursor-pointer rounded-full border transition-all',
                             cls,
                             accentColor === color
-                              ? 'ring-2 ring-ring ring-offset-2 scale-110'
+                              ? 'scale-110 ring-2 ring-ring ring-offset-2'
                               : 'scale-90 opacity-70',
                           )}
                           aria-label={`Đổi accent sang ${color}`}
@@ -355,7 +358,10 @@ export function BentoSimulator() {
                       ))}
                     </div>
                     <div className="truncate text-[9px] text-muted-foreground">
-                      Hệ màu: <span className="font-semibold capitalize text-foreground">{accentColor}</span>
+                      Hệ màu:{' '}
+                      <span className="font-semibold text-foreground capitalize">
+                        {accentColor}
+                      </span>
                     </div>
                   </BentoGridItem>
 
@@ -414,12 +420,14 @@ export function BentoSimulator() {
                 Giải thích spanning:
               </h5>
               <p className="leading-relaxed text-muted-foreground">
-                Khung xem trước được kẹp theo <strong className="text-foreground">chiều rộng thật</strong>{' '}
-                của từng breakpoint. Vì <code>BentoGrid</code> giờ là grid theo{' '}
-                <strong className="text-foreground">container query</strong> (<code>@container/bento</code>),
-                nó tự thu 12 → 6 → 1 cột dựa trên chiều rộng của chính nó — y hệt khi đặt trong sidebar hay
-                dialog hẹp ngoài production. Ô <code>hero</code>/<code>feature</code> cao đúng 2 lần{' '}
-                <code>metric</code> nhờ <code>rowHeight={'{140}'}</code> tạo track cố định (bento math).
+                Khung xem trước được kẹp theo{' '}
+                <strong className="text-foreground">chiều rộng thật</strong> của từng breakpoint. Vì{' '}
+                <code>BentoGrid</code> giờ là grid theo{' '}
+                <strong className="text-foreground">container query</strong> (
+                <code>@container/bento</code>), nó tự thu 12 → 6 → 1 cột dựa trên chiều rộng của
+                chính nó — y hệt khi đặt trong sidebar hay dialog hẹp ngoài production. Ô{' '}
+                <code>hero</code>/<code>feature</code> cao đúng 2 lần <code>metric</code> nhờ{' '}
+                <code>rowHeight={'{140}'}</code> tạo track cố định (bento math).
               </p>
             </CardWell>
           </CardContent>

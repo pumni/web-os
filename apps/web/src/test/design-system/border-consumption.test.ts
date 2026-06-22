@@ -51,9 +51,7 @@ function stripComments(css: string): string {
 function readRuleBody(css: string, selector: string): string {
   const stripped = stripComments(css);
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const startMatch = stripped.match(
-    new RegExp(`(?:^|\\})\\s*${escaped}\\s*\\{`, 'm'),
-  );
+  const startMatch = stripped.match(new RegExp(`(?:^|\\})\\s*${escaped}\\s*\\{`, 'm'));
   if (startMatch?.index == null) return '';
   const openIdx = startMatch.index + startMatch[0].lastIndexOf('{');
   let depth = 0;
@@ -126,19 +124,17 @@ describe('surface-raised (solid) stays on the solid hairline flow', () => {
   it('does NOT read the glass-only bottom rim (--glass-shadow-edge)', () => {
     const body = readRuleBody(themeCss, '@utility surface-raised');
 
-    expect(
-      body,
-      'surface-raised must not pull the glass bottom rim into solid cards',
-    ).not.toMatch(/--glass-shadow-edge/);
+    expect(body, 'surface-raised must not pull the glass bottom rim into solid cards').not.toMatch(
+      /--glass-shadow-edge/,
+    );
   });
 
   it('does NOT read --glass-edge as a structural hairline', () => {
     const body = readRuleBody(themeCss, '@utility surface-raised');
 
-    expect(
-      body,
-      'surface-raised must not borrow the glass structural hairline',
-    ).not.toMatch(/--glass-edge\b/);
+    expect(body, 'surface-raised must not borrow the glass structural hairline').not.toMatch(
+      /--glass-edge\b/,
+    );
   });
 });
 
@@ -166,10 +162,9 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
 
     // `--border` may appear inside a11y fallback selectors, but never as the
     // base `border:` declaration of the utility body itself.
-    expect(
-      body,
-      `${_label} must not use the solid --border token as its hairline`,
-    ).not.toMatch(/border:\s*1px\s+solid\s+var\(--border\)/);
+    expect(body, `${_label} must not use the solid --border token as its hairline`).not.toMatch(
+      /border:\s*1px\s+solid\s+var\(--border\)/,
+    );
   });
 
   it.each([

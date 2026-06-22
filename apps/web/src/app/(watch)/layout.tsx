@@ -3,7 +3,6 @@ import { getCurrentUser } from '@pumni/auth';
 import { redirect } from 'next/navigation';
 import { DesktopBackground } from '@/shared/components/app-shell/desktop-background';
 
-
 export default function WatchLayout({
   children,
 }: Readonly<{

@@ -6,7 +6,6 @@ import { cn, withViewTransition } from '@pumni/ui';
 
 import { useActiveSection } from '@/shared/hooks/use-active-section';
 
-
 /**
  * SectionNav — sticky scroll-spy underline navigation.
  *
@@ -69,7 +68,10 @@ export function SectionNav({
 
   return (
     <div className={cn('sticky top-16 z-60 border-b border-border bg-background', className)}>
-      <nav aria-label="Page sections" className={cn('flex overflow-x-auto scrollbar-none', navClassName)}>
+      <nav
+        aria-label="Page sections"
+        className={cn('flex scrollbar-none overflow-x-auto', navClassName)}
+      >
         {sections.map((section) => {
           const Icon = section.icon;
           const isActive = activeSection === section.id;

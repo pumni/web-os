@@ -52,7 +52,9 @@ export async function getRecentRoomsClient(): Promise<Room[]> {
   return (data as Room[]) || [];
 }
 
-export async function getMemberProfilesClient(sortedUserIds: string[]): Promise<Record<string, MemberProfile>> {
+export async function getMemberProfilesClient(
+  sortedUserIds: string[],
+): Promise<Record<string, MemberProfile>> {
   const supabase = createSupabaseBrowserClient();
   const { data, error } = await supabase.rpc('get_public_profiles', {
     p_ids: sortedUserIds,
@@ -95,12 +97,15 @@ export async function updateHostHeartbeatClient(roomId: string, userId: string):
   if (error) throw error;
 }
 
-export async function persistHostAnchorClient(roomId: string, anchor: {
-  isPlaying: boolean;
-  anchorPosition: number;
-  anchorServerTs: number;
-  playbackRate: number;
-}): Promise<void> {
+export async function persistHostAnchorClient(
+  roomId: string,
+  anchor: {
+    isPlaying: boolean;
+    anchorPosition: number;
+    anchorServerTs: number;
+    playbackRate: number;
+  },
+): Promise<void> {
   const supabase = createSupabaseBrowserClient();
   const { error } = await supabase
     .from('watch_rooms')

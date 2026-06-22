@@ -36,7 +36,9 @@ export function DashboardDock() {
               key={item.href}
               label={item.label}
               active={pathname === item.href}
-              onClick={() => withViewTransition(() => router.push(item.href), { type: 'slide-forward' })}
+              onClick={() =>
+                withViewTransition(() => router.push(item.href), { type: 'slide-forward' })
+              }
             >
               <Icon />
             </DockItem>

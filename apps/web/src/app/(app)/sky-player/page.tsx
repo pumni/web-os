@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { SkyPlayerIntro } from '@/features/sky-player';
 
-
 export const metadata: Metadata = {
   title: 'Sky Player - Automatic PC Music Sheet Player',
   description:

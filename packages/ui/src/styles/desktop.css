@@ -19,7 +19,6 @@
   background-color: var(--background);
 }
 
-
 /*
  * Dock magnification — macOS-style. The hovered item grows; immediate
  * neighbours grow a little (via :has + sibling). CSS-only, no JS.

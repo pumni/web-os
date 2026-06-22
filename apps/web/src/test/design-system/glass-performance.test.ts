@@ -84,9 +84,7 @@ describe('glass surfaces never animate backdrop-filter', () => {
   // pass every animation frame.
   it('has no transition that targets backdrop-filter', () => {
     const stripped = stripComments(glassCss);
-    const transitions = [...stripped.matchAll(/transition\s*:\s*([^;]+);/g)].map(
-      (m) => m[1] ?? '',
-    );
+    const transitions = [...stripped.matchAll(/transition\s*:\s*([^;]+);/g)].map((m) => m[1] ?? '');
 
     const offenders = transitions.filter((t) => /backdrop-filter/i.test(t));
     expect(
@@ -122,14 +120,12 @@ describe('will-change is scoped to animating overlays, not static glass', () => 
 
     expect(panelRule, '@utility glass-panel base rule must exist').toBeTruthy();
     expect(windowRule, '@utility glass-window base rule must exist').toBeTruthy();
-    expect(
-      panelRule?.body,
-      'glass-panel must not set will-change in its base block',
-    ).not.toMatch(/will-change\s*:/);
-    expect(
-      windowRule?.body,
-      'glass-window must not set will-change in its base block',
-    ).not.toMatch(/will-change\s*:/);
+    expect(panelRule?.body, 'glass-panel must not set will-change in its base block').not.toMatch(
+      /will-change\s*:/,
+    );
+    expect(windowRule?.body, 'glass-window must not set will-change in its base block').not.toMatch(
+      /will-change\s*:/,
+    );
   });
 
   it('every will-change declaration lives in an animating-overlay or fallback rule', () => {

@@ -11,7 +11,13 @@ export function useHostHeartbeat(roomId: string, userId: string, isHost: boolean
     if (!isHost) return;
     const beat = () => {
       updateHostHeartbeatClient(roomId, userId).catch((err) => {
-        console.error('Failed to update host heartbeat:', err.message || err, err.details || '', err.hint || '', err.code || '');
+        console.error(
+          'Failed to update host heartbeat:',
+          err.message || err,
+          err.details || '',
+          err.hint || '',
+          err.code || '',
+        );
       });
     };
     beat();

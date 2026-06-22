@@ -11,7 +11,6 @@ import { DashboardDock } from './dashboard-dock';
 import { DashboardHeaderCard } from './dashboard-header-card';
 import { RecentRoomsCard, getRecentRooms } from '@/features/watch';
 
-
 export const metadata: Metadata = {
   title: 'Dashboard',
   description: 'Resume your watch rooms, start new sessions, and stay on top of your day.',

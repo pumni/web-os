@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 import { requireUser } from '@pumni/auth';
 import { getRoom, getQueue, WatchRoom } from '@/features/watch';
 
-
 interface WatchRoomPageProps {
   params: Promise<{
     roomId: string;

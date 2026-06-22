@@ -31,22 +31,19 @@ export function ShowcaseHeader({ onOpenCommand }: { onOpenCommand: () => void })
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Button
-          variant="outline"
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-        >
+        <Button variant="outline" onClick={toggleTheme} aria-label="Toggle theme">
           {mounted ? (
-            resolvedTheme === 'dark' ? <SunIcon className="size-4" /> : <MoonIcon className="size-4" />
+            resolvedTheme === 'dark' ? (
+              <SunIcon className="size-4" />
+            ) : (
+              <MoonIcon className="size-4" />
+            )
           ) : (
             <MoonIcon className="size-4" />
           )}
           {mounted ? (resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode') : 'Theme'}
         </Button>
-        <Button
-          variant="outline"
-          onClick={() => toast.success('Notification toast triggered.')}
-        >
+        <Button variant="outline" onClick={() => toast.success('Notification toast triggered.')}>
           <BellIcon />
           Test Toast
         </Button>

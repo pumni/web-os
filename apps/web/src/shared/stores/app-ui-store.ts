@@ -2,7 +2,6 @@ import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { SIDEBAR_COOKIE } from '@/shared/components/app-shell/sidebar-config';
 
-
 const WATCH_PLAYER_VOLUME_STORAGE_KEY = 'pumni.watchPlayerVolume';
 const DEFAULT_WATCH_PLAYER_VOLUME = 0.5;
 

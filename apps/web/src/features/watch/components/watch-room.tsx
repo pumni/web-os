@@ -334,7 +334,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
                 size="sm"
                 role="status"
                 aria-live="polite"
-                className="hidden sm:inline-flex motion-safe:animate-pulse"
+                className="hidden motion-safe:animate-pulse sm:inline-flex"
               >
                 Mất kết nối
               </Badge>

@@ -205,10 +205,7 @@ export function OverlaysSection({ onOpenDialog, onOpenSheet }: OverlaysSectionPr
                 <ContextMenuSub>
                   <ContextMenuSubTrigger>Sort By</ContextMenuSubTrigger>
                   <ContextMenuSubContent className="w-40">
-                    <ContextMenuRadioGroup
-                      value={dropdownRadio}
-                      onValueChange={setDropdownRadio}
-                    >
+                    <ContextMenuRadioGroup value={dropdownRadio} onValueChange={setDropdownRadio}>
                       <ContextMenuRadioItem value="name">Name</ContextMenuRadioItem>
                       <ContextMenuRadioItem value="date">Date Modified</ContextMenuRadioItem>
                       <ContextMenuRadioItem value="size">Size</ContextMenuRadioItem>

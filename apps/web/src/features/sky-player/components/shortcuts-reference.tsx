@@ -2,14 +2,7 @@
 
 import * as React from 'react';
 
-import {
-  Window,
-  CardWell,
-  Tabs,
-  motion,
-  recipes,
-  useReducedMotion,
-} from '@pumni/ui';
+import { Window, CardWell, Tabs, motion, recipes, useReducedMotion } from '@pumni/ui';
 
 import { SHORTCUT_GROUPS } from '../content';
 import { AddSongsCallout } from './add-songs-callout';
@@ -28,7 +21,11 @@ function ShortcutList({ groupId }: { groupId: string }) {
     >
       {group.shortcuts.map((shortcut) => (
         <li key={shortcut.label}>
-          <CardWell radius="lg" padding="md" className="flex h-full items-start justify-between gap-4">
+          <CardWell
+            radius="lg"
+            padding="md"
+            className="flex h-full items-start justify-between gap-4"
+          >
             <div className="min-w-0 space-y-1">
               <p className="type-label font-semibold text-foreground">{shortcut.label}</p>
               <p className="type-caption leading-relaxed text-muted-foreground">

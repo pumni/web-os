@@ -83,9 +83,7 @@ export function IdentitySection() {
         <Card>
           <CardHeader>
             <CardTitle>Accent personalizations</CardTitle>
-            <CardDescription>
-              Brand color overrides across actions and outlines.
-            </CardDescription>
+            <CardDescription>Brand color overrides across actions and outlines.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex gap-2">
@@ -105,8 +103,7 @@ export function IdentitySection() {
               ))}
             </div>
             <p className="text-xs text-muted-foreground">
-              Applies <code>data-accent</code> attribute to scope color mixes. Accent is
-              currently:{' '}
+              Applies <code>data-accent</code> attribute to scope color mixes. Accent is currently:{' '}
               <span className="font-mono font-semibold text-foreground capitalize">
                 {accent || 'coral (default)'}
               </span>
@@ -158,8 +155,8 @@ export function IdentitySection() {
               <span className="font-mono font-semibold text-foreground capitalize">
                 {density || 'comfortable'}
               </span>
-              . Applies <code>data-density</code> parameter to override control height
-              (h-control: 36px ↔ 32px) and paddings.
+              . Applies <code>data-density</code> parameter to override control height (h-control:
+              36px ↔ 32px) and paddings.
             </p>
           </CardContent>
         </Card>

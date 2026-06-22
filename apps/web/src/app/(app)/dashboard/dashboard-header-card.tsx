@@ -8,7 +8,6 @@ import { Badge, CardSpotlight, CardContent, Avatar, AvatarImage, AvatarFallback 
 import { useClock } from '@/shared/hooks/use-clock';
 import { dateFormatter } from '@/shared/lib/formatters';
 
-
 function getGreeting(hour: number): string {
   if (hour < 12) return 'Good morning';
   if (hour < 18) return 'Good afternoon';
@@ -68,7 +67,7 @@ export function DashboardHeaderCard({ user }: DashboardHeaderCardProps) {
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 self-start rounded-xl border bg-card surface-raised px-3 py-2 md:self-auto">
+        <div className="flex shrink-0 items-center gap-2 self-start rounded-xl border bg-card px-3 py-2 surface-raised md:self-auto">
           <Badge tone="neutral">
             <Clock className="size-3.5 text-primary" />
             <time

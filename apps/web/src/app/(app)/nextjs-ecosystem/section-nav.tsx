@@ -1,9 +1,8 @@
 'use client';
 
-import { BookOpen, Layers, Zap, ShieldAlert, FlaskConical, Database } from 'lucide-react';
+import { BookOpen, Database, FlaskConical, Layers, ShieldAlert, Zap } from 'lucide-react';
 
 import { SectionNav } from '@/shared/components/section-nav';
-
 
 const ECOSYSTEM_SECTIONS = [
   { id: 'overview', label: 'Tổng Quan', icon: BookOpen },

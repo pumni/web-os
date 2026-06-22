@@ -236,5 +236,16 @@
         }
       }
     }
+
+    /* ---- Freeze Coordinator ----
+       Pauses all infinite CSS animations and transitions when data-vt-freeze is set
+       on <html>, ensuring a clean static snapshot and preventing blur. */
+    html[data-vt-freeze],
+    html[data-vt-freeze] *,
+    html[data-vt-freeze] ::before,
+    html[data-vt-freeze] ::after {
+      animation-play-state: paused !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

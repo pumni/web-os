@@ -4,7 +4,6 @@ import { getCurrentUser } from '@pumni/auth';
 import { redirect } from 'next/navigation';
 import { AppShell } from '@/shared/components/app-shell/app-shell';
 
-
 export default function ProtectedLayout({
   children,
 }: Readonly<{

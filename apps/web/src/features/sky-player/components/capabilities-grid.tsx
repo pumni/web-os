@@ -37,12 +37,7 @@ function CapabilityCard({
     >
       <CardSpotlight interactive className="h-full">
         <CardHeader className={cn('gap-4', isFeatured && 'lg:flex-row lg:items-start')}>
-          <IconBadge
-            tone="primary-soft"
-            size={isFeatured ? 'lg' : 'md'}
-            radius="xl"
-            aria-hidden
-          >
+          <IconBadge tone="primary-soft" size={isFeatured ? 'lg' : 'md'} radius="xl" aria-hidden>
             <Icon />
           </IconBadge>
 
