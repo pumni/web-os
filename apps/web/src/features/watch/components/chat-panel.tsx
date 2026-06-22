@@ -185,7 +185,7 @@ export function ChatPanel({
   };
 
   return (
-    <div className="relative flex h-full flex-col select-none">
+    <div className="relative flex h-full min-h-0 flex-col select-none">
       <div className="relative min-h-0 flex-1 overflow-hidden">
         <div
           ref={logRef}

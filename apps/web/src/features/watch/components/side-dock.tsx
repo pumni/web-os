@@ -101,7 +101,7 @@ export function SideDock({
           {/* Chat Tab */}
           <Tabs.Content
             value="chat"
-            className="mt-3 flex min-h-0 flex-1 flex-col focus-visible:outline-none"
+            className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden focus-visible:outline-none"
           >
             <ChatPanel
               messages={messages}
