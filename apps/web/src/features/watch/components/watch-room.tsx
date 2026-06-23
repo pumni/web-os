@@ -336,7 +336,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   }
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col gap-3 p-4 select-none">
+    <div className="flex min-h-0 flex-1 flex-col gap-3 p-4 select-none">
       {/* Top Header Bar */}
       <GlassSurface
         variant="bar"
@@ -431,7 +431,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
       )}
 
       {/* Main Zones Layout */}
-      <div className="flex min-h-0 flex-1 flex-col items-stretch gap-4 lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col items-stretch gap-y-4 lg:flex-row lg:gap-x-0">
         {/* Left: Stage (Video Player) */}
         <div className="flex min-w-0 flex-1 flex-col justify-center">
           <SyncPlayer
@@ -464,11 +464,11 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         {/* Right: Side Dock — collapsible desktop panel */}
         <div
           className={cn(
-            'hidden min-h-0 shrink-0 overflow-hidden transition-[width,opacity] duration-(--duration-base) ease-fluid lg:block',
-            isDockOpen ? 'w-80 opacity-100' : 'w-0 opacity-0',
+            'relative hidden min-h-0 min-w-0 shrink-0 overflow-hidden transition-all duration-(--duration-base) ease-fluid lg:block',
+            isDockOpen ? 'w-80 lg:basis-80 opacity-100 lg:ml-4' : 'w-0 lg:basis-0 opacity-0 lg:ml-0',
           )}
         >
-          <div className="h-full min-h-0 w-80">
+          <div className="relative h-full min-h-0 w-80">
             <SideDock
               roomId={currentRoom.id}
               userId={userId}
