@@ -64,8 +64,9 @@ function Spinner({
      * label. Pass an `aria-label` (and leave this unset) when the spinner is
      * the sole indicator of a loading state.
      */
-    'aria-hidden'?: boolean | 'true' | 'false';
-  }) {
+    'aria-hidden'?: boolean;
+  }
+  ) {
   return (
     <span
       data-slot="spinner"

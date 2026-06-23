@@ -28,6 +28,7 @@ interface RoomControlsProps {
   autoPlay?: boolean;
   onAutoPlayToggle?: () => void;
   onAdvance?: () => void;
+  isAdvanceDisabled?: boolean;
   onVolumePreferenceChange?: (volume: number) => void;
   onPlayPauseIntent?: () => void;
   onSeekCommitIntent?: (time: number) => void;
@@ -249,6 +250,7 @@ interface HostActionGroupProps {
   onSourceChange?: () => void;
   onAutoPlayToggle?: () => void;
   onAdvance?: () => void;
+  isAdvanceDisabled?: boolean;
   onSpeedChange: (value: string) => void;
   onFullscreenToggle: () => void;
 }
@@ -262,6 +264,7 @@ function HostActionGroup({
   onSourceChange,
   onAutoPlayToggle,
   onAdvance,
+  isAdvanceDisabled,
   onSpeedChange,
   onFullscreenToggle,
 }: HostActionGroupProps) {
@@ -315,6 +318,7 @@ function HostActionGroup({
           variant="ghost"
           size="icon"
           onClick={onAdvance}
+          disabled={isAdvanceDisabled}
           aria-label="Phát video tiếp theo"
           className="size-8 text-muted-foreground motion-safe:hover:text-foreground"
           title="Video tiếp theo"
@@ -352,6 +356,7 @@ export function RoomControls({
   autoPlay,
   onAutoPlayToggle,
   onAdvance,
+  isAdvanceDisabled,
   onVolumePreferenceChange,
   onPlayPauseIntent,
   onSeekCommitIntent,
@@ -496,6 +501,7 @@ export function RoomControls({
             onSourceChange={onSourceChange}
             onAutoPlayToggle={onAutoPlayToggle}
             onAdvance={onAdvance}
+            isAdvanceDisabled={isAdvanceDisabled}
             onSpeedChange={handleSpeedChange}
             onFullscreenToggle={handleFullscreenToggle}
           />

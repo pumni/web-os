@@ -25,7 +25,7 @@ import { SyncIndicator } from './sync-indicator';
 import { SideDock } from './side-dock';
 import { setRoomSource, leaveRoom } from '../actions';
 import { useRoomQuery } from '../hooks/use-room-query';
-import { useQueueQuery, useAdvanceQueue } from '../hooks/use-room-queue';
+import { useQueueQuery, useAdvanceQueue, usePlayQueueItem } from '../hooks/use-room-queue';
 import { watchKeys } from '../query-keys';
 import type { Room, QueueItem, RoomBroadcastEvent } from '../types';
 import { TapToPlayOverlay } from './tap-to-play-overlay';
@@ -199,6 +199,21 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   const isHost = currentRoom.host_id === userId;
 
   const advanceQueueMutation = useAdvanceQueue(currentRoom.id);
+  const playQueueItemMutation = usePlayQueueItem(currentRoom.id);
+
+  const handlePlayItem = (item: QueueItem) => {
+    if (!membership.isMemberReady) return;
+    playQueueItemMutation.mutate(item.id, {
+      onSuccess: () => {
+        toast.success(`Đang phát: ${item.title || item.source_ref}`);
+        broadcastQueueEvent({ action: 'advance' });
+        broadcastRoomEvent({ action: 'advance' });
+      },
+      onError: (err) => {
+        toast.error(err.message || 'Phát bài hát thất bại.');
+      },
+    });
+  };
 
   const handleEnded = () => {
     if (!isHost) return;
@@ -211,6 +226,34 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
       },
     });
   };
+
+  const handleAdvance = () => {
+    if (!membership.isMemberReady) return;
+    if (queueItems.length === 0) {
+      toast.error('Hàng chờ đã hết. Vui lòng thêm video mới.');
+      return;
+    }
+    advanceQueueMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast.success('Đã chuyển sang video tiếp theo!');
+        broadcastQueueEvent({ action: 'advance' });
+        broadcastRoomEvent({ action: 'advance' });
+      },
+      onError: (err) => {
+        toast.error(err.message || 'Chuyển video thất bại.');
+      },
+    });
+  };
+
+  const isAdvanceDisabled = (() => {
+    if (queueItems.length === 0) return true;
+    if (!currentRoom.current_queue_item_id) return false;
+
+    const currentItem = queueItems.find((item) => item.id === currentRoom.current_queue_item_id);
+    if (!currentItem) return false;
+
+    return !queueItems.some((item) => item.position > currentItem.position);
+  })();
 
   useHostHeartbeat(currentRoom.id, userId, isHost);
 
@@ -409,6 +452,8 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               stageRef={stageRef}
               autoPlay={autoPlay}
               onAutoPlayToggle={() => setAutoPlay((prev) => !prev)}
+              onAdvance={handleAdvance}
+              isAdvanceDisabled={isAdvanceDisabled}
               onVolumePreferenceChange={setWatchPlayerVolume}
               {...controlHandlers}
             />
@@ -438,6 +483,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               messages={messages}
               sendChat={sendChat}
               onReact={sendReaction}
+              onPlayItem={handlePlayItem}
               reactionOverlayRef={reactionOverlayRef}
             />
           </div>
@@ -468,6 +514,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               messages={messages}
               sendChat={sendChat}
               onReact={sendReaction}
+              onPlayItem={handlePlayItem}
               reactionOverlayRef={reactionOverlayRef}
             />
           </div>

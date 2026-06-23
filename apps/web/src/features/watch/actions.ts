@@ -458,3 +458,61 @@ export async function claimHost(roomId: string): Promise<ActionResult> {
   revalidatePath('/watch');
   return { ok: true, data: undefined };
 }
+
+/** Host-only action to play a specific queue item directly. */
+export async function playQueueItem(roomId: string, itemId: string): Promise<ActionResult> {
+  const user = await requireUser();
+  const supabase = await createSupabaseServerClient();
+
+  // Enforce host boundary (also verified by RLS); also read the active queue item.
+  const ownership = await assertHostOwnership(supabase, roomId, user.id, [
+    'host_id',
+    'current_queue_item_id',
+  ] as const);
+  if (!ownership.ok) return ownership;
+  const currentQueueItemId = ownership.room.current_queue_item_id as string | null;
+
+  // Get the target queue item
+  const { data: targetItem, error: targetError } = await supabase
+    .from('watch_queue_items')
+    .select('id, source_type, source_ref')
+    .eq('id', itemId)
+    .eq('room_id', roomId)
+    .maybeSingle();
+
+  if (targetError || !targetItem) {
+    return { ok: false, message: 'Không tìm thấy bài hát trong hàng chờ.' };
+  }
+
+  // Update room to play this item
+  const { error: updateError } = await supabase
+    .from('watch_rooms')
+    .update({
+      source_type: targetItem.source_type,
+      source_ref: targetItem.source_ref,
+      current_queue_item_id: targetItem.id,
+      is_playing: false,
+      anchor_position: 0,
+      playback_rate: 1,
+      anchor_server_ts: new Date().toISOString(),
+      last_active_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', roomId);
+
+  if (updateError) {
+    return { ok: false, message: updateError.message };
+  }
+
+  // Delete the previously playing item if it is different from the target item
+  if (currentQueueItemId && currentQueueItemId !== itemId) {
+    await supabase
+      .from('watch_queue_items')
+      .delete()
+      .eq('id', currentQueueItemId)
+      .eq('room_id', roomId);
+  }
+
+  revalidatePath('/watch');
+  return { ok: true, data: undefined };
+}

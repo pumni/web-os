@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import * as React from 'react';
 
 import { cn } from '../../lib/cn';
 
@@ -20,11 +20,12 @@ import { cn } from '../../lib/cn';
  * Conversations cluster consecutive messages from the same sender. The
  * bubble only rounds the inner corners shared with neighbouring bubbles,
  * so the visual silhouette reads as a single speech run rather than
- * four disconnected pills:
- * - `single` — fully rounded (`rounded-xl`).
+ * four disconnected pills. The shared base (`rounded-xl`) is set on the
+ * cva root; compound variants tuck one floor-side corner toward `rounded-*-xs`
+ * based on `tone` × `shape`:
+ * - `single` — fully rounded.
  * - `first` — body side that touches the previous (different sender)
- *   message, the floor-side corner tucks in (e.g. `rounded-bl-xs` for
- *   them).
+ *   message tucks in.
  * - `middle` — both side corners opposite to the column tuck in.
  * - `last` — only the floor-side corner tucks in.
  *
@@ -33,24 +34,40 @@ import { cn } from '../../lib/cn';
  * label next to the bubble. The parent container must carry
  * `className="group"` for the hover to fire (the radius map lives
  * inside the bubble, so this works for any layout the consumer picks).
+ *
+ * ### Children
+ * `children` is rendered inside a `<div>` (not a `<p>`) so callers may
+ * pass structured ReactNode — links, inline code, etc. — without HTML
+ * nesting violations. String content keeps its pre-wrap semantics.
  */
 const chatBubbleVariants = cva(
-  'max-w-full px-3 py-2 text-xs wrap-break-word shadow-control select-text',
+  'max-w-full rounded-xl px-3 py-2 text-xs wrap-break-word shadow-control select-text',
   {
     variants: {
       tone: {
         me: 'bg-primary text-primary-foreground',
         them: 'bg-muted text-foreground',
       },
+      /**
+       * Shape is *only* a base for the compound variants above. Single
+       * already inherits `rounded-xl` from the cva root, so listing it
+       * again here would be a dead class.
+       */
       shape: {
-        single: 'rounded-xl',
-        /** Group-start: clip the floor-side corner away from where the next
-         *  bubble of the same run will sit. */
-        first: 'rounded-xl',
-        /** Middle: clip both side corners that touch adjacent run members. */
-        middle: 'rounded-xl',
-        /** Run end: clip the floor-side corner toward the next new-sender message. */
-        last: 'rounded-xl',
+        single: '',
+        /**
+         * Group start — the compound variant for `them` / `me` adds
+         * `rounded-bl-xs` / `rounded-br-xs` to tuck the floor-side
+         * corner away from the next same-sender bubble.
+         */
+        first: '',
+        /** Middle — both side corners opposite to the column tuck in. */
+        middle: '',
+        /**
+         * Run end — the top-side corner tucks in to read as the tail
+         * of the speech run.
+         */
+        last: '',
       },
     },
     compoundVariants: [
@@ -119,10 +136,7 @@ function ChatBubble({
   }) {
   const resolvedAlign = align ?? (tone === 'me' ? 'end' : 'start');
   const timeLabel = timestamp != null ? formatChatTime(timestamp) : null;
-  const timePosition =
-    tone === 'me'
-      ? 'right-full mr-1.5'
-      : 'left-full ml-1.5';
+  const timePosition = tone === 'me' ? 'right-full mr-1.5' : 'left-full ml-1.5';
 
   return (
     <div
@@ -136,8 +150,8 @@ function ChatBubble({
     >
       <div className="relative flex max-w-full items-end">
         <div className={cn(chatBubbleVariants({ tone, shape }), className)} {...props}>
-            <p className="leading-snug whitespace-pre-wrap">{children}</p>
-       </div>
+          <div className="leading-snug whitespace-pre-wrap">{children}</div>
+        </div>
         {timeLabel !== null ? (
           <span
             className={cn(
@@ -146,10 +160,10 @@ function ChatBubble({
             )}
           >
             {timeLabel}
-         </span>
+          </span>
         ) : null}
-     </div>
-   </div>
+      </div>
+    </div>
   );
 }
 

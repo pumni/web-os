@@ -49,6 +49,13 @@
   --success-foreground: var(--neutral-50);
   --warning: color-mix(in oklch, var(--primary) 2%, var(--amber-500));
   --warning-foreground: var(--neutral-950);
+  /* Info sits on the cool side of the palette (indigo/cyan family) so it
+     stays visually distinct from the warm coral brand while clearing the
+     status-tint gate over the same `--neutral-50` foreground. The 2%
+     primary mix matches `success`/`warning` so the four status indicators
+     share one visual cadence. */
+  --info: color-mix(in oklch, var(--primary) 2%, var(--indigo-500));
+  --info-foreground: var(--neutral-50);
 
   /* --- Data Visualization (Charts) ---
      Chart (data visualization) — warm coral lead, kept distinct in lightness
@@ -198,6 +205,11 @@
   --success-foreground: var(--neutral-950);
   --warning: color-mix(in oklch, var(--primary) 3%, var(--amber-400));
   --warning-foreground: var(--neutral-950);
+  /* Dark info: lighter indigo stop pairs with the same `--neutral-50`
+     foreground as success/secondary, keeping the status palette uniform
+     across themes. */
+  --info: color-mix(in oklch, var(--primary) 3%, var(--indigo-400));
+  --info-foreground: var(--neutral-50);
 
   /* --- Data Visualization (Charts) ---
      Chart — warm coral lead (see :root note). */
@@ -323,6 +335,8 @@
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 
   /* --- Data Visualization (Charts) --- */
   --color-chart-1: var(--chart-1);

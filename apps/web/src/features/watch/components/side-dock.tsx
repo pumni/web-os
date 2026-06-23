@@ -1,21 +1,21 @@
 'use client';
 
+import { Card, Tabs } from '@pumni/ui/layout';
+import { ListVideo, MessageSquare, Users } from 'lucide-react';
 import React from 'react';
-import { Tabs, Card } from '@pumni/ui/layout';
-import { Users, ListVideo, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
-import { ParticipantRail } from './participant-rail';
-import { PlaylistPanel } from './playlist-panel';
-import { ChatPanel } from './chat-panel';
-import type { ReactionOverlayRef } from './reaction-overlay';
 import { useTransferHost } from '../hooks/use-room-queue';
 import type {
-  Participant,
-  QueueItem,
-  QueueBroadcastEvent,
-  RoomBroadcastEvent,
   ChatMessage,
+  Participant,
+  QueueBroadcastEvent,
+  QueueItem,
+  RoomBroadcastEvent,
 } from '../types';
+import { ChatPanel } from './chat-panel';
+import { ParticipantRail } from './participant-rail';
+import { PlaylistPanel } from './playlist-panel';
+import type { ReactionOverlayRef } from './reaction-overlay';
 
 interface SideDockProps {
   roomId: string;
@@ -31,6 +31,7 @@ interface SideDockProps {
   messages: ChatMessage[];
   sendChat: (text: string) => boolean;
   onReact?: (emoji: string) => void;
+  onPlayItem?: (item: QueueItem) => void;
   reactionOverlayRef?: React.Ref<ReactionOverlayRef>;
 }
 
@@ -48,6 +49,7 @@ export function SideDock({
   messages,
   sendChat,
   onReact,
+  onPlayItem,
   reactionOverlayRef,
 }: SideDockProps) {
   const transferHostMutation = useTransferHost(roomId);
@@ -66,10 +68,10 @@ export function SideDock({
   };
 
   return (
-    <Card variant="solid" className="flex h-full flex-col overflow-hidden p-0 select-none">
-      <div className="flex h-full min-h-0 flex-1 flex-col p-4">
-        <Tabs defaultValue="playlist" className="flex h-full min-h-0 w-full flex-1 flex-col">
-          <Tabs.List className="grid h-9 shrink-0 grid-cols-3">
+    <Card variant="solid" className="flex h-full flex-col p-0 select-none">
+      <div className="flex min-h-0 flex-1 flex-col">
+        <Tabs defaultValue="playlist" className="min-h-0 w-full flex-1 flex-col">
+          <Tabs.List className="grid h-9 shrink-0 grid-cols-3 px-4">
             <Tabs.Trigger value="playlist" className="text-xs">
               <ListVideo className="size-3.5 shrink-0" />
               <span className="hidden sm:inline">Danh sách</span>
@@ -86,7 +88,10 @@ export function SideDock({
           </Tabs.List>
 
           {/* Playlist Tab */}
-          <Tabs.Content value="playlist" className="mt-3 flex-1 focus-visible:outline-none">
+          <Tabs.Content
+            value="playlist"
+            className="mt-3 flex min-h-0 flex-1 flex-col px-4 focus-visible:outline-none"
+          >
             <PlaylistPanel
               roomId={roomId}
               items={queueItems}
@@ -95,13 +100,14 @@ export function SideDock({
               isHost={isHost}
               broadcastQueueEvent={broadcastQueueEvent}
               broadcastRoomEvent={broadcastRoomEvent}
+              onPlayItem={onPlayItem}
             />
           </Tabs.Content>
 
           {/* Chat Tab */}
           <Tabs.Content
             value="chat"
-            className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden focus-visible:outline-none"
+            className="mt-3 flex min-h-0 flex-1 flex-col pb-4 focus-visible:outline-none"
           >
             <ChatPanel
               messages={messages}
@@ -116,7 +122,7 @@ export function SideDock({
           {/* Participants Tab */}
           <Tabs.Content
             value="participants"
-            className="mt-3 flex min-h-0 flex-1 flex-col gap-3 overflow-hidden focus-visible:outline-none"
+            className="mt-3 flex min-h-0 flex-1 flex-col gap-3 px-4 focus-visible:outline-none"
           >
             <ParticipantRail
               participants={participants}

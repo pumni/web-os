@@ -30,9 +30,9 @@ async function AuthenticatedWatchShell({
   }
 
   return (
-    <div className="relative flex min-h-dvh flex-col bg-background p-0 md:p-4">
+    <div className="relative flex h-dvh flex-col bg-background">
       <DesktopBackground />
-      <div className="z-base relative flex min-h-0 flex-1 flex-col">{children}</div>
+      <div className="z-base relative flex min-h-0 flex-1 flex-col p-0 md:p-4">{children}</div>
     </div>
   );
 }

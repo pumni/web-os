@@ -4,12 +4,12 @@ import * as React from 'react';
 
 import { Window } from '@pumni/ui/os';
 import { CardWell, Tabs } from '@pumni/ui/layout';
+import { KbdChip } from '@pumni/ui/feedback';
 import { motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
 import { recipes } from '@pumni/ui/lib/motion';
 
 import { SHORTCUT_GROUPS } from '../content';
 import { AddSongsCallout } from './add-songs-callout';
-import { KbdChip } from './kbd-chip';
 
 function ShortcutList({ groupId }: { groupId: string }) {
   const group = SHORTCUT_GROUPS.find((g) => g.id === groupId);

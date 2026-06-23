@@ -74,8 +74,8 @@ interface BentoGridProps extends React.ComponentProps<'div'> {
    */
   columns?: 6 | 12;
   /**
-   * Floor height (px) of every implicit grid row. When set, the uses
-   *`grid-auto-rows: minmax(rowHeight, auto)`, so a `row-span-2` tier spans
+   * Floor height (px) of every implicit grid row. When set, the grid uses
+   * `grid-auto-rows: minmax(rowHeight, auto)`, so a `row-span-2` tier spans
    * exactly two fixed-height tracks instead of two content-sized rows — the
    * proportional tile ratios that make a true bento. The `auto` ceiling lets a
    * row grow past the floor for dense content. Omit to keep the legacy
@@ -98,12 +98,12 @@ export function BentoGrid({ className, children, columns = 12, rowHeight, dense,
   // here (consistent with how `BentoGridItem.minHeight` is already handled).
   const gridStyle: React.CSSProperties = {
     ...(rowHeight !== undefined ? { gridAutoRows: `minmax(${rowHeight}px, auto)` } : {}),
-    ...(dense ? { gridAutoFlow: 'dense'} : {}),
+    ...(dense ? { gridAutoFlow: 'dense' } : {}),
     ...style,
   };
   return (
-    // Named container lives on this WRAPPER, not the grid. A can never
-    // respond to its OWN query — CSS only restyles a's
+    // Named container lives on this WRAPPER, not the grid. A container can never
+    // respond to its OWN query — CSS only restyles a container's
     // descendants by its size, never the container itself (the rule the CSS WG
     // keeps unbreakable to avoid infinite resize loops). So `@container/bento`
     // is declared here and the grid below — its descendant — reads this
@@ -143,13 +143,13 @@ export function BentoGrid({ className, children, columns = 12, rowHeight, dense,
  * `@[…]/bento:` prefix pins every span to BentoGrid's width so a 6-col grid
  * always gets 6-col spans even when nested in a viewport that's ≥64rem.
  *
- * | tier    | @[64rem] (12-col)            | @[40rem] (6-col) | base |
- * | ------- | ---------------------------- | --------------- | ---- |
- * | hero    | col-span-6 row-span-2        |      | 1 col |
- * | feature |        |      | 1 col |
- * | metric  |                   |      | 1 col |
- * | accent  |                   |      | 1 col |
- * | full    |                  |      | 1 col |
+ * | tier    | @[64rem] (12-col)     | @[40rem] (6-col) | base (1-col) |
+ * | ------- | --------------------- | ---------------- | ------------ |
+ * | hero    | col-span-6 row-span-2 | col-span-6       | full width   |
+ * | feature | col-span-4 row-span-2 | col-span-6       | full width   |
+ * | metric  | col-span-3            | col-span-3       | full width   |
+ * | accent  | col-span-2            | col-span-2       | full width   |
+ * | full    | col-span-12           | col-span-6       | full width   |
  */
 const bentoTierVariants = cva('', {
   variants: {
@@ -269,7 +269,10 @@ export function BentoGridItem({
   ariaLabel,
   loading = false,
   minHeight,
-  interactive = true,
+  // Passive by default, matching Card's contract — a static surface must not
+  // depress. Most tiles are display-only (metrics/KPIs); opt in with
+  // `interactive` only for tiles that are genuinely clickable.
+  interactive = false,
   // Card carries its own `state` prop (idle/loading/error/success). We only
   // surface the loading branch here, so let any consumer-supplied `state`
   // pass through untouched and avoid a name clash in our own props.

@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import { ChatBubble } from '@pumni/ui/feedback';
 import { Button, Input } from '@pumni/ui/form';
 import { Avatar, AvatarFallback, AvatarImage } from '@pumni/ui/layout';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@pumni/ui/overlay';
-import { Send, MessageSquare } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui/overlay';
+import { MessageSquare, Send } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ChatMessage } from '../types';
 import { ReactionBar } from './reaction-bar';
 import { ReactionOverlay, type ReactionOverlayRef } from './reaction-overlay';
@@ -18,17 +19,10 @@ interface ChatPanelProps {
   reactionOverlayRef?: React.Ref<ReactionOverlayRef>;
 }
 
-function formatChatTime(ts: number): string {
-  const d = new Date(ts);
-  const hours = d.getHours().toString().padStart(2, '0');
-  const mins = d.getMinutes().toString().padStart(2, '0');
-  return `${hours}:${mins}`;
-}
-
 type ChatProfile = { username: string | null; avatar_url: string | null };
 type BubbleGroupPosition = 'single' | 'first' | 'middle' | 'last';
 
-interface ChatBubbleProps {
+interface ChatBubbleRowProps {
   msg: ChatMessage;
   isMe: boolean;
   profile?: ChatProfile;
@@ -72,60 +66,8 @@ function MessageAvatar({
 }
 
 // fallow-ignore-next-line complexity
-function BubbleContent({
-  isMe,
-  groupPosition,
-  sentAt,
-  children,
-}: {
-  isMe: boolean;
-  groupPosition: BubbleGroupPosition;
-  sentAt: number;
-  children: React.ReactNode;
-}) {
-  const radiusClass = getBubbleRadiusClass(isMe, groupPosition);
-
-  return (
-    <div className={`flex min-w-0 flex-col gap-0.5 ${isMe ? 'items-end' : 'items-start'}`}>
-      <div className="relative flex max-w-full items-end">
-        <div
-          className={`max-w-full px-3 py-2 text-xs wrap-break-word shadow-control ${radiusClass} ${
-            isMe ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'
-          }`}
-        >
-          <p className="leading-snug whitespace-pre-wrap select-text">{children}</p>
-        </div>
-        <span
-          className={`pointer-events-none absolute top-1/2 hidden -translate-y-1/2 type-caption whitespace-nowrap text-muted-foreground opacity-0 transition-opacity duration-(--duration-fast) group-hover:opacity-100 sm:block ${
-            isMe ? 'right-full mr-1.5' : 'left-full ml-1.5'
-          }`}
-        >
-          {formatChatTime(sentAt)}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function getBubbleRadiusClass(isMe: boolean, groupPosition: BubbleGroupPosition): string {
-  if (groupPosition === 'single') {
-    return 'rounded-xl';
-  }
-
-  if (isMe) {
-    if (groupPosition === 'first') return 'rounded-xl rounded-br-xs';
-    if (groupPosition === 'middle') return 'rounded-xl rounded-tr-xs rounded-br-xs';
-    return 'rounded-xl rounded-tr-xs';
-  }
-
-  if (groupPosition === 'first') return 'rounded-xl rounded-bl-xs';
-  if (groupPosition === 'middle') return 'rounded-xl rounded-tl-xs rounded-bl-xs';
-  return 'rounded-xl rounded-tl-xs';
-}
-
-// fallow-ignore-next-line complexity
-function ChatBubble({ msg, isMe, profile, groupPosition }: ChatBubbleProps) {
-  const displayName = profile?.username ?? (isMe ? 'Bạn' : `User #${msg.userId.slice(0, 6)}`);
+function ChatBubbleRow({ msg, isMe, profile, groupPosition }: ChatBubbleRowProps) {
+  const displayName = profile?.username ?? (isMe ? 'B?n' : `User #${msg.userId.slice(0, 6)}`);
   const initials = profile?.username
     ? profile.username.slice(0, 2).toUpperCase()
     : msg.userId.slice(0, 2).toUpperCase();
@@ -144,9 +86,9 @@ function ChatBubble({ msg, isMe, profile, groupPosition }: ChatBubbleProps) {
           avatarUrl={profile?.avatar_url ?? null}
         />
       )}
-      <BubbleContent isMe={isMe} groupPosition={groupPosition} sentAt={msg.sentAt}>
+      <ChatBubble tone={isMe ? 'me' : 'them'} shape={groupPosition} timestamp={msg.sentAt}>
         {msg.text}
-      </BubbleContent>
+      </ChatBubble>
     </div>
   );
 }
@@ -161,9 +103,21 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const [inputText, setInputText] = useState('');
   const logRef = useRef<HTMLDivElement>(null);
+  const isNearBottomRef = useRef(true);
 
   useEffect(() => {
-    if (logRef.current) {
+    const el = logRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const threshold = 48;
+      isNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (logRef.current && isNearBottomRef.current) {
       logRef.current.scrollTop = logRef.current.scrollHeight;
     }
   }, [messages]);
@@ -178,13 +132,13 @@ export function ChatPanel({
   };
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col select-none">
+    <div className="relative flex min-h-0 flex-1 flex-col select-none">
       <div className="relative min-h-0 flex-1 overflow-hidden">
         <div
           ref={logRef}
           role="log"
           aria-live="polite"
-          className="relative flex h-full min-h-0 flex-col gap-0 overflow-x-hidden overflow-y-auto py-1"
+          className="relative flex h-full min-h-0 scrollbar-gutter-stable flex-col gap-0 overflow-x-hidden overflow-y-auto px-2 py-1"
         >
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center py-10 text-center text-muted-foreground">
@@ -210,7 +164,7 @@ export function ChatPanel({
                       : 'single';
 
               return (
-                <ChatBubble
+                <ChatBubbleRow
                   key={msg.id}
                   msg={msg}
                   isMe={isMe}
@@ -225,7 +179,7 @@ export function ChatPanel({
       </div>
 
       {/* Input — pill-shaped with embedded send button */}
-      <form onSubmit={handleSubmit} className="flex shrink-0 items-end gap-1.5 pt-2">
+      <form onSubmit={handleSubmit} className="mx-4 flex shrink-0 items-end gap-1.5 pt-2">
         <div className="relative flex-1">
           <Input
             placeholder="Nhắn tin..."

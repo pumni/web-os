@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button, Input, SegmentedPicker } from '@pumni/ui/form';
 import { cn } from '@pumni/ui/lib/cn';
-import { Plus, Trash2, Play, Music, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, Play, SkipForward, Music, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   useAddQueueItem,
@@ -38,6 +38,7 @@ interface PlaylistPanelProps {
   isHost: boolean;
   broadcastQueueEvent: (e: QueueBroadcastEvent) => void;
   broadcastRoomEvent: (e: RoomBroadcastEvent) => void;
+  onPlayItem?: (item: QueueItem) => void;
 }
 
 export function PlaylistPanel({
@@ -48,6 +49,7 @@ export function PlaylistPanel({
   isHost,
   broadcastQueueEvent,
   broadcastRoomEvent,
+  onPlayItem,
 }: PlaylistPanelProps) {
   const [sourceType, setSourceType] = useState<'youtube' | 'url'>('youtube');
   const [sourceRef, setSourceRef] = useState('');
@@ -193,7 +195,7 @@ export function PlaylistPanel({
               disabled={items.length === 0 || isActionDisabled}
               className="h-7 shrink-0 gap-1 rounded-full px-2 text-xs text-primary motion-safe:hover:bg-primary/10"
             >
-              <Play className="size-3 fill-current" />
+              <SkipForward className="size-3" />
               Tiếp
             </Button>
           )}
@@ -294,6 +296,8 @@ export function PlaylistPanel({
                     currentQueueItemId={currentQueueItemId}
                     isPending={isPending}
                     isMemberReady={isMemberReady}
+                    isHost={isHost}
+                    handlePlayItem={onPlayItem}
                     handleRemoveItem={handleRemoveItem}
                   />
                 ))}
@@ -312,6 +316,8 @@ interface SortableItemProps {
   currentQueueItemId: string | null;
   isPending: boolean;
   isMemberReady: boolean;
+  isHost: boolean;
+  handlePlayItem?: (item: QueueItem) => void;
   handleRemoveItem: (id: string) => void;
 }
 
@@ -322,6 +328,8 @@ function SortableItem({
   currentQueueItemId,
   isPending,
   isMemberReady,
+  isHost,
+  handlePlayItem,
   handleRemoveItem,
 }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -365,6 +373,21 @@ function SortableItem({
             <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-60 motion-safe:animate-ping" />
             <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
           </span>
+        ) : isHost && handlePlayItem ? (
+          <>
+            <span className="font-mono text-[10px] leading-none text-muted-foreground tabular-nums opacity-50 group-hover:hidden">
+              {idx + 1}
+            </span>
+            <button
+              type="button"
+              onClick={() => handlePlayItem(item)}
+              disabled={isPending || !isMemberReady}
+              className="hidden group-hover:flex items-center justify-center text-primary motion-safe:hover:scale-110 transition-transform"
+              aria-label="Phát video này"
+            >
+              <Play className="size-3 fill-current" />
+            </button>
+          </>
         ) : (
           <span className="font-mono text-[10px] leading-none text-muted-foreground tabular-nums opacity-50">
             {idx + 1}

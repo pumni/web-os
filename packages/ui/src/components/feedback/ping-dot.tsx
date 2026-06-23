@@ -76,7 +76,7 @@ function PingDot({
         <span className="absolute inline-flex h-full w-full rounded-full bg-current opacity-60 motion-safe:animate-ping" />
       ) : null}
       <span className={cn('relative inline-flex rounded-full bg-current', square)} />
-</span>
+   </span>
   );
 }
 

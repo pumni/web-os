@@ -41,9 +41,6 @@ const skeletonVariants = cva('rounded-md bg-muted', {
 function Skeleton({
   className,
   variant = 'pulse',
-  // Allow callers to override aria attributes in edge cases (e.g. a custom
-  // live-region announcement wired directly to this element). The default is
-  // always aria-hidden / role="presentation" for the common visual-only case.
   role = 'presentation',
   'aria-hidden': ariaHidden = true,
   ...props
@@ -54,7 +51,7 @@ function Skeleton({
      * announced by screen readers. Override only when you have a specific
      * accessibility reason to expose the element.
      */
-    'aria-hidden'?: boolean | 'true' | 'false';
+    'aria-hidden'?: boolean;
   }) {
   return (
     <div

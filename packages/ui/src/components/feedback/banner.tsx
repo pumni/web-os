@@ -22,6 +22,8 @@ import { cn } from '../../lib/cn';
  * ### Size contract
  * - `compact` — single-row, horizontal. Icon • title • `action?`.
  *   Used in chat panels / control bars where vertical space is precious.
+ *   Passing `description` here is silently ignored — switch to
+ *   `size="block"` if you need the body copy.
  * - `block` — vertical card. Icon block • title • `description?`.
  *   Used as a prominent section divider or a "responsible use" callout.
  *
@@ -58,12 +60,14 @@ function Banner({
   icon?: React.ComponentType<{ className?: string }>;
   /** Title node — required. */
   title: React.ReactNode;
-  /** Optional richer body content under the title (block size only). */
+  /** Optional richer body content under the title. Silently ignored for
+   *  `size="compact"` — switch to `size="block"` to render it. */
   description?: React.ReactNode;
-  /** Trailing action slot (e.g. <Button>). */
+  /** Trailing action slot (e.g. `<Button>`). */
   action?: React.ReactNode;
 }) {
   const isCompact = size === 'compact';
+  const showDescription = !isCompact && description != null;
 
   return (
     <div
@@ -72,7 +76,7 @@ function Banner({
       data-size={size}
       role={tone === 'error' ? 'alert' : 'status'}
       className={cn(
-        'flex select-none border',
+        'flex border select-none',
         isCompact
           ? 'items-center justify-between gap-3 rounded-xl px-4 py-2.5'
           : 'items-start gap-4 rounded-lg p-5 md:p-6',
@@ -84,9 +88,7 @@ function Banner({
       <div
         className={cn(
           'flex min-w-0',
-          isCompact
-            ? 'items-center gap-2 type-caption font-medium'
-            : 'flex-col items-start gap-3',
+          isCompact ? 'items-center gap-2 type-caption font-medium' : 'flex-col items-start gap-3',
         )}
       >
         {Icon ? (
@@ -98,30 +100,24 @@ function Banner({
             )}
           >
             <Icon className={isCompact ? 'size-3.5' : 'h-5 w-5'} />
-       </span>
+          </span>
         ) : null}
         <div className={cn('flex min-w-0 flex-col', isCompact ? 'gap-0.5' : 'space-y-1.5')}>
           <span
-            className={cn(
-              isCompact ? 'type-caption font-medium' : 'type-heading text-foreground',
-            )}
+            className={cn(isCompact ? 'type-caption font-medium' : 'type-heading text-foreground')}
           >
             {title}
-   </span>
-          {description && !isCompact ? (
+          </span>
+          {showDescription ? (
             <p className="type-body text-muted-foreground">{description}</p>
           ) : null}
+        </div>
       </div>
-    </div>
 
-      {action ? (
-        <div className={cn('flex shrink-0 items-center', isCompact ? 'ms-auto' : 'ms-auto')}>
-          {action}
-   </div>
-      ) : null}
+      {action ? <div className="ms-auto flex shrink-0 items-center">{action}</div> : null}
 
       {children}
-  </div>
+    </div>
   );
 }
 

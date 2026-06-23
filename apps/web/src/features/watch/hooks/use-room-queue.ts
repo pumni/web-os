@@ -9,6 +9,7 @@ import {
   advanceQueue,
   transferHost,
   claimHost,
+  playQueueItem,
 } from '../actions';
 import type { QueueItem } from '../types';
 import { fractionalPosition } from '../sync-math';
@@ -217,6 +218,24 @@ export function useClaimHost(roomId: string) {
       return res;
     },
     onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });
+    },
+  });
+}
+
+export function usePlayQueueItem(roomId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (itemId: string) => {
+      const res = await playQueueItem(roomId, itemId);
+      if (!res.ok) {
+        throw new Error(res.message);
+      }
+      return res;
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });
       void queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });
     },
   });

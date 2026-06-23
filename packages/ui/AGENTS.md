@@ -20,9 +20,29 @@ database, no auth, no server logic. Consumers import via subpath only.
   - `form/` — inputs, controls, form scaffolding (button, input, select, form…)
   - `overlay/` — floating/portaled layers (dialog, popover, dropdown-menu…)
   - `layout/` — structural & presentational primitives (card, separator, tabs…)
-  - `feedback/` — transient status (skeleton, sonner)
+  - `feedback/` — status indicators & transient UI (8 primitives — see
+    `feedback` sub-roles table below).
   - `identity/` — Pumni brand tier (glass-surface, personalization-provider)
   - `os/` — desktop shell (window, dock, bento-grid)
+
+### `feedback/` sub-roles
+
+The folder deliberately mixes 8 primitives under one subpath because they all
+answer the same consumer need: "short-lived / status-driven UI that doesn't
+own a layout". None of them wrap a Radix primitive — visual + status concepts
+are owned here. Only `sonner.tsx` reaches outside for behavior (the Sonner
+toaster), and that is a stack-level integration, not a UI primitive.
+
+| Sub-role                  | Primitives                                  | Why no Radix                       |
+| ------------------------- | ------------------------------------------- | ---------------------------------- |
+| **Tone indicators**       | `Badge`, `PingDot`                          | Visual chip / animated dot — no behavioral primitive to own. |
+| **Transient status**      | `Skeleton`, `Spinner`, `Toaster`            | Pure visual placeholders + a stacked toast surface (`Toaster` wraps Sonner, owns the floating `glass-panel` + `--z-toast`). |
+| **Surface chrome**        | `Banner`                                    | Inline notice primitive — never portaled, no focus-trap or roving-tabindex semantics. |
+| **Domain UI vocabulary**  | `ChatBubble`, `KbdChip`                     | Pumni OS surface vocabulary drawn from chat + keyboard-help surfaces; no Radix equivalent. |
+
+When you add a new `feedback/` primitive, decide which sub-role it serves and
+keep it there. If a candidate actually ports a Radix behavior (e.g. radio
+notification center), it belongs in `overlay/`.
 - When adding a component:
   1. Place the file in the matching group folder.
   2. Export it from that group's `index.ts` barrel (e.g. `src/components/form/index.ts`).
