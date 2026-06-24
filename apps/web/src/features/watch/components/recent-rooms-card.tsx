@@ -67,6 +67,7 @@ export function RecentRoomsCard({ rooms, maxRooms = 4 }: RecentRoomsCardProps) {
 
             <Link
               href={'/watch' as Route}
+              prefetch={false}
               className="inline-flex items-center gap-1 rounded-md text-xs font-semibold text-primary transition-colors hover:text-primary/80"
             >
               View all

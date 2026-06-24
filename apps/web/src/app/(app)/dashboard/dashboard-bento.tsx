@@ -164,7 +164,7 @@ function PersonalizeMetric() {
       <div className="mt-auto flex items-center justify-between gap-2">
         <Badge tone="neutral">Theme</Badge>
         <Button asChild variant="ghost" size="xs" className="gap-1 px-2 text-primary">
-          <Link href={'/settings/appearance' as Route}>
+          <Link href={'/settings/appearance' as Route} prefetch={false}>
             Edit
             <ArrowUpRight className="size-3" />
           </Link>
@@ -212,7 +212,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
             size="lg"
             className="w-full justify-center gap-2 bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) text-primary-foreground shadow-card hover:shadow-interactive-hover"
           >
-            <Link href={'/watch' as Route}>
+            <Link href={'/watch' as Route} prefetch={false}>
               <Plus className="size-4" />
               Start a new room
             </Link>
@@ -291,7 +291,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
             </div>
 
             <Button asChild className="mt-auto w-full justify-center gap-2">
-              <Link href={lastRoomUrl}>
+              <Link href={lastRoomUrl} prefetch={false}>
                 {mostRecent.is_playing ? (
                   <span className="inline-flex items-center gap-2">
                     <Play className="size-4" />
@@ -321,7 +321,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
               </p>
             </div>
             <Button asChild variant="outline" size="sm">
-              <Link href={'/watch' as Route}>
+              <Link href={'/watch' as Route} prefetch={false}>
                 Browse watch tools
                 <ArrowUpRight className="size-3.5" />
               </Link>
@@ -344,7 +344,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
             {totalRooms > 0 ? 'In your library' : 'Start one today'}
           </Badge>
           <Button asChild variant="ghost" size="xs" className="gap-1 px-2 text-primary">
-            <Link href={'/watch' as Route}>
+            <Link href={'/watch' as Route} prefetch={false}>
               Browse
               <ArrowUpRight className="size-3" />
             </Link>

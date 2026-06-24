@@ -92,6 +92,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               aria-label={item.label}
               className={cn(
                 'flex items-center gap-3 rounded-md py-2 text-sm font-medium transition-colors',

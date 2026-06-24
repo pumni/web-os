@@ -3,6 +3,7 @@ import 'server-only';
 import { requireUser } from '@pumni/auth';
 import { createSupabaseServerClient } from '@pumni/supabase/server';
 import { type Room, type QueueItem, QUEUE_ITEM_SELECT } from './types';
+import { cacheLife, cacheTag } from 'next/cache';
 
 /**
  * Idempotently register the caller as a member of the room so RLS lets them
@@ -45,6 +46,10 @@ export async function getRoom(roomId: string): Promise<Room | null> {
 
 /** Reads all watch queue items for a room, ordered by position. */
 export async function getQueue(roomId: string): Promise<QueueItem[]> {
+  'use cache';
+  cacheTag(`room_queue:${roomId}`);
+  cacheLife('minutes');
+
   await requireUser();
   const supabase = await createSupabaseServerClient();
   // fallow-ignore-next-line code-duplication
@@ -64,6 +69,10 @@ export async function getQueue(roomId: string): Promise<QueueItem[]> {
 
 /** Fetches the user's recent watch rooms, ordered by last activity. */
 export async function getRecentRooms(userId: string, limit = 5): Promise<Room[]> {
+  'use cache';
+  cacheTag(`recent_rooms:${userId}`);
+  cacheLife('minutes');
+
   const supabase = await createSupabaseServerClient();
 
   // Step 1: Get room IDs the user is a member of

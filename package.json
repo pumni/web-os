@@ -77,9 +77,7 @@
     "ps:search": "pwsh -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/search.ps1",
     "ai:local": "bun run ai:check && bun run typecheck",
     "ai:premerge": "bun run ai:check && bun run ai:eval && bun run lint && bun run typecheck && bun run test && bun run build",
-    "clean": "bun run clean:node && bun run clean:build",
-    "clean:node": "rm -rf node_modules .turbo",
-    "clean:build": "rm -rf apps/web/.next apps/web/dist packages/*/dist"
+    "clean": "bun run scripts/clean.mjs"
   },
   "devDependencies": {
     "prettier": "catalog:",

@@ -16,7 +16,7 @@ import {
 } from '@pumni/validators';
 import { randomBytes } from 'crypto';
 import { fractionalPosition } from './sync-math';
-import { revalidatePath } from 'next/cache';
+import { updateTag } from 'next/cache';
 import {
   sanitizeSourceRef,
   assertHostOwnership,
@@ -106,7 +106,7 @@ export async function createRoom(
         user_id: user.id,
       });
 
-      revalidatePath('/watch');
+      updateTag(`recent_rooms:${user.id}`);
       return { ok: true, data: { roomId: data.id, code: data.code } };
     }
 
@@ -156,7 +156,7 @@ export async function setRoomSource(input: SetSourceInput): Promise<ActionResult
     return { ok: false, message: error.message };
   }
 
-  revalidatePath('/watch');
+  updateTag(`recent_rooms:${user.id}`);
   return { ok: true, data: undefined };
 }
 
@@ -184,7 +184,7 @@ export async function joinByCode(code: string): Promise<ActionResult<{ roomId: s
 
 /** Call leave_room RPC to delete membership and cleanup empty room. */
 export async function leaveRoom(roomId: string): Promise<ActionResult> {
-  await requireUser();
+  const user = await requireUser();
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.rpc('leave_room', {
@@ -195,7 +195,7 @@ export async function leaveRoom(roomId: string): Promise<ActionResult> {
     return { ok: false, message: error.message };
   }
 
-  revalidatePath('/watch');
+  updateTag(`recent_rooms:${user.id}`);
   return { ok: true, data: undefined };
 }
 
@@ -248,13 +248,14 @@ export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResu
 
   await touchRoomActivity(supabase, parsed.data.roomId);
 
-  revalidatePath('/watch');
+  updateTag(`room_queue:${parsed.data.roomId}`);
+  updateTag(`recent_rooms:${user.id}`);
   return { ok: true, data: undefined };
 }
 
 /** Reorder an item in the queue using fractional indexing. */
 export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResult> {
-  await requireUser();
+  const user = await requireUser();
   const parsed = reorderQueueSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, message: 'Dữ liệu vị trí không hợp lệ.' };
@@ -265,24 +266,36 @@ export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResu
   let beforePosition: number | null = null;
   let afterPosition: number | null = null;
 
+  const beforePromise = parsed.data.beforeId
+    ? supabase
+        .from('watch_queue_items')
+        .select('position')
+        .eq('id', parsed.data.beforeId)
+        .maybeSingle()
+    : Promise.resolve({ data: null, error: null });
+
+  const afterPromise = parsed.data.afterId
+    ? supabase
+        .from('watch_queue_items')
+        .select('position')
+        .eq('id', parsed.data.afterId)
+        .maybeSingle()
+    : Promise.resolve({ data: null, error: null });
+
+  const [beforeResult, afterResult] = await Promise.all([beforePromise, afterPromise]);
+
   if (parsed.data.beforeId) {
-    const { data: bItem, error: bError } = await supabase
-      .from('watch_queue_items')
-      .select('position')
-      .eq('id', parsed.data.beforeId)
-      .maybeSingle();
-    if (bError || !bItem) return { ok: false, message: 'Không tìm thấy item đứng trước.' };
-    beforePosition = bItem.position;
+    if (beforeResult.error || !beforeResult.data) {
+      return { ok: false, message: 'Không tìm thấy item đứng trước.' };
+    }
+    beforePosition = beforeResult.data.position;
   }
 
   if (parsed.data.afterId) {
-    const { data: aItem, error: aError } = await supabase
-      .from('watch_queue_items')
-      .select('position')
-      .eq('id', parsed.data.afterId)
-      .maybeSingle();
-    if (aError || !aItem) return { ok: false, message: 'Không tìm thấy item đứng sau.' };
-    afterPosition = aItem.position;
+    if (afterResult.error || !afterResult.data) {
+      return { ok: false, message: 'Không tìm thấy item đứng sau.' };
+    }
+    afterPosition = afterResult.data.position;
   }
 
   const newPosition = fractionalPosition(beforePosition, afterPosition);
@@ -299,25 +312,15 @@ export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResu
 
   await touchRoomActivity(supabase, parsed.data.roomId);
 
-  revalidatePath('/watch');
+  updateTag(`room_queue:${parsed.data.roomId}`);
+  updateTag(`recent_rooms:${user.id}`);
   return { ok: true, data: undefined };
 }
 
 /** Remove an item from the playlist. */
 export async function removeQueueItem(roomId: string, itemId: string): Promise<ActionResult> {
-  await requireUser();
+  const user = await requireUser();
   const supabase = await createSupabaseServerClient();
-
-  // Find if it is current item
-  const { data: room, error: roomError } = await supabase
-    .from('watch_rooms')
-    .select('current_queue_item_id')
-    .eq('id', roomId)
-    .maybeSingle();
-
-  if (roomError || !room) {
-    return { ok: false, message: 'Phòng không tồn tại.' };
-  }
 
   const { error: deleteError } = await supabase
     .from('watch_queue_items')
@@ -329,20 +332,13 @@ export async function removeQueueItem(roomId: string, itemId: string): Promise<A
     return { ok: false, message: deleteError.message };
   }
 
-  if (room.current_queue_item_id === itemId) {
-    // Clear the active item and bump activity in a single write.
-    await supabase
-      .from('watch_rooms')
-      .update({
-        current_queue_item_id: null,
-        last_active_at: new Date().toISOString(),
-      })
-      .eq('id', roomId);
-  } else {
-    await touchRoomActivity(supabase, roomId);
-  }
+  // Postgres ON DELETE SET NULL on watch_rooms.current_queue_item_id automatically handles
+  // clearing the current queue item ID reference if it was this itemId.
+  // We just need to bump the activity of the room now.
+  await touchRoomActivity(supabase, roomId);
 
-  revalidatePath('/watch');
+  updateTag(`room_queue:${roomId}`);
+  updateTag(`recent_rooms:${user.id}`);
   return { ok: true, data: undefined };
 }
 
@@ -418,13 +414,14 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
       .eq('room_id', roomId);
   }
 
-  revalidatePath('/watch');
+  updateTag(`room_queue:${roomId}`);
+  updateTag(`recent_rooms:${user.id}`);
   return { ok: true, data: undefined };
 }
 
 /** Host-only action to transfer host to another member. */
 export async function transferHost(input: TransferHostInput): Promise<ActionResult> {
-  await requireUser();
+  const user = await requireUser();
   const parsed = transferHostSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, message: 'Dữ liệu chuyển chủ phòng không hợp lệ.' };
@@ -443,19 +440,20 @@ export async function transferHost(input: TransferHostInput): Promise<ActionResu
 
   await touchRoomActivity(supabase, parsed.data.roomId);
 
-  revalidatePath('/watch');
+  updateTag(`recent_rooms:${user.id}`);
+  updateTag(`recent_rooms:${parsed.data.newHostId}`);
   return { ok: true, data: undefined };
 }
 
 /** Member action to claim host when the current host is gone (gated server-side). */
 export async function claimHost(roomId: string): Promise<ActionResult> {
-  await requireUser();
+  const user = await requireUser();
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.rpc('claim_room_host', { p_room_id: roomId });
   if (error) {
     return { ok: false, message: error.message };
   }
-  revalidatePath('/watch');
+  updateTag(`recent_rooms:${user.id}`);
   return { ok: true, data: undefined };
 }
 
@@ -513,6 +511,7 @@ export async function playQueueItem(roomId: string, itemId: string): Promise<Act
       .eq('room_id', roomId);
   }
 
-  revalidatePath('/watch');
+  updateTag(`room_queue:${roomId}`);
+  updateTag(`recent_rooms:${user.id}`);
   return { ok: true, data: undefined };
 }
