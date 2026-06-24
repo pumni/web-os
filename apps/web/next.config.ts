@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   reactCompiler: true,
   cacheComponents: true,
+  serverExternalPackages: ['@supabase/supabase-js'],
   logging: {
     fetches: process.env.NODE_ENV === 'development' ? { fullUrl: true } : undefined,
     browserToTerminal: process.env.NODE_ENV !== 'production',
@@ -20,6 +21,7 @@ const nextConfig: NextConfig = {
     // @supports (view-transition-name: none) in CSS.
     viewTransition: true,
     scrollRestoration: true,
+    turbopackFileSystemCacheForDev: true,
   },
 
   async headers() {

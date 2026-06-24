@@ -5,83 +5,27 @@ import { Check, Plus, Trash2 } from 'lucide-react';
 import { Button, Input } from '@pumni/ui/form';
 import { cn } from '@pumni/ui/lib/cn';
 
-type Task = {
-  id: string;
-  text: string;
-  completed: boolean;
-};
-
-const STORAGE_KEY = 'pumni_dashboard_tasks';
-
-/** Custom event dispatched after writing tasks so the metric card stays in sync. */
-const TASKS_UPDATED_EVENT = 'pumni:dashboard-tasks-updated';
-
-const DEFAULT_TASKS: Task[] = [
-  { id: '1', text: 'Start a Watch Together room', completed: false },
-  { id: '2', text: 'Test C-Major scale on Sky Player', completed: false },
-  { id: '3', text: 'Customize workspace appearance settings', completed: false },
-];
+import { useTasks, useTasksStore, DEFAULT_TASKS } from '@/shared/stores/tasks-store';
 
 export function DailyPlanner() {
-  const [tasks, setTasks] = React.useState<Task[]>([]);
   const [newTaskText, setNewTaskText] = React.useState('');
+
   const [mounted, setMounted] = React.useState(false);
-
-  // Load tasks on mount
   React.useEffect(() => {
-    let initialTasks = DEFAULT_TASKS;
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed: unknown = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          initialTasks = parsed as Task[];
-        }
-      }
-    } catch {
-      initialTasks = DEFAULT_TASKS;
-    }
-
-    const timer = setTimeout(() => {
-      setTasks(initialTasks);
-      setMounted(true);
-    }, 0);
-
-    return () => clearTimeout(timer);
+    setMounted(true);
   }, []);
 
-  // Persist tasks on changes
-  const saveTasks = React.useCallback((next: Task[]) => {
-    setTasks(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      window.dispatchEvent(new Event(TASKS_UPDATED_EVENT));
-    } catch {
-      // Ignore — storage may be unavailable (private mode, quota).
-    }
-  }, []);
+  const tasks = useTasks(DEFAULT_TASKS);
+  const addTaskStore = useTasksStore((state) => state.addTask);
+  const toggleTask = useTasksStore((state) => state.toggleTask);
+  const deleteTask = useTasksStore((state) => state.deleteTask);
 
   const addTask = (e: React.FormEvent) => {
     e.preventDefault();
     const text = newTaskText.trim();
     if (!text) return;
-    const newTask: Task = {
-      id: crypto.randomUUID(),
-      text,
-      completed: false,
-    };
-    saveTasks([...tasks, newTask]);
+    addTaskStore(text);
     setNewTaskText('');
-  };
-
-  const toggleTask = (id: string) => {
-    saveTasks(
-      tasks.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)),
-    );
-  };
-
-  const deleteTask = (id: string) => {
-    saveTasks(tasks.filter((task) => task.id !== id));
   };
 
   if (!mounted) {

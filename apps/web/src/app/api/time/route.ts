@@ -1,8 +1,8 @@
 // Server clock source for drift-free anchor math. No auth needed (no secrets).
 
-import { headers } from 'next/headers';
+import { connection } from 'next/server';
 
 export async function GET() {
-  await headers();
+  await connection();
   return Response.json({ now: Date.now() });
 }

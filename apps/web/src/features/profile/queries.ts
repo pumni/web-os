@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { requireUser } from '@pumni/auth';
 import { createSupabaseServiceRoleClient } from '@pumni/supabase/service-role';
 import { cacheLife, cacheTag } from 'next/cache';

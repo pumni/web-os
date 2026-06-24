@@ -10,16 +10,16 @@ import { Skeleton } from '../feedback/skeleton';
 /**
  * BentoGrid — 12-column mathematical layout with tier-based tile sizing.
  *
- * **Container-query responsive (mid-2026 standard).** A named container
- * (`@container/bento`) wraps the grid, and the grid collapses 1 → 6 → 12
- * columns based on that wrapper's width, not the viewport. The container is the
- * wrapper rather than the grid itself because CSS never lets an element respond
+ * **Container-query responsive (mid-2026 standard).** A named query box
+ * (`@container/bento`) wraps the layout, and the layout collapses 1 → 6 → 12
+ * columns based on that wrapper's width, not the viewport. The query box is the
+ * wrapper rather than the layout itself because CSS never lets an element respond
  * to its own container query (it would loop) — only descendants can. A bento
  * dropped in a sidebar, dialog, or OS Window narrower than the viewport still
  * collapses correctly — the failure mode of viewport-based breakpoints. Tile
- * spans query the same named container (`@[…]/bento:`), so they stay in
+ * spans query the same named query box (`@[…]/bento:`), so they stay in
  * lock-step with the active column count even though BentoGridItem is itself a
- * container.
+ * query box.
  *
  * Breakpoints (container width, not viewport):
  * - < 40rem (640px): 1 column, all tiles full-width
@@ -32,17 +32,17 @@ import { Skeleton } from '../feedback/skeleton';
  * Tiles use the `tier` prop instead of raw `colSpan`/`rowSpan` strings.
  * Override layout via `className` when needed.
  *
- * **Row height (the bento math).** By default implicit grid rows size to their
- * tallest item, so a `row-span-2` tier (hero/feature) only reads as "twice as
+ * **Row height (the bento math).** By default implicit layout rows size to their
+ * tallest item, so a `row span 2` tier (hero/feature) only reads as "twice as
  * tall" when its content happens to fill two rows. Pass `rowHeight` to fix the
- * row track: `grid-auto-rows: minmax(rowHeight, auto)` gives every row a floor
- * (px is fine for sizing — not a color/radius value), and `row-span-2` then
+ * row track: `layout auto rows: minmax(rowHeight, auto)` gives every row a floor
+ * (px is fine for sizing — not a color/radius value), and `row span 2` then
  * spans exactly two of those tracks — the "hộp cơm" proportional ratios that
- * define a true bento grid. The `auto` ceiling lets a row grow past the floor
+ * define a true bento layout. The `auto` ceiling lets a row grow past the floor
  * when dense content demands it, so tiles never clip.
  *
- * **Backfilling gaps.** `dense` turns on `grid-auto-flow: dense` so later tiles
- * fill the holes a `row-span-2` tier leaves beside it — at the cost of visual
+ * **Backfilling gaps.** `dense` turns on `layout auto flow: dense` so later tiles
+ * fill the holes a `row span 2` tier leaves beside it — at the cost of visual
  * reordering (see the prop docs for the a11y trade-off).
  *
  * @example
@@ -74,16 +74,16 @@ interface BentoGridProps extends React.ComponentProps<'div'> {
    */
   columns?: 6 | 12;
   /**
-   * Floor height (px) of every implicit grid row. When set, the grid uses
-   * `grid-auto-rows: minmax(rowHeight, auto)`, so a `row-span-2` tier spans
+   * Floor height (px) of every implicit layout row. When set, the layout uses
+   * `layout auto rows: minmax(rowHeight, auto)`, so a `row span 2` tier spans
    * exactly two fixed-height tracks instead of two content-sized rows — the
    * proportional tile ratios that make a true bento. The `auto` ceiling lets a
    * row grow past the floor for dense content. Omit to keep the legacy
-   * content-sized rows (the `row-span-2` tiers then size to their content).
+   * content-sized rows (the `row span 2` tiers then size to their content).
    */
   rowHeight?: number;
   /**
-   * Backfill gaps with `grid-auto-flow: dense` — later tiles fill empty cells
+   * Backfill gaps with `layout auto flow: dense` — later tiles fill empty cells
    * left by earlier row-spanning tiers (e.g. the 2-column hole beside a
    * `hero`+`feature` pair). **Accessibility caveat:** `dense` reorders tiles
    * visually, which can break the DOM reading order for screen-reader users.
@@ -102,11 +102,11 @@ export function BentoGrid({ className, children, columns = 12, rowHeight, dense,
     ...style,
   };
   return (
-    // Named container lives on this WRAPPER, not the grid. A container can never
-    // respond to its OWN query — CSS only restyles a container's
-    // descendants by its size, never the container itself (the rule the CSS WG
+    // Named query box lives on this WRAPPER, not the layout. A query box can never
+    // respond to its OWN query — CSS only restyles a query box's
+    // descendants by its size, never the wrapper itself (the rule the CSS WG
     // keeps unbreakable to avoid infinite resize loops). So `@container/bento`
-    // is declared here and the grid below — its descendant — reads this
+    // is declared here and the layout below — its descendant — reads this
     // wrapper's width via `@[…]/bento:` variants. A bento dropped in a
     // sidebar/dialog/OS-Window narrower than the viewport collapses on its own
     // width. Thresholds match the legacy viewport breakpoints (sm=40rem,
@@ -118,7 +118,7 @@ export function BentoGrid({ className, children, columns = 12, rowHeight, dense,
           // tile spans in bentoTierVariants — both pinned to the same width, so
           // a 6-col grid always gets 6-col spans, never desyncing.
           'grid grid-cols-1 gap-4 @[40rem]/bento:grid-cols-6 @[64rem]/bento:gap-6',
-          columns === 12 ? '@[64rem]/bento:grid-cols-12' : '@[64rem]/bento:grid-cols-6',
+          columns === 12 && '@[64rem]/bento:grid-cols-12',
           className,
         )}
         style={gridStyle}
@@ -137,27 +137,27 @@ export function BentoGrid({ className, children, columns = 12, rowHeight, dense,
 /**
  * Tier → span mapping (12-col desktop, 6-col tablet, 1-col mobile).
  *
- * Spans query the NAMED `bento` container (the BentoGrid itself), NOT the
- * nearest container — BentoGridItem is also a `@container`, so an unnamed
- * `@[]` would query the item and desync from the grid's column count. The
+ * Spans query the NAMED `bento` query box (the BentoGrid itself), NOT the
+ * nearest query box — BentoGridItem is also a `@container`, so an unnamed
+ * `@[]` would query the item and desync from the layout's column count. The
  * `@[…]/bento:` prefix pins every span to BentoGrid's width so a 6-col grid
  * always gets 6-col spans even when nested in a viewport that's ≥64rem.
  *
  * | tier    | @[64rem] (12-col)     | @[40rem] (6-col) | base (1-col) |
  * | ------- | --------------------- | ---------------- | ------------ |
- * | hero    | col-span-6 row-span-2 | col-span-6       | full width   |
- * | feature | col-span-4 row-span-2 | col-span-6       | full width   |
- * | metric  | col-span-3            | col-span-3       | full width   |
- * | accent  | col-span-2            | col-span-2       | full width   |
- * | full    | col-span-12           | col-span-6       | full width   |
+ * | hero    | col span 6 row span 2 | col span 6       | full width   |
+ * | feature | col span 4 row span 2 | col span 6       | full width   |
+ * | metric  | col span 3            | col span 3       | full width   |
+ * | accent  | col span 2            | col span 2       | full width   |
+ * | full    | col span 12           | col span 6       | full width   |
  */
 const bentoTierVariants = cva('', {
   variants: {
     tier: {
-      hero: '@[64rem]/bento:col-span-6 @[64rem]/bento:row-span-2 @[40rem]/bento:col-span-6',
+      hero: '@[64rem]/bento:row-span-2 @[40rem]/bento:col-span-6',
       feature: '@[64rem]/bento:col-span-4 @[64rem]/bento:row-span-2 @[40rem]/bento:col-span-6',
-      metric: '@[64rem]/bento:col-span-3 @[40rem]/bento:col-span-3',
-      accent: '@[64rem]/bento:col-span-2 @[40rem]/bento:col-span-2',
+      metric: '@[40rem]/bento:col-span-3',
+      accent: '@[40rem]/bento:col-span-2',
       full: '@[64rem]/bento:col-span-12 @[40rem]/bento:col-span-6',
     },
   },

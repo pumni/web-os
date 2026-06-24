@@ -2,6 +2,7 @@ import 'server-only';
 
 import { requireUser } from '@pumni/auth';
 import { createSupabaseServerClient } from '@pumni/supabase/server';
+import { createSupabaseServiceRoleClient } from '@pumni/supabase/service-role';
 import { type Room, type QueueItem, QUEUE_ITEM_SELECT } from './types';
 import { cacheLife, cacheTag } from 'next/cache';
 
@@ -46,12 +47,37 @@ export async function getRoom(roomId: string): Promise<Room | null> {
 
 /** Reads all watch queue items for a room, ordered by position. */
 export async function getQueue(roomId: string): Promise<QueueItem[]> {
+  const user = await requireUser();
+  const supabase = await createSupabaseServerClient();
+
+  // Validate room membership outside "use cache" using user client (respects RLS)
+  const { data: membership, error: membershipError } = await supabase
+    .from('room_members')
+    .select('room_id')
+    .eq('room_id', roomId)
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (membershipError) {
+    console.error('Database error checking room membership:', membershipError.message);
+    return [];
+  }
+
+  if (!membership) {
+    // Expected on initial load before useRoomMembership registers the caller
+    return [];
+  }
+
+  return getCachedQueue(roomId);
+}
+
+async function getCachedQueue(roomId: string): Promise<QueueItem[]> {
   'use cache';
   cacheTag(`room_queue:${roomId}`);
   cacheLife('minutes');
 
-  await requireUser();
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServiceRoleClient();
+
   // fallow-ignore-next-line code-duplication
   const { data, error } = await supabase
     .from('watch_queue_items')
@@ -73,7 +99,7 @@ export async function getRecentRooms(userId: string, limit = 5): Promise<Room[]>
   cacheTag(`recent_rooms:${userId}`);
   cacheLife('minutes');
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServiceRoleClient();
 
   // Step 1: Get room IDs the user is a member of
   const { data: memberships, error: membershipError } = await supabase

@@ -8,12 +8,19 @@ export const metadata: Metadata = {
   description: 'Xem video cùng bạn bè theo thời gian thực.',
 };
 
-export default async function WatchLobbyPage() {
+interface WatchLobbyPageProps {
+  searchParams: Promise<{
+    roomCode?: string;
+  }>;
+}
+
+export default async function WatchLobbyPage({ searchParams }: WatchLobbyPageProps) {
   await requireUser();
+  const { roomCode } = await searchParams;
 
   return (
     <div className="flex min-h-[70vh] flex-col p-4">
-      <WatchLobby />
+      <WatchLobby initialRoomCode={roomCode} />
     </div>
   );
 }

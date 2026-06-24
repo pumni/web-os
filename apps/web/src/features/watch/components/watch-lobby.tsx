@@ -12,19 +12,42 @@ import { toast } from 'sonner';
 import { Clapperboard, LogIn, Sparkles } from 'lucide-react';
 import { VideoSourceTabs } from './source-tabs';
 
-export function WatchLobby() {
+interface WatchLobbyProps {
+  initialRoomCode?: string;
+}
+
+export function WatchLobby({ initialRoomCode }: WatchLobbyProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   // Tab state for controlled view transitions
-  const [activeTab, setActiveTab] = useState<string>('create');
+  const [activeTab, setActiveTab] = useState<string>(initialRoomCode ? 'join' : 'create');
 
   // Create room form state
   const [sourceType, setSourceType] = useState<'youtube' | 'url'>('youtube');
   const [sourceRef, setSourceRef] = useState('');
 
   // Join room form state
-  const [joinCode, setJoinCode] = useState('');
+  const [joinCode, setJoinCode] = useState(initialRoomCode || '');
+
+  React.useEffect(() => {
+    if (initialRoomCode) {
+      startTransition(async () => {
+        try {
+          const res = await joinByCode(initialRoomCode);
+          if (res.ok) {
+            toast.success('Tham gia phòng thành công!');
+            router.push(`/watch/${res.data.roomId}` as Route);
+          } else {
+            toast.error(res.message);
+          }
+        } catch (err) {
+          toast.error('Có lỗi xảy ra khi tìm phòng.');
+          console.error(err);
+        }
+      });
+    }
+  }, [initialRoomCode, router]);
 
   const handleCreateRoom = (e: React.FormEvent) => {
     e.preventDefault();

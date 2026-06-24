@@ -3,6 +3,7 @@
 import * as React from 'react';
 import type { Route } from 'next';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   ArrowUpRight,
   ClipboardList,
@@ -27,71 +28,10 @@ interface DashboardBentoProps {
   recentRooms: ReadonlyArray<Room>;
 }
 
-const TASKS_STORAGE_KEY = 'pumni_dashboard_tasks';
-
-/** Custom event name dispatched by DailyPlanner after writing to localStorage. */
-const TASKS_UPDATED_EVENT = 'pumni:dashboard-tasks-updated';
-
-interface StoredTask {
-  id: string;
-  text: string;
-  completed: boolean;
-}
-
-function readTasksFromStorage(): StoredTask[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(TASKS_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-// Stable snapshot ref for useSyncExternalStore below.
-const FROZEN_EMPTY_TASKS: readonly StoredTask[] = Object.freeze([]);
+import { useTasks } from '@/shared/stores/tasks-store';
 
 function TasksMetricContent() {
-  const cacheRef = React.useRef<{
-    tasks: StoredTask[];
-    serialized: string;
-  } | null>(null);
-
-  const getSnapshot = React.useCallback((): StoredTask[] => {
-    return cacheRef.current ? cacheRef.current.tasks : (FROZEN_EMPTY_TASKS as StoredTask[]);
-  }, []);
-
-  const subscribe = React.useCallback((notify: () => void): (() => void) => {
-    if (typeof window === 'undefined') return () => {};
-    const sync = () => {
-      const fresh = readTasksFromStorage();
-      const serialized = JSON.stringify(fresh);
-      const previous = cacheRef.current;
-      if (previous === null || previous.serialized !== serialized) {
-        cacheRef.current = { tasks: fresh, serialized };
-        notify();
-      } else {
-        cacheRef.current = { tasks: fresh, serialized };
-      }
-    };
-    sync();
-    window.addEventListener('storage', sync);
-    window.addEventListener('focus', sync);
-    window.addEventListener(TASKS_UPDATED_EVENT, sync);
-    return () => {
-      window.removeEventListener('storage', sync);
-      window.removeEventListener('focus', sync);
-      window.removeEventListener(TASKS_UPDATED_EVENT, sync);
-    };
-  }, []);
-
-  const tasks = React.useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    () => FROZEN_EMPTY_TASKS as StoredTask[],
-  );
+  const tasks = useTasks([]);
 
   const completed = tasks.filter((t) => t.completed).length;
   const total = tasks.length;
@@ -175,6 +115,8 @@ function PersonalizeMetric() {
 }
 
 export function DashboardBento({ recentRooms }: DashboardBentoProps) {
+  const router = useRouter();
+  const [roomCode, setRoomCode] = React.useState('');
   const mostRecent = recentRooms[0];
   const totalRooms = recentRooms.length;
   const playingCount = recentRooms.filter((room) => room.is_playing).length;
@@ -220,8 +162,13 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
 
           <form
             className="flex flex-col gap-2 sm:flex-row sm:items-center"
-            action="/watch"
-            method="get"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const code = roomCode.trim().toUpperCase();
+              if (code) {
+                router.push(`/watch?roomCode=${code}` as Route);
+              }
+            }}
           >
             <Input
               name="roomCode"
@@ -231,6 +178,8 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
               className="flex-1 font-mono tracking-wider uppercase"
               autoCapitalize="characters"
               spellCheck={false}
+              value={roomCode}
+              onChange={(e) => setRoomCode(e.target.value)}
             />
             <Button type="submit" variant="outline" className="shrink-0 sm:w-auto">
               Join
