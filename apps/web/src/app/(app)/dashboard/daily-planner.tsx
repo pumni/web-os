@@ -86,7 +86,7 @@ export function DailyPlanner() {
 
   if (!mounted) {
     return (
-      <div className="flex h-full motion-safe:animate-pulse flex-col justify-between gap-4">
+      <div className="flex h-full flex-col justify-between gap-4 motion-safe:animate-pulse">
         <div className="h-5 w-40 rounded-md bg-muted" />
         <div className="space-y-2">
           <div className="h-10 rounded-md bg-muted" />

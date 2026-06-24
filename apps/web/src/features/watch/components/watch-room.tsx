@@ -6,7 +6,18 @@ import type { Route } from 'next';
 import type { MediaPlayerInstance } from '@vidstack/react';
 import { Badge, Spinner } from '@pumni/ui/feedback';
 import { Button, Input, Label } from '@pumni/ui/form';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Sheet, SheetContent, SheetHeader, SheetTitle } from '@pumni/ui/overlay';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@pumni/ui/overlay';
 import { GlassSurface } from '@pumni/ui/identity';
 import { cn } from '@pumni/ui/lib/cn';
 import { toast } from 'sonner';
@@ -465,7 +476,9 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
         <div
           className={cn(
             'relative hidden min-h-0 min-w-0 shrink-0 overflow-hidden transition-all duration-(--duration-base) ease-fluid lg:block',
-            isDockOpen ? 'w-80 lg:basis-80 opacity-100 lg:ml-4' : 'w-0 lg:basis-0 opacity-0 lg:ml-0',
+            isDockOpen
+              ? 'w-80 opacity-100 lg:ml-4 lg:basis-80'
+              : 'w-0 opacity-0 lg:ml-0 lg:basis-0',
           )}
         >
           <div className="relative h-full min-h-0 w-80">

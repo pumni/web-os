@@ -3,7 +3,15 @@ import type { Route } from 'next';
 import { ChevronRight, Clapperboard, Pause, Play } from 'lucide-react';
 
 import { Badge } from '@pumni/ui/feedback';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardAction, IconBadge } from '@pumni/ui/layout';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardAction,
+  IconBadge,
+} from '@pumni/ui/layout';
 
 import type { Room } from '../types';
 import { RoomCard } from './room-card';

@@ -10,7 +10,7 @@
     "./service-role": "./src/service-role.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun --bun tsc --noEmit"
   },
   "dependencies": {
     "@pumni/env": "workspace:*",

@@ -197,7 +197,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               <span className="relative flex size-2">
-                <span className="absolute inline-flex h-full w-full motion-safe:animate-ping rounded-full bg-primary opacity-75" />
+                <span className="absolute inline-flex h-full w-full rounded-full bg-primary opacity-75 motion-safe:animate-ping" />
                 <span className="relative inline-flex size-2 rounded-full bg-primary" />
               </span>
               Ready to share

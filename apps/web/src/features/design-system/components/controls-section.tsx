@@ -2,8 +2,42 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { SettingsIcon } from 'lucide-react';
-import { AuthField, Button, Checkbox, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Label, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue, SegmentedPicker, Slider, SubmitButton, Switch } from '@pumni/ui/form';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, Highlight, Separator, Tabs } from '@pumni/ui/layout';
+import {
+  AuthField,
+  Button,
+  Checkbox,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Label,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+  SegmentedPicker,
+  Slider,
+  SubmitButton,
+  Switch,
+} from '@pumni/ui/form';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Highlight,
+  Separator,
+  Tabs,
+} from '@pumni/ui/layout';
 import { ShowcaseSection } from './showcase-section';
 
 type DemoFormValues = {

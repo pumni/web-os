@@ -2,7 +2,12 @@
 
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@pumni/ui/layout';
-import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from '@pumni/ui/overlay';
+import {
+  ContextMenu,
+  ContextMenuTrigger,
+  ContextMenuContent,
+  ContextMenuItem,
+} from '@pumni/ui/overlay';
 import { motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
 import { recipes } from '@pumni/ui/lib/motion';
 import { cn } from '@pumni/ui/lib/cn';

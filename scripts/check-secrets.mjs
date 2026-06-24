@@ -15,8 +15,8 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { $ } from 'bun';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -42,7 +42,7 @@ function pass(msg) {
 
 let trackedFiles;
 try {
-  const out = execSync('git ls-files', { cwd: ROOT, encoding: 'utf8' });
+  const out = await $`git ls-files`.cwd(ROOT).text();
   trackedFiles = out.split('\n').filter(Boolean);
 } catch {
   console.error('FATAL: git ls-files failed - not a git repo or git not available');
@@ -146,11 +146,12 @@ for (const relPath of trackedFiles) {
   if (!SCAN_EXTENSIONS.has(ext) && !relPath.endsWith('.env')) continue;
 
   const absPath = path.join(ROOT, relPath);
-  if (!fs.existsSync(absPath)) continue;
+  const file = Bun.file(absPath);
+  if (!(await file.exists())) continue;
 
   let content;
   try {
-    content = fs.readFileSync(absPath, 'utf8');
+    content = await file.text();
   } catch {
     continue;
   }

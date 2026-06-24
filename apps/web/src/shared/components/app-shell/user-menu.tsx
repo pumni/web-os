@@ -5,7 +5,14 @@ import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@pumni/ui/layout';
 import { Button } from '@pumni/ui/form';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@pumni/ui/overlay';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@pumni/ui/overlay';
 import { withViewTransition } from '@pumni/ui/lib/view-transition';
 import { LogOut, User as UserIcon, Settings } from 'lucide-react';
 import { toast } from 'sonner';

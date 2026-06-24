@@ -80,7 +80,7 @@ export function WatchLobby() {
       className="mx-auto flex h-full w-full max-w-md flex-col gap-6"
     >
       {/* Hero Header */}
-        <div className="flex shrink-0 flex-col items-center gap-3 text-center select-none">
+      <div className="flex shrink-0 flex-col items-center gap-3 text-center select-none">
         {/* Glow icon with pulse ring */}
         <div className="relative flex items-center justify-center">
           <div className="absolute size-16 rounded-full bg-primary/20 motion-safe:animate-pulse" />
@@ -103,7 +103,7 @@ export function WatchLobby() {
         value={activeTab}
         onValueChange={setActiveTab}
         disableTransition={false}
-        className="flex w-full min-h-0 flex-1 flex-col"
+        className="flex min-h-0 w-full flex-1 flex-col"
       >
         <Tabs.List className="mb-4 grid h-9 w-full grid-cols-2">
           <Tabs.Trigger value="create" className="h-full text-xs">

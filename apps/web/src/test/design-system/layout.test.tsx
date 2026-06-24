@@ -2,7 +2,20 @@ import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it } from 'vitest';
 
-import { Avatar, AvatarBadge, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage, CardSpotlight, Highlight, ScrollArea, ScrollBar, Separator, Tabs } from '@pumni/ui/layout';
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+  CardSpotlight,
+  Highlight,
+  ScrollArea,
+  ScrollBar,
+  Separator,
+  Tabs,
+} from '@pumni/ui/layout';
 
 // Radix ScrollArea / Tabs use ResizeObserver internally.
 beforeAll(() => {

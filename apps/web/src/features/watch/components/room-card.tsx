@@ -3,7 +3,15 @@ import Link from 'next/link';
 import { ArrowUpRight, Clapperboard, Tv } from 'lucide-react';
 
 import { Badge } from '@pumni/ui/feedback';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardWell, IconBadge } from '@pumni/ui/layout';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardWell,
+  IconBadge,
+} from '@pumni/ui/layout';
 
 import type { Room } from '../types';
 

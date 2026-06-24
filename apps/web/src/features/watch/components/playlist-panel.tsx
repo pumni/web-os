@@ -3,7 +3,16 @@
 import React, { useState } from 'react';
 import { Button, Input, SegmentedPicker } from '@pumni/ui/form';
 import { cn } from '@pumni/ui/lib/cn';
-import { Plus, Trash2, Play, SkipForward, Music, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Play,
+  SkipForward,
+  Music,
+  GripVertical,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import {
   useAddQueueItem,
@@ -382,7 +391,7 @@ function SortableItem({
               type="button"
               onClick={() => handlePlayItem(item)}
               disabled={isPending || !isMemberReady}
-              className="hidden group-hover:flex items-center justify-center text-primary motion-safe:hover:scale-110 transition-transform"
+              className="hidden items-center justify-center text-primary transition-transform group-hover:flex motion-safe:hover:scale-110"
               aria-label="Phát video này"
             >
               <Play className="size-3 fill-current" />

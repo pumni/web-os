@@ -7,7 +7,7 @@ export function ClockWidget() {
   const timestamp = useClock();
 
   if (timestamp === null) {
-    return <div className="h-5 w-16 motion-safe:animate-pulse rounded bg-muted" />;
+    return <div className="h-5 w-16 rounded bg-muted motion-safe:animate-pulse" />;
   }
 
   const date = new Date(timestamp);

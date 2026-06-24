@@ -7,7 +7,17 @@ import { profileSchema, type ProfileInput } from '@pumni/validators';
 import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@pumni/ui/layout';
-import { Button, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, SubmitButton } from '@pumni/ui/form';
+import {
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  SubmitButton,
+} from '@pumni/ui/form';
 import { Spinner } from '@pumni/ui/feedback';
 import { cn } from '@pumni/ui/lib/cn';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@pumni/ui/layout';

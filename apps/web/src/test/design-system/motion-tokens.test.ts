@@ -1,6 +1,18 @@
 import { describe, expect, it } from 'vitest';
 
-import { duration, easing, hoverLiftScale, hoverLiftY, entranceY, entranceYLarge, parallaxRate, pressScale, staggerBase, staggerFast, staggerSlow } from '@pumni/ui/lib/motion';
+import {
+  duration,
+  easing,
+  hoverLiftScale,
+  hoverLiftY,
+  entranceY,
+  entranceYLarge,
+  parallaxRate,
+  pressScale,
+  staggerBase,
+  staggerFast,
+  staggerSlow,
+} from '@pumni/ui/lib/motion';
 import { readDurationSeconds, readUnitless, tokenCss, themeCss } from './token-test-utils';
 
 /**

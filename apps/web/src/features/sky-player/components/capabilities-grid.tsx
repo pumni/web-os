@@ -1,6 +1,13 @@
 'use client';
 
-import { CardSpotlight, CardHeader, CardTitle, CardDescription, CardWell, IconBadge } from '@pumni/ui/layout';
+import {
+  CardSpotlight,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardWell,
+  IconBadge,
+} from '@pumni/ui/layout';
 import { motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
 import { recipes } from '@pumni/ui/lib/motion';
 import { cn } from '@pumni/ui/lib/cn';

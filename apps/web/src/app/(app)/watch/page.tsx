@@ -14,6 +14,6 @@ export default async function WatchLobbyPage() {
   return (
     <div className="flex min-h-[70vh] flex-col p-4">
       <WatchLobby />
-   </div>
+    </div>
   );
 }

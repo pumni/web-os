@@ -8,7 +8,7 @@
     "./eslint": "./eslint.mjs"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun --bun tsc --noEmit"
   },
   "devDependencies": {
     "typescript": "catalog:"

@@ -18,7 +18,7 @@ describe('KbdChip', () => {
     render(
       <KbdChip tone="primary" data-testid="kbd">
         K
-    </KbdChip>,
+      </KbdChip>,
     );
     expect(screen.getByTestId('kbd')).toHaveAttribute('data-tone', 'primary');
     expect(screen.getByTestId('kbd').className).toContain('text-primary');
@@ -28,7 +28,7 @@ describe('KbdChip', () => {
     render(
       <KbdChip className="ml-2" data-testid="kbd">
         Esc
-    </KbdChip>,
+      </KbdChip>,
     );
     expect(screen.getByTestId('kbd').className).toContain('ml-2');
   });

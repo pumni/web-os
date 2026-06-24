@@ -5,7 +5,14 @@ import { cn } from '@/shared/lib/utils';
 
 import { Badge } from '@pumni/ui/feedback';
 import { Button, Slider, Switch } from '@pumni/ui/form';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardWell } from '@pumni/ui/layout';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardWell,
+} from '@pumni/ui/layout';
 import { GlassSurface } from '@pumni/ui/identity';
 import { apcaContrast } from '@pumni/ui/lib/apca';
 import { formatOklch, oklchToSrgb } from '@pumni/ui/lib/oklch';
@@ -39,14 +46,14 @@ function SpecBadge() {
   );
 }
 
-/** The canonical 2-blob backdrop a glass card must float over (ADR-0015). */
+/** Backdrop using mp_bg.jpg for the glass card to refract (replaces canonical 2-blob). */
 function GlassBackdrop({ className }: { className?: string }) {
   return (
-    <div aria-hidden className={cn('absolute inset-0 overflow-hidden', className)}>
-      <div className="absolute -top-24 -left-16 size-80 rounded-full bg-(--desktop-blob-primary) opacity-55 blur-3xl" />
-      <div className="absolute -right-12 -bottom-24 size-80 rounded-full bg-(--desktop-blob-secondary) opacity-50 blur-3xl" />
-      <div className="absolute inset-0 bg-muted/30" />
-    </div>
+    <div
+      aria-hidden
+      className={cn('absolute inset-0 bg-cover bg-center', className)}
+      style={{ backgroundImage: 'url(/mp_bg.jpg)' }}
+    />
   );
 }
 

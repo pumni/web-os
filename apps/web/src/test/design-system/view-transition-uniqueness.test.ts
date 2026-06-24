@@ -74,7 +74,7 @@ describe('View Transition Name Uniqueness', () => {
 
     if (duplicates.length > 0) {
       throw new Error(
-        `Duplicate View Transition Names detected! Each view-transition-name must be unique across the document to prevent collision/stretching: \n${duplicates.join('\n')}`
+        `Duplicate View Transition Names detected! Each view-transition-name must be unique across the document to prevent collision/stretching: \n${duplicates.join('\n')}`,
       );
     }
 

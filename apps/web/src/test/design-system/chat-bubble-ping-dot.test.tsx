@@ -41,7 +41,7 @@ describe('PingDot', () => {
     render(
       <div className="text-primary">
         <PingDot data-testid="ping" />
-   </div>,
+      </div>,
     );
     const painters = screen.getByTestId('ping').querySelectorAll('[class*="bg-current"]');
     expect(painters.length).toBeGreaterThanOrEqual(2);
@@ -62,7 +62,7 @@ describe('ChatBubble', () => {
     render(
       <ChatBubble tone="me" data-testid="skin">
         Hi
-   </ChatBubble>,
+      </ChatBubble>,
     );
     expect(getBubbleRoot('skin')).toHaveAttribute('data-tone', 'me');
   });
@@ -73,7 +73,7 @@ describe('ChatBubble', () => {
       render(
         <ChatBubble shape={shape} data-testid="skin">
           Body
-     </ChatBubble>,
+        </ChatBubble>,
       );
       expect(getBubbleRoot('skin')).toHaveAttribute('data-shape', shape);
     },
@@ -83,7 +83,7 @@ describe('ChatBubble', () => {
     render(
       <ChatBubble tone="them" shape="middle" data-testid="skin">
         Body
-   </ChatBubble>,
+      </ChatBubble>,
     );
     const skin = screen.getByTestId('skin');
     expect(skin.className).toContain('rounded-tl-xs');
@@ -94,7 +94,7 @@ describe('ChatBubble', () => {
     render(
       <ChatBubble tone="me" shape="last" data-testid="skin">
         Body
-   </ChatBubble>,
+      </ChatBubble>,
     );
     expect(screen.getByTestId('skin').className).toContain('rounded-tr-xs');
   });
@@ -103,7 +103,7 @@ describe('ChatBubble', () => {
     render(
       <ChatBubble tone="them" shape="single" data-testid="skin">
         Body
-   </ChatBubble>,
+      </ChatBubble>,
     );
     const skin = screen.getByTestId('skin');
     expect(skin.className).toContain('rounded-xl');
@@ -116,8 +116,8 @@ describe('ChatBubble', () => {
       <div className="group">
         <ChatBubble timestamp={epoch} data-testid="skin">
           Body
-     </ChatBubble>
-   </div>,
+        </ChatBubble>
+      </div>,
     );
     const skin = screen.getByTestId('skin');
     const row = skin.parentElement;
@@ -135,7 +135,7 @@ describe('ChatBubble', () => {
     render(
       <ChatBubble tone="me" data-testid="skin">
         Hi
-  </ChatBubble>,
+      </ChatBubble>,
     );
     const skin = screen.getByTestId('skin');
     expect(skin.className).toContain('bg-primary');
@@ -148,7 +148,7 @@ describe('Button — unstyled variant', () => {
     render(
       <Button variant="unstyled" size="icon-xs" data-testid="btn">
         <span>x</span>
-  </Button>,
+      </Button>,
     );
     const btn = screen.getByTestId('btn');
     expect(btn).toHaveAttribute('data-variant', 'unstyled');
@@ -167,7 +167,7 @@ describe('Button — unstyled variant', () => {
         data-testid="btn"
       >
         <span>x</span>
-  </Button>,
+      </Button>,
     );
     expect(screen.getByTestId('btn')).toHaveAttribute('aria-label', 'Kéo để sắp xếp');
   });

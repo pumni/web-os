@@ -7,7 +7,13 @@ import { ACCENTS, usePersonalization, DENSITIES, GLASS_LEVELS } from '@pumni/ui/
 import { Button, SegmentedPicker } from '@pumni/ui/form';
 import { Card, CardContent } from '@pumni/ui/layout';
 import { cn } from '@pumni/ui/lib/cn';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@pumni/ui/overlay';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@pumni/ui/overlay';
 
 const themeOptions = [
   { value: 'system', label: 'System', icon: MonitorIcon },

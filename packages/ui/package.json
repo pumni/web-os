@@ -14,8 +14,8 @@
     "./lib/*": "./src/lib/*.ts"
   },
   "scripts": {
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "lint": "bun --bun eslint .",
+    "typecheck": "bun --bun tsc --noEmit",
     "generate-exports": "bun run scripts/generate-exports.ts"
   },
   "dependencies": {

@@ -60,11 +60,7 @@ function FaqCard({
 
       <AnimatePresence initial={false}>
         {isOpen ? (
-          <motion.div
-            key="content"
-            {...collapseProps}
-            className="overflow-hidden"
-          >
+          <motion.div key="content" {...collapseProps} className="overflow-hidden">
             <CardContent className="border-t border-border pt-4 pb-5">
               <p className="ps-8 type-body leading-relaxed text-muted-foreground">{faq.answer}</p>
             </CardContent>

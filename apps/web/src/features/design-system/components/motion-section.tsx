@@ -2,10 +2,26 @@ import * as React from 'react';
 import { toast } from 'sonner';
 import { AnimatePresence, motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
 import { Button } from '@pumni/ui/form';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardWell } from '@pumni/ui/layout';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardWell,
+} from '@pumni/ui/layout';
 import { Window } from '@pumni/ui/os';
 import { Skeleton } from '@pumni/ui/feedback';
-import { easing, entranceYLarge, motionTokens, parallaxRate, recipes, springs, staggerFast, staggerSlow } from '@pumni/ui/lib/motion';
+import {
+  easing,
+  entranceYLarge,
+  motionTokens,
+  parallaxRate,
+  recipes,
+  springs,
+  staggerFast,
+  staggerSlow,
+} from '@pumni/ui/lib/motion';
 import { withViewTransition } from '@pumni/ui/lib/view-transition';
 import { ShowcaseSection } from './showcase-section';
 

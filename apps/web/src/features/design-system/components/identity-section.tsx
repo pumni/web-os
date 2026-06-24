@@ -1,5 +1,18 @@
 import * as React from 'react';
-import { Avatar, AvatarFallback, AvatarImage, AvatarBadge, AvatarGroup, AvatarGroupCount, Card, CardHeader, CardTitle, CardDescription, CardContent, Separator } from '@pumni/ui/layout';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  AvatarBadge,
+  AvatarGroup,
+  AvatarGroupCount,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Separator,
+} from '@pumni/ui/layout';
 import { SegmentedPicker } from '@pumni/ui/form';
 import { ACCENTS, GLASS_LEVELS, DENSITIES, usePersonalization } from '@pumni/ui/identity';
 import { cn } from '@pumni/ui/lib/cn';

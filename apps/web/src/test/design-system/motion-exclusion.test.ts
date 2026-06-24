@@ -112,9 +112,10 @@ describe('Animation Identity Exclusivity (Conformity Guard)', () => {
     }
 
     // Find the prefers-reduced-transparency media query block
-    const mediaQueryRegex = /@media\s*\(\s*prefers-reduced-transparency\s*:\s*reduce\s*\)\s*\{([^}]+)\}/g;
+    const mediaQueryRegex =
+      /@media\s*\(\s*prefers-reduced-transparency\s*:\s*reduce\s*\)\s*\{([^}]+)\}/g;
     const mediaQueryMatch = mediaQueryRegex.exec(content);
-    
+
     expect(mediaQueryMatch).not.toBeNull();
     const fallbackBlock = mediaQueryMatch?.[1] ?? '';
 
