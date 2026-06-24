@@ -72,6 +72,7 @@
     "ai:review:static": "bun scripts/check-review-gate-rules.mjs",
     "ai:eval": "bun scripts/run-ai-evals.mjs",
     "ai:graph:sync": "bun scripts/sync-project-graph.mjs",
+    "ai:skills:sync": "bun scripts/sync-skills.mjs",
     "ps:check": "pwsh -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/check.ps1",
     "ps:premerge": "pwsh -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/check.ps1 -Gate premerge",
     "ps:search": "pwsh -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/search.ps1",

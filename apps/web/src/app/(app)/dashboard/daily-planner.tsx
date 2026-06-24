@@ -7,13 +7,14 @@ import { cn } from '@pumni/ui/lib/cn';
 
 import { useTasks, useTasksStore, DEFAULT_TASKS } from '@/shared/stores/tasks-store';
 
+const subscribe = () => () => {};
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export function DailyPlanner() {
   const [newTaskText, setNewTaskText] = React.useState('');
 
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const tasks = useTasks(DEFAULT_TASKS);
   const addTaskStore = useTasksStore((state) => state.addTask);

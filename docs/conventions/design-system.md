@@ -1,6 +1,5 @@
 ---
-description: Pumni OS design system hard rules for tokens, surfaces, contrast, motion, and @pumni/ui.
-when-to-load: When styling UI, adding design tokens, building components, or deciding whether to load `.agents/skills/ui-styling/SKILL.md` for reference tables.
+description: Pumni OS design system hard rules for tokens, surfaces, contrast, motion, and @pumni/ui. Use when styling UI, adding design tokens, building components, or deciding whether to load `.agents/skills/ui-styling/SKILL.md` for reference tables.
 ---
 
 # Pumni OS Design System

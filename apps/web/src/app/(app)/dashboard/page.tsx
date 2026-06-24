@@ -16,16 +16,25 @@ export const metadata: Metadata = {
   description: 'Resume your watch rooms, start new sessions, and stay on top of your day.',
 };
 
+async function DashboardBentoSection({ userId }: { userId: string }) {
+  const recentRooms = await getRecentRooms(userId, 5);
+  return <DashboardBento recentRooms={recentRooms} />;
+}
+
+async function RecentRoomsSection({ userId }: { userId: string }) {
+  const recentRooms = await getRecentRooms(userId, 5);
+  return <RecentRoomsCard rooms={recentRooms} maxRooms={4} />;
+}
+
 export default async function DashboardPage() {
   const user = await requireUser();
-  const recentRooms = await getRecentRooms(user.id, 5);
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6 pb-28">
       <DashboardHeaderCard user={user} />
 
       <Suspense fallback={<DashboardBentoSkeleton />}>
-        <DashboardBento recentRooms={recentRooms} />
+        <DashboardBentoSection userId={user.id} />
       </Suspense>
 
       {/* Daily planner — local productivity streak */}
@@ -57,7 +66,9 @@ export default async function DashboardPage() {
         <h2 id="recent-watch-rooms-heading" className="sr-only">
           Recent Watch Rooms
         </h2>
-        <RecentRoomsCard rooms={recentRooms} maxRooms={4} />
+        <Suspense fallback={<div className="h-[210px] w-full animate-pulse rounded-xl bg-muted/40" />}>
+          <RecentRoomsSection userId={user.id} />
+        </Suspense>
       </section>
 
       <DashboardDock />

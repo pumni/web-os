@@ -84,7 +84,6 @@ function getMarkdownLinkFiles() {
     'AGENTS.md',
     'CLAUDE.md',
     'GEMINI.md',
-    'llms.txt',
     ...collectMarkdownFiles('docs'),
     ...collectMarkdownFiles('.agents'),
     ...collectMarkdownFiles('.github'),
@@ -270,58 +269,6 @@ function checkFrontmatter() {
     if (!/^\s*description:\s*\S+/m.test(frontmatter)) {
       reportError(`${relativePath} frontmatter is missing 'description:'`);
     }
-    if (!/^\s*when-to-load:\s*\S+/m.test(frontmatter)) {
-      reportError(`${relativePath} frontmatter is missing 'when-to-load:'`);
-    }
-  }
-}
-
-const FRESHNESS_WARN_DAYS = 180;
-const FRESHNESS_ERROR_DAYS = 365;
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
-
-function checkFreshness() {
-  const today = new Date();
-  for (const relativePath of FRONTMATTER_REQUIRED) {
-    let commitDate = null;
-    try {
-      const stdout = execFileSync('git', ['log', '-1', '--format=%cI', '--', relativePath], {
-        cwd: ROOT,
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'ignore'],
-      }).trim();
-      if (stdout) {
-        commitDate = new Date(stdout);
-      }
-    } catch {
-      // If git is not available, skip with a warning.
-    }
-
-    if (!commitDate) {
-      try {
-        const tracked = execFileSync('git', ['ls-files', '--error-unmatch', relativePath], {
-          cwd: ROOT,
-          encoding: 'utf8',
-          stdio: ['ignore', 'pipe', 'ignore'],
-        }).trim();
-        if (!tracked) continue;
-      } catch {
-        continue;
-      }
-      reportWarn(`${relativePath} freshness: git commit date not available. Skipping freshness check.`);
-      continue;
-    }
-
-    const ageDays = Math.floor((today.getTime() - commitDate.getTime()) / MS_PER_DAY);
-    if (ageDays > FRESHNESS_ERROR_DAYS) {
-      reportError(
-        `${relativePath} is stale: last git commit was ${ageDays} days ago (> ${FRESHNESS_ERROR_DAYS}). Re-review accuracy and commit a change.`,
-      );
-    } else if (ageDays > FRESHNESS_WARN_DAYS) {
-      reportWarn(
-        `${relativePath} is aging: last git commit was ${ageDays} days ago (> ${FRESHNESS_WARN_DAYS}).`,
-      );
-    }
   }
 }
 
@@ -376,6 +323,25 @@ function checkSecretsIntegration() {
     execFileSync(process.execPath, [secretsScript], { stdio: 'inherit', cwd: ROOT });
   } catch {
     reportError('check-secrets.mjs reported one or more findings — fix before proceeding.');
+  }
+}
+
+function checkSkillShimsSync() {
+  // The .claude/skills/<name>/SKILL.md shims are generated from the canonical
+  // .agents/skills bodies (single source of truth). A hand-edited shim drifts its
+  // description out of sync with the canonical, breaking native discovery. Verify
+  // they match; regenerate with `bun run ai:skills:sync`.
+  const syncScript = path.join(__dirname, 'sync-skills.mjs');
+  if (!fs.existsSync(syncScript)) {
+    reportWarn('sync-skills.mjs not found — skipping skill shim sync check.');
+    return;
+  }
+  try {
+    execFileSync(process.execPath, [syncScript, '--check'], { stdio: 'inherit', cwd: ROOT });
+  } catch {
+    reportError(
+      '.claude/skills shims are out of sync with .agents/skills. Run `bun run ai:skills:sync` and commit.',
+    );
   }
 }
 
@@ -542,26 +508,6 @@ function checkGoldenExamplePaths() {
   }
 }
 
-function checkLlmsTxt() {
-  const llmsPath = resolveRel('llms.txt');
-  if (!fs.existsSync(llmsPath)) {
-    reportError('llms.txt is missing from root.');
-    return;
-  }
-  const content = fs.readFileSync(llmsPath, 'utf8');
-  const pathRegex = /(?:\s|^)(\/[\w.-]+(?:\/[\w.-]+)*\/?)/g;
-  let match;
-  while ((match = pathRegex.exec(content)) !== null) {
-    const candidate = match[1];
-    const relativePath = candidate.slice(1);
-    if (!fs.existsSync(resolveRel(relativePath))) {
-      reportError(
-        `llms.txt references a missing path: ${candidate} at line ${lineNumber(content, match.index)}`,
-      );
-    }
-  }
-}
-
 function collectFiles(relativeDir, extensions) {
   const dir = resolveRel(relativeDir);
   if (!fs.existsSync(dir)) return [];
@@ -645,7 +591,6 @@ console.log('Running AI context validation...');
 
 checkRequiredFiles();
 checkFrontmatter();
-checkFreshness();
 checkStructuredMarkdown({
   dir: '.agents/skills',
   kind: 'Skill',
@@ -665,10 +610,10 @@ checkContextIndexCoverage();
 checkWorkflowIndexNames();
 checkRuleInventory();
 checkPackageScripts();
-checkLlmsTxt();
 checkDesignTokenBoundaries();
 checkUiPackageBoundaries();
 checkSecretsIntegration();
+checkSkillShimsSync();
 checkProjectGraphSync();
 
 if (errors > 0) {

@@ -1,6 +1,5 @@
 ---
-description: Common AI mistakes in this codebase as ❌/✅ pairs, cross-referenced to the static rules that catch them.
-when-to-load: Before writing feature code, Supabase access, or state logic — and when a review-gate rule fires.
+description: Common AI mistakes in this codebase as ❌/✅ pairs, cross-referenced to the static rules that catch them. Use before writing feature code, Supabase access, or state logic — and when a review-gate rule fires.
 ---
 
 # Common Mistakes

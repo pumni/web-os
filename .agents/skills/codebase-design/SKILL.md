@@ -8,6 +8,26 @@ description: Design or improve modules with small interfaces, deep implementatio
 Design deep modules: a small interface that gives callers substantial behavior,
 with complexity kept local to the implementation.
 
+## Reuse-first ladder
+
+Before writing new code, walk this ladder top-down and stop at the first hit —
+the cheapest code is the code you never wrote:
+
+1. **Does it need to exist?** Drop speculative features, flags, and config nobody
+   asked for (YAGNI).
+2. **Already in this repo?** Reuse a feature module, `@pumni/*` package export,
+   hook, or helper before re-implementing it.
+3. **A platform / stdlib primitive?** Prefer Web / Node / React / Next built-ins
+   over a hand-rolled equivalent.
+4. **An already-installed dependency?** Use a catalog dep (`package.json`) rather
+   than adding a new one.
+5. **A one-liner?** Prefer the smallest expression that stays clear.
+6. Only then write new code — the minimum that solves today's task.
+
+A new dependency or abstraction is a real cost; justify it against the rungs
+above. This is the design-time companion to the simplicity rule in
+`docs/ai/common-mistakes.md` (#11).
+
 ## Vocabulary
 
 - **Module**: any unit with an interface and implementation; a function,
@@ -41,6 +61,8 @@ with complexity kept local to the implementation.
 
 ## Checklist
 
+- [ ] Walked the reuse-first ladder; any new code, dependency, or abstraction is
+      justified against existing repo, platform, and installed deps.
 - [ ] The module has one clear interface.
 - [ ] Callers do not need to know internal sequencing or storage details.
 - [ ] Tests can exercise behavior through the same seam callers use.

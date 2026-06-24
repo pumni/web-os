@@ -1,6 +1,5 @@
 ---
-description: Internal feature structure (layers, public APIs, cross-communication) and architectural boundaries.
-when-to-load: When creating or extending a feature under apps/web/src/features.
+description: Internal feature structure (layers, public APIs, cross-communication) and architectural boundaries. Use when creating or extending a feature under apps/web/src/features.
 ---
 
 # Feature Module Architecture

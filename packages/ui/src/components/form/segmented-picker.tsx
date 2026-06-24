@@ -169,7 +169,7 @@ function SegmentedPicker<T extends string>({
               <span
                 aria-hidden
                 className={cn(
-                  'inline-flex items-center justify-center gap-1.5 transition-opacity duration-(--duration-fast) ease-(--ease-out)',
+                  'inline-flex items-center justify-center gap-1.5 transition-opacity duration-(--duration-fast) ease-fluid',
                   !checked ? 'text-muted-foreground font-normal opacity-100' : 'opacity-0',
                 )}
               >
@@ -179,7 +179,7 @@ function SegmentedPicker<T extends string>({
               {/* Active layer */}
               <span
                 className={cn(
-                  'absolute inset-0 inline-flex items-center justify-center gap-1.5 transition-opacity duration-(--duration-fast) ease-(--ease-out) font-medium text-foreground',
+                  'absolute inset-0 inline-flex items-center justify-center gap-1.5 transition-opacity duration-(--duration-fast) ease-fluid font-medium text-foreground',
                   checked ? 'opacity-100' : 'opacity-0',
                 )}
               >

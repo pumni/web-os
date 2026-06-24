@@ -1,6 +1,5 @@
 ---
-description: How AI agents use the two declared MCP servers — next-devtools (live Next.js dev-server runtime: errors, routes, browser verify) and postgres (read-only DB schema introspection) — including their security boundaries.
-when-to-load: When debugging a runtime/build error, verifying a route/render change against the running dev server, or reading the live Supabase schema instead of guessing from generated types.
+description: How AI agents use the two declared MCP servers — next-devtools (live Next.js dev-server runtime: errors, routes, browser verify) and postgres (read-only DB schema introspection) — including their security boundaries. Use when debugging a runtime/build error, verifying a route/render change against the running dev server, or reading the live Supabase schema instead of guessing from generated types.
 ---
 
 # MCP Integration

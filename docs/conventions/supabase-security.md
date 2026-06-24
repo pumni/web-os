@@ -1,6 +1,5 @@
 ---
-description: Migration rules — RLS, policies, grants, function search_path, and client key handling.
-when-to-load: When writing a Supabase migration, RLS policy, RPC, or touching Supabase keys.
+description: Migration rules — RLS, policies, grants, function search_path, and client key handling. Use when writing a Supabase migration, RLS policy, RPC, or touching Supabase keys.
 ---
 
 # Supabase Security Convention

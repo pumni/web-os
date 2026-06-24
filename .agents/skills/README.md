@@ -12,9 +12,10 @@ validation gate (`scripts/check-ai-context.mjs`).
 
 - One skill per directory: `.agents/skills/<kebab-name>/SKILL.md` is canonical
   and tool-agnostic.
-- A thin shim mirrors it at `.claude/skills/<kebab-name>/SKILL.md` so Claude Code
-  surfaces it. The shim carries the **same frontmatter** and a one-line pointer
-  back to the canonical file — nothing else.
+- A thin shim at `.claude/skills/<kebab-name>/SKILL.md` lets Claude Code surface
+  the skill. The shim is **generated** from the canonical file by `bun run
+  ai:skills:sync` (`name` + `description` + a pointer) — never hand-edit it.
+  `bun run ai:check` fails if a shim is missing, stale, or orphaned.
 - List the skill in `docs/ai/index.md` under `## Skills`.
 
 ## Gate requirements (hard — `bun run ai:check` fails otherwise)

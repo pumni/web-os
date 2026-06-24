@@ -62,8 +62,10 @@ never mirror server data into Zustand. See `docs/conventions/data-fetching.md`.
 - **Think first.** State assumptions and tradeoffs before coding; when a
   request has multiple readings, surface them — do not choose silently.
 - **Simplicity.** Minimum code that solves the stated problem. No speculative
-  abstraction for single-use code. Applies to docs too: do not mint an ADR for
-  a reversible/cosmetic decision (see `docs/adr/README.md`).
+  abstraction for single-use code. Before new code, walk the reuse-first ladder
+  in `.agents/skills/codebase-design/SKILL.md` (reuse repo / platform / installed
+  deps before writing). Applies to docs too: do not mint an ADR for a
+  reversible/cosmetic decision (see `docs/adr/README.md`).
 - **Surgical.** Touch only what the task needs; clean up only the mess your
   change made. Do not refactor unrelated, working code.
 - **Goal-driven verification.** Turn the request into a checkable outcome, then

@@ -14,14 +14,18 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    staleTimes: { static: 180, dynamic: 30 },
     inlineCss: true,
     // Enables cross-document View Transitions for MPA-style page navigations.
     // Progressive enhancement — gated at the browser level via
     // @supports (view-transition-name: none) in CSS.
     viewTransition: true,
     scrollRestoration: true,
-    turbopackFileSystemCacheForDev: true,
+    optimizePackageImports: [
+      '@vidstack/react',
+      '@dnd-kit/core',
+      '@dnd-kit/sortable',
+      '@dnd-kit/utilities',
+    ],
   },
 
   async headers() {

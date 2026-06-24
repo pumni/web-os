@@ -1,6 +1,5 @@
 ---
-description: Shared vocabulary for Pumni Web OS so agents name concepts, tests, and implementation seams consistently.
-when-to-load: Before non-trivial planning, architecture discussion, feature naming, PRD drafting, or when terminology is ambiguous.
+description: Shared vocabulary for Pumni Web OS so agents name concepts, tests, and implementation seams consistently. Use before non-trivial planning, architecture discussion, feature naming, PRD drafting, or when terminology is ambiguous.
 ---
 
 # Domain Language
