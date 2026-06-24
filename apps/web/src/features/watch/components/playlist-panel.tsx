@@ -218,7 +218,7 @@ export function PlaylistPanel({
           onClick={() => setIsAddOpen((prev) => !prev)}
           disabled={!isMemberReady}
           className={cn(
-            'flex h-9 w-full items-center gap-2 rounded-md border border-border bg-muted px-3 text-xs transition-colors duration-(--duration-fast) motion-safe:hover:bg-muted/80',
+            'flex h-9 w-full items-center gap-2 rounded-md border border-border surface-raised px-3 text-xs transition-colors duration-(--duration-fast) state-hover',
             isAddOpen ? 'text-foreground' : 'text-muted-foreground',
           )}
         >
@@ -253,14 +253,14 @@ export function PlaylistPanel({
               value={sourceRef}
               onChange={(e) => setSourceRef(e.target.value)}
               disabled={isActionDisabled}
-              className="h-9 rounded-full border border-border bg-muted px-3 text-xs"
+              className="h-9 rounded-full border border-border surface-raised px-3 text-xs"
             />
             <Input
               placeholder="Tiêu đề gợi nhớ (tùy chọn)"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={isActionDisabled}
-              className="h-9 rounded-full border border-border bg-muted px-3 text-xs"
+              className="h-9 rounded-full border border-border surface-raised px-3 text-xs"
             />
             <Button
               type="submit"
@@ -356,8 +356,8 @@ function SortableItem({
 
   const rowClass = cn(
     'group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-all duration-(--duration-fast) ease-snappy',
-    isCurrent ? 'bg-primary/10 text-primary' : 'text-foreground motion-safe:hover:bg-muted/80',
-    isDragging && 'scale-[1.02] bg-muted opacity-60 shadow-control',
+    isCurrent ? 'state-selected text-primary' : 'text-foreground state-hover',
+    isDragging && 'scale-[1.02] skeleton opacity-60 shadow-control',
   );
   const titleClass = cn(
     'truncate font-medium text-left leading-tight',
@@ -365,7 +365,7 @@ function SortableItem({
   );
   const badgeClass = cn(
     'inline-flex w-fit items-center px-1 py-px rounded text-[10px] font-medium leading-none',
-    isYoutube ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground',
+    isYoutube ? 'bg-destructive/10 text-destructive' : 'surface-raised text-muted-foreground',
   );
   const deleteClass = cn(
     'size-5 p-0 motion-safe:hover:bg-destructive/10 motion-safe:hover:text-destructive shrink-0 transition-opacity duration-(--duration-fast)',

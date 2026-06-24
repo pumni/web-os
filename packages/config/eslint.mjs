@@ -133,28 +133,20 @@ export const pumniNoAdHocSurface = [
     ignores: [
       'src/test/**',
       '**/*.test.{ts,tsx}',
-      // TODO: Migrate these out-of-scope surfaces in follow-up passes (Section 7 of plan)
-      '**/layout.tsx',
-      '**/profile-form.tsx',
-      '**/app-shell/**',
+      // ── Permanent demo exemptions ─────────────────────────────────────────
+      // These pages exist to demonstrate and stress-test the design system;
+      // enforcing token usage inside them would hide real violations by raising
+      // the noise floor. They are intentionally exempt.
       '**/showcase.tsx',
       '**/features/design-system/**',
-      // Core UI package components that house overlay scrim blurs or OS window body transparency.
+      // ── Permanent overlay exemptions ──────────────────────────────────────
+      // These UI primitives own the scrim/overlay layer. Their backgrounds are
+      // transparent-by-design and use backdrop-filter — not semantic surface
+      // fills. Applying bg-card/bg-muted here would defeat the purpose.
       '**/dialog.tsx',
       '**/sheet.tsx',
       '**/command-palette.tsx',
       '**/window.tsx',
-      // TODO(card-system-unification): these still hand-roll `border bg-muted`
-      // inset wells; migrate them to <CardWell> in a follow-up pass, then drop
-      // the entry. Dashboard + watch room cards are already migrated & enforced.
-      '**/watch-room.tsx',
-      '**/watch-lobby.tsx',
-      '**/source-tabs.tsx',
-      '**/playlist-panel.tsx',
-      '**/participant-rail.tsx',
-      '**/chat-panel.tsx',
-      '**/crop-dialog.tsx',
-      '**/kbd.tsx',
     ],
     rules: {
       'no-restricted-syntax': restrictedAdHocSurface,
@@ -305,5 +297,55 @@ export const pumniFeaturePresentationBoundary = [
     },
   },
 ];
+/*
+ * Raw z-index guard. The design system owns a single OS z-index scale
+ * (tokens.css --z-window…--z-toast). Hand-picking a raw Tailwind z-class
+ * (z-10, z-20, z-30, z-40, z-50) in a cross-component layer will be leap-frogged
+ * by the token-based layers, causing stacking bugs that are hard to reproduce.
+ * Single-component local stacking (z-0, z-10 within an isolated element like a
+ * button icon or avatar badge) is allowed — the guard targets the cross-component
+ * layer values (z-30 through z-50) and arbitrary `z-[N]` values.
+ *
+ * Runs as a warning (not error) so existing legacy stacking doesn't block CI
+ * while the migration to token utilities proceeds.
+ */
+const RAW_Z_INDEX_PATTERNS = [
+  // Tailwind z-index steps that land in/above shell-chrome territory.
+  '\\bz-(?:30|40|50)\\b',
+  // Arbitrary z-index values e.g. z-[999], z-[9999].
+  '\\bz-\\[\\d+\\]',
+];
 
+const RAW_Z_INDEX_MESSAGE =
+  'Z-index is owned by the OS layering scale (--z-window…--z-toast in tokens.css). ' +
+  'Use a Tailwind utility bridged from a token (e.g. z-(--z-modal)) instead of a raw z-class. ' +
+  'See docs/conventions/design-system.md §Z-index.';
 
+export const restrictedRawZIndex = [
+  'warn',
+  ...RAW_Z_INDEX_PATTERNS.flatMap((pattern) => [
+    { selector: `Literal[value=/${pattern}/]`, message: RAW_Z_INDEX_MESSAGE },
+    { selector: `TemplateElement[value.raw=/${pattern}/]`, message: RAW_Z_INDEX_MESSAGE },
+  ]),
+];
+
+/**
+ * Flat-config fragment warning on raw z-index classes in TS/TSX source.
+ * Tests and the OS window component (which uses z-token variables directly
+ * via inline style) are excluded.
+ */
+export const pumniNoRawZIndex = [
+  {
+    name: 'pumni/no-raw-z-index',
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      'src/test/**',
+      '**/*.test.{ts,tsx}',
+      // OS window explicitly manages z-index via data attributes and CSS vars.
+      '**/window.tsx',
+    ],
+    rules: {
+      'no-restricted-syntax': restrictedRawZIndex,
+    },
+  },
+];

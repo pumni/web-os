@@ -8,6 +8,7 @@ import {
   pumniNoRawTiming,
   pumniFeatureBoundary,
   pumniFeaturePresentationBoundary,
+  pumniNoRawZIndex,
 } from '@pumni/config/eslint';
 
 const eslintConfig = defineConfig([
@@ -23,6 +24,8 @@ const eslintConfig = defineConfig([
   ...pumniFeatureBoundary,
   // Feature presentation boundary guard: forbid direct data/auth imports in UI components.
   ...pumniFeaturePresentationBoundary,
+  // Z-index guard: warn on raw Tailwind z-classes in cross-component layers.
+  ...pumniNoRawZIndex,
 
   // Override default ignores of eslint-config-next.
   globalIgnores([

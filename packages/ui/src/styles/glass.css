@@ -337,6 +337,36 @@
 /* Forced-colors: color-mix overlays are system-color context — safe, no override needed.
    Reduced-motion: state layers are colour-only (no transform/animation) — no extra handling. */
 
+/*
+ * Skeleton loading placeholder utility (Material-3 / §4 loading pattern).
+ * Use `skeleton` on any placeholder element instead of hand-rolling
+ * `bg-muted animate-pulse` — the utility centralises the token reference and
+ * automatically suppresses the animation for users who prefer reduced motion.
+ *
+ * Usage: <div className="h-9 rounded-md skeleton" />
+ */
+@utility skeleton {
+  background-color: color-mix(in oklch, var(--foreground) 8%, transparent);
+  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+
 /* --- Scrim Overlays --- */
 @utility overlay-scrim {
   background-color: var(--overlay);

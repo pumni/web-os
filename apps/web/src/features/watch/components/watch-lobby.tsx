@@ -107,7 +107,7 @@ export function WatchLobby({ initialRoomCode }: WatchLobbyProps) {
         {/* Glow icon with pulse ring */}
         <div className="relative flex items-center justify-center">
           <div className="absolute size-16 rounded-full bg-primary/20 motion-safe:animate-pulse" />
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-border bg-primary/10 text-primary shadow-sm shadow-primary/20">
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-border surface-tinted text-primary shadow-sm shadow-primary/20">
             <Clapperboard className="size-7" />
           </div>
         </div>

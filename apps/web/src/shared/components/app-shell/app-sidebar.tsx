@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@pumni/ui/form';
+import { KbdChip } from '@pumni/ui/feedback';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui/overlay';
 import { cn } from '@/shared/lib/utils';
 import { useAppUiStore, useSidebarCollapsed } from '@/shared/stores/app-ui-store';
@@ -73,9 +74,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
           </TooltipTrigger>
           <TooltipContent side="right" className="flex items-center gap-2">
             {collapsed ? 'Mở rộng' : 'Thu gọn'}
-            <kbd className="rounded border border-border bg-muted px-1.5 font-mono text-[0.7rem] text-muted-foreground">
-              {modKey()} B
-            </kbd>
+            <KbdChip>{modKey()} B</KbdChip>
           </TooltipContent>
         </Tooltip>
       </div>
@@ -99,7 +98,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
                 collapsed ? 'justify-center px-2' : 'px-3',
                 isActive
                   ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+                  : 'text-muted-foreground state-hover state-pressed',
               )}
             >
               <Icon className="size-4 shrink-0" />

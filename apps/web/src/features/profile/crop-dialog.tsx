@@ -69,8 +69,7 @@ export function CropDialog({
 
         <div className="px-6 py-4">
           <div
-            className="relative h-64 w-full overflow-hidden rounded-md border border-border"
-            style={{ backgroundColor: '#171717' }}
+            className="relative h-64 w-full overflow-hidden rounded-md border border-border bg-(--neutral-950)"
           >
             {rawFileUrl && (
               <Cropper
@@ -98,12 +97,12 @@ export function CropDialog({
               step={0.1}
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-muted accent-primary"
+              className="h-1 w-full cursor-pointer appearance-none rounded-lg surface-raised accent-primary"
             />
           </div>
         </div>
 
-        <DialogFooter className="border-t border-border bg-muted px-6 py-4">
+        <DialogFooter className="border-t border-border surface-raised px-6 py-4">
           <Button type="button" variant="outline" onClick={handleCancel}>
             Cancel
           </Button>

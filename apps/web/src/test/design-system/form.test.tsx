@@ -145,12 +145,13 @@ describe('Switch', () => {
 
   it('exposes dedicated visual tokens for track and thumb', () => {
     // Regression guard: switch must NOT fall back to --input / --background.
-    // Confirms tokens.css owns the 4 role tokens that drive switch visual in
+    // Confirms tokens.css owns the 3 role tokens that drive switch visual in
     // both light and dark — removing them would silently regress affordance.
+    // Note: --switch-thumb-checked was removed (dead token — thumb colour
+    // does not change between checked/unchecked states in the current design).
     expect(tokenCss).toContain('--switch-track');
     expect(tokenCss).toContain('--switch-track-checked');
     expect(tokenCss).toContain('--switch-thumb');
-    expect(tokenCss).toContain('--switch-thumb-checked');
   });
 
   it('renders the thumb slot for descendant CSS targeting', () => {

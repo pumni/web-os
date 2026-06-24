@@ -360,7 +360,6 @@
   --switch-track: var(--neutral-300);
   --switch-track-checked: var(--primary);
   --switch-thumb: var(--neutral-0);
-  --switch-thumb-checked: var(--primary-foreground);
 
   /* --- SegmentedPicker Component Tokens ---
      SegmentedPicker visual-role tokens. The well/track must read as a RECESSED
@@ -417,7 +416,6 @@
   --switch-track: var(--neutral-600);
   --switch-track-checked: var(--primary);
   --switch-thumb: var(--neutral-50);
-  --switch-thumb-checked: var(--primary-foreground);
 
   /* --- SegmentedPicker Role Tokens ---
      Dark SegmentedPicker: the well sits one stop DARKER than --card (neutral-880

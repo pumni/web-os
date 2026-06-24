@@ -1,6 +1,6 @@
 import tseslint from 'typescript-eslint';
 
-import { pumniNoRawColor, pumniNoAdHocSurface, pumniNoRawTiming, pumniUiBoundary } from '@pumni/config/eslint';
+import { pumniNoRawColor, pumniNoAdHocSurface, pumniNoRawTiming, pumniUiBoundary, pumniNoRawZIndex } from '@pumni/config/eslint';
 
 /**
  * @pumni/ui lint config. Intentionally minimal: it enables TypeScript parsing
@@ -18,4 +18,5 @@ export default tseslint.config(
   ...pumniNoRawColor,
   ...pumniNoAdHocSurface,
   ...pumniNoRawTiming,
+  ...pumniNoRawZIndex,
 );

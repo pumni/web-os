@@ -45,7 +45,7 @@ function MessageAvatar({
       {!isGrouped ? (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Avatar className="size-6 cursor-pointer border border-border">
+            <Avatar className="size-6 cursor-pointer">
               {avatarUrl && (
                 <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
               )}
@@ -186,7 +186,7 @@ export function ChatPanel({
             aria-label="Nhập tin nhắn"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            className="h-9 flex-1 rounded-full border border-border bg-muted pe-10 text-xs"
+            className="h-9 flex-1 rounded-full border border-border surface-raised pe-10 text-xs"
             maxLength={500}
           />
           <Button

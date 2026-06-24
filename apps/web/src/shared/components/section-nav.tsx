@@ -68,7 +68,7 @@ export function SectionNav({
   );
 
   return (
-    <div className={cn('sticky top-16 z-60 border-b border-border bg-background', className)}>
+    <div className={cn('sticky top-16 z-(--z-topbar) border-b border-border surface-base', className)}>
       <nav
         aria-label="Page sections"
         className={cn('flex scrollbar-none overflow-x-auto', navClassName)}

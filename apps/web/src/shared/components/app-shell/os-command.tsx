@@ -7,6 +7,7 @@ import { SearchIcon } from 'lucide-react';
 
 import { CommandPalette } from '@pumni/ui/overlay';
 import type { CommandItem } from '@pumni/ui/overlay';
+import { KbdChip } from '@pumni/ui/feedback';
 import { withViewTransition } from '@pumni/ui/lib/view-transition';
 import { navItems } from './nav-items';
 
@@ -59,13 +60,11 @@ export function OsCommand() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open command palette"
-        className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-muted px-3 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="inline-flex h-9 items-center gap-2 rounded-md border border-border surface-raised px-3 text-sm text-muted-foreground transition-colors state-hover state-pressed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <SearchIcon className="size-4" />
         <span className="hidden sm:inline">Search…</span>
-        <kbd className="ml-1 hidden rounded border border-border px-1.5 py-0.5 text-[10px] font-medium sm:inline">
-          ⌘K
-        </kbd>
+        <KbdChip className="ml-1 hidden sm:inline">⌘K</KbdChip>
       </button>
       <CommandPalette open={open} onOpenChange={setOpen} items={items} />
     </>

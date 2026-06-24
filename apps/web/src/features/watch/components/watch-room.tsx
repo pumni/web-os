@@ -390,7 +390,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             size="sm"
             onClick={handleCopyCode}
             aria-label="Sao chép mã phòng"
-            className="hidden h-7 items-center gap-1 rounded-md border border-border bg-muted px-2.5 font-mono text-xs font-bold tracking-widest text-foreground transition-colors duration-(--duration-fast) motion-safe:hover:bg-muted/80 sm:inline-flex"
+            className="hidden h-7 items-center gap-1 rounded-md border border-border surface-raised px-2.5 font-mono text-xs font-bold tracking-widest text-foreground transition-colors duration-(--duration-fast) state-hover sm:inline-flex"
           >
             <Hash className="size-3 text-muted-foreground" />
             <span>{currentRoom.code}</span>

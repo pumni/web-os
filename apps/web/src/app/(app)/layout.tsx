@@ -44,29 +44,29 @@ async function AuthenticatedAppShell({ children }: Readonly<{ children: React.Re
 function ProtectedShellFallback() {
   return (
     <div className="min-h-dvh bg-background">
-      <aside className="fixed inset-y-0 left-0 z-sidebar hidden w-64 bg-card lg:block">
+      <aside className="fixed inset-y-0 left-0 z-sidebar hidden w-64 surface-overlay lg:block">
         <div className="flex h-16 items-center px-6">
-          <div className="h-5 w-32 rounded bg-muted" />
+          <div className="h-5 w-32 rounded skeleton" />
         </div>
         <div
           aria-hidden
           className="mx-auto h-px bg-linear-to-r from-transparent via-glass-border/20 to-transparent"
         />
         <div className="space-y-2 p-4">
-          <div className="h-9 rounded-md bg-muted" />
-          <div className="h-9 rounded-md bg-muted" />
-          <div className="h-9 rounded-md bg-muted" />
+          <div className="h-9 rounded-md skeleton" />
+          <div className="h-9 rounded-md skeleton" />
+          <div className="h-9 rounded-md skeleton" />
         </div>
       </aside>
       <div className="flex min-h-dvh flex-col lg:pl-64">
         <header className="sticky top-0 z-topbar flex h-16 shrink-0 items-center justify-between glass-bar-edge-b px-4 sm:px-6 lg:px-8">
-          <div className="h-5 w-32 rounded bg-muted lg:hidden" />
-          <div className="h-8 w-8 rounded-full bg-muted" />
+          <div className="h-5 w-32 rounded skeleton lg:hidden" />
+          <div className="h-8 w-8 rounded-full skeleton" />
         </header>
         <main className="mx-auto w-full max-w-7xl flex-1 space-y-4 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="h-8 w-48 rounded bg-muted" />
-          <div className="h-4 w-72 rounded bg-muted" />
-          <div className="h-32 rounded-lg border border-border bg-card" />
+          <div className="h-8 w-48 rounded skeleton" />
+          <div className="h-4 w-72 rounded skeleton" />
+          <div className="h-32 rounded-lg border border-border skeleton" />
         </main>
       </div>
     </div>

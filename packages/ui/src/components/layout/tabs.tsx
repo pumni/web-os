@@ -51,7 +51,7 @@ const tabsListVariants =
  * itself on the active trigger only).
  */
 const tabsTriggerVariants =
-  "relative inline-flex h-full flex-1 items-center justify-center gap-1.5 border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color] outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 not-data-[state=active]:state-hover not-data-[state=active]:state-pressed data-[state=active]:text-foreground";
+  "relative inline-flex h-full flex-1 items-center justify-center gap-1.5 border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color] outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 not-data-[state=active]:state-hover not-data-[state=active]:state-pressed data-[state=active]:state-selected data-[state=active]:text-foreground";
 
 function TabsRoot({
   ref,
