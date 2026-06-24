@@ -97,12 +97,12 @@ export function CropDialog({
               step={0.1}
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="h-1 w-full cursor-pointer appearance-none rounded-lg surface-raised accent-primary"
+              className="h-1 w-full cursor-pointer appearance-none rounded-lg accent-primary"
             />
           </div>
         </div>
 
-        <DialogFooter className="border-t border-border surface-raised px-6 py-4">
+        <DialogFooter className="border-t border-border px-6 py-4">
           <Button type="button" variant="outline" onClick={handleCancel}>
             Cancel
           </Button>

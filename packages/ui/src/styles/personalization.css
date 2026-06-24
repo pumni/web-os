@@ -31,11 +31,7 @@
   --brand-gradient-from: var(--coral-500);
   --brand-gradient-via: var(--amber-500);
   --brand-gradient-to: var(--rose-500);
-  --chart-1: var(--coral-500);
-  --chart-2: color-mix(in oklch, var(--coral-500) 65%, var(--amber-500));
-  --chart-3: var(--amber-500);
-  --chart-4: color-mix(in oklch, var(--amber-500) 65%, var(--rose-500));
-  --chart-5: var(--rose-500);
+  --chart: color-mix(in oklch, var(--coral-500) 65%, var(--amber-500));
 }
 .dark[data-accent='coral'] {
   --primary: var(--coral-500);
@@ -43,11 +39,7 @@
   --brand-gradient-from: var(--coral-400);
   --brand-gradient-via: var(--amber-400);
   --brand-gradient-to: var(--rose-400);
-  --chart-1: var(--coral-400);
-  --chart-2: color-mix(in oklch, var(--coral-400) 65%, var(--amber-400));
-  --chart-3: var(--amber-400);
-  --chart-4: color-mix(in oklch, var(--amber-400) 65%, var(--rose-400));
-  --chart-5: var(--rose-400);
+  --chart: color-mix(in oklch, var(--coral-400) 65%, var(--amber-400));
 }
 
 [data-accent='cyan'] {
@@ -58,11 +50,7 @@
   --brand-gradient-from: var(--cyan-500);
   --brand-gradient-via: var(--indigo-500);
   --brand-gradient-to: var(--violet-500);
-  --chart-1: var(--cyan-500);
-  --chart-2: color-mix(in oklch, var(--cyan-500) 65%, var(--indigo-500));
-  --chart-3: var(--indigo-500);
-  --chart-4: color-mix(in oklch, var(--indigo-500) 65%, var(--violet-500));
-  --chart-5: var(--violet-500);
+  --chart: color-mix(in oklch, var(--cyan-500) 65%, var(--indigo-500));
 }
 .dark[data-accent='cyan'] {
   --primary: var(--cyan-500);
@@ -70,11 +58,7 @@
   --brand-gradient-from: var(--cyan-400);
   --brand-gradient-via: var(--indigo-400);
   --brand-gradient-to: var(--violet-400);
-  --chart-1: var(--cyan-400);
-  --chart-2: color-mix(in oklch, var(--cyan-400) 65%, var(--indigo-400));
-  --chart-3: var(--indigo-400);
-  --chart-4: color-mix(in oklch, var(--indigo-400) 65%, var(--violet-400));
-  --chart-5: var(--violet-400);
+  --chart: color-mix(in oklch, var(--cyan-400) 65%, var(--indigo-400));
 }
 
 [data-accent='indigo'] {
@@ -85,11 +69,7 @@
   --brand-gradient-from: var(--indigo-500);
   --brand-gradient-via: var(--violet-500);
   --brand-gradient-to: var(--cyan-500);
-  --chart-1: var(--indigo-500);
-  --chart-2: color-mix(in oklch, var(--indigo-500) 65%, var(--violet-500));
-  --chart-3: var(--violet-500);
-  --chart-4: color-mix(in oklch, var(--violet-500) 65%, var(--cyan-500));
-  --chart-5: var(--cyan-500);
+  --chart: color-mix(in oklch, var(--indigo-500) 65%, var(--violet-500));
 }
 .dark[data-accent='indigo'] {
   --primary: var(--indigo-500);
@@ -97,11 +77,7 @@
   --brand-gradient-from: var(--indigo-400);
   --brand-gradient-via: var(--violet-400);
   --brand-gradient-to: var(--cyan-400);
-  --chart-1: var(--indigo-400);
-  --chart-2: color-mix(in oklch, var(--indigo-400) 65%, var(--violet-400));
-  --chart-3: var(--violet-400);
-  --chart-4: color-mix(in oklch, var(--violet-400) 65%, var(--cyan-400));
-  --chart-5: var(--cyan-400);
+  --chart: color-mix(in oklch, var(--indigo-400) 65%, var(--violet-400));
 }
 
 [data-accent='violet'] {
@@ -112,11 +88,7 @@
   --brand-gradient-from: var(--violet-500);
   --brand-gradient-via: var(--rose-500);
   --brand-gradient-to: var(--red-500);
-  --chart-1: var(--violet-500);
-  --chart-2: color-mix(in oklch, var(--violet-500) 65%, var(--rose-500));
-  --chart-3: var(--rose-500);
-  --chart-4: color-mix(in oklch, var(--rose-500) 65%, var(--indigo-500));
-  --chart-5: var(--indigo-500);
+  --chart: color-mix(in oklch, var(--violet-500) 65%, var(--rose-500));
 }
 .dark[data-accent='violet'] {
   --primary: var(--violet-500);
@@ -124,11 +96,7 @@
   --brand-gradient-from: var(--violet-400);
   --brand-gradient-via: var(--rose-400);
   --brand-gradient-to: var(--red-400);
-  --chart-1: var(--violet-400);
-  --chart-2: color-mix(in oklch, var(--violet-400) 65%, var(--rose-400));
-  --chart-3: var(--rose-400);
-  --chart-4: color-mix(in oklch, var(--rose-400) 65%, var(--indigo-400));
-  --chart-5: var(--indigo-400);
+  --chart: color-mix(in oklch, var(--violet-400) 65%, var(--rose-400));
 }
 
 [data-accent='rose'] {
@@ -139,11 +107,7 @@
   --brand-gradient-from: var(--red-500);
   --brand-gradient-via: var(--rose-500);
   --brand-gradient-to: var(--violet-500);
-  --chart-1: var(--rose-500);
-  --chart-2: color-mix(in oklch, var(--rose-500) 65%, var(--red-500));
-  --chart-3: var(--red-500);
-  --chart-4: color-mix(in oklch, var(--red-500) 65%, var(--violet-500));
-  --chart-5: var(--violet-500);
+  --chart: color-mix(in oklch, var(--rose-500) 65%, var(--red-500));
 }
 .dark[data-accent='rose'] {
   /* Red is high-chroma: a lighter red-500 drops white `--primary-foreground` below
@@ -154,11 +118,7 @@
   --brand-gradient-from: var(--red-400);
   --brand-gradient-via: var(--rose-400);
   --brand-gradient-to: var(--violet-400);
-  --chart-1: var(--rose-400);
-  --chart-2: color-mix(in oklch, var(--rose-400) 65%, var(--red-400));
-  --chart-3: var(--red-400);
-  --chart-4: color-mix(in oklch, var(--red-400) 65%, var(--violet-400));
-  --chart-5: var(--violet-400);
+  --chart: color-mix(in oklch, var(--rose-400) 65%, var(--red-400));
 }
 
 /*

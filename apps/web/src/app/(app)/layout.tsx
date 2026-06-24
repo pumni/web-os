@@ -44,7 +44,7 @@ async function AuthenticatedAppShell({ children }: Readonly<{ children: React.Re
 function ProtectedShellFallback() {
   return (
     <div className="min-h-dvh bg-background">
-      <aside className="fixed inset-y-0 left-0 z-sidebar hidden w-64 surface-overlay lg:block">
+      <aside className="fixed inset-y-0 left-0 z-sidebar hidden w-64 bg-card lg:block">
         <div className="flex h-16 items-center px-6">
           <div className="h-5 w-32 rounded skeleton" />
         </div>

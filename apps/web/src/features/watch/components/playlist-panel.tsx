@@ -218,7 +218,7 @@ export function PlaylistPanel({
           onClick={() => setIsAddOpen((prev) => !prev)}
           disabled={!isMemberReady}
           className={cn(
-            'flex h-9 w-full items-center gap-2 rounded-md border border-border surface-raised px-3 text-xs transition-colors duration-(--duration-fast) state-hover',
+            'flex h-9 w-full items-center gap-2 rounded-md border border-border bg-card surface-raised px-3 text-xs transition-colors duration-(--duration-fast) state-hover',
             isAddOpen ? 'text-foreground' : 'text-muted-foreground',
           )}
         >
@@ -365,7 +365,7 @@ function SortableItem({
   );
   const badgeClass = cn(
     'inline-flex w-fit items-center px-1 py-px rounded text-[10px] font-medium leading-none',
-    isYoutube ? 'bg-destructive/10 text-destructive' : 'surface-raised text-muted-foreground',
+    isYoutube ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground',
   );
   const deleteClass = cn(
     'size-5 p-0 motion-safe:hover:bg-destructive/10 motion-safe:hover:text-destructive shrink-0 transition-opacity duration-(--duration-fast)',

@@ -60,7 +60,9 @@ function ParticipantRow({
 
   const rowClass = cn(
     'flex items-center justify-between p-2 rounded-md border text-xs transition-colors duration-(--duration-fast)',
-    isHost ? 'border-border surface-tinted' : 'border-border surface-raised state-hover',
+    isHost
+      ? 'border-primary/30 bg-accent text-accent-foreground'
+      : 'border-border bg-card surface-raised state-hover',
   );
   const avatarClass = cn(
     'size-7 border shrink-0',
@@ -68,7 +70,7 @@ function ParticipantRow({
   );
   const fallbackClass = cn(
     'text-[10px] font-bold uppercase select-none',
-    isHost ? 'bg-primary/10 text-primary' : 'surface-raised text-muted-foreground',
+    isHost ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground',
   );
   const label = isCurrentUser && profile?.username ? `${displayName} (Bạn)` : displayName;
 

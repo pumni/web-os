@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { describe, expect, it } from 'vitest';
 import { apcaContrast } from '@pumni/ui/lib/apca';
 import { oklchToSrgb, parseOklch } from '@pumni/ui/lib/oklch';
+import { describe, expect, it } from 'vitest';
 import { repoRoot, tokenCss } from './token-test-utils';
 
 type Color = {
@@ -513,22 +513,13 @@ describe('Chart color CVD distinctness', () => {
     'ensures chart color series have distinct lightness delta in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const chart1 = resolveColor('--chart-1', tokenMap).l;
-      const chart2 = resolveColor('--chart-2', tokenMap).l;
-      const chart3 = resolveColor('--chart-3', tokenMap).l;
-      const chart4 = resolveColor('--chart-4', tokenMap).l;
-      const chart5 = resolveColor('--chart-5', tokenMap).l;
+      const primary = resolveColor('--primary', tokenMap).l;
+      const chart2 = resolveColor('--chart', tokenMap).l;
 
-      const pairs = [
-        [chart1, chart2],
-        [chart2, chart3],
-        [chart3, chart4],
-        [chart4, chart5],
-      ] as const;
-
-      for (const [a, b] of pairs) {
-        expect(Math.abs(a - b)).toBeGreaterThanOrEqual(0.02);
-      }
+      // primary (coral brand) and chart (indigo) are the only two data-vis
+      // colours in active use (bento-simulator.tsx). They must be distinct
+      // enough for colour-blind viewers (Lc delta ≥ 0.02 on the OKLCH L axis).
+      expect(Math.abs(primary - chart2)).toBeGreaterThanOrEqual(0.02);
     },
   );
 });

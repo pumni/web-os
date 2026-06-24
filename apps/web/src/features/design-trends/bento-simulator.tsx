@@ -1,10 +1,9 @@
 'use client';
 
-import * as React from 'react';
 import { cn } from '@/shared/lib/utils';
+import * as React from 'react';
 
 import { Badge } from '@pumni/ui/feedback';
-import { BentoGrid, BentoGridItem } from '@pumni/ui/os';
 import { Button } from '@pumni/ui/form';
 import {
   Card,
@@ -15,6 +14,7 @@ import {
   CardWell,
   IconBadge,
 } from '@pumni/ui/layout';
+import { BentoGrid, BentoGridItem } from '@pumni/ui/os';
 import {
   ChevronRight,
   Code,
@@ -335,7 +335,7 @@ export function BentoSimulator() {
                       {(
                         [
                           ['primary', 'bg-primary'],
-                          ['chart-2', 'bg-chart-2'],
+                          ['chart', 'bg-chart'],
                           ['success', 'bg-success'],
                         ] as const
                       ).map(([color, cls]) => (

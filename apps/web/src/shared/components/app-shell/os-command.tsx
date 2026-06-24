@@ -60,7 +60,7 @@ export function OsCommand() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open command palette"
-        className="inline-flex h-9 items-center gap-2 rounded-md border border-border surface-raised px-3 text-sm text-muted-foreground transition-colors state-hover state-pressed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-card surface-raised px-3 text-sm text-muted-foreground transition-colors state-hover state-pressed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <SearchIcon className="size-4" />
         <span className="hidden sm:inline">Search…</span>
