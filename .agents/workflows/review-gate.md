@@ -32,6 +32,18 @@ If any **P0** item fails, stop and fix before doing anything else.
 - [ ] Context-layer edits → `bun run ai:check` + `bun run ai:eval`.
       Code edits → `typecheck` / `lint` / `test` (+ `build` if the bundle can change).
 
+## Feedback loop (turn a miss into a guardrail)
+
+When this review or a user correction surfaces a **mistake class not already
+captured**, close the loop in the same change so it cannot recur:
+
+- [ ] Add the ❌/✅ pair to `docs/ai/common-mistakes.md` (trim a stale entry to
+      stay within its budget).
+- [ ] If regex-catchable, also add a rule + self-test to
+      `scripts/review-gate-rules.mjs` so the next miss fails the gate, not review.
+
+Real misses become permanent guardrails. No LLM-judge eval tier (ADR-0009).
+
 ## Static Rule Inventory
 
 The 16 static rules (id, severity, summary, fix) are defined once in the

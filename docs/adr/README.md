@@ -48,10 +48,12 @@ Followed by exactly four sections, in order:
 
 - **Load-bearing ADRs are never deleted** — they evolve by status transition
   (`Proposed` → `Accepted` → `Deprecated` → `Superseded by ADR-0XXX`).
-- **Cosmetic / same-week superseded ADRs may be squashed** into one
-  consolidated ADR (keeping the lowest number), with git preserving the
-  originals. A token-value or visual-tuning change is a `docs/conventions/*`
-  edit, **not** a new ADR.
+- **Cosmetic / same-week superseded ADRs may be squashed** into a single
+  consolidated ADR. The consolidated record keeps **one** number (not
+  necessarily the lowest — e.g. ADR-0009 consolidated three same-week 0005–0007
+  drafts under 0009); the squashed drafts are preserved in git rather than as
+  tombstone files, and their numbers are not reused. A token-value or
+  visual-tuning change is a `docs/conventions/*` edit, **not** a new ADR.
 - Status transitions only:
   `Proposed` → `Accepted` → `Deprecated` → `Superseded by ADR-0XXX`.
 - To supersede, create a new ADR that references the old one by ID and update the

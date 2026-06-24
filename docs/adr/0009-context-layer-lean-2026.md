@@ -3,6 +3,9 @@
 - **Status:** Accepted
 - **Date:** 2026-06-20
 - **Owner:** AI context layer (see `docs/ai/index.md`)
+- **Refined by:** ADR-0013 (2026-06-24) — removed the per-doc freshness check and
+  `llms.txt`, merged `when-to-load` into `description`, and made the `.claude`
+  skill shims generated rather than hand-synced. The lean direction below stands.
 
 ## Context
 
