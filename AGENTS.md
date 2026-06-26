@@ -70,27 +70,18 @@ never mirror server data into Zustand. See `docs/conventions/data-fetching.md`.
   change made. Do not refactor unrelated, working code.
 - **Goal-driven verification.** Turn the request into a checkable outcome, then
   run the *narrowest* gate that proves it (a bug fix starts with a failing test
-  that goes green). See the altitude table in `docs/ai/agent-command-policy.md`.
+  that goes green). See `docs/ai/agent-command-policy.md#validation` for gate selection.
 
 ## Command Discipline
 
-**PowerShell 7 (`pwsh`) is the only allowed shell for AI-issued commands.**
-Windows PowerShell 5.1, Git Bash, WSL bash, and bare POSIX shells are
-prohibited — issue shell-only commands only through `pwsh -Command …` if the
-user explicitly asks. Default to `rg`, `fd`, `bat --plain --paging=never`,
-`jq`; the native harness tools (Read/Grep/Glob) are a fallback when the CLI
-cannot do the job, and you must state why. Avoid `&&`/`||` chaining and inline
-`$env:`/`$null`; run commands individually or `;`-separated. Use deterministic,
-non-interactive commands with repo-relative paths. Full discipline:
-`docs/ai/agent-command-policy.md`.
+PowerShell 7 (`pwsh`) is the only allowed shell. See
+`docs/ai/agent-command-policy.md` for the full policy.
 
-## Validation (run the gate that matches what you changed)
+## Validation
 
-- **Code** (`apps/`, `packages/` source): `bun run lint`, `bun run typecheck`, `bun run test` — add `bun run build` for Next config/bundle changes. E2E: `cd apps/web; bunx playwright test`.
-- **Context layer** (`AGENTS.md`, `docs/`, `.claude/rules`, `.agents`, `scripts/check-*`, manifest): `bun run ai:check`, `bun run ai:eval`.
-
-Run the narrowest relevant gate first. Never bypass security or skip validation.
-If a command cannot be run, say why.
+Run the narrowest gate for your change scope — see
+`docs/ai/agent-command-policy.md#validation` (altitude table).
+Never bypass security or skip validation. If a command cannot be run, say why.
 
 ## Read Routing
 

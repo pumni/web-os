@@ -73,9 +73,6 @@
     "ai:eval": "bun scripts/run-ai-evals.mjs",
     "ai:graph:sync": "bun scripts/sync-project-graph.mjs",
     "ai:skills:sync": "bun scripts/sync-skills.mjs",
-    "ps:check": "pwsh -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/check.ps1",
-    "ps:premerge": "pwsh -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/check.ps1 -Gate premerge",
-    "ps:search": "pwsh -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File scripts/search.ps1",
     "ai:local": "bun run ai:check && bun run typecheck",
     "ai:premerge": "bun run ai:check && bun run ai:eval && bun run lint && bun run typecheck && bun run test && bun run build",
     "clean": "bun run scripts/clean.mjs"

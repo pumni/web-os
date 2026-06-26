@@ -2,43 +2,5 @@
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
   "ignorePatterns": [
     "packages/supabase/src/types.ts"
-  ],
-  "ignoreExports": [
-    {
-      "file": "apps/web/src/app/(app)/dashboard/nav.ts",
-      "exports": ["pageNav"]
-    },
-    {
-      "file": "apps/web/src/app/(app)/design-system/nav.ts",
-      "exports": ["pageNav"]
-    },
-    {
-      "file": "apps/web/src/app/(app)/nextjs-ecosystem/nav.ts",
-      "exports": ["pageNav"]
-    },
-    {
-      "file": "apps/web/src/app/(app)/settings/account/nav.ts",
-      "exports": ["pageNav"]
-    },
-    {
-      "file": "apps/web/src/app/(app)/settings/appearance/nav.ts",
-      "exports": ["pageNav"]
-    },
-    {
-      "file": "apps/web/src/app/(app)/settings/profile/nav.ts",
-      "exports": ["pageNav"]
-    },
-    {
-      "file": "apps/web/src/app/(app)/sky-player/nav.ts",
-      "exports": ["pageNav"]
-    },
-    {
-      "file": "apps/web/src/app/(app)/watch/nav.ts",
-      "exports": ["pageNav"]
-    },
-    {
-      "file": "packages/supabase/src/types.ts",
-      "exports": ["Tables", "TablesInsert", "TablesUpdate", "Enums", "CompositeTypes", "Constants"]
-    }
   ]
 }

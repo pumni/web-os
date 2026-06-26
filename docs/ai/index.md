@@ -31,7 +31,7 @@ need to the canonical doc that owns it.
 
 | Need | Load |
 | --- | --- |
-| Shell command discipline (PowerShell 7 / rg-fd-bat) | `docs/ai/agent-command-policy.md` |
+| Shell command discipline (PowerShell 7) | `docs/ai/agent-command-policy.md` |
 | Domain glossary | `docs/ai/domain-language.md` |
 | Local production patterns to copy | `docs/ai/golden-examples.md` |
 | Known ❌/✅ mistake pairs | `docs/ai/common-mistakes.md` |
@@ -64,10 +64,11 @@ skill: `.agents/skills/README.md` (authoring standard).
 
 ## Verification
 
-- Code changes (`apps/`, `packages/` source): `bun run lint`, `bun run typecheck`, `bun run test` (+ `bun run build` for config/bundle).
-- Context-layer changes (`AGENTS.md`, `docs/`, `.claude/rules`, `.agents`, `scripts/check-*`, manifest): `bun run ai:check`, `bun run ai:eval`.
+See `docs/ai/agent-command-policy.md#validation` (altitude table) for the
+gate that matches your change scope.
 
 ## Workflows
 
-On-demand procedures live in `.agents/workflows`. The only standing one is the
-self-review gate: `review-gate`.
+Not currently in use.
+
+
