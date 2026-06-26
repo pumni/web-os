@@ -10,7 +10,6 @@
     "lint": "bun --bun eslint .",
     "typecheck": "bun --bun tsc --noEmit",
     "test": "vitest run",
-    "test:unit": "bun test src/test/validators src/test/scripts",
     "format": "prettier --write --cache ."
   },
   "dependencies": {

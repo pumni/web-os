@@ -206,7 +206,7 @@ default. Prefer the v4 canonical shorthand.
 
 Enforced in CI via `tailwind-lint` (the Tailwind language-service `suggestCanonicalClasses`
 diagnostic, run headless): `bun run ai:tw` checks (part of `bun run ai:check`)
-and `bun run ai:tw:fix` rewrites the whole repo in one pass.
+and `bun run ai:tw -- --fix` rewrites the whole repo in one pass.
 
 ## State-layer tokens
 

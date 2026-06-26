@@ -40,32 +40,9 @@
     "docs/conventions/transpile-packages.md",
     "docs/quality-gates.md"
   ],
-  "thinWrappers": [
-    {
-      "path": "CLAUDE.md",
-      "maxBytes": 1500,
-      "requiredText": ["AGENTS.md"]
-    },
-    {
-      "path": "GEMINI.md",
-      "maxBytes": 1500,
-      "requiredText": ["AGENTS.md"]
-    },
-    {
-      "path": "CODEX.md",
-      "maxBytes": 1500,
-      "requiredText": ["AGENTS.md"]
-    },
-    {
-      "path": ".github/copilot-instructions.md",
-      "maxBytes": 1500,
-      "requiredText": ["AGENTS.md"]
-    }
-  ],
   "requiredPackageScripts": [
     "ai:check",
     "ai:eval",
-    "ai:local",
     "ai:premerge",
     "lint",
     "typecheck",

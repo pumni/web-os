@@ -15,7 +15,7 @@ database, no auth, no server logic. Consumers import via subpath only.
   `@pumni/ui/layout`, `@pumni/ui/feedback`, `@pumni/ui/identity`, `@pumni/ui/os`,
   or `@pumni/ui/lib/<name>`. There is no `@pumni/ui` entry point.
 - The `exports` map in `package.json` is auto-generated from the filesystem by
-  `bun run generate-exports` (or validated in CI with `--check`).
+  `bun --filter @pumni/ui generate-exports` (or validated in CI with `--check`).
 - Components are grouped by functional role under `src/components/`:
   - `form/` — inputs, controls, form scaffolding (button, input, select, form…)
   - `overlay/` — floating/portaled layers (dialog, popover, dropdown-menu…)
@@ -46,8 +46,8 @@ notification center), it belongs in `overlay/`.
 - When adding a component:
   1. Place the file in the matching group folder.
   2. Export it from that group's `index.ts` barrel (e.g. `src/components/form/index.ts`).
-  3. The `exports` map is auto-generated — run `bun run generate-exports` or
-     `bun run generate-exports --check` in CI.
+  3. The `exports` map is auto-generated — run `bun --filter @pumni/ui generate-exports` or
+     `bun --filter @pumni/ui generate-exports --check` in CI.
 - Design tokens live in `src/styles/tokens.css`, `theme.css`, and
   `personalization.css`. Raw `oklch()` and primitive color vars (`--indigo-*`,
   `--violet-*`, etc.) elsewhere fail `checkDesignTokenBoundaries`.
@@ -61,8 +61,8 @@ react-hook-form, sonner. Peer deps: React 19. Workspace dep: `@pumni/config`.
 
 - `bun --filter @pumni/ui typecheck`
 - `bun --filter @pumni/ui lint`
-- `bun run generate-exports --check` (validate exports map in CI)
-- `bun run generate-exports` (regenerate exports map)
+- `bun --filter @pumni/ui generate-exports --check` (validate exports map in CI)
+- `bun --filter @pumni/ui generate-exports` (regenerate exports map)
 - `bun run ai:check` (enforces the import + token boundaries)
 
 ## Pitfalls

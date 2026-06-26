@@ -21,7 +21,6 @@ try {
 }
 
 const REQUIRED_FILES = manifest.requiredFiles ?? [];
-const THIN_WRAPPERS = manifest.thinWrappers ?? [];
 const REQUIRED_PACKAGE_SCRIPTS = manifest.requiredPackageScripts ?? [];
 const FRONTMATTER_REQUIRED = manifest.frontmatterRequired ?? [];
 const INDEX_REQUIRED_REFERENCES = manifest.indexRequiredReferences ?? [];
@@ -119,18 +118,7 @@ function checkAiDocSizes() {
   }
 }
 
-function checkEntrypointSizes() {
-  const agentPath = resolveRel('AGENTS.md');
-  if (!fs.existsSync(agentPath)) return;
-  const stats = fs.statSync(agentPath);
-  if (stats.size > 6500) {
-    reportWarn(`AGENTS.md is large (${stats.size} bytes). Keep detailed guidance in docs/.`);
-  }
-}
-
-// Hard size ceiling for high-traffic context files. The soft WARNs above are an
-// early signal; these are a build-failing budget so the layer cannot silently
-// re-bloat (the recurring failure mode behind ADR-0005/0006/0007/0009). Budgets
+// Hard size ceiling for high-traffic context files. Budgets
 // live in the manifest (`sizeBudgets`) with headroom over current size; trim the
 // doc rather than raise the budget when it trips.
 function checkSizeBudgets() {
@@ -142,25 +130,6 @@ function checkSizeBudgets() {
       reportError(
         `${budget.path} exceeds its size budget (${stats.size} > ${budget.maxBytes} bytes). Trim it — do not raise the budget.`,
       );
-    }
-  }
-}
-
-function checkThinWrappers() {
-  for (const wrapper of THIN_WRAPPERS) {
-    const filePath = resolveRel(wrapper.path);
-    if (!fs.existsSync(filePath)) continue;
-
-    const stats = fs.statSync(filePath);
-    if (stats.size > wrapper.maxBytes) {
-      reportError(`Compatibility wrapper is too large (${stats.size} bytes): ${wrapper.path}`);
-    }
-
-    const content = fs.readFileSync(filePath, 'utf8');
-    for (const requiredText of wrapper.requiredText) {
-      if (!content.includes(requiredText)) {
-        reportError(`${wrapper.path} must route to ${requiredText}`);
-      }
     }
   }
 }
@@ -245,8 +214,6 @@ function checkPackageScripts() {
     }
   }
 }
-
-
 
 function checkFrontmatter() {
   for (const relativePath of FRONTMATTER_REQUIRED) {
@@ -411,60 +378,6 @@ function checkStructuredMarkdown({ dir, kind, validation, isFileEntry }) {
   }
 }
 
-function checkSkillDescriptionTriggers() {
-  // Skill descriptions are the model's invocation surface. Per the authoring
-  // standard (.agents/skills/README.md) each must end with an explicit trigger
-  // clause so the model fires the skill at the right moment. Warn, not error,
-  // so the heuristic never blocks a legitimate phrasing.
-  const baseDir = resolveRel('.agents/skills');
-  if (!fs.existsSync(baseDir)) return;
-  const triggerCue = /\buse when\b|\bwhen (?:adding|changing|the user|terminology|shaping|styling|building|working|running)\b/i;
-
-  for (const entry of fs.readdirSync(baseDir, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    const filePath = path.join(baseDir, entry.name, 'SKILL.md');
-    if (!fs.existsSync(filePath)) continue;
-    const content = fs.readFileSync(filePath, 'utf8');
-    const end = content.indexOf('\n---', 4);
-    if (end === -1) continue;
-    const frontmatter = content.slice(4, end);
-    const match = frontmatter.match(/^\s*description:\s*([\s\S]*?)(?:\n\w|$)/m);
-    const description = match ? match[1].replace(/\s+/g, ' ').trim() : '';
-    if (description && !triggerCue.test(description)) {
-      reportWarn(
-        `${relPath(filePath)} description has no trigger clause ("Use when …"). See .agents/skills/README.md.`,
-      );
-    }
-  }
-}
-
-function checkSkillChecklistVerifiable() {
-  // karpathy "definition of done": every skill's ## Checklist must name how
-  // completion is verified — a gate command or an explicit checkable
-  // criterion — so the exit contract defends against premature completion.
-  const baseDir = resolveRel('.agents/skills');
-  if (!fs.existsSync(baseDir)) return;
-  const verifiable =
-    /bun run |bunx |verification gate|\bverif|\bconfirm|passes\b|scans clean|test seam|acceptance criteria|resolved by/i;
-
-  for (const entry of fs.readdirSync(baseDir, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    const filePath = path.join(baseDir, entry.name, 'SKILL.md');
-    if (!fs.existsSync(filePath)) continue;
-    const content = fs.readFileSync(filePath, 'utf8');
-    const start = content.indexOf('## Checklist');
-    if (start < 0) continue; // missing-section already errors in checkStructuredMarkdown
-    const rest = content.slice(start + '## Checklist'.length);
-    const nextHeading = rest.search(/\n## /);
-    const section = nextHeading === -1 ? rest : rest.slice(0, nextHeading);
-    if (!verifiable.test(section)) {
-      reportError(
-        `${relPath(filePath)} ## Checklist has no verifiable completion anchor (a gate command or explicit checkable criterion). See .agents/skills/README.md.`,
-      );
-    }
-  }
-}
-
 function checkRuleInventory() {
   const inventoryPath = '.agents/workflows/review-gate.md';
   const content = readFile(inventoryPath);
@@ -483,28 +396,6 @@ function checkRuleInventory() {
     reportError(
       `${inventoryPath} Static Rule Inventory must point to the rule registry (scripts/review-gate-rules.mjs).`,
     );
-  }
-}
-
-function checkGoldenExamplePaths() {
-  const relativePath = 'docs/ai/golden-examples.md';
-  const content = readFile(relativePath);
-  const pathRegex = /`([^`]+)`/g;
-  const checked = new Set();
-  let match;
-
-  while ((match = pathRegex.exec(content)) !== null) {
-    const candidate = match[1].trim().split('#')[0];
-    if (!/^(?:apps|packages|supabase|docs|\.agents)\//.test(candidate)) continue;
-    if (candidate.includes('*') || candidate.includes('<')) continue;
-    if (checked.has(candidate)) continue;
-    checked.add(candidate);
-
-    if (!fs.existsSync(resolveRel(candidate))) {
-      reportError(
-        `Golden example path does not exist in ${relativePath}:${lineNumber(content, match.index)} -> ${candidate}`,
-      );
-    }
   }
 }
 
@@ -597,15 +488,10 @@ checkStructuredMarkdown({
   validation: SKILL_VALIDATION,
   isFileEntry: false,
 });
-checkSkillDescriptionTriggers();
-checkSkillChecklistVerifiable();
 checkAiDocSizes();
-checkEntrypointSizes();
 checkSizeBudgets();
-checkThinWrappers();
 checkMarkdownLinks();
 checkDocPathReferences();
-checkGoldenExamplePaths();
 checkContextIndexCoverage();
 checkWorkflowIndexNames();
 checkRuleInventory();

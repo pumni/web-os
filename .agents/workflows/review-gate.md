@@ -15,7 +15,7 @@ If any **P0** item fails, stop and fix before doing anything else.
 - [ ] No RLS bypass; access control relies on Row Level Security, not UI hiding.
 - [ ] New tables/policies follow `docs/conventions/supabase-security.md`
       (RLS enabled, owner predicate uses `auth.uid()`).
-- [ ] No secrets committed (`bun run ai:secrets`).
+- [ ] No secrets committed (`bun run scripts/check-secrets.mjs`).
 
 ## Behaviour a static check can't see
 

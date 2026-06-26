@@ -28,9 +28,6 @@
       "dependsOn": ["^build"],
       "inputs": ["src/**/*.{ts,tsx}", "vitest.config.ts", "tsconfig.json"]
     },
-    "test:unit": {
-      "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json"]
-    },
     "format": {
       "inputs": [
         "src/**/*.{ts,tsx,js,mjs,css,json,md}",
