@@ -1,0 +1,8 @@
+[install]
+exact = true
+verbose = false
+concurrentDownloads = 100
+frozenLockfile = false
+
+[install.registry]
+url = "https://registry.npmjs.org"

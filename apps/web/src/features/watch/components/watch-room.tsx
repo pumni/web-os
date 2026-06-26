@@ -36,7 +36,8 @@ import { SyncIndicator } from './sync-indicator';
 import { SideDock } from './side-dock';
 import { setRoomSource, leaveRoom } from '../actions';
 import { useRoomQuery } from '../hooks/use-room-query';
-import { useQueueQuery, useAdvanceQueue, usePlayQueueItem } from '../hooks/use-room-queue';
+import { useQueueActions } from '../hooks/use-queue-actions';
+import { useQueueQuery } from '../hooks/use-room-queue';
 import { watchKeys } from '../query-keys';
 import type { Room, QueueItem, RoomBroadcastEvent } from '../types';
 import { TapToPlayOverlay } from './tap-to-play-overlay';
@@ -209,52 +210,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
 
   const isHost = currentRoom.host_id === userId;
 
-  const advanceQueueMutation = useAdvanceQueue(currentRoom.id);
-  const playQueueItemMutation = usePlayQueueItem(currentRoom.id);
-
-  const handlePlayItem = (item: QueueItem) => {
-    if (!membership.isMemberReady) return;
-    playQueueItemMutation.mutate(item.id, {
-      onSuccess: () => {
-        toast.success(`Đang phát: ${item.title || item.source_ref}`);
-        broadcastQueueEvent({ action: 'advance' });
-        broadcastRoomEvent({ action: 'advance' });
-      },
-      onError: (err) => {
-        toast.error(err.message || 'Phát bài hát thất bại.');
-      },
-    });
-  };
-
-  const handleEnded = () => {
-    if (!isHost) return;
-    if (!autoPlay) return; // User has auto-play off — just stop
-    if (queueItems.length === 0) return;
-    advanceQueueMutation.mutate(undefined, {
-      onSuccess: () => {
-        broadcastQueueEvent({ action: 'advance' });
-        broadcastRoomEvent({ action: 'advance' });
-      },
-    });
-  };
-
-  const handleAdvance = () => {
-    if (!membership.isMemberReady) return;
-    if (queueItems.length === 0) {
-      toast.error('Hàng chờ đã hết. Vui lòng thêm video mới.');
-      return;
-    }
-    advanceQueueMutation.mutate(undefined, {
-      onSuccess: () => {
-        toast.success('Đã chuyển sang video tiếp theo!');
-        broadcastQueueEvent({ action: 'advance' });
-        broadcastRoomEvent({ action: 'advance' });
-      },
-      onError: (err) => {
-        toast.error(err.message || 'Chuyển video thất bại.');
-      },
-    });
-  };
+  // queue action hook + handlers declared after the realtime channel (need broadcasts).
 
   const isAdvanceDisabled = (() => {
     if (queueItems.length === 0) return true;
@@ -282,7 +238,33 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     broadcastReaction,
   } = useRoomChannel(currentRoom, userId, isHost);
 
-  // 4.5 Chat & Reactions & Host Auto-promote
+  // 4.5 Queue action handlers (shared with PlaylistPanel — see `useQueueActions`).
+  const queue = useQueueActions(currentRoom.id, {
+    isMemberReady: membership.isMemberReady,
+    currentQueueItemId: currentRoom.current_queue_item_id,
+    broadcastQueueEvent,
+    broadcastRoomEvent,
+  });
+
+  const handlePlayItem = (item: QueueItem) => queue.play(item);
+
+  const handleEnded = () => {
+    if (!isHost) return;
+    if (!autoPlay) return;
+    if (queueItems.length === 0) return;
+    queue.advance({ silent: true });
+  };
+
+  const handleAdvance = () => {
+    if (!membership.isMemberReady) return;
+    if (queueItems.length === 0) {
+      toast.error('Hàng chờ đã hết. Vui lòng thêm video mới.');
+      return;
+    }
+    queue.advance();
+  };
+
+  // 4.6 Chat & Reactions & Host Auto-promote
   const { messages, sendChat, sendReaction } = useRoomChat(
     userId,
     broadcastChat,

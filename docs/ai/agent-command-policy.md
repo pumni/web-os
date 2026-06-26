@@ -8,10 +8,12 @@ canonical-owner: docs/ai/agent-command-policy.md
 Keeps AI command execution safe, deterministic, and reviewable in this Windows +
 Bun + Turborepo workspace. This policy does not override higher-priority rules.
 
-> [!WARNING]
-> **Host Shell Constraints:** commands may run through Windows PowerShell 5.1 or
-> Git Bash. Avoid host-sensitive `$` expansion, `&&`/`||`, and long
-> `pwsh -Command` strings.
+> [!CAUTION]
+> **PowerShell 7 (`pwsh`) is the only allowed shell for AI-issued commands.**
+> Windows PowerShell 5.1, Git Bash, WSL bash, and bare POSIX shells are
+> prohibited. Any shell-bound run must go through `pwsh`. `bash`, `sh`,
+> `cmd`, `bash -c`, and unprefixed tool defaults all count as drift — fix the
+> command, do not justify the shell.
 
 ## Baseline
 
@@ -23,7 +25,10 @@ Bun + Turborepo workspace. This policy does not override higher-priority rules.
 
 ## Host Shell Compatibility & Chaining
 
-- Chaining: `&&` and `||` fail in Windows PowerShell 5.1. Run commands
+- **Shell: `pwsh` 7+.** Anything else is a violation. If a tool default falls
+  back to Bash, wrap it (`pwsh -NoLogo -NoProfile -Command "..."`) or refuse
+  the tool call — never let the bash form execute.
+- Chaining: `&&` and `||` are unreliable across shells. Run commands
   sequentially or use `;`.
 - Variables/nulls: Avoid `$null` or `$env:NAME` inline. Use Bun/Node scripts or
   `.ps1` files for complex logic.

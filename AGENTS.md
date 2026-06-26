@@ -74,11 +74,15 @@ never mirror server data into Zustand. See `docs/conventions/data-fetching.md`.
 
 ## Command Discipline
 
-Host shell varies (Windows PowerShell 5.1 / 7, or Git Bash). Avoid `&&`/`||`
-chaining and inline `$env:`/`$null`; run commands individually or `;`-separated.
-Prefer `rg`, `fd`, `bat --plain --paging=never`, and `jq` over broad recursion.
-Use deterministic, non-interactive commands with repo-relative paths. Full
-discipline: `docs/ai/agent-command-policy.md`.
+**PowerShell 7 (`pwsh`) is the only allowed shell for AI-issued commands.**
+Windows PowerShell 5.1, Git Bash, WSL bash, and bare POSIX shells are
+prohibited — issue shell-only commands only through `pwsh -Command …` if the
+user explicitly asks. Default to `rg`, `fd`, `bat --plain --paging=never`,
+`jq`; the native harness tools (Read/Grep/Glob) are a fallback when the CLI
+cannot do the job, and you must state why. Avoid `&&`/`||` chaining and inline
+`$env:`/`$null`; run commands individually or `;`-separated. Use deterministic,
+non-interactive commands with repo-relative paths. Full discipline:
+`docs/ai/agent-command-policy.md`.
 
 ## Validation (run the gate that matches what you changed)
 

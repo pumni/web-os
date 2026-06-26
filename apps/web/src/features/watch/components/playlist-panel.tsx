@@ -14,12 +14,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  useAddQueueItem,
-  useRemoveQueueItem,
-  useReorderQueue,
-  useAdvanceQueue,
-} from '../hooks/use-room-queue';
+import { useQueueActions } from '../hooks/use-queue-actions';
 import type { QueueItem, QueueBroadcastEvent, RoomBroadcastEvent } from '../types';
 
 import {
@@ -65,81 +60,34 @@ export function PlaylistPanel({
   const [title, setTitle] = useState('');
   const [isAddOpen, setIsAddOpen] = useState(true);
 
-  const addMutation = useAddQueueItem(roomId);
-  const removeMutation = useRemoveQueueItem(roomId);
-  const reorderMutation = useReorderQueue(roomId);
-  const advanceMutation = useAdvanceQueue(roomId);
-
-  const isPending =
-    addMutation.isPending ||
-    removeMutation.isPending ||
-    reorderMutation.isPending ||
-    advanceMutation.isPending;
-  const isActionDisabled = isPending || !isMemberReady;
+  const queue = useQueueActions(roomId, {
+    isMemberReady,
+    currentQueueItemId,
+    broadcastQueueEvent,
+    broadcastRoomEvent,
+  });
+  const isActionDisabled = queue.isActionDisabled;
 
   const currentItem = items.find((i) => i.id === currentQueueItemId);
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isMemberReady) return;
     if (!sourceRef.trim()) {
       toast.error('Vui lòng nhập link hoặc ID video.');
       return;
     }
-
-    const currentTitle = title.trim();
-    const currentSourceRef = sourceRef.trim();
-
-    addMutation.mutate(
-      {
-        sourceType,
-        sourceRef: currentSourceRef,
-        title: currentTitle || undefined,
-      },
-      {
-        onSuccess: () => {
-          toast.success('Đã thêm vào hàng chờ!');
-          setSourceRef('');
-          setTitle('');
-          broadcastQueueEvent({ action: 'add', title: currentTitle || currentSourceRef });
-        },
-        onError: (err) => {
-          toast.error(err.message || 'Thêm thất bại.');
-        },
-      },
-    );
-  };
-
-  const handleRemoveItem = (itemId: string) => {
-    if (!isMemberReady) return;
-    const removed = items.find((i) => i.id === itemId);
-    removeMutation.mutate(itemId, {
-      onSuccess: () => {
-        toast.success('Đã xóa khỏi hàng chờ!');
-        broadcastQueueEvent({ action: 'remove', title: removed?.title ?? removed?.source_ref });
-        if (removed?.id === currentQueueItemId) {
-          broadcastRoomEvent({ action: 'queue-current-cleared' });
-        }
-      },
-      onError: (err) => {
-        toast.error(err.message || 'Xóa thất bại.');
-      },
+    queue.add({
+      sourceType,
+      sourceRef: sourceRef.trim(),
+      title: title.trim() || undefined,
     });
+    setSourceRef('');
+    setTitle('');
   };
 
-  const handleAdvance = () => {
-    if (!isMemberReady) return;
-    advanceMutation.mutate(undefined, {
-      onSuccess: () => {
-        toast.success('Đã chuyển sang video tiếp theo!');
-        broadcastQueueEvent({ action: 'advance' });
-        broadcastRoomEvent({ action: 'advance' });
-      },
-      onError: (err) => {
-        toast.error(err.message || 'Chuyển video thất bại.');
-      },
-    });
-  };
+  const handleRemoveItem = (itemId: string) => queue.remove(itemId);
+
+  const handleAdvance = () => queue.advance();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -151,7 +99,6 @@ export function PlaylistPanel({
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
-    if (!isMemberReady) return;
     const { active, over } = event;
     if (!over) return;
     if (active.id === over.id) return;
@@ -163,22 +110,7 @@ export function PlaylistPanel({
     const before = newIndex - 1 >= 0 ? without[newIndex - 1] : null;
     const after = without[newIndex] ?? null;
 
-    reorderMutation.mutate(
-      {
-        itemId: String(active.id),
-        beforeId: before?.id ?? null,
-        afterId: after?.id ?? null,
-      },
-      {
-        onSuccess: () => {
-          toast.success('Đã sắp xếp lại hàng chờ');
-          broadcastQueueEvent({ action: 'reorder', title: undefined });
-        },
-        onError: (err) => {
-          toast.error(err.message || 'Sắp xếp thất bại.');
-        },
-      },
-    );
+    queue.reorder(String(active.id), before?.id ?? null, after?.id ?? null);
   };
 
   return (
@@ -303,7 +235,7 @@ export function PlaylistPanel({
                     item={item}
                     idx={idx}
                     currentQueueItemId={currentQueueItemId}
-                    isPending={isPending}
+                    isPending={queue.isPending}
                     isMemberReady={isMemberReady}
                     isHost={isHost}
                     handlePlayItem={onPlayItem}

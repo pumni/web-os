@@ -29,6 +29,27 @@ export function useQueueQuery(roomId: string, initialData: QueueItem[]) {
   });
 }
 
+/**
+ * Optimistic queue helper shared by every "queue mutation" hook below.
+ * Cancels in-flight queries, snapshots the previous queue, runs `mutator` to
+ * produce the next queue, and writes it back to the cache — returning the
+ * snapshot for `onError` to roll back. Each hook pairs this with its own
+ * `onError` (roll back if the helper returned a snapshot) and `onSettled`
+ * (invalidate to reconcile with the server). Centralising just the
+ * cancel/snapshot/write half removes the duplicate boilerplate between
+ * `useAddQueueItem` and `useReorderQueue`.
+ */
+async function applyOptimisticQueueUpdate(
+  roomId: string,
+  queryClient: ReturnType<typeof useQueryClient>,
+  mutator: (prev: QueueItem[]) => QueueItem[],
+): Promise<{ previousQueue: QueueItem[] }> {
+  await queryClient.cancelQueries({ queryKey: watchKeys.queue(roomId) });
+  const previousQueue = queryClient.getQueryData<QueueItem[]>(watchKeys.queue(roomId)) || [];
+  queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), mutator(previousQueue));
+  return { previousQueue };
+}
+
 export function useAddQueueItem(roomId: string) {
   const queryClient = useQueryClient();
 
@@ -49,30 +70,25 @@ export function useAddQueueItem(roomId: string) {
       }
       return res;
     },
-    onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: watchKeys.queue(roomId) });
-      const previousQueue = queryClient.getQueryData<QueueItem[]>(watchKeys.queue(roomId)) || [];
+    onMutate: async (variables) =>
+      applyOptimisticQueueUpdate(roomId, queryClient, (previousQueue) => {
+        const lastItem = previousQueue[previousQueue.length - 1];
+        const position = lastItem ? fractionalPosition(lastItem.position, null) : 0.0;
 
-      const lastItem = previousQueue[previousQueue.length - 1];
-      const position = lastItem ? fractionalPosition(lastItem.position, null) : 0.0;
+        const optimisticItem: QueueItem = {
+          id: `temp-${Date.now()}`,
+          room_id: roomId,
+          position,
+          source_type: variables.sourceType,
+          source_ref: variables.sourceRef,
+          title: variables.title || 'Đang tải tiêu đề...',
+          added_by: 'me',
+          created_at: new Date().toISOString(),
+        };
 
-      const optimisticItem: QueueItem = {
-        id: `temp-${Date.now()}`,
-        room_id: roomId,
-        position,
-        source_type: variables.sourceType,
-        source_ref: variables.sourceRef,
-        title: variables.title || 'Đang tải tiêu đề...',
-        added_by: 'me',
-        created_at: new Date().toISOString(),
-      };
-
-      const nextQueue = [...previousQueue, optimisticItem];
-      queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), nextQueue);
-
-      return { previousQueue };
-    },
-    onError: (err, variables, context) => {
+        return [...previousQueue, optimisticItem];
+      }),
+    onError: (_err, _variables, context) => {
       if (context?.previousQueue) {
         queryClient.setQueryData(watchKeys.queue(roomId), context.previousQueue);
       }
@@ -94,16 +110,11 @@ export function useRemoveQueueItem(roomId: string) {
       }
       return res;
     },
-    onMutate: async (itemId) => {
-      await queryClient.cancelQueries({ queryKey: watchKeys.queue(roomId) });
-      const previousQueue = queryClient.getQueryData<QueueItem[]>(watchKeys.queue(roomId)) || [];
-
-      const nextQueue = previousQueue.filter((item) => item.id !== itemId);
-      queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), nextQueue);
-
-      return { previousQueue };
-    },
-    onError: (err, itemId, context) => {
+    onMutate: async (itemId) =>
+      applyOptimisticQueueUpdate(roomId, queryClient, (previousQueue) =>
+        previousQueue.filter((item) => item.id !== itemId),
+      ),
+    onError: (_err, _itemId, context) => {
       if (context?.previousQueue) {
         queryClient.setQueryData(watchKeys.queue(roomId), context.previousQueue);
       }
@@ -135,31 +146,21 @@ export function useReorderQueue(roomId: string) {
       }
       return res;
     },
-    onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: watchKeys.queue(roomId) });
-      const previousQueue = queryClient.getQueryData<QueueItem[]>(watchKeys.queue(roomId)) || [];
+    onMutate: async (variables) =>
+      applyOptimisticQueueUpdate(roomId, queryClient, (previousQueue) => {
+        const beforeItem = previousQueue.find((i) => i.id === variables.beforeId);
+        const afterItem = previousQueue.find((i) => i.id === variables.afterId);
+        const beforePosition = beforeItem ? beforeItem.position : null;
+        const afterPosition = afterItem ? afterItem.position : null;
+        const newPosition = fractionalPosition(beforePosition, afterPosition);
 
-      const beforeItem = previousQueue.find((i) => i.id === variables.beforeId);
-      const afterItem = previousQueue.find((i) => i.id === variables.afterId);
-      const beforePosition = beforeItem ? beforeItem.position : null;
-      const afterPosition = afterItem ? afterItem.position : null;
-      const newPosition = fractionalPosition(beforePosition, afterPosition);
-
-      const nextQueue = previousQueue.map((item) => {
-        if (item.id === variables.itemId) {
-          return { ...item, position: newPosition };
-        }
-        return item;
-      });
-
-      // Sort again by position
-      nextQueue.sort((a, b) => a.position - b.position);
-
-      queryClient.setQueryData<QueueItem[]>(watchKeys.queue(roomId), nextQueue);
-
-      return { previousQueue };
-    },
-    onError: (err, variables, context) => {
+        const nextQueue = previousQueue.map((item) =>
+          item.id === variables.itemId ? { ...item, position: newPosition } : item,
+        );
+        nextQueue.sort((a, b) => a.position - b.position);
+        return nextQueue;
+      }),
+    onError: (_err, _variables, context) => {
       if (context?.previousQueue) {
         queryClient.setQueryData(watchKeys.queue(roomId), context.previousQueue);
       }

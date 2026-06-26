@@ -38,6 +38,72 @@ function generateJoinCode(): string {
 }
 
 /**
+ * Apply the canonical "switch the room's playback source" update to
+ * `watch_rooms`. Centralises the 9-field stalled-reset block earlier
+ * duplicated between `setRoomSource`, `advanceQueue`, and `playQueueItem`.
+ * Returns the underlying Supabase error message (or `null` on success) so
+ * each caller can return its own `ActionResult` shape.
+ */
+async function startPlayingItem(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  roomId: string,
+  source: { source_type: 'youtube' | 'url'; source_ref: string },
+  currentQueueItemId: string | null,
+): Promise<{ error: string | null }> {
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from('watch_rooms')
+    .update({
+      source_type: source.source_type,
+      source_ref: source.source_ref,
+      is_playing: false,
+      anchor_position: 0,
+      playback_rate: 1,
+      anchor_server_ts: now,
+      current_queue_item_id: currentQueueItemId,
+      last_active_at: now,
+      updated_at: now,
+    })
+    .eq('id', roomId);
+  return { error: error ? error.message : null };
+}
+
+/**
+ * Validate an action input against its Zod schema and return either the typed
+ * input or an {@link ActionResult} failure that the caller can return
+ * directly. Removes the repeated `safeParse`/`early-return` block from every
+ * validator-driven action.
+ */
+function parseActionInput<T>(
+  schema: { safeParse: (input: unknown) => { success: true; data: T } | { success: false } },
+  input: unknown,
+  errorMessage: string,
+): { ok: true; data: T } | { ok: false; message: string } {
+  const parsed = schema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, message: errorMessage };
+  }
+  return { ok: true, data: parsed.data };
+}
+
+/** Invalidate the cache tags that every successful watch-room action
+ *  bumps: the per-room queue tag and the user's recent-rooms tag. */
+function bumpWatchTags(roomId: string, userId: string): void {
+  updateTag(`room_queue:${roomId}`);
+  updateTag(`recent_rooms:${userId}`);
+}
+
+async function finalizeRoomQueueAction(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  roomId: string,
+  userId: string,
+): Promise<{ ok: true; data: undefined }> {
+  await touchRoomActivity(supabase, roomId);
+  bumpWatchTags(roomId, userId);
+  return { ok: true, data: undefined };
+}
+
+/**
  * Best-effort auto-title when the user leaves the title blank. YouTube uses the
  * public oEmbed endpoint (no API key); direct URLs fall back to the file name.
  * Never throws — returns null on any failure so adding still succeeds.
@@ -69,10 +135,12 @@ export async function createRoom(
   input: CreateRoomInput,
 ): Promise<ActionResult<{ roomId: string; code: string }>> {
   const user = await requireUser();
-  const parsed = createRoomSchema.safeParse(input);
-  if (!parsed.success) {
-    return { ok: false, message: 'Dữ liệu tạo phòng không hợp lệ.' };
-  }
+  const parsed = parseActionInput(
+    createRoomSchema,
+    input,
+    'Dữ liệu tạo phòng không hợp lệ.',
+  );
+  if (!parsed.ok) return parsed;
 
   const sanitized = sanitizeSourceRef(parsed.data.sourceType, parsed.data.sourceRef);
   if (!sanitized.ok) return sanitized;
@@ -123,10 +191,12 @@ export async function createRoom(
 
 export async function setRoomSource(input: SetSourceInput): Promise<ActionResult> {
   const user = await requireUser();
-  const parsed = setSourceSchema.safeParse(input);
-  if (!parsed.success) {
-    return { ok: false, message: 'Dữ liệu nguồn phát không hợp lệ.' };
-  }
+  const parsed = parseActionInput(
+    setSourceSchema,
+    input,
+    'Dữ liệu nguồn phát không hợp lệ.',
+  );
+  if (!parsed.ok) return parsed;
 
   const sanitized = sanitizeSourceRef(parsed.data.sourceType, parsed.data.sourceRef);
   if (!sanitized.ok) return sanitized;
@@ -137,23 +207,15 @@ export async function setRoomSource(input: SetSourceInput): Promise<ActionResult
   const ownership = await assertHostOwnership(supabase, parsed.data.roomId, user.id);
   if (!ownership.ok) return ownership;
 
-  const { error } = await supabase
-    .from('watch_rooms')
-    .update({
-      source_type: parsed.data.sourceType,
-      source_ref: sanitized.ref,
-      is_playing: false,
-      anchor_position: 0,
-      playback_rate: 1,
-      anchor_server_ts: new Date().toISOString(),
-      current_queue_item_id: null, // Clear active queue item highlights on direct source change
-      last_active_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', parsed.data.roomId);
+  const { error } = await startPlayingItem(
+    supabase,
+    parsed.data.roomId,
+    { source_type: parsed.data.sourceType, source_ref: sanitized.ref },
+    null,
+  );
 
   if (error) {
-    return { ok: false, message: error.message };
+    return { ok: false, message: error };
   }
 
   updateTag(`recent_rooms:${user.id}`);
@@ -202,10 +264,12 @@ export async function leaveRoom(roomId: string): Promise<ActionResult> {
 /** Add a new item to the collaborative queue. */
 export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResult> {
   const user = await requireUser();
-  const parsed = addQueueItemSchema.safeParse(input);
-  if (!parsed.success) {
-    return { ok: false, message: 'Dữ liệu hàng chờ không hợp lệ.' };
-  }
+  const parsed = parseActionInput(
+    addQueueItemSchema,
+    input,
+    'Dữ liệu hàng chờ không hợp lệ.',
+  );
+  if (!parsed.ok) return parsed;
 
   const sanitized = sanitizeSourceRef(parsed.data.sourceType, parsed.data.sourceRef);
   if (!sanitized.ok) return sanitized;
@@ -246,20 +310,18 @@ export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResu
     return { ok: false, message: insertError.message };
   }
 
-  await touchRoomActivity(supabase, parsed.data.roomId);
-
-  updateTag(`room_queue:${parsed.data.roomId}`);
-  updateTag(`recent_rooms:${user.id}`);
-  return { ok: true, data: undefined };
+  return finalizeRoomQueueAction(supabase, parsed.data.roomId, user.id);
 }
 
 /** Reorder an item in the queue using fractional indexing. */
 export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResult> {
   const user = await requireUser();
-  const parsed = reorderQueueSchema.safeParse(input);
-  if (!parsed.success) {
-    return { ok: false, message: 'Dữ liệu vị trí không hợp lệ.' };
-  }
+  const parsed = parseActionInput(
+    reorderQueueSchema,
+    input,
+    'Dữ liệu vị trí không hợp lệ.',
+  );
+  if (!parsed.ok) return parsed;
 
   const supabase = await createSupabaseServerClient();
 
@@ -310,11 +372,7 @@ export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResu
     return { ok: false, message: updateError.message };
   }
 
-  await touchRoomActivity(supabase, parsed.data.roomId);
-
-  updateTag(`room_queue:${parsed.data.roomId}`);
-  updateTag(`recent_rooms:${user.id}`);
-  return { ok: true, data: undefined };
+  return finalizeRoomQueueAction(supabase, parsed.data.roomId, user.id);
 }
 
 /** Remove an item from the playlist. */
@@ -334,12 +392,8 @@ export async function removeQueueItem(roomId: string, itemId: string): Promise<A
 
   // Postgres ON DELETE SET NULL on watch_rooms.current_queue_item_id automatically handles
   // clearing the current queue item ID reference if it was this itemId.
-  // We just need to bump the activity of the room now.
-  await touchRoomActivity(supabase, roomId);
-
-  updateTag(`room_queue:${roomId}`);
-  updateTag(`recent_rooms:${user.id}`);
-  return { ok: true, data: undefined };
+  // finalizeRoomQueueAction bumps room activity + cache tags so the lobby/dashboard updates.
+  return finalizeRoomQueueAction(supabase, roomId, user.id);
 }
 
 /** Host-only action to advance to next item in the queue.
@@ -386,23 +440,15 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
     return { ok: false, message: 'Hàng chờ đã hết. Vui lòng thêm video mới.' };
   }
 
-  const { error: updateError } = await supabase
-    .from('watch_rooms')
-    .update({
-      source_type: nextItem.source_type,
-      source_ref: nextItem.source_ref,
-      current_queue_item_id: nextItem.id,
-      is_playing: false,
-      anchor_position: 0,
-      playback_rate: 1,
-      anchor_server_ts: new Date().toISOString(),
-      last_active_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', roomId);
+  const { error: updateError } = await startPlayingItem(
+    supabase,
+    roomId,
+    { source_type: nextItem.source_type, source_ref: nextItem.source_ref },
+    nextItem.id,
+  );
 
   if (updateError) {
-    return { ok: false, message: updateError.message };
+    return { ok: false, message: updateError };
   }
 
   // Delete the just-played item so it won't linger in the queue
@@ -414,18 +460,19 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
       .eq('room_id', roomId);
   }
 
-  updateTag(`room_queue:${roomId}`);
-  updateTag(`recent_rooms:${user.id}`);
+  bumpWatchTags(roomId, user.id);
   return { ok: true, data: undefined };
 }
 
 /** Host-only action to transfer host to another member. */
 export async function transferHost(input: TransferHostInput): Promise<ActionResult> {
   const user = await requireUser();
-  const parsed = transferHostSchema.safeParse(input);
-  if (!parsed.success) {
-    return { ok: false, message: 'Dữ liệu chuyển chủ phòng không hợp lệ.' };
-  }
+  const parsed = parseActionInput(
+    transferHostSchema,
+    input,
+    'Dữ liệu chuyển chủ phòng không hợp lệ.',
+  );
+  if (!parsed.ok) return parsed;
 
   const supabase = await createSupabaseServerClient();
 
@@ -483,23 +530,15 @@ export async function playQueueItem(roomId: string, itemId: string): Promise<Act
   }
 
   // Update room to play this item
-  const { error: updateError } = await supabase
-    .from('watch_rooms')
-    .update({
-      source_type: targetItem.source_type,
-      source_ref: targetItem.source_ref,
-      current_queue_item_id: targetItem.id,
-      is_playing: false,
-      anchor_position: 0,
-      playback_rate: 1,
-      anchor_server_ts: new Date().toISOString(),
-      last_active_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', roomId);
+  const { error: updateError } = await startPlayingItem(
+    supabase,
+    roomId,
+    { source_type: targetItem.source_type, source_ref: targetItem.source_ref },
+    targetItem.id,
+  );
 
   if (updateError) {
-    return { ok: false, message: updateError.message };
+    return { ok: false, message: updateError };
   }
 
   // Delete the previously playing item if it is different from the target item
@@ -511,7 +550,6 @@ export async function playQueueItem(roomId: string, itemId: string): Promise<Act
       .eq('room_id', roomId);
   }
 
-  updateTag(`room_queue:${roomId}`);
-  updateTag(`recent_rooms:${user.id}`);
+  bumpWatchTags(roomId, user.id);
   return { ok: true, data: undefined };
 }
