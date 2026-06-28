@@ -16,9 +16,9 @@ Owner: `docs/adr/0004-memory-layer-harness-managed.md`.
 
 ## Settled facts
 
-- Surface identity (glass vs solid) → [design-system.md](file:///d:/Dev/web-os/docs/conventions/design-system.md) and [ADR-0012](file:///d:/Dev/web-os/docs/adr/0012-engineered-glass-surface-language.md).
-- Security boundary (RLS and keys) → [AGENTS.md](file:///d:/Dev/web-os/AGENTS.md) and [supabase-security.md](file:///d:/Dev/web-os/docs/conventions/supabase-security.md).
-- State ownership → [data-fetching.md](file:///d:/Dev/web-os/docs/conventions/data-fetching.md).
-- Next.js 16 cache API → [data-fetching.md](file:///d:/Dev/web-os/docs/conventions/data-fetching.md) and [common-mistakes.md](file:///d:/Dev/web-os/docs/ai/common-mistakes.md).
-- transpilePackages necessity → [transpile-packages.md](file:///d:/Dev/web-os/docs/conventions/transpile-packages.md).
-- MCP runtime role → [mcp.md](file:///d:/Dev/web-os/docs/ai/mcp.md).
+- Surface identity (glass vs solid) → [design-system.md](../conventions/design-system.md) and [ADR-0012](../adr/0012-engineered-glass-surface-language.md).
+- Security boundary (RLS and keys) → [AGENTS.md](../../AGENTS.md) and [supabase-security.md](../conventions/supabase-security.md).
+- State ownership → [data-fetching.md](../conventions/data-fetching.md).
+- Next.js 16 cache API → [data-fetching.md](../conventions/data-fetching.md) and [common-mistakes.md](common-mistakes.md).
+- transpilePackages necessity → [transpile-packages.md](../conventions/transpile-packages.md).
+- MCP runtime role → [mcp.md](mcp.md).

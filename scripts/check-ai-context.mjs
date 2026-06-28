@@ -3,6 +3,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
+const args = process.argv.slice(2);
+const selfTest = args.includes('--self-test');
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
@@ -132,6 +135,179 @@ function checkSizeBudgets() {
         `${budget.path} exceeds its size budget (${stats.size} > ${budget.maxBytes} bytes). Trim it — do not raise the budget.`,
       );
     }
+  }
+}
+
+// Enforce compact style for markdown tables in size-budgeted context files
+// to prevent table padding from inflating file sizes.
+function checkCompactMarkdownTables() {
+  for (const budget of SIZE_BUDGETS) {
+    const filePath = resolveRel(budget.path);
+    if (!fs.existsSync(filePath)) continue;
+
+    const content = fs.readFileSync(filePath, 'utf8');
+    const lines = content.split(/\r?\n/);
+    let inCodeBlock = false;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith('```')) {
+        inCodeBlock = !inCodeBlock;
+        continue;
+      }
+
+      if (inCodeBlock) continue;
+
+      // Table rows must start and end with a pipe
+      if (trimmed.startsWith('|') && trimmed.endsWith('|') && trimmed.length > 2) {
+        const isSeparator = /^[|:\s-]+$/.test(trimmed);
+
+        if (isSeparator) {
+          // Separator row must be compact (at most 3 hyphens per cell, e.g. |---| or | --- |)
+          if (/----/.test(trimmed) || /  /.test(trimmed)) {
+            reportError(
+              `Padded markdown separator row detected in ${budget.path}:${i + 1}. Ensure separator is compact (e.g. '|---|---|').`,
+            );
+          }
+        } else {
+          // Data or header cells must not contain 2 or more consecutive spaces
+          const cells = line.split('|').slice(1, -1);
+          for (let cellIdx = 0; cellIdx < cells.length; cellIdx++) {
+            const cell = cells[cellIdx];
+            if (/ {2,}/.test(cell)) {
+              reportError(
+                `Padded markdown table cell detected in ${budget.path}:${i + 1} (cell ${cellIdx + 1}). Avoid 2 or more consecutive spaces.`,
+              );
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function runSelfTest() {
+  console.log('Running self-test for compact markdown table validation...');
+  const tests = [
+    {
+      name: 'Valid compact table',
+      content: `
+| Need | Load |
+|---|---|
+| Architecture | \`docs/architecture/overview.md\` |
+| Data fetching | \`docs/conventions/data-fetching.md\` |
+`,
+      expectedErrors: 0,
+    },
+    {
+      name: 'Padded separator row (too many hyphens)',
+      content: `
+| Need | Load |
+| ------- | ------- |
+| Architecture | \`docs/architecture/overview.md\` |
+`,
+      expectedErrors: 1,
+    },
+    {
+      name: 'Padded separator row (double spaces)',
+      content: `
+| Need | Load |
+|  ---  |  ---  |
+| Architecture | \`docs/architecture/overview.md\` |
+`,
+      expectedErrors: 1,
+    },
+    {
+      name: 'Padded cell (extra space at end)',
+      content: `
+| Need         | Load |
+|---|---|
+| Architecture | \`docs/architecture/overview.md\` |
+`,
+      expectedErrors: 1,
+    },
+    {
+      name: 'Double space inside cell text',
+      content: `
+| Need | Load |
+|---|---|
+| Architecture  docs | \`docs/architecture/overview.md\` |
+`,
+      expectedErrors: 1,
+    },
+    {
+      name: 'Pipes inside code blocks with spaces should be ignored',
+      content: `
+\`\`\`typescript
+const x = a ||  b;
+const y = " |  | ";
+\`\`\`
+| Need | Load |
+|---|---|
+| Architecture | \`docs/architecture/overview.md\` |
+`,
+      expectedErrors: 0,
+    },
+  ];
+
+  let selfTestErrors = 0;
+
+  for (const t of tests) {
+    let mockErrors = 0;
+    const originalReportError = reportError;
+    reportError = (msg) => {
+      mockErrors++;
+    };
+
+    const lines = t.content.split(/\r?\n/);
+    let inCodeBlock = false;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith('```')) {
+        inCodeBlock = !inCodeBlock;
+        continue;
+      }
+      if (inCodeBlock) continue;
+
+      if (trimmed.startsWith('|') && trimmed.endsWith('|') && trimmed.length > 2) {
+        const isSeparator = /^[|:\s-]+$/.test(trimmed);
+        if (isSeparator) {
+          if (/----/.test(trimmed) || /  /.test(trimmed)) {
+            reportError(`Padded separator`);
+          }
+        } else {
+          const cells = line.split('|').slice(1, -1);
+          for (let cellIdx = 0; cellIdx < cells.length; cellIdx++) {
+            const cell = cells[cellIdx];
+            if (/ {2,}/.test(cell)) {
+              reportError(`Padded cell`);
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    reportError = originalReportError;
+
+    if (mockErrors !== t.expectedErrors) {
+      console.error(`[FAIL] Test "${t.name}" failed. Expected ${t.expectedErrors} errors, got ${mockErrors}.`);
+      selfTestErrors++;
+    } else {
+      console.log(`[PASS] ${t.name}`);
+    }
+  }
+
+  if (selfTestErrors > 0) {
+    console.error('Self-test failed!');
+    process.exit(1);
+  } else {
+    console.log('Self-test passed successfully!');
   }
 }
 
@@ -479,6 +655,11 @@ function checkUiPackageBoundaries() {
   }
 }
 
+if (selfTest) {
+  runSelfTest();
+  process.exit(0);
+}
+
 console.log('Running AI context validation...');
 
 checkRequiredFiles();
@@ -491,6 +672,7 @@ checkStructuredMarkdown({
 });
 checkAiDocSizes();
 checkSizeBudgets();
+checkCompactMarkdownTables();
 checkMarkdownLinks();
 checkDocPathReferences();
 checkContextIndexCoverage();
