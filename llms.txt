@@ -1,0 +1,33 @@
+# Pumni Web OS
+
+> Next.js 16 (App Router, React Compiler) web app in a Bun + Turborepo monorepo.
+> Stack: Supabase (RLS-first), TanStack Query (client async only), Zustand (client
+> UI state only), Zod validators. This file is the agentic handshake — a map of
+> the tool-agnostic AI context. Read in order; pull only the rows a task needs.
+
+## Start here
+
+- [AGENTS.md](AGENTS.md): security mandates (P0), priority stack (P0–P6), untrusted-content policy, command discipline. The non-negotiable entry point.
+- [docs/ai/index.md](docs/ai/index.md): the single need → canonical-doc router. Everything below is reached through it.
+- [CLAUDE.md](CLAUDE.md): Claude Code shim; imports AGENTS.md.
+
+## Conventions (the engineering rules)
+
+- [docs/architecture/overview.md](docs/architecture/overview.md): package boundaries.
+- [docs/conventions/server-client-boundary.md](docs/conventions/server-client-boundary.md): server/client split, `server-only`.
+- [docs/conventions/data-fetching.md](docs/conventions/data-fetching.md): Server Components vs TanStack Query vs Zustand; Next.js 16 cache.
+- [docs/conventions/supabase-security.md](docs/conventions/supabase-security.md): RLS, keys, grants.
+- [docs/conventions/feature-module.md](docs/conventions/feature-module.md): feature vertical-slice layout.
+- [docs/conventions/design-system.md](docs/conventions/design-system.md): OKLCH tokens, surfaces, motion.
+
+## Reference (load on demand)
+
+- [docs/ai/agent-command-policy.md](docs/ai/agent-command-policy.md): PowerShell 7 discipline + validation gates + local hooks.
+- [docs/ai/domain-language.md](docs/ai/domain-language.md): domain glossary.
+- [docs/ai/MEMORY.md](docs/ai/MEMORY.md): durable settled-decision log (harness-managed hybrid memory).
+- [docs/ai/mcp.md](docs/ai/mcp.md): MCP servers.
+
+## Skills & verification
+
+- [.agents/skills/README.md](.agents/skills/README.md): how the 16 reusable skills are authored (canonical, tool-agnostic; Claude Code shims are generated).
+- Gate: run `bun run ai:check` + `bun run ai:eval` before "done"; `bun run ai:premerge` is the full pass.

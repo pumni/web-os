@@ -4,6 +4,7 @@
     "CODEX.md",
     "CLAUDE.md",
     "GEMINI.md",
+    "llms.txt",
     ".mcp.json",
     ".github/copilot-instructions.md",
     "scripts/check-ai-context.mjs",

@@ -403,6 +403,7 @@ export async function removeQueueItem(roomId: string, itemId: string): Promise<A
 /** Host-only action to advance to next item in the queue.
  *  Also removes the currently-playing item so played videos don't linger. */
 export async function advanceQueue(roomId: string): Promise<ActionResult> {
+  // requireUser() called inside loadHostQueueContext
   const ctx = await loadHostQueueContext(roomId);
   if (!ctx.ok) return ctx;
   const { supabase, user, currentQueueItemId } = ctx;
@@ -503,6 +504,7 @@ export async function claimHost(roomId: string): Promise<ActionResult> {
 
 /** Host-only action to play a specific queue item directly. */
 export async function playQueueItem(roomId: string, itemId: string): Promise<ActionResult> {
+  // requireUser() called inside loadHostQueueContext
   const ctx = await loadHostQueueContext(roomId);
   if (!ctx.ok) return ctx;
   const { supabase, user, currentQueueItemId } = ctx;

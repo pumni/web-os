@@ -36,6 +36,7 @@ need to the canonical doc that owns it.
 | Local production patterns to copy | `docs/ai/golden-examples.md` |
 | Known ❌/✅ mistake pairs | `docs/ai/common-mistakes.md` |
 | MCP servers (next-devtools runtime + postgres schema, optional) | `docs/ai/mcp.md` |
+| Repo map for external agents/tools (agentic handshake) | `llms.txt` |
 
 ## Skills (reusable procedures in `.agents/skills`)
 
@@ -70,5 +71,3 @@ gate that matches your change scope.
 ## Workflows
 
 Not currently in use.
-
-
