@@ -310,6 +310,7 @@ export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResu
     return { ok: false, message: insertError.message };
   }
 
+  updateTag(`room_queue:${parsed.data.roomId}`);
   return finalizeRoomQueueAction(supabase, parsed.data.roomId, user.id);
 }
 
@@ -372,6 +373,7 @@ export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResu
     return { ok: false, message: updateError.message };
   }
 
+  updateTag(`room_queue:${parsed.data.roomId}`);
   return finalizeRoomQueueAction(supabase, parsed.data.roomId, user.id);
 }
 
@@ -393,6 +395,7 @@ export async function removeQueueItem(roomId: string, itemId: string): Promise<A
   // Postgres ON DELETE SET NULL on watch_rooms.current_queue_item_id automatically handles
   // clearing the current queue item ID reference if it was this itemId.
   // finalizeRoomQueueAction bumps room activity + cache tags so the lobby/dashboard updates.
+  updateTag(`room_queue:${roomId}`);
   return finalizeRoomQueueAction(supabase, roomId, user.id);
 }
 
@@ -550,6 +553,7 @@ export async function playQueueItem(roomId: string, itemId: string): Promise<Act
       .eq('room_id', roomId);
   }
 
+  updateTag(`room_queue:${roomId}`);
   bumpWatchTags(roomId, user.id);
   return { ok: true, data: undefined };
 }

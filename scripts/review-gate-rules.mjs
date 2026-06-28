@@ -15,6 +15,9 @@ export const RULES = {
   SERVER_ONLY_IN_CLIENT: 'server-only-in-client',
   CACHE_LIFE_TOO_SHORT: 'cache-life-too-short',
   CACHE_TAG_UNPARAMETERIZED: 'cache-tag-unparameterized',
+  LEGACY_MIDDLEWARE: 'legacy-middleware',
+  IMAGE_PRIORITY_DEPRECATED: 'image-priority-deprecated',
+  SINGLE_ARG_REVALIDATE_TAG: 'single-arg-revalidate-tag',
 };
 
 export const RULE_INFO = {
@@ -97,5 +100,20 @@ export const RULE_INFO = {
     severity: 'B1',
     summary: 'cacheTag() with a non-parameterized literal collides across users.',
     fix: 'Pass an identifying parameter: cacheTag(`profile:${userId}`) instead of cacheTag(\'profile\').',
+  },
+  [RULES.LEGACY_MIDDLEWARE]: {
+    severity: 'B1',
+    summary: 'middleware.ts is deprecated. Use proxy.ts instead.',
+    fix: 'Replace middleware.ts with proxy.ts on the Node.js runtime.',
+  },
+  [RULES.IMAGE_PRIORITY_DEPRECATED]: {
+    severity: 'B2',
+    summary: 'priority prop on Next.js <Image> is deprecated.',
+    fix: 'Use the standard HTML preload="eager" attribute instead.',
+  },
+  [RULES.SINGLE_ARG_REVALIDATE_TAG]: {
+    severity: 'B1',
+    summary: 'revalidateTag() must be called with two arguments in Next.js 16.',
+    fix: 'Specify a revalidation profile: revalidateTag(tag, \'max\').',
   },
 };

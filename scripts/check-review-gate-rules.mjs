@@ -806,6 +806,73 @@ function analyzeServerActionWrites(files, findings) {
   }
 }
 
+function analyzeLegacyMiddleware(files, findings) {
+  for (const file of files) {
+    const rel = relPath(file);
+    if (rel.endsWith('middleware.ts') || rel.endsWith('middleware.js')) {
+      const content = readText(file);
+      addFinding(
+        findings,
+        RULES.LEGACY_MIDDLEWARE,
+        rel,
+        content,
+        0,
+        'File name is middleware.ts/js',
+        'middleware.ts is deprecated. Use proxy.ts instead.',
+      );
+    }
+  }
+}
+
+function analyzeImagePriority(files, findings) {
+  const re = /<Image\b[^>]*\bpriority\b/g;
+  for (const file of files) {
+    if (!file.endsWith('.tsx') && !file.endsWith('.jsx')) continue;
+    const content = readText(file);
+    const rel = relPath(file);
+    let m;
+    while ((m = re.exec(content)) !== null) {
+      addFinding(
+        findings,
+        RULES.IMAGE_PRIORITY_DEPRECATED,
+        rel,
+        content,
+        m.index,
+        m[0],
+        'The priority prop on <Image> is deprecated in Next.js 16. Use preload="eager" instead.',
+      );
+    }
+  }
+}
+
+function analyzeSingleArgRevalidateTag(files, findings) {
+  const re = /\brevalidateTag\s*\(/g;
+  for (const file of files) {
+    const content = readText(file);
+    const rel = relPath(file);
+    let m;
+    while ((m = re.exec(content)) !== null) {
+      const arg = getCallArgument(content, m.index);
+      if (!arg) continue;
+      const text = arg.text.trim();
+      if (text.length > 0) {
+        const commaCount = text.split(',').length - 1;
+        if (commaCount === 0) {
+          addFinding(
+            findings,
+            RULES.SINGLE_ARG_REVALIDATE_TAG,
+            rel,
+            content,
+            m.index,
+            'revalidateTag(' + arg.text + ')',
+            'revalidateTag() must be called with two arguments in Next.js 16.',
+          );
+        }
+      }
+    }
+  }
+}
+
 // -- driver -------------------------------------------------------------------
 
 function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
@@ -825,6 +892,9 @@ function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
   analyzeMissingLoadingState(files, findings);
   analyzeRouteBusinessLogic(files, findings);
   analyzeServerActionWrites(files, findings);
+  analyzeLegacyMiddleware(files, findings);
+  analyzeImagePriority(files, findings);
+  analyzeSingleArgRevalidateTag(files, findings);
   return findings.filter((f) => !isAllowlisted(allowlist, f));
 }
 
@@ -843,6 +913,7 @@ function runSelfTest() {
   const stateFile = 'apps/web/src/features/selftest/panel.tsx';
   const routeFile = 'apps/web/src/app/selftest/page.tsx';
   const sqlFile = 'supabase/migrations/00000000000000_selftest.sql';
+  const middlewareFile = 'apps/web/src/middleware.ts';
 
   const serverFixture = `
     "use server";
@@ -866,6 +937,7 @@ function runSelfTest() {
       'use cache';
       cacheLife('seconds');
       cacheTag('profile');
+      revalidateTag('stale_tag');
     }
   `;
   const clientFixture = `
@@ -891,7 +963,12 @@ function runSelfTest() {
         setProfile(data);
       }, [data, setProfile]);
       const mutation = useMutation({ mutationFn: saveProfile });
-      return <button onClick={() => mutation.mutate(data)}>Save {data?.name}</button>;
+      return (
+        <div>
+          <button onClick={() => mutation.mutate(data)}>Save {data?.name}</button>
+          <Image src="/img.png" priority />
+        </div>
+      );
     }
   `;
   const routeFixture = `
@@ -918,6 +995,7 @@ function runSelfTest() {
     [resolveRel(stateFile)]: stateFixture,
     [resolveRel(routeFile)]: routeFixture,
     [resolveRel(sqlFile)]: sqlFixture,
+    [resolveRel(middlewareFile)]: 'export default function middleware() {}',
   };
   const original = fs.readFileSync;
   fs.readFileSync = (filePath, ...rest) =>
@@ -930,6 +1008,7 @@ function runSelfTest() {
         resolveRel(clientFile),
         resolveRel(stateFile),
         resolveRel(routeFile),
+        resolveRel(middlewareFile),
       ],
       sqlFiles: [resolveRel(sqlFile)],
       sqlEvidence: sqlFixture,
