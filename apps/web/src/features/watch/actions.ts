@@ -20,6 +20,7 @@ import { updateTag } from 'next/cache';
 import {
   sanitizeSourceRef,
   assertHostOwnership,
+  loadHostQueueContext,
   touchRoomActivity,
   type ActionResult,
 } from './action-helpers';
@@ -402,16 +403,9 @@ export async function removeQueueItem(roomId: string, itemId: string): Promise<A
 /** Host-only action to advance to next item in the queue.
  *  Also removes the currently-playing item so played videos don't linger. */
 export async function advanceQueue(roomId: string): Promise<ActionResult> {
-  const user = await requireUser();
-  const supabase = await createSupabaseServerClient();
-
-  // Enforce host boundary (also verified by RLS); also read the active queue item.
-  const ownership = await assertHostOwnership(supabase, roomId, user.id, [
-    'host_id',
-    'current_queue_item_id',
-  ] as const);
-  if (!ownership.ok) return ownership;
-  const currentQueueItemId = ownership.room.current_queue_item_id as string | null;
+  const ctx = await loadHostQueueContext(roomId);
+  if (!ctx.ok) return ctx;
+  const { supabase, user, currentQueueItemId } = ctx;
 
   let currentPosition = -999999.0;
   if (currentQueueItemId) {
@@ -509,16 +503,9 @@ export async function claimHost(roomId: string): Promise<ActionResult> {
 
 /** Host-only action to play a specific queue item directly. */
 export async function playQueueItem(roomId: string, itemId: string): Promise<ActionResult> {
-  const user = await requireUser();
-  const supabase = await createSupabaseServerClient();
-
-  // Enforce host boundary (also verified by RLS); also read the active queue item.
-  const ownership = await assertHostOwnership(supabase, roomId, user.id, [
-    'host_id',
-    'current_queue_item_id',
-  ] as const);
-  if (!ownership.ok) return ownership;
-  const currentQueueItemId = ownership.room.current_queue_item_id as string | null;
+  const ctx = await loadHostQueueContext(roomId);
+  if (!ctx.ok) return ctx;
+  const { supabase, user, currentQueueItemId } = ctx;
 
   // Get the target queue item
   const { data: targetItem, error: targetError } = await supabase

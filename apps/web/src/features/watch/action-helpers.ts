@@ -1,5 +1,9 @@
+import 'server-only';
+
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { requireUser } from '@pumni/auth';
 import type { Database } from '@pumni/supabase';
+import { createSupabaseServerClient } from '@pumni/supabase/server';
 import { extractYouTubeId, isValidHttpUrl } from './sync-math';
 
 /** Discriminated result returned by every watch server action. */
@@ -71,4 +75,39 @@ export async function touchRoomActivity(
     .from('watch_rooms')
     .update({ last_active_at: new Date().toISOString() })
     .eq('id', roomId);
+}
+
+/**
+ * Bundle the "auth + supabase + host boundary + active queue item" prelude
+ * shared by every host-only queue mutation (`advanceQueue`, `playQueueItem`,
+ * …). Eliminates the identical `requireUser` + `createSupabaseServerClient` +
+ * `assertHostOwnership(..., ['host_id', 'current_queue_item_id'])` + failure
+ * + extract block the two callers had, which fallow's `--format compact`
+ * dupes pass flags as `dup:41643f7f`.
+ *
+ * Returns either the bound trio + the active queue item id, or a ready-to-
+ * return Vietnamese error message so callers can early-return in one line.
+ */
+export async function loadHostQueueContext(roomId: string): Promise<
+  | {
+      ok: true;
+      user: { id: string };
+      supabase: SupabaseClient<Database>;
+      currentQueueItemId: string | null;
+    }
+  | { ok: false; message: string }
+> {
+  const user = await requireUser();
+  const supabase = await createSupabaseServerClient();
+  const ownership = await assertHostOwnership(supabase, roomId, user.id, [
+    'host_id',
+    'current_queue_item_id',
+  ] as const);
+  if (!ownership.ok) return ownership;
+  return {
+    ok: true,
+    user: { id: user.id },
+    supabase,
+    currentQueueItemId: ownership.room.current_queue_item_id as string | null,
+  };
 }
