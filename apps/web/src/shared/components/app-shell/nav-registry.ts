@@ -27,6 +27,7 @@ export type NavItem = {
   icon: ComponentType<{ className?: string }>;
   keywords?: string;
   group?: string;
+  navScope?: import('./page-nav').NavScope;
 };
 
 const pages: PageNav[] = [
@@ -53,3 +54,28 @@ export const navItems: ReadonlyArray<NavItem> = pages
     void _order;
     return rest;
   });
+
+/**
+ * Items for the desktop sidebar and mobile drawer.
+ * Excludes `'user-menu'` and `'command-only'` scoped routes.
+ */
+export const sidebarNavItems: ReadonlyArray<NavItem> = navItems.filter(
+  (item) => !item.navScope || item.navScope === 'sidebar',
+);
+
+/**
+ * Items for the ⌘K command palette — includes everything except
+ * `'command-only'` routes that are intentionally palette-only.
+ * Settings pages remain discoverable here for power users.
+ */
+export const commandNavItems: ReadonlyArray<NavItem> = navItems.filter(
+  (item) => item.navScope !== 'command-only',
+);
+
+/**
+ * Items for the avatar dropdown menu.
+ * Only routes that explicitly declare `navScope: 'user-menu'`.
+ */
+export const userMenuNavItems: ReadonlyArray<NavItem> = navItems.filter(
+  (item) => item.navScope === 'user-menu',
+);

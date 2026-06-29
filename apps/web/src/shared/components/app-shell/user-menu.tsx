@@ -14,9 +14,11 @@ import {
   DropdownMenuTrigger,
 } from '@pumni/ui/overlay';
 import { withViewTransition } from '@pumni/ui/lib/view-transition';
-import { LogOut, User as UserIcon, Settings } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 import * as React from 'react';
+
+import { userMenuNavItems } from './nav-items';
 
 type UserMenuProps = {
   user: User;
@@ -79,22 +81,20 @@ export function UserMenu({ user }: UserMenuProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() =>
-            withViewTransition(() => router.push('/settings/profile'), { type: 'slide-forward' })
-          }
-        >
-          <UserIcon className="mr-2 h-4 w-4" />
-          <span>Profile</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() =>
-            withViewTransition(() => router.push('/settings/account'), { type: 'slide-forward' })
-          }
-        >
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Account</span>
-        </DropdownMenuItem>
+        {userMenuNavItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <DropdownMenuItem
+              key={item.href}
+              onClick={() =>
+                withViewTransition(() => router.push(item.href), { type: 'slide-forward' })
+              }
+            >
+              <Icon className="mr-2 h-4 w-4" />
+              <span>{item.label}</span>
+            </DropdownMenuItem>
+          );
+        })}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           disabled={isSigningOut}
@@ -111,3 +111,4 @@ export function UserMenu({ user }: UserMenuProps) {
     </DropdownMenu>
   );
 }
+

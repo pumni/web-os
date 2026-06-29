@@ -8,4 +8,5 @@ export const pageNav: PageNav = {
   keywords: 'settings email password security',
   group: 'Settings',
   order: 20,
+  navScope: 'user-menu',
 };

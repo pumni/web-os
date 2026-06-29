@@ -9,7 +9,7 @@ import { CommandPalette } from '@pumni/ui/overlay';
 import type { CommandItem } from '@pumni/ui/overlay';
 import { KbdChip } from '@pumni/ui/feedback';
 import { withViewTransition } from '@pumni/ui/lib/view-transition';
-import { navItems } from './nav-items';
+import { commandNavItems } from './nav-items';
 
 /** Turns a route path into a DOM-safe id: "/settings/account" -> "settings-account". */
 function toCommandId(href: Route): string {
@@ -39,7 +39,7 @@ export function OsCommand() {
 
   const items = React.useMemo<CommandItem[]>(
     () =>
-      navItems.map((item) => {
+      commandNavItems.map((item) => {
         const Icon = item.icon;
         return {
           id: toCommandId(item.href),

@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui/overlay';
 import { cn } from '@/shared/lib/utils';
 import { useAppUiStore, useSidebarCollapsed } from '@/shared/stores/app-ui-store';
 
-import { navItems } from './nav-items';
+import { sidebarNavItems } from './nav-items';
 import { SIDEBAR_WIDTH } from './sidebar-config';
 
 type AppSidebarProps = Readonly<{ defaultCollapsed: boolean }>;
@@ -84,7 +84,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
       />
 
       <nav className={cn('space-y-1 p-3', !collapsed && 'px-4')}>
-        {navItems.map((item) => {
+        {sidebarNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           const link = (

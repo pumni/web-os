@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@pumni/ui/overlay'
 import { cn } from '@/shared/lib/utils';
 import { useAppUiStore } from '@/shared/stores/app-ui-store';
 
-import { navItems } from './nav-items';
+import { sidebarNavItems } from './nav-items';
 
 /**
  * Off-canvas navigation for small screens. Controlled by the shared UI store so
@@ -25,7 +25,7 @@ export function MobileNav() {
           <SheetTitle className="text-lg tracking-tight">Pumni Web OS</SheetTitle>
         </SheetHeader>
         <nav className="space-y-1 p-4">
-          {navItems.map((item) => {
+          {sidebarNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (

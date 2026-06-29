@@ -8,4 +8,5 @@ export const pageNav: PageNav = {
   keywords: 'settings account name avatar',
   group: 'Settings',
   order: 10,
+  navScope: 'user-menu',
 };

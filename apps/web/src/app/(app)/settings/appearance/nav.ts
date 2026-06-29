@@ -8,4 +8,5 @@ export const pageNav: PageNav = {
   keywords: 'settings theme dark light mode color',
   group: 'Settings',
   order: 30,
+  navScope: 'user-menu',
 };
