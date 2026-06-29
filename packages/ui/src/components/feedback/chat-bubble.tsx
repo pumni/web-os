@@ -41,7 +41,7 @@ import { cn } from '../../lib/cn';
  * nesting violations. String content keeps its pre-wrap semantics.
  */
 const chatBubbleVariants = cva(
-  'max-w-full rounded-xl px-3 py-2 text-xs wrap-break-word shadow-control select-text',
+  'rounded-xl px-3 py-2 text-xs break-words shadow-control select-text',
   {
     variants: {
       tone: {
@@ -148,7 +148,7 @@ function ChatBubble({
         resolvedAlign === 'end' ? 'items-end' : 'items-start',
       )}
     >
-      <div className="relative flex max-w-full items-end">
+      <div className="relative flex max-w-[70%] items-end">
         <div className={cn(chatBubbleVariants({ tone, shape }), className)} {...props}>
           <div className="leading-snug whitespace-pre-wrap">{children}</div>
         </div>

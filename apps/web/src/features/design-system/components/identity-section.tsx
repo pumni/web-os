@@ -1,17 +1,10 @@
 import * as React from 'react';
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  AvatarBadge,
-  AvatarGroup,
-  AvatarGroupCount,
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-  Separator,
 } from '@pumni/ui/layout';
 import { SegmentedPicker } from '@pumni/ui/form';
 import { ACCENTS, GLASS_LEVELS, DENSITIES, usePersonalization } from '@pumni/ui/identity';
@@ -25,57 +18,9 @@ export function IdentitySection() {
     <ShowcaseSection
       id="identity-personalization"
       title="Identity & Personalization"
-      description="Profile branding and personalization settings: user avatars, accent triggers, and surface intensity levels."
+      description="Profile branding and personalization settings: accent triggers, surface intensity levels, and text/UI density."
     >
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Avatars */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Avatars</CardTitle>
-            <CardDescription>User profile assets and badge combinations.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-4">
-              <Avatar className="size-12">
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <Avatar className="size-10">
-                <AvatarImage
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80"
-                  alt="Jane"
-                />
-                <AvatarFallback>JN</AvatarFallback>
-                <AvatarBadge className="size-3 border-2 border-background bg-success" />
-              </Avatar>
-              <Avatar className="size-8">
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar>
-            </div>
-            <Separator />
-            <div className="space-y-2">
-              <span className="block text-xs font-semibold text-muted-foreground">
-                Avatar Group
-              </span>
-              <AvatarGroup>
-                <Avatar>
-                  <AvatarFallback>AL</AvatarFallback>
-                </Avatar>
-                <Avatar>
-                  <AvatarImage
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80"
-                    alt="Jane"
-                  />
-                  <AvatarFallback>JN</AvatarFallback>
-                </Avatar>
-                <Avatar>
-                  <AvatarFallback>PN</AvatarFallback>
-                </Avatar>
-                <AvatarGroupCount>+3</AvatarGroupCount>
-              </AvatarGroup>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Accent personalization */}
         <Card>
           <CardHeader>

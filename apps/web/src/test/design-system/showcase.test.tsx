@@ -47,7 +47,7 @@ describe('DesignSystemShowcase', () => {
       screen.getByRole('heading', { name: 'Surfaces & Layout', level: 2 }),
     ).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Overlays & Menus', level: 2 })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Feedback', level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Feedback & Identity', level: 2 })).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'Identity & Personalization', level: 2 }),
     ).toBeInTheDocument();

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { toast } from 'sonner';
-import { HelpCircleIcon, SunIcon, SettingsIcon } from 'lucide-react';
+import { HelpCircleIcon, SunIcon, SettingsIcon, LayoutIcon } from 'lucide-react';
 import { Button } from '@pumni/ui/form';
 import {
   Card,
@@ -14,6 +14,7 @@ import {
   IconBadge,
   ScrollArea,
   ScrollBar,
+  SectionHeading,
 } from '@pumni/ui/layout';
 import { Dock, DockItem, Window } from '@pumni/ui/os';
 import { GlassSurface } from '@pumni/ui/identity';
@@ -28,59 +29,32 @@ export function SurfacesSection() {
       description="Layout structures: glassmorphism glass cards, raised solid cards, floating surface primitives, windows, and scrolling views."
     >
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Card comparison — over a backdrop so the glass card reads as
-            glassmorphism (it refracts the blobs); the solid card stays opaque. */}
-        <div className="relative overflow-hidden rounded-2xl border bg-background p-4">
-          <div aria-hidden className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-24 -left-16 size-80 rounded-full bg-(--desktop-blob-primary) opacity-55 blur-3xl" />
-            <div className="absolute -right-12 -bottom-24 size-80 rounded-full bg-(--desktop-blob-secondary) opacity-50 blur-3xl" />
-            <div className="absolute inset-0 bg-muted/30" />
-          </div>
-          <div className="relative grid gap-4">
-            <Card variant="glass">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Glass Card</CardTitle>
-                  <CardAction>
-                    <Button variant="ghost" size="icon-sm" aria-label="More options">
-                      <HelpCircleIcon />
-                    </Button>
-                  </CardAction>
-                </div>
-                <CardDescription>
-                  Glassmorphism (opt-in, <code>variant=&quot;glass&quot;</code>): frosted vibrant
-                  fill with a luminous light border and a volumetric rim pair. Float it over a
-                  backdrop.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                Optimal for OS windows, dialog panels, and elements layered on top of backdrops.
-              </CardContent>
-              <CardFooter className="justify-end gap-2 border-t pt-4">
-                <Button variant="outline" size="sm">
-                  Secondary
-                </Button>
-                <Button size="sm">Action</Button>
-              </CardFooter>
-            </Card>
-
-            <Card variant="solid">
-              <CardHeader>
-                <CardTitle>Solid Card</CardTitle>
-                <CardDescription>
-                  Opaque background for dense or high-contrast content.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                Optimal for inline content blocks, lists, and forms sitting inside dialogs.
-              </CardContent>
-              <CardFooter className="justify-between border-t pt-4 text-xs text-muted-foreground">
-                <span>Last updated 2 mins ago</span>
-                <Button size="sm">Action</Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </div>
+        {/* Section Heading Showcase */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Section Heading</CardTitle>
+            <CardDescription>
+              Standardised layout divider with structured text and icon badge representation.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="rounded-xl border bg-muted/20 p-5 md:p-6">
+              <SectionHeading
+                eyebrow="Monitoring"
+                title="System Diagnostics & Telemetry"
+                description="Real-time dashboard for memory allocations, network traffic metrics, and worker thread state."
+                icon={LayoutIcon}
+              />
+            </div>
+            <div className="rounded-xl border bg-muted/20 p-5 md:p-6">
+              <SectionHeading
+                eyebrow="Preferences"
+                title="Personalize Appearance"
+                description="Adjust global accent color themes, glassmorphism intensity, and default UI density scale."
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Floating Surface role utility */}
         <Card>

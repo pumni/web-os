@@ -50,6 +50,9 @@ export function ControlsSection() {
   const [pickerSize, setPickerSize] = React.useState('default');
   const [pickerView, setPickerView] = React.useState('grid');
   const [highlightQuery, setHighlightQuery] = React.useState('set');
+  const [demoInputVariant, setDemoInputVariant] = React.useState<'outline' | 'filled'>('outline');
+  const [demoInputDisabled, setDemoInputDisabled] = React.useState(false);
+  const [demoInputInvalid, setDemoInputInvalid] = React.useState(false);
 
   const form = useForm<DemoFormValues>({
     defaultValues: {
@@ -111,97 +114,138 @@ export function ControlsSection() {
           </CardContent>
         </Card>
 
-        {/* Form & Validation */}
-        <Card>
+        {/* Inputs & Form Primitives */}
+        <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Form Primitives</CardTitle>
-            <CardDescription>React Hook Form validation states.</CardDescription>
+            <CardTitle>Inputs & Form Primitives</CardTitle>
+            <CardDescription>
+              Form validation contexts, specialized fields, and raw input states.
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form
-                className="space-y-4"
-                onSubmit={form.handleSubmit((values) =>
-                  toast.success(`Form saved: ${values.workspaceName}`),
-                )}
-              >
-                <FormField
-                  control={form.control}
-                  name="workspaceName"
-                  rules={{ required: 'Workspace name is required.' }}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Workspace Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter workspace..." {...field} />
-                      </FormControl>
-                      <FormDescription>Must be unique in the organization.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+          <CardContent className="grid gap-6 md:grid-cols-2">
+            {/* Left side: React Hook Form & Server Action fields */}
+            <div className="space-y-5">
+              <div className="space-y-3">
+                <span className="text-xs font-semibold text-muted-foreground block">
+                  Form Context & Validation
+                </span>
+                <Form {...form}>
+                  <form
+                    className="space-y-3"
+                    onSubmit={form.handleSubmit((values) =>
+                      toast.success(`Form saved: ${values.workspaceName}`),
+                    )}
+                  >
+                    <FormField
+                      control={form.control}
+                      name="workspaceName"
+                      rules={{ required: 'Workspace name is required.' }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Workspace Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Enter workspace..." {...field} />
+                          </FormControl>
+                          <FormDescription>Must be unique in the organization.</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex justify-end">
+                      <SubmitButton size="sm">Submit Form</SubmitButton>
+                    </div>
+                  </form>
+                </Form>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3.5">
+                <span className="text-xs font-semibold text-muted-foreground block">
+                  AuthField & SubmitButton (Server Action ready)
+                </span>
+                <AuthField
+                  id="demo-auth-field"
+                  label="API Token Name"
+                  placeholder="e.g. Production Read-only"
+                  error={['Token name must be at least 3 characters.']}
                 />
-                <div className="flex justify-end gap-2">
-                  <SubmitButton size="sm">Submit Form</SubmitButton>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Pending State:</span>
+                  <SubmitButton size="xs">Save</SubmitButton>
+                  <SubmitButton size="xs" loading>
+                    Saving…
+                  </SubmitButton>
                 </div>
-              </form>
-            </Form>
-            <Separator className="my-4" />
-            <div className="space-y-3">
-              <p className="text-xs font-semibold text-muted-foreground">
-                AuthField (Server Action form field)
-              </p>
-              <AuthField
-                id="demo-auth-field"
-                label="API Token Name"
-                placeholder="e.g. Production Read-only"
-                error={['Token name must be at least 3 characters.']}
-              />
-            </div>
-            <Separator className="my-4" />
-            <div className="space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground">
-                SubmitButton (Server Action ready)
-              </p>
-              <p className="text-[11px] text-muted-foreground">
-                Reads <code>useFormStatus</code> for auto-pending state. Falls back to manual{' '}
-                <code>loading</code> prop.
-              </p>
-              <div className="flex gap-2">
-                <SubmitButton size="sm">Save</SubmitButton>
-                <SubmitButton size="sm" loading>
-                  Saving…
-                </SubmitButton>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Input & Label States */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Input States</CardTitle>
-            <CardDescription>Fields under different user feedback scenarios.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="input-normal">Active Input (outline)</Label>
-              <Input id="input-normal" defaultValue="Editable content" />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="input-filled">Filled Variant</Label>
-              <Input id="input-filled" variant="filled" placeholder="Filled input style…" />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="input-invalid" className="text-destructive">
-                Invalid Input
-              </Label>
-              <Input id="input-invalid" placeholder="Invalid data entered" aria-invalid="true" />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="input-disabled" className="opacity-50">
-                Disabled Input
-              </Label>
-              <Input id="input-disabled" defaultValue="Locked value" disabled />
+            {/* Right side: Interactive Input Playground */}
+            <div className="space-y-4 md:border-l md:pl-6">
+              <span className="text-xs font-semibold text-muted-foreground block">
+                Interactive Input Playground
+              </span>
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="input-playground"
+                    className={demoInputInvalid ? 'text-destructive' : ''}
+                  >
+                    Dynamic Input Field
+                  </Label>
+                  <Input
+                    id="input-playground"
+                    variant={demoInputVariant}
+                    disabled={demoInputDisabled}
+                    aria-invalid={demoInputInvalid ? true : undefined}
+                    placeholder={demoInputDisabled ? 'Locked state' : 'Type something...'}
+                    defaultValue={demoInputDisabled ? 'Locked' : 'Editable text'}
+                  />
+                  {demoInputInvalid && (
+                    <p className="text-[11px] text-destructive">Invalid input data entered.</p>
+                  )}
+                </div>
+
+                <div className="space-y-2.5 pt-2">
+                  <span className="text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
+                    Configure States & Styles
+                  </span>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="toggle-variant" className="text-xs">
+                        Filled Variant
+                      </Label>
+                      <Switch
+                        id="toggle-variant"
+                        checked={demoInputVariant === 'filled'}
+                        onCheckedChange={(checked) =>
+                          setDemoInputVariant(checked ? 'filled' : 'outline')
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="toggle-disabled" className="text-xs">
+                        Disabled State
+                      </Label>
+                      <Switch
+                        id="toggle-disabled"
+                        checked={demoInputDisabled}
+                        onCheckedChange={setDemoInputDisabled}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="toggle-invalid" className="text-xs">
+                        Invalid State (Error)
+                      </Label>
+                      <Switch
+                        id="toggle-invalid"
+                        checked={demoInputInvalid}
+                        onCheckedChange={setDemoInputInvalid}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
