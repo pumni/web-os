@@ -296,7 +296,9 @@ const y = " |  | ";
     reportError = originalReportError;
 
     if (mockErrors !== t.expectedErrors) {
-      console.error(`[FAIL] Test "${t.name}" failed. Expected ${t.expectedErrors} errors, got ${mockErrors}.`);
+      console.error(
+        `[FAIL] Test "${t.name}" failed. Expected ${t.expectedErrors} errors, got ${mockErrors}.`,
+      );
       selfTestErrors++;
     } else {
       console.log(`[PASS] ${t.name}`);
@@ -376,6 +378,53 @@ function checkDocPathReferences() {
         reportError(
           `Doc path reference does not exist in ${relativePath}:${lineNumber(content, match.index)} -> ${candidate}`,
         );
+      }
+    }
+  }
+}
+
+function checkCodeReferences() {
+  // Backtick refs to real source files (and optional `#symbol` anchors) in the
+  // enforced docs. checkDocPathReferences only covers `.md`, so a golden-example
+  // or convention pointing at a renamed/deleted code path — or a since-renamed
+  // exported symbol inside a still-living file — slips through. This closes that
+  // semantic-drift gap deterministically: file must exist; if `#symbol` is given,
+  // the symbol must still appear in the file. Use `path.ts#exportedName` to opt in.
+  const refRegex =
+    /`((?:apps|packages|supabase|scripts)\/[^`\s]+\.(?:ts|tsx|sql|mjs|css))(#[A-Za-z_][A-Za-z0-9_]*)?`/g;
+  const checked = new Set();
+
+  for (const relativePath of getMarkdownLinkFiles()) {
+    const sourcePath = resolveRel(relativePath);
+    if (!fs.existsSync(sourcePath)) continue;
+
+    const content = fs.readFileSync(sourcePath, 'utf8');
+    let match;
+
+    while ((match = refRegex.exec(content)) !== null) {
+      const candidate = match[1];
+      const symbol = match[2] ? match[2].slice(1) : null;
+      if (candidate.includes('*') || candidate.includes('<') || candidate.includes('${')) continue;
+
+      const key = `${relativePath}::${candidate}${symbol ? `#${symbol}` : ''}`;
+      if (checked.has(key)) continue;
+      checked.add(key);
+
+      const targetPath = resolveRel(candidate);
+      if (!fs.existsSync(targetPath)) {
+        reportError(
+          `Code path reference does not exist in ${relativePath}:${lineNumber(content, match.index)} -> ${candidate}`,
+        );
+        continue;
+      }
+
+      if (symbol) {
+        const fileContent = fs.readFileSync(targetPath, 'utf8');
+        if (!new RegExp(`\\b${symbol}\\b`).test(fileContent)) {
+          reportError(
+            `Symbol '${symbol}' not found in ${candidate} (referenced from ${relativePath}:${lineNumber(content, match.index)})`,
+          );
+        }
       }
     }
   }
@@ -608,9 +657,13 @@ function checkDesignTokenBoundaries() {
   // The colour-math library is the one place allowed to parse/construct oklch()
   // strings programmatically (regex + formatters), not hardcoded design colours.
   // Exempt it from the raw-colour pattern only — primitive-var rules still apply.
-  const colorMathFiles = new Set([
-    'packages/ui/src/lib/oklch.ts',
-    'packages/ui/src/lib/apca.ts',
+  const colorMathFiles = new Set(['packages/ui/src/lib/oklch.ts', 'packages/ui/src/lib/apca.ts']);
+  // The design-system showcase visualizes colour math: it constructs oklch()
+  // from runtime-selected anchor values to render live APCA contrast previews.
+  // That is the demonstration's purpose, not a hardcoded design colour — exempt
+  // from the raw-colour pattern only (primitive-var rules still apply).
+  const colorDemoFiles = new Set([
+    'apps/web/src/features/design-system/components/apca-section.tsx',
   ]);
   const files = [
     ...collectFiles('apps/web/src', ['.css', '.ts', '.tsx']),
@@ -623,9 +676,10 @@ function checkDesignTokenBoundaries() {
     if (allowedTokenFiles.has(relativePath)) continue;
 
     const content = readFile(relativePath);
-    const patterns = colorMathFiles.has(relativePath)
-      ? [primitiveVarPattern]
-      : [rawColorPattern, primitiveVarPattern];
+    const patterns =
+      colorMathFiles.has(relativePath) || colorDemoFiles.has(relativePath)
+        ? [primitiveVarPattern]
+        : [rawColorPattern, primitiveVarPattern];
     for (const pattern of patterns) {
       pattern.lastIndex = 0;
       let match;
@@ -675,6 +729,7 @@ checkSizeBudgets();
 checkCompactMarkdownTables();
 checkMarkdownLinks();
 checkDocPathReferences();
+checkCodeReferences();
 checkContextIndexCoverage();
 checkWorkflowIndexNames();
 checkRuleInventory();

@@ -4,7 +4,7 @@ import * as React from 'react';
 import { apcaContrast, foregroundFor } from '@pumni/ui/lib/apca';
 import { formatOklch, oklchToSrgb } from '@pumni/ui/lib/oklch';
 import { Badge } from '@pumni/ui/feedback';
-import { Button, Input, Label, SegmentedPicker } from '@pumni/ui/form';
+import { Button, Label, SegmentedPicker, Slider } from '@pumni/ui/form';
 import {
   Card,
   CardContent,
@@ -19,51 +19,9 @@ import { ShowcaseSection } from './showcase-section';
 
 // ──────────────────────── helpers ────────────────────────
 
-/** Parse a `#rrggbb` hex string into the `[r, g, b]` triple that `apcaContrast` expects. */
-function hexToRgb(hex: string): [number, number, number] {
-  const clean = hex.replace('#', '');
-  return [
-    parseInt(clean.slice(0, 2), 16) / 255,
-    parseInt(clean.slice(2, 4), 16) / 255,
-    parseInt(clean.slice(4, 6), 16) / 255,
-  ];
-}
-
-function srgbToOklch(r: number, g: number, b: number): { l: number; c: number; h: number } {
-  const linearize = (c: number) => {
-    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-  };
-  const lr = linearize(r);
-  const lg = linearize(g);
-  const lb = linearize(b);
-
-  const x = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
-  const y = 0.2119034982 * lr + 0.6806995477 * lg + 0.1073969541 * lb;
-  const z = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
-
-  const lPrime = Math.cbrt(0.8189330101 * x + 0.3618667424 * y - 0.1288597155 * z);
-  const mPrime = Math.cbrt(0.0329845436 * x + 0.9293118715 * y + 0.0361451849 * z);
-  const sPrime = Math.cbrt(0.0482003018 * x + 0.2643542568 * y + 0.6338517070 * z);
-
-  const L = 0.2104542553 * lPrime + 0.7936177850 * mPrime - 0.0040720403 * sPrime;
-  const oklabA = 1.9779984951 * lPrime - 2.4285922050 * mPrime + 0.4505937099 * sPrime;
-  const oklabB = 0.0259040371 * lPrime + 0.7827717662 * mPrime - 0.8086757660 * sPrime;
-
-  const C = Math.sqrt(oklabA * oklabA + oklabB * oklabB);
-  let h = (Math.atan2(oklabB, oklabA) * 180) / Math.PI;
-  if (h < 0) h += 360;
-
-  return { l: L, c: C, h };
-}
-
-function hexToOklch(hex: string): { l: number; c: number; h: number } {
-  const [r, g, b] = hexToRgb(hex);
-  return srgbToOklch(r, g, b);
-}
-
-function getLcValue(fgHex: string, bgHex: string): number {
+function getLcValue(fgOklch: { l: number; c: number; h: number }, bgOklch: { l: number; c: number; h: number }): number {
   try {
-    return apcaContrast(oklchToSrgb(hexToOklch(fgHex)), oklchToSrgb(hexToOklch(bgHex)));
+    return apcaContrast(oklchToSrgb(fgOklch), oklchToSrgb(bgOklch));
   } catch {
     return 0;
   }
@@ -88,12 +46,12 @@ function getLcGrade(absLc: number): LcGrade {
 // ──────────────────────── static data ────────────────────────
 
 const PRESET_PAIRS = [
-  { label: 'Classic B/W', fg: '#0a0a0a', bg: '#fafafa' },
-  { label: 'Coral on Dark', fg: '#e87b4f', bg: '#1a1614' },
-  { label: 'Muted on Card', fg: '#6b7280', bg: '#ffffff' },
-  { label: 'Yellow Warning', fg: '#f0c000', bg: '#ffffff' },
-  { label: 'White on Primary', fg: '#ffffff', bg: '#c05a28' },
-  { label: 'Low Contrast', fg: '#9a9a9a', bg: '#c0c0c0' },
+  { label: 'Classic B/W', fg: { l: 0.085, c: 0.003, h: 70 }, bg: { l: 1, c: 0, h: 0 } },
+  { label: 'Coral on Dark', fg: { l: 0.61, c: 0.134, h: 40 }, bg: { l: 0.14, c: 0.003, h: 70 } },
+  { label: 'Muted on Card', fg: { l: 0.555, c: 0.005, h: 70 }, bg: { l: 1, c: 0, h: 0 } },
+  { label: 'Yellow Warning', fg: { l: 0.769, c: 0.188, h: 70.08 }, bg: { l: 1, c: 0, h: 0 } },
+  { label: 'White on Primary', fg: { l: 1, c: 0, h: 0 }, bg: { l: 0.545, c: 0.14, h: 38 } },
+  { label: 'Low Contrast', fg: { l: 0.555, c: 0.005, h: 70 }, bg: { l: 0.884, c: 0.006, h: 72 } },
 ] as const;
 
 const SEMANTIC_PAIRS = [
@@ -172,10 +130,6 @@ const FONT_SIZE_GATES = [
   { size: '32px+', w400: 35, w700: 25 },
 ];
 
-/**
- * OKLCH anchor presets — real design-system token values from tokens.css / brand.css.
- * Pass directly to foregroundFor() as { l, c, h }.
- */
 const OKLCH_ANCHORS = [
   { label: 'Page bg (light)', token: '--neutral-50', css: 'oklch(0.985 0.005 75)', l: 0.985, c: 0.005, h: 75 },
   { label: 'Card (light)', token: '--neutral-0', css: 'oklch(1 0 0)', l: 1, c: 0, h: 0 },
@@ -237,25 +191,38 @@ function LcScaleBar({ lc }: { lc: number }) {
   );
 }
 
-function TextPreview({ fg, bg, lc }: { fg: string; bg: string; lc: number }) {
+interface ColorOklch {
+  l: number;
+  c: number;
+  h: number;
+}
+
+function TextPreview({ fg, bg, lc }: { fg: ColorOklch; bg: ColorOklch; lc: number }) {
   const polarity = lc > 0 ? 'BoW' : lc < 0 ? 'WoB' : '—';
+  const fgCss = formatOklch(fg);
+  const bgCss = formatOklch(bg);
   return (
-    <div className="overflow-hidden rounded-xl border border-border" style={{ backgroundColor: bg }}>
+    <div className="overflow-hidden rounded-xl border border-border" style={{ backgroundColor: bgCss }}>
       <div className="space-y-2 p-5">
-        <p className="text-4xl font-black leading-tight" style={{ color: fg }}>The quick brown fox</p>
-        <p className="text-xl font-semibold" style={{ color: fg }}>Design systems enable consistency</p>
-        <p className="text-base font-normal" style={{ color: fg }}>Body text (text-base / 16px) — the most common reading context.</p>
-        <p className="text-sm font-normal" style={{ color: fg }}>Small (text-sm / 14px) — captions, data tables, secondary metadata.</p>
-        <p className="text-xs font-normal" style={{ color: fg }}>Micro (text-xs / 12px) — requires Lc 75+ for comfortable readability.</p>
+        <p className="text-4xl font-black leading-tight" style={{ color: fgCss }}>The quick brown fox</p>
+        <p className="text-xl font-semibold" style={{ color: fgCss }}>Design systems enable consistency</p>
+        <p className="text-base font-normal" style={{ color: fgCss }}>Body text (text-base / 16px) — the most common reading context.</p>
+        <p className="text-sm font-normal" style={{ color: fgCss }}>Small (text-sm / 14px) — captions, data tables, secondary metadata.</p>
+        <p className="text-xs font-normal" style={{ color: fgCss }}>Micro (text-xs / 12px) — requires Lc 75+ for comfortable readability.</p>
       </div>
       <div
         className="flex items-center justify-between border-t px-5 py-2"
-        style={{ borderColor: `${fg}25`, backgroundColor: `${fg}08` }}
+        style={{
+          borderColor: `oklch(${fg.l} ${fg.c} ${fg.h} / 0.15)`,
+          backgroundColor: `oklch(${fg.l} ${fg.c} ${fg.h} / 0.03)`
+        }}
       >
-        <span className="font-mono text-sm" style={{ color: fg, opacity: 0.7 }}>
+        <span className="font-mono text-sm" style={{ color: fgCss, opacity: 0.7 }}>
           Lc {Math.abs(lc).toFixed(1)} — {polarity}
         </span>
-        <span className="font-mono text-xs" style={{ color: fg, opacity: 0.4 }}>fg: {fg} · bg: {bg}</span>
+        <span className="font-mono text-xs" style={{ color: fgCss, opacity: 0.4 }}>
+          fg: {fgCss} · bg: {bgCss}
+        </span>
       </div>
     </div>
   );
@@ -277,11 +244,11 @@ function ConceptCard({ icon, title, children }: { icon: string; title: string; c
 
 export function ApcaSection() {
   // Playground
-  const [fg, setFg] = React.useState('#0f0f0f');
-  const [bg, setBg] = React.useState('#fafafa');
-  const lc = getLcValue(fg, bg);
+  const [fgOklch, setFgOklch] = React.useState({ l: 0.085, c: 0.003, h: 70 });
+  const [bgOklch, setBgOklch] = React.useState({ l: 0.985, c: 0.005, h: 75 });
+  const lc = getLcValue(fgOklch, bgOklch);
   const absLc = Math.abs(lc);
-  const swapColors = () => { const tmp = fg; setFg(bg); setBg(tmp); };
+  const swapColors = () => { const tmp = fgOklch; setFgOklch(bgOklch); setBgOklch(tmp); };
 
   // Derivation
   const [anchorLabel, setAnchorLabel] = React.useState<AnchorLabel>('Primary (light)');
@@ -290,11 +257,17 @@ export function ApcaSection() {
 
   const derivedFg = React.useMemo(() => {
     try {
-      return foregroundFor(
+      const result = foregroundFor(
         { l: anchor.l, c: anchor.c, h: anchor.h },
         deriveTargetLc,
         { polarity: 'auto', chroma: 0, hue: 0 },
       );
+      if (!result) return null;
+      return {
+        ...result,
+        oklch: formatOklch({ l: result.l, c: 0, h: 0 }),
+        lc: getLcValue({ l: result.l, c: 0, h: 0 }, { l: anchor.l, c: anchor.c, h: anchor.h }),
+      };
     } catch {
       return null;
     }
@@ -304,7 +277,7 @@ export function ApcaSection() {
     <ShowcaseSection
       id="apca-contrast"
       title="APCA Contrast"
-      description="Advanced Perceptual Contrast Algorithm — the perceptually-accurate contrast standard. Lc scores map directly to human visual perception, replacing WCAG 2.x ratios."
+      description="Advanced Perceptually Contrast Algorithm — the perceptually-accurate contrast standard. Lc scores map directly to human visual perception, replacing WCAG 2.x ratios."
     >
       <div className="space-y-8">
 
@@ -383,12 +356,21 @@ export function ApcaSection() {
               <div className="flex flex-wrap gap-2">
                 {PRESET_PAIRS.map((pair) => {
                   const pLc = Math.abs(getLcValue(pair.fg, pair.bg));
-                  const isActive = pair.fg === fg && pair.bg === bg;
+                  const isActive =
+                    Math.abs(pair.fg.l - fgOklch.l) < 0.001 &&
+                    Math.abs(pair.fg.c - fgOklch.c) < 0.001 &&
+                    Math.abs(pair.fg.h - fgOklch.h) < 0.1 &&
+                    Math.abs(pair.bg.l - bgOklch.l) < 0.001 &&
+                    Math.abs(pair.bg.c - bgOklch.c) < 0.001 &&
+                    Math.abs(pair.bg.h - bgOklch.h) < 0.1;
                   return (
                     <button
                       key={pair.label}
                       type="button"
-                      onClick={() => { setFg(pair.fg); setBg(pair.bg); }}
+                      onClick={() => {
+                        setFgOklch(pair.fg);
+                        setBgOklch(pair.bg);
+                      }}
                       className={cn(
                         'flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors duration-(--duration-base) ease-fluid',
                         isActive ? 'border-primary bg-primary text-primary-foreground font-semibold' : 'border-border text-foreground state-hover',
@@ -396,7 +378,9 @@ export function ApcaSection() {
                     >
                       <span
                         className="inline-flex size-3 shrink-0 rounded-full border border-border/50"
-                        style={{ background: `linear-gradient(135deg, ${pair.fg} 50%, ${pair.bg} 50%)` }}
+                        style={{
+                          background: `linear-gradient(135deg, ${formatOklch(pair.fg)} 50%, ${formatOklch(pair.bg)} 50%)`,
+                        }}
                       />
                       {pair.label}
                       <span className={cn('font-mono text-xs', pLc >= 60 ? 'text-success' : pLc >= 25 ? 'text-warning' : 'text-destructive', isActive && 'text-primary-foreground')}>
@@ -410,45 +394,132 @@ export function ApcaSection() {
             <Separator />
             <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="play-fg" className="text-sm font-semibold">Foreground (text / icon)</Label>
-                  <div className="flex items-center gap-2">
-                    <input id="play-fg" type="color" value={fg} onChange={(e) => setFg(e.target.value)}
-                      className="size-10 cursor-pointer rounded-md border border-border bg-transparent" />
-                    <div className="flex flex-col">
-                      <Input
-                        value={fg}
-                        onChange={(e) => { if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) setFg(e.target.value); }}
-                        className="h-9 w-28 font-mono text-sm"
-                        aria-label="Foreground hex value"
+                {/* Foreground OKLCH adjustments */}
+                <div className="space-y-3 rounded-xl border border-border/40 bg-muted/10 p-3">
+                  <span className="text-xs font-bold text-foreground block uppercase tracking-wider">Foreground OKLCH</span>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[11px] font-mono">
+                        <span className="text-muted-foreground">Lightness (L)</span>
+                        <span className="font-bold text-foreground">{fgOklch.l.toFixed(3)}</span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={1}
+                        step={0.001}
+                        value={[fgOklch.l]}
+                        onValueChange={(val) => {
+                          const l = val[0];
+                          if (l !== undefined) setFgOklch((prev) => ({ ...prev, l }));
+                        }}
+                        aria-label="Foreground Lightness"
                       />
-                      <span className="font-mono text-[10px] text-muted-foreground mt-0.5 select-all">
-                        {formatOklch(hexToOklch(fg))}
-                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[11px] font-mono">
+                        <span className="text-muted-foreground">Chroma (C)</span>
+                        <span className="font-bold text-foreground">{fgOklch.c.toFixed(3)}</span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={0.4}
+                        step={0.001}
+                        value={[fgOklch.c]}
+                        onValueChange={(val) => {
+                          const c = val[0];
+                          if (c !== undefined) setFgOklch((prev) => ({ ...prev, c }));
+                        }}
+                        aria-label="Foreground Chroma"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[11px] font-mono">
+                        <span className="text-muted-foreground">Hue (h)</span>
+                        <span className="font-bold text-foreground">{Math.round(fgOklch.h)}°</span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={360}
+                        step={1}
+                        value={[fgOklch.h]}
+                        onValueChange={(val) => {
+                          const h = val[0];
+                          if (h !== undefined) setFgOklch((prev) => ({ ...prev, h }));
+                        }}
+                        aria-label="Foreground Hue"
+                      />
                     </div>
                   </div>
+                  <div className="flex items-center justify-between text-[10px] font-mono bg-muted/50 px-2 py-1 rounded border border-border/20 mt-2 select-all">
+                    <span className="text-foreground font-semibold">{formatOklch(fgOklch)}</span>
+                  </div>
                 </div>
-                <Button type="button" variant="outline" size="sm" onClick={swapColors} className="w-full" aria-label="Swap foreground and background">
+
+                <Button type="button" variant="outline" size="sm" onClick={swapColors} className="w-full font-medium" aria-label="Swap foreground and background">
                   ⇅ Swap FG ↔ BG
                 </Button>
-                <div className="space-y-1.5">
-                  <Label htmlFor="play-bg" className="text-sm font-semibold">Background</Label>
-                  <div className="flex items-center gap-2">
-                    <input id="play-bg" type="color" value={bg} onChange={(e) => setBg(e.target.value)}
-                      className="size-10 cursor-pointer rounded-md border border-border bg-transparent" />
-                    <div className="flex flex-col">
-                      <Input
-                        value={bg}
-                        onChange={(e) => { if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) setBg(e.target.value); }}
-                        className="h-9 w-28 font-mono text-sm"
-                        aria-label="Background hex value"
+
+                {/* Background OKLCH adjustments */}
+                <div className="space-y-3 rounded-xl border border-border/40 bg-muted/10 p-3">
+                  <span className="text-xs font-bold text-foreground block uppercase tracking-wider">Background OKLCH</span>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[11px] font-mono">
+                        <span className="text-muted-foreground">Lightness (L)</span>
+                        <span className="font-bold text-foreground">{bgOklch.l.toFixed(3)}</span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={1}
+                        step={0.001}
+                        value={[bgOklch.l]}
+                        onValueChange={(val) => {
+                          const l = val[0];
+                          if (l !== undefined) setBgOklch((prev) => ({ ...prev, l }));
+                        }}
+                        aria-label="Background Lightness"
                       />
-                      <span className="font-mono text-[10px] text-muted-foreground mt-0.5 select-all">
-                        {formatOklch(hexToOklch(bg))}
-                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[11px] font-mono">
+                        <span className="text-muted-foreground">Chroma (C)</span>
+                        <span className="font-bold text-foreground">{bgOklch.c.toFixed(3)}</span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={0.4}
+                        step={0.001}
+                        value={[bgOklch.c]}
+                        onValueChange={(val) => {
+                          const c = val[0];
+                          if (c !== undefined) setBgOklch((prev) => ({ ...prev, c }));
+                        }}
+                        aria-label="Background Chroma"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[11px] font-mono">
+                        <span className="text-muted-foreground">Hue (h)</span>
+                        <span className="font-bold text-foreground">{Math.round(bgOklch.h)}°</span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={360}
+                        step={1}
+                        value={[bgOklch.h]}
+                        onValueChange={(val) => {
+                          const h = val[0];
+                          if (h !== undefined) setBgOklch((prev) => ({ ...prev, h }));
+                        }}
+                        aria-label="Background Hue"
+                      />
                     </div>
                   </div>
+                  <div className="flex items-center justify-between text-[10px] font-mono bg-muted/50 px-2 py-1 rounded border border-border/20 mt-2 select-all">
+                    <span className="text-foreground font-semibold">{formatOklch(bgOklch)}</span>
+                  </div>
                 </div>
+
                 <Separator />
                 <CardWell className="space-y-1 p-4 text-center">
                   <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">APCA Lc Score</p>
@@ -463,7 +534,7 @@ export function ApcaSection() {
               </div>
               <div className="min-w-0 space-y-3">
                 <span className="text-sm font-semibold text-muted-foreground">Live preview — all type-scale steps simultaneously:</span>
-                <TextPreview fg={fg} bg={bg} lc={lc} />
+                <TextPreview fg={fgOklch} bg={bgOklch} lc={lc} />
                 <CardWell className="p-4">
                   <p className="mb-3 text-sm font-semibold text-foreground">APCA minimum Lc by font size</p>
                   <table className="w-full border-collapse text-sm">

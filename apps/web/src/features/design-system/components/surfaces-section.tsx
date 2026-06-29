@@ -1,15 +1,12 @@
 import * as React from 'react';
 import { toast } from 'sonner';
 import { HelpCircleIcon, SunIcon, SettingsIcon, LayoutIcon } from 'lucide-react';
-import { Button } from '@pumni/ui/form';
 import {
   Card,
   CardHeader,
   CardTitle,
-  CardAction,
   CardDescription,
   CardContent,
-  CardFooter,
   CardWell,
   IconBadge,
   ScrollArea,

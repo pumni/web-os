@@ -9,8 +9,8 @@ verify against the canonical convention docs.
 
 ## Feature Module
 
-- `apps/web/src/features/profile/actions.ts`: Server Action with Zod validation,
-  `requireUser()`, Supabase update, and `updateTag(...)`.
+- `apps/web/src/features/profile/actions.ts#requireUser`: Server Action with Zod
+  validation, `requireUser()`, Supabase update, and `updateTag(...)`.
 - `apps/web/src/features/profile/profile-form.tsx`: Client form with
   `useMutation`, pending state, optimistic form reset, and error handling.
 - `apps/web/src/features/profile/queries.ts`: cached server read with explicit
@@ -24,9 +24,9 @@ for the architecture rules before copying.
 
 - `apps/web/src/features/watch/sync-machine.ts`: pure follower-lifecycle reducer
   `(state, event) => { state, effects }` plus transition-derived telemetry.
-- `apps/web/src/features/watch/sync-math.ts`: pure timing math —
-  `calculateExpectedPosition`, `shouldAcceptPlaybackAnchor` (broadcast vs
-  persisted-snapshot dedupe), Cristian `selectBestClockSample`.
+- `apps/web/src/features/watch/sync-math.ts#shouldAcceptPlaybackAnchor`: pure
+  timing math — `calculateExpectedPosition`, `shouldAcceptPlaybackAnchor`
+  (broadcast vs persisted-snapshot dedupe), Cristian `selectBestClockSample`.
 - `apps/web/src/features/watch/hooks/use-sync-controller.ts`: the thin executor
   that applies reducer effects to the player (only side-effecting layer).
 - `apps/web/src/features/watch/hooks/use-server-clock.ts`: min-RTT clock probe.

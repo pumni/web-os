@@ -2,19 +2,18 @@
 
 import * as React from 'react';
 import { Check, Plus, Trash2 } from 'lucide-react';
+import { Badge } from '@pumni/ui/feedback';
 import { Button, Input } from '@pumni/ui/form';
+import { CardWell } from '@pumni/ui/layout';
 import { cn } from '@pumni/ui/lib/cn';
 
 import { useTasks, useTasksStore, DEFAULT_TASKS } from '@/shared/stores/tasks-store';
-
-const subscribe = () => () => {};
-const getSnapshot = () => true;
-const getServerSnapshot = () => false;
+import { useHydrated } from '@/shared/hooks/use-hydrated';
 
 export function DailyPlanner() {
   const [newTaskText, setNewTaskText] = React.useState('');
 
-  const mounted = React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const mounted = useHydrated();
 
   const tasks = useTasks(DEFAULT_TASKS);
   const addTaskStore = useTasksStore((state) => state.addTask);
@@ -37,9 +36,9 @@ export function DailyPlanner() {
           <div className="h-10 rounded-md bg-muted" />
           <div className="h-10 rounded-md bg-muted" />
           <div className="h-10 rounded-md bg-muted" />
-        </div>
+       </div>
         <div className="h-9 rounded-md bg-muted" />
-      </div>
+     </div>
     );
   }
 
@@ -52,16 +51,12 @@ export function DailyPlanner() {
         <div className="flex items-center gap-2">
           <span className="type-caption font-semibold tracking-wider text-muted-foreground uppercase">
             Progress
-          </span>
-          <span
-            className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary"
-            aria-label={`${completedCount} of ${tasks.length} tasks done`}
-          >
+         </span>
+          <Badge tone="primary" aria-label={`${completedCount} of ${tasks.length} tasks done`}>
             {completedCount}/{tasks.length} done
-          </span>
-        </div>
+         </Badge>
+       </div>
 
-        {/* Progress bar */}
         <div
           className="h-1.5 w-32 overflow-hidden rounded-full bg-muted"
           role="progressbar"
@@ -74,15 +69,16 @@ export function DailyPlanner() {
             className="h-full rounded-full bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) transition-[width] duration-(--duration-slow) ease-snappy"
             style={{ width: `${progressPercent}%` }}
           />
-        </div>
-      </div>
+       </div>
+     </div>
 
-      {/* Task List */}
       <div className="space-y-2">
         {tasks.length === 0 ? (
-          <p className="rounded-lg border border-dashed bg-muted/40 px-4 py-6 text-center text-sm text-muted-foreground">
-            All tasks completed — add one to keep momentum.
-          </p>
+          <CardWell padding="lg" className="text-center">
+            <p className="text-sm text-muted-foreground">
+              All tasks completed — add one to keep momentum.
+           </p>
+        </CardWell>
         ) : (
           tasks.map((task) => (
             <div
@@ -115,8 +111,8 @@ export function DailyPlanner() {
                   )}
                 >
                   {task.text}
-                </span>
-              </button>
+               </span>
+             </button>
               <Button
                 size="icon-sm"
                 variant="ghost"
@@ -125,13 +121,12 @@ export function DailyPlanner() {
                 className="shrink-0 text-muted-foreground hover:text-destructive"
               >
                 <Trash2 className="size-3.5" />
-              </Button>
-            </div>
+             </Button>
+           </div>
           ))
         )}
-      </div>
+     </div>
 
-      {/* Add Task Form */}
       <form onSubmit={addTask} className="flex items-center gap-2">
         <Input
           type="text"
@@ -144,8 +139,8 @@ export function DailyPlanner() {
         />
         <Button type="submit" size="icon" aria-label="Add task">
           <Plus className="size-4" />
-        </Button>
-      </form>
-    </div>
+       </Button>
+     </form>
+   </div>
   );
 }

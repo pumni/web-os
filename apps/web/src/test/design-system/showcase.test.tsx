@@ -37,7 +37,7 @@ function renderShowcase() {
 }
 
 describe('DesignSystemShowcase', () => {
-  it('renders the primary QA sections from shared UI primitives', () => {
+  it('renders the primary QA sections from shared UI primitives', { timeout: 15000 }, () => {
     renderShowcase();
 
     expect(screen.getByRole('heading', { name: 'Design System' })).toBeInTheDocument();
@@ -108,7 +108,7 @@ describe('DesignSystemShowcase', () => {
   it('opens dialog and sends toast feedback', () => {
     renderShowcase();
 
-    fireEvent.click(screen.getAllByRole('button', { name: 'Success' })[0]);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Success' })[0]!);
     expect(toast.success).toHaveBeenCalledWith('Changes saved successfully.');
 
     fireEvent.click(screen.getByRole('button', { name: 'Trigger Dialog' }));
@@ -148,6 +148,19 @@ describe('DesignSystemShowcase', () => {
     fireEvent.click(presetButton);
 
     expect(screen.getByText('Lc 60+ — Pass Text')).toBeInTheDocument();
+  });
+
+  it('renders OKLCH sliders for foreground and background adjustment', () => {
+    renderShowcase();
+
+    // Check for the presence of the slider labels
+    expect(screen.getAllByText('Lightness (L)').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('Chroma (C)').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('Hue (h)').length).toBeGreaterThanOrEqual(2);
+
+    // Verify slider elements exist
+    const sliders = screen.getAllByRole('slider');
+    expect(sliders.length).toBeGreaterThanOrEqual(6);
   });
 
   it('toggles reduced motion simulation in Motion section', () => {

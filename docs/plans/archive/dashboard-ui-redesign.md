@@ -1,8 +1,9 @@
 ---
 title: Dashboard UI Redesign & Optimization
-status: proposed
+status: superseded
 owner: apps/web
 last-updated: 2026-06-17
+superseded-by: chat-only plan, 2026-06-29 — "Dashboard Control Room Refactor" (4 surfaces, doctrine-anchored; phased execution completed in apps/web/dashboard + todos). See conversation transcript for the live doc; no ADR was written.
 audit-source: manual comparison vs `apps/web/src/app/(app)/dashboard/` against `docs/conventions/design-system.md`, `@pumni/ui` exports, and the dashboard audit reply (this conversation)
 ---
 

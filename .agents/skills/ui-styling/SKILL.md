@@ -64,5 +64,5 @@ not inline its tables here.
 - [ ] Radius/z-index use named utilities; no `rounded-[Npx]`, no raw `z-40`/`z-50` for cross-component layers.
 - [ ] Motion uses recipes / `motion-safe:` CSS; `useReducedMotion()` on JS motion.
 - [ ] Contrast pairs resolved by `glass-contrast.test.ts` (APCA), not eyeballed.
-- [ ] New component: `cva` variants, `data-slot` hooks, exported from `packages/ui/src/index.ts`, no `@/` or server imports.
+- [ ] New component: `cva` variants, `data-slot` hooks, exported from its role barrel (e.g. `packages/ui/src/components/form/index.ts`), no `@/` or server imports.
 - [ ] `bun run ai:check` passes.

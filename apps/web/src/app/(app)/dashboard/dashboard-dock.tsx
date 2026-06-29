@@ -3,7 +3,7 @@
 import type { Route } from 'next';
 import type { ComponentType } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Palette, Settings, User, Music } from 'lucide-react';
+import { LayoutDashboard, Music, User } from 'lucide-react';
 
 import { Dock, DockItem } from '@pumni/ui/os';
 import { withViewTransition } from '@pumni/ui/lib/view-transition';
@@ -16,8 +16,6 @@ const dockItems: ReadonlyArray<{
   { href: '/dashboard' as Route, label: 'Dashboard', icon: LayoutDashboard },
   { href: '/sky-player' as Route, label: 'Sky Player', icon: Music },
   { href: '/settings/profile' as Route, label: 'Profile', icon: User },
-  { href: '/settings/account' as Route, label: 'Account', icon: Settings },
-  { href: '/settings/appearance' as Route, label: 'Appearance', icon: Palette },
 ] as const;
 
 export function DashboardDock() {

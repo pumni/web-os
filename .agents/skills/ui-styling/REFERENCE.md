@@ -148,7 +148,8 @@ is the `apca` design-system page (`features/design-system/components/apca-sectio
 
 - Components live in `packages/ui/src/components/`, grouped by functional role:
   `form/`, `overlay/`, `layout/`, `feedback/`, `identity/`, or `os/` (see
-  `packages/ui/AGENTS.md`). Export from `packages/ui/src/index.ts`.
+  `packages/ui/AGENTS.md`). Export from the role barrel, e.g.
+  `packages/ui/src/components/form/index.ts`.
 - Use `cva` variants, `data-slot` / `data-variant` styling hooks, Radix for
   interactive primitives, and `cn()` from `@pumni/ui`.
 - Consume semantic tokens only. Floating layers use role-specific glass utility.

@@ -1,5 +1,4 @@
-import { Badge } from '@pumni/ui/feedback';
-import { Button, Label, SegmentedPicker, Switch } from '@pumni/ui/form';
+import { Label, SegmentedPicker, Switch } from '@pumni/ui/form';
 import {
   Card,
   CardContent,
@@ -11,30 +10,12 @@ import {
 } from '@pumni/ui/layout';
 import { cn } from '@pumni/ui/lib/cn';
 
-import { GlassSurface } from '@pumni/ui/identity';
-import { Window } from '@pumni/ui/os';
 import * as React from 'react';
 import { ShowcaseSection } from './showcase-section';
 
 interface FoundationsSectionProps {
   hideApca?: boolean;
 }
-
-type TransparencyOption = 'standard' | 'reduced';
-type ContrastOption = 'standard' | 'more';
-
-const TRANSPARENCY_OPTIONS: readonly TransparencyOption[] = ['standard', 'reduced'];
-const TRANSPARENCY_LABELS: Record<TransparencyOption, string> = {
-  standard: 'Standard',
-  reduced: 'Opaque Solid',
-};
-const CONTRAST_OPTIONS: readonly ContrastOption[] = ['standard', 'more'];
-const CONTRAST_LABELS: Record<ContrastOption, string> = {
-  standard: 'Normal Contrast',
-  more: 'High Contrast',
-};
-
-
 
 
 const SEMANTIC_COLORS = [
@@ -194,7 +175,6 @@ const MOTION_EASINGS = [
 ];
 
 export function FoundationsSection({
-  hideApca = false,
 }: FoundationsSectionProps) {
   const [showSpecs, setShowSpecs] = React.useState(false);
   const [spacingStep, setSpacingStep] = React.useState('4');

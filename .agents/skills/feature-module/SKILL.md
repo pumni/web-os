@@ -41,4 +41,7 @@ piece and routes the detail to the matching implementation skill.
 - [ ] Inputs validated via `@pumni/validators`; user derived server-side.
 - [ ] Any promotion to `packages/*` sits at a real reuse boundary.
 - [ ] Route files stay thin.
+- [ ] If this feature establishes a reusable pattern, add one entry to
+      `docs/ai/golden-examples.md` (use a `path#symbol` anchor) so agents have a
+      local example to copy.
 - [ ] `bun run typecheck` and the relevant feature gate pass.

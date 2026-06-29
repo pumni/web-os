@@ -4,7 +4,7 @@ import type { User } from '@supabase/supabase-js';
 import { Calendar, Clock } from 'lucide-react';
 
 import { Badge } from '@pumni/ui/feedback';
-import { CardSpotlight, CardContent, Avatar, AvatarImage, AvatarFallback } from '@pumni/ui/layout';
+import { Avatar, AvatarFallback, AvatarImage, Card, CardContent } from '@pumni/ui/layout';
 
 import { useClock } from '@/shared/hooks/use-clock';
 import { dateFormatter } from '@/shared/lib/formatters';
@@ -31,18 +31,8 @@ export function DashboardHeaderCard({ user }: DashboardHeaderCardProps) {
   const initialLetter = user.email?.charAt(0).toUpperCase() || 'U';
 
   return (
-    <CardSpotlight className="relative overflow-hidden transition-all duration-(--duration-base)">
-      {/* Decorative ambient glow — purely visual */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 -right-24 size-56 rounded-full bg-primary/10 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-20 -left-20 size-48 rounded-full bg-linear-to-tr from-(--brand-gradient-from)/10 to-(--brand-gradient-via)/10 blur-3xl"
-      />
-
-      <CardContent className="relative flex flex-col gap-5 py-6 md:flex-row md:items-center md:justify-between">
+    <Card variant="inset" className="overflow-hidden transition-all duration-(--duration-base)">
+      <CardContent className="flex flex-col gap-5 py-6 md:flex-row md:items-center md:justify-between">
         <div className="flex min-w-0 items-center gap-4">
           <Avatar
             size="lg"
@@ -84,6 +74,6 @@ export function DashboardHeaderCard({ user }: DashboardHeaderCardProps) {
           </Badge>
         </div>
       </CardContent>
-    </CardSpotlight>
+    </Card>
   );
 }

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { toast } from 'sonner';
-import { AnimatePresence, motion, useReducedMotion, MotionConfig } from '@pumni/ui/lib/motion-primitives';
+import { AnimatePresence, motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
 import { Button, Slider, SegmentedPicker, Switch, Checkbox } from '@pumni/ui/form';
 import {
   Card,
@@ -10,19 +10,12 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardWell,
 } from '@pumni/ui/layout';
-import { Window } from '@pumni/ui/os';
-import { Skeleton } from '@pumni/ui/feedback';
 import {
-  easing,
-  entranceYLarge,
   motionTokens,
   parallaxRate,
   recipes,
   springs,
-  staggerFast,
-  staggerSlow,
   transition,
 } from '@pumni/ui/lib/motion';
 import { withViewTransition } from '@pumni/ui/lib/view-transition';
@@ -37,14 +30,10 @@ import {
   Move,
   Sparkles,
   MousePointer,
-  HelpCircle,
-  Menu,
   ArrowLeft,
   BookOpen,
   Search,
   Activity,
-  Layers,
-  Settings,
   X,
 } from 'lucide-react';
 
@@ -203,21 +192,7 @@ export function MotionSection() {
 
   const activeArticle = VT_ARTICLES.find((a) => a.id === vtSelectedId) ?? VT_ARTICLES[0]!;
 
-  // Mouse parallax tracker
-  const [parallaxPos, setParallaxPos] = React.useState({ x: 0, y: 0 });
-  const handleParallaxMove = React.useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (isReduced) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-      const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      setParallaxPos({ x: nx, y: ny });
-    },
-    [isReduced],
-  );
-  const handleParallaxLeave = React.useCallback(() => {
-    setParallaxPos({ x: 0, y: 0 });
-  }, []);
+
 
   // Preset dispatcher
   const applyPreset = (presetName: 'fluid' | 'snappy' | 'bouncy') => {

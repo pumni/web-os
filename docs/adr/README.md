@@ -23,6 +23,11 @@ Write an ADR when a decision is:
 Do **not** write one for:
 - Trivial choices, naming, or anything already settled by an enforced config or conventions doc.
 - Reversible visual/token tuning (update `docs/conventions/design-system.md` instead) — see ADR-0012's consolidation.
+- **Further context-layer tuning.** The AI context layer is settled by ADR-0009 +
+  0013. Do not open a new context-layer ADR for prose trims, doc moves, or router
+  tweaks — make the edit. Only write one if there is a *measured* regression
+  (e.g. meta-vs-rule size inversion, or a gate that demonstrably missed real
+  drift). Five context-layer ADRs in June 2026 was the over-tuning this prevents.
 
 ## Format (MADR-lite)
 
