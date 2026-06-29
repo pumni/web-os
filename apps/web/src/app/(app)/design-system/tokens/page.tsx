@@ -1,7 +1,6 @@
 'use client';
 
-import { FoundationsSection } from '@/features/design-system/components/foundations-section';
-import { IdentitySection } from '@/features/design-system/components/identity-section';
+import { FoundationsSection, IdentitySection } from '@/features/design-system';
 
 export default function TokensPage() {
   return (

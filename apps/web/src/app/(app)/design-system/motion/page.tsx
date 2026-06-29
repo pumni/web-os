@@ -1,6 +1,6 @@
 'use client';
 
-import { MotionSection } from '@/features/design-system/components/motion-section';
+import { MotionSection } from '@/features/design-system';
 
 export default function MotionPage() {
   return (

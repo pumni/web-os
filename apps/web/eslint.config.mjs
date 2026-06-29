@@ -7,7 +7,6 @@ import {
   pumniNoAdHocSurface,
   pumniNoRawTiming,
   pumniFeatureBoundary,
-  pumniFeaturePresentationBoundary,
   pumniNoRawZIndex,
 } from '@pumni/config/eslint';
 
@@ -20,10 +19,10 @@ const eslintConfig = defineConfig([
   ...pumniNoAdHocSurface,
   // Timing-first guard: forbid raw Tailwind duration/ease utilities.
   ...pumniNoRawTiming,
-  // Feature boundary guard: forbid importing feature internals from outside the feature.
-  ...pumniFeatureBoundary,
-  // Feature presentation boundary guard: forbid direct data/auth imports in UI components.
-  ...pumniFeaturePresentationBoundary,
+  // Feature boundary + presentation guard: forbid importing feature internals from
+  // outside the feature, routing-layer imports inside features, and direct data/auth
+  // imports in feature UI components. Rules are auto-derived from src/features/*.
+  ...pumniFeatureBoundary(new URL('./src/features', import.meta.url)),
   // Z-index guard: warn on raw Tailwind z-classes in cross-component layers.
   ...pumniNoRawZIndex,
 

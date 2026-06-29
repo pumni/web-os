@@ -10,7 +10,7 @@ import type { CommandItem } from '@pumni/ui/overlay';
 import { cn } from '@pumni/ui/lib/cn';
 
 // Subcomponents
-import { ShowcaseHeader } from '@/features/design-system/components/showcase-header';
+import { ShowcaseHeader } from '@/features/design-system';
 
 const commandItems: CommandItem[] = [
   {
@@ -46,11 +46,7 @@ const TABS = [
   { href: '/design-system/apca', label: 'APCA & Contrast' },
 ] as const;
 
-export default function DesignSystemLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DesignSystemLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [commandOpen, setCommandOpen] = React.useState(false);
 
@@ -68,10 +64,10 @@ export default function DesignSystemLayout({
                 key={tab.href}
                 href={tab.href}
                 className={cn(
-                  'relative px-4 py-2.5 text-sm font-medium border-b-2 transition-all duration-(--duration-base) ease-fluid outline-hidden',
+                  'relative border-b-2 px-4 py-2.5 text-sm font-medium outline-hidden transition-all duration-(--duration-base) ease-fluid',
                   isActive
                     ? 'border-primary text-foreground'
-                    : 'border-transparent text-muted-foreground hover:text-foreground state-hover'
+                    : 'border-transparent state-hover text-muted-foreground hover:text-foreground',
                 )}
               >
                 {tab.label}
@@ -88,9 +84,7 @@ export default function DesignSystemLayout({
       </div>
 
       {/* Subpage content */}
-      <div className="min-w-0 flex-1">
-        {children}
-      </div>
+      <div className="min-w-0 flex-1">{children}</div>
 
       {/* COMMAND PALETTE PORTAL */}
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} items={commandItems} />

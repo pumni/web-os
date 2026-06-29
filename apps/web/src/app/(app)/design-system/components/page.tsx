@@ -32,12 +32,14 @@ import {
 import { Skeleton } from '@pumni/ui/feedback';
 
 // Subcomponents
-import { ControlsSection } from '@/features/design-system/components/controls-section';
-import { SurfacesSection } from '@/features/design-system/components/surfaces-section';
-import { OverlaysSection } from '@/features/design-system/components/overlays-section';
-import { FeedbackSection } from '@/features/design-system/components/feedback-section';
-import { BentoSection } from '@/features/design-system/components/bento-section';
-import { CardsSection } from '@/features/design-system/components/cards-section';
+import {
+  ControlsSection,
+  SurfacesSection,
+  OverlaysSection,
+  FeedbackSection,
+  BentoSection,
+  CardsSection,
+} from '@/features/design-system';
 
 export default function ComponentsPage() {
   const [dialogOpen, setDialogOpen] = React.useState(false);

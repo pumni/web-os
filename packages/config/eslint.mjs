@@ -7,9 +7,13 @@
  * auth/data/env/validator layers. Until now this rule lived only in prose — this
  * makes a violation fail `lint` instead of relying on humans remembering.
  *
- * Plain flat-config objects only (no imports) so this file stays
- * dependency-free; the consuming package supplies the TypeScript parser.
+ * Plain flat-config objects plus Node built-ins only — no third-party deps, so
+ * the consuming package still supplies the TypeScript parser. `node:fs` is used
+ * to derive the feature-boundary rules from the real `features/` directory (see
+ * `pumniFeatureBoundary`) instead of a hand-maintained list.
  */
+
+import fs from 'node:fs';
 
 /** @type {import("eslint").Linter.RuleEntry} */
 export const restrictedUiImports = [
@@ -207,96 +211,114 @@ export const pumniNoRawTiming = [
   },
 ];
 
-const FEATURES = ['design-system', 'design-trends', 'profile', 'sky-player', 'watch'];
+/**
+ * Lists the feature-slice directory names directly under `featuresDir` (e.g.
+ * `apps/web/src/features`). Deriving from the filesystem makes the directory the
+ * single source of truth: a new `features/<name>/` folder is firewalled the
+ * moment it exists, with no hand-maintained array to forget to update. Returns a
+ * sorted list (deterministic rule order); files and dot-directories are skipped,
+ * and a missing directory yields `[]` instead of throwing.
+ *
+ * @param {string | URL} featuresDir - directory holding the feature slices.
+ * @returns {string[]}
+ */
+export function readFeatureNames(featuresDir) {
+  if (!fs.existsSync(featuresDir)) return [];
+  return fs
+    .readdirSync(featuresDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+    .map((entry) => entry.name)
+    .sort();
+}
 
 /**
- * Feature boundary guard. Enforces that:
+ * Feature boundary + presentation guard. Enforces that:
  * 1. Features do not import from the routing layer (src/app/**) to ensure portability.
  * 2. Code outside a specific feature (including other features) must not import its internal files,
  *    forcing them to use the public API (root index.ts of the feature).
+ * 3. Feature UI components (.tsx) do not import Supabase clients or auth helpers
+ *    directly, keeping them pure presentation layers.
  * Test files are exempted from these rules.
+ *
+ * The per-feature rules are derived from the real `featuresDir` contents (see
+ * {@link readFeatureNames}) so the firewall can never silently miss a feature an
+ * author forgot to register. The consuming config passes its own `src/features`
+ * directory, keeping this shared package agnostic about the app's location.
+ *
+ * Why this owns the presentation restriction too: ESLint flat config does NOT
+ * merge two `no-restricted-imports` entries matching the same file — the last
+ * one wins and silently clobbers the rest. A separately-exported presentation
+ * rule on `src/features/**\/*.tsx` therefore used to override the feature
+ * firewall on those exact files. Folding every restricted-import concern for a
+ * given file scope into ONE rule object removes that override trap.
+ *
+ * @param {string | URL} featuresDir - the consuming app's `src/features` directory.
+ * @returns {import("eslint").Linter.Config[]}
  */
-export const pumniFeatureBoundary = [
-  {
-    name: 'pumni/feature-no-app-imports',
-    files: ['src/features/**/*.{ts,tsx}'],
-    ignores: ['src/test/**', '**/*.test.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: [
-                '**/app/**',
-                '@/app/**',
-              ],
-              message:
-                'Feature portability violation: Features must not import from the routing layer (@/app). Keep features fully self-contained.',
-            },
-          ],
-        },
-      ],
-    },
-  },
-  ...FEATURES.map((feature) => ({
-    name: `pumni/feature-boundary-${feature}`,
-    files: ['src/**/*.{ts,tsx}'],
-    ignores: [
-      `src/features/${feature}/**`,
-      'src/test/**',
-      '**/*.test.{ts,tsx}',
-    ],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: [
-                `**/features/${feature}/*`,
-                `**/features/${feature}/**/*`,
-              ],
-              message: `Feature boundary violation: Do not import internals of "${feature}" feature. Only import from the public API "@/features/${feature}".`,
-            },
-          ],
-        },
-      ],
-    },
-  })),
-];
+export function pumniFeatureBoundary(featuresDir) {
+  // One restricted-import pattern per feature, forbidding deep imports of its
+  // internals from anywhere (the public-API root `@/features/<name>` has no
+  // trailing segment, so it never matches and stays allowed). A single shared
+  // array is reused by every scope below so ALL features are enforced at once
+  // rather than only the last-declared one.
+  const internalPatterns = readFeatureNames(featuresDir).map((feature) => ({
+    group: [`**/features/${feature}/*`, `**/features/${feature}/**/*`],
+    message: `Feature boundary violation: Do not import internals of "${feature}" feature. Only import from the public API "@/features/${feature}".`,
+  }));
 
-/**
- * Feature presentation boundary guard. Enforces that UI components (.tsx)
- * within feature modules do not import Supabase clients or auth helpers directly,
- * ensuring they remain pure presentation layers.
- */
-export const pumniFeaturePresentationBoundary = [
-  {
-    name: 'pumni/feature-presentation-boundary',
-    files: ['src/features/**/*.tsx'],
-    ignores: ['src/test/**', '**/*.test.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: [
-                '@pumni/supabase',
-                '@pumni/supabase/*',
-                '@pumni/auth',
-                '@pumni/auth/*',
-              ],
-              message:
-                'Presentation boundary violation: UI components (.tsx) must not import Supabase clients or auth helpers directly. Delegate data operations to custom hooks, queries, or Server Actions. See docs/conventions/feature-module.md.',
-            },
-          ],
-        },
-      ],
+  // Features must stay portable: no reaching back into the routing layer.
+  const appLayerPattern = {
+    group: ['**/app/**', '@/app/**'],
+    message:
+      'Feature portability violation: Features must not import from the routing layer (@/app). Keep features fully self-contained.',
+  };
+
+  // Presentation purity: UI components delegate data/auth to hooks/queries/actions.
+  const presentationPattern = {
+    group: ['@pumni/supabase', '@pumni/supabase/*', '@pumni/auth', '@pumni/auth/*'],
+    message:
+      'Presentation boundary violation: UI components (.tsx) must not import Supabase clients or auth helpers directly. Delegate data operations to custom hooks, queries, or Server Actions. See docs/conventions/feature-module.md.',
+  };
+
+  // The three scopes below are disjoint by file path/extension, so no file is
+  // ever matched by two of them — each `no-restricted-imports` stays authoritative.
+  // Feature self-imports use relative paths (`./`, `../`), which do not match the
+  // `**/features/<name>/*` specifier patterns, so a feature freely imports its own files.
+  return [
+    {
+      // Inside a feature, non-UI modules (.ts): portability + cross-feature firewall.
+      name: 'pumni/feature-boundary-internal',
+      files: ['src/features/**/*.ts'],
+      ignores: ['src/test/**', '**/*.test.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': ['error', { patterns: [appLayerPattern, ...internalPatterns] }],
+      },
     },
-  },
-];
+    {
+      // Inside a feature, UI components (.tsx): the above plus presentation purity.
+      name: 'pumni/feature-boundary-internal-tsx',
+      files: ['src/features/**/*.tsx'],
+      ignores: ['src/test/**', '**/*.test.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          { patterns: [appLayerPattern, presentationPattern, ...internalPatterns] },
+        ],
+      },
+    },
+    {
+      // Outside any feature (routes, shared components, lib): consume features
+      // only through their public API, never their internals.
+      name: 'pumni/feature-boundary-external',
+      files: ['src/**/*.{ts,tsx}'],
+      ignores: ['src/features/**', 'src/test/**', '**/*.test.{ts,tsx}'],
+      rules: {
+        'no-restricted-imports': ['error', { patterns: internalPatterns }],
+      },
+    },
+  ];
+}
+
 /*
  * Raw z-index guard. The design system owns a single OS z-index scale
  * (tokens.css --z-window…--z-toast). Hand-picking a raw Tailwind z-class

@@ -45,6 +45,9 @@ runScript('Review Gate static rules', 'check-review-gate-rules.mjs');
 // 2. Secrets scan.
 runScript('Secrets scan', 'check-secrets.mjs');
 
+// 3. Feature-boundary firewall: rules stay derived from the real features tree.
+runScript('Feature boundary check', 'check-feature-boundary.mjs');
+
 if (failed) {
   console.error('\n[FAIL] AI regression evals failed.');
   process.exit(1);
