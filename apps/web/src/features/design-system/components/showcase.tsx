@@ -154,7 +154,7 @@ export function DesignSystemShowcase() {
                   <SelectItem value="critical">Critical</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Dropdown must appear above this dialog panel (z-popover 1050 &gt; z-modal 1000).
               </p>
             </div>

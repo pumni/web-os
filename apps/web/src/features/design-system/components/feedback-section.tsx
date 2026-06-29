@@ -141,15 +141,15 @@ export function FeedbackSection() {
             <div className="flex items-center gap-5">
               <div className="flex flex-col items-center gap-1.5">
                 <Spinner size="sm" />
-                <span className="font-mono text-[10px] text-muted-foreground">sm</span>
+                <span className="font-mono text-xs text-muted-foreground">sm</span>
               </div>
               <div className="flex flex-col items-center gap-1.5">
                 <Spinner size="md" />
-                <span className="font-mono text-[10px] text-muted-foreground">md</span>
+                <span className="font-mono text-xs text-muted-foreground">md</span>
               </div>
               <div className="flex flex-col items-center gap-1.5">
                 <Spinner size="lg" />
-                <span className="font-mono text-[10px] text-muted-foreground">lg</span>
+                <span className="font-mono text-xs text-muted-foreground">lg</span>
               </div>
             </div>
             <Separator />
@@ -159,7 +159,7 @@ export function FeedbackSection() {
                 Standalone — pass <code>aria-label</code> so the status role announces itself.
               </span>
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Decorative by default (<code>aria-hidden</code>) when paired with a visible label.
               Reduced-motion shows a static icon.
             </p>
@@ -365,7 +365,7 @@ export function FeedbackSection() {
               </ChatBubble>
             </div>
 
-            <p className="text-[10px] text-muted-foreground pt-2 text-center">
+            <p className="text-xs text-muted-foreground pt-2 text-center">
               Hover over bubbles to reveal timestamps (group-reveal).
             </p>
           </CardContent>

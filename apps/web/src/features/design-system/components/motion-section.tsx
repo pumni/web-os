@@ -328,7 +328,7 @@ export function MotionSection() {
               Motion Diagnostic Engine
             </span>
           </div>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             OS Prefs: <strong>{systemReducedMotion ? 'Reduced Motion' : 'Motion Allowed'}</strong> · Current Status: <strong>{isReduced ? 'Animations Blocked (Reduced Mode)' : 'All Animations Active'}</strong>
           </p>
         </div>
@@ -397,7 +397,7 @@ export function MotionSection() {
                   }}
                   aria-label="Spring stiffness coefficient"
                 />
-                <p className="text-[10px] text-muted-foreground">Controls transition velocity. High value = snaps faster.</p>
+                <p className="text-xs text-muted-foreground">Controls transition velocity. High value = snaps faster.</p>
               </div>
 
               {/* Damping Slider */}
@@ -416,7 +416,7 @@ export function MotionSection() {
                   }}
                   aria-label="Spring damping friction coefficient"
                 />
-                <p className="text-[10px] text-muted-foreground">Controls oscillation resistance. Low value = bouncy recoil.</p>
+                <p className="text-xs text-muted-foreground">Controls oscillation resistance. Low value = bouncy recoil.</p>
               </div>
 
               {/* Mass Slider */}
@@ -435,13 +435,13 @@ export function MotionSection() {
                   }}
                   aria-label="Spring payload mass coefficient"
                 />
-                <p className="text-[10px] text-muted-foreground">Alters inertia momentum. High mass = slower, heavier settle.</p>
+                <p className="text-xs text-muted-foreground">Alters inertia momentum. High mass = slower, heavier settle.</p>
               </div>
             </div>
 
             {/* SVG Visualizer Block */}
             <div className="flex flex-col justify-between gap-3 rounded-xl bg-muted/30 border border-border/40 p-4 lg:col-span-2">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Oscillation Decay Graph
               </span>
               <div className="relative flex-1 min-h-24">
@@ -471,19 +471,19 @@ export function MotionSection() {
                     transition={{ duration: 0.12, ease: 'linear' }}
                   />
                   {/* Graph Annotations */}
-                  <text x="8" y="84" className="text-[8px] font-mono fill-muted-foreground">Start (0.0)</text>
-                  <text x="8" y="34" className="text-[8px] font-mono fill-primary font-semibold">Target (1.0)</text>
-                  <text x="250" y="112" className="text-[8px] font-mono fill-muted-foreground">Time (1.0s)</text>
+                  <text x="8" y="84" className="text-xs font-mono fill-muted-foreground">Start (0.0)</text>
+                  <text x="8" y="34" className="text-xs font-mono fill-primary font-semibold">Target (1.0)</text>
+                  <text x="250" y="112" className="text-xs font-mono fill-muted-foreground">Time (1.0s)</text>
                 </svg>
               </div>
-              <p className="text-[9px] text-muted-foreground leading-tight">
+              <p className="text-xs text-muted-foreground leading-tight">
                 Plotted using exact equations for under/overdamping. Real-time path updates.
               </p>
             </div>
 
             {/* Test Action Canvas Block */}
             <div className="flex flex-col justify-between rounded-xl bg-muted/40 p-4 border border-border/40 text-center lg:col-span-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Real-time Sandbox
               </span>
               <div className="my-3 flex flex-1 items-center justify-center min-h-20 overflow-hidden">
@@ -560,7 +560,7 @@ export function MotionSection() {
               <CardHeader>
                 <CardTitle className="text-base">Tactile Micro-Feedback Library</CardTitle>
                 <CardDescription>
-                  <span className="font-mono text-[10px] font-semibold text-primary/80">Surface 1 · CSS &amp; Spring Gesture</span>
+                  <span className="font-mono text-xs font-semibold text-primary/80">Surface 1 · CSS &amp; Spring Gesture</span>
                   {' — '}Demo of the actual, reusable Pumni UI components and active state transitions.
                 </CardDescription>
               </CardHeader>
@@ -569,8 +569,8 @@ export function MotionSection() {
                 <div className="grid grid-cols-2 gap-3">
                   {/* CSS Interactive Card */}
                   <Card interactive variant="solid" className="py-4 justify-center items-center text-center">
-                    <p className="text-[10px] font-bold text-foreground leading-tight">CSS Interactive</p>
-                    <p className="text-[8px] text-muted-foreground mt-0.5 leading-normal">Hover lift + tap press via variables</p>
+                    <p className="text-xs font-bold text-foreground leading-tight">CSS Interactive</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-normal">Hover lift + tap press via variables</p>
                   </Card>
 
                   {/* JS Interactive Card */}
@@ -578,8 +578,8 @@ export function MotionSection() {
                     {...recipesGated.hoverLift}
                     className="flex flex-col justify-center items-center text-center rounded-xl border border-border bg-card p-4 cursor-pointer select-none"
                   >
-                    <p className="text-[10px] font-bold text-foreground leading-tight">JS hoverLift</p>
-                    <p className="text-[8px] text-muted-foreground mt-0.5 leading-normal">Physics spring lift + tap compress</p>
+                    <p className="text-xs font-bold text-foreground leading-tight">JS hoverLift</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-normal">Physics spring lift + tap compress</p>
                   </motion.div>
                 </div>
 
@@ -589,7 +589,7 @@ export function MotionSection() {
                   <div className="flex items-center justify-between text-xs">
                     <div className="space-y-0.5">
                       <span className="font-bold text-foreground block">Tactile Checkbox</span>
-                      <span className="text-[9px] text-muted-foreground block">Radix Checkbox with check indicator spring</span>
+                      <span className="text-xs text-muted-foreground block">Radix Checkbox with check indicator spring</span>
                     </div>
                     <Checkbox
                       checked={tactileCheckbox}
@@ -602,7 +602,7 @@ export function MotionSection() {
                   <div className="flex items-center justify-between text-xs pt-3 border-t border-border/20">
                     <div className="space-y-0.5">
                       <span className="font-bold text-foreground block">Tactile Switch</span>
-                      <span className="text-[9px] text-muted-foreground block">Radix Switch with sliding thumb spring</span>
+                      <span className="text-xs text-muted-foreground block">Radix Switch with sliding thumb spring</span>
                     </div>
                     <Switch
                       checked={tactileSwitch}
@@ -630,12 +630,12 @@ export function MotionSection() {
 
                 {/* Card States Playground */}
                 <div className="space-y-3 pt-1">
-                  <span className="text-[9.5px] font-bold text-foreground block uppercase tracking-wider">Card States Playground</span>
+                  <span className="text-xs font-bold text-foreground block uppercase tracking-wider">Card States Playground</span>
                   
                   {/* Test State Card */}
                   <Card state={cardState} className="py-4 items-center justify-center text-center min-h-16">
-                    <p className="text-[10px] font-bold text-foreground capitalize">State: {cardState}</p>
-                    <p className="text-[8px] text-muted-foreground mt-0.5 leading-normal">
+                    <p className="text-xs font-bold text-foreground capitalize">State: {cardState}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 leading-normal">
                       {cardState === 'idle' && 'Standard state. Hairline border + card shadow.'}
                       {cardState === 'loading' && 'Opacity breathing pulse animation infinite.'}
                       {cardState === 'error' && 'Plays shake animation once + destructive border.'}
@@ -644,7 +644,7 @@ export function MotionSection() {
                   </Card>
 
                   {/* Controls */}
-                  <div className="grid grid-cols-4 gap-1.5 text-[10px]">
+                  <div className="grid grid-cols-4 gap-1.5 text-xs">
                     <Button variant={cardState === 'idle' ? 'default' : 'outline'} size="xs" onClick={() => setCardState('idle')}>
                       Idle
                     </Button>
@@ -667,7 +667,7 @@ export function MotionSection() {
               <CardHeader>
                 <CardTitle className="text-base">Overlay State-Inspector</CardTitle>
                 <CardDescription>
-                  <span className="font-mono text-[10px] font-semibold text-primary/80">Surface 2 · tw-animate-css &amp; pause coordinator</span>
+                  <span className="font-mono text-xs font-semibold text-primary/80">Surface 2 · tw-animate-css &amp; pause coordinator</span>
                   {' — '}Trigger mock overlays below. Observe active classes change dynamically in the HUD.
                 </CardDescription>
               </CardHeader>
@@ -696,11 +696,11 @@ export function MotionSection() {
                   >
                     <div className="space-y-1.5">
                       <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-bold text-muted-foreground uppercase">Console dashboard</span>
-                        <span className="text-[7.5px] font-mono text-muted-foreground">sys: connected</span>
+                        <span className="text-xs font-bold text-muted-foreground uppercase">Console dashboard</span>
+                        <span className="text-xs font-mono text-muted-foreground">sys: connected</span>
                       </div>
                       <div className="h-2 border border-dashed border-border/80 rounded flex items-center justify-center p-4 bg-muted/10 cursor-context-menu" onClick={handleContextClick}>
-                        <span className="text-[8.5px] text-muted-foreground font-mono">Right-click / click here to Context Menu</span>
+                        <span className="text-xs text-muted-foreground font-mono">Right-click / click here to Context Menu</span>
                       </div>
                     </div>
 
@@ -719,7 +719,7 @@ export function MotionSection() {
                             <button className="absolute top-2 right-2 text-muted-foreground hover:text-foreground" onClick={() => setOverlaySim('none')}>
                               <X className="size-3" />
                             </button>
-                            <span className="text-[10px] font-bold text-foreground block">Modal dialog</span>
+                            <span className="text-xs font-bold text-foreground block">Modal dialog</span>
                             <div className="h-1 bg-muted rounded w-5/6" />
                             <div className="h-1 bg-muted rounded w-2/3" />
                             <Button size="xs" className="w-full mt-1" onClick={() => setOverlaySim('none')}>Confirm</Button>
@@ -738,7 +738,7 @@ export function MotionSection() {
                         >
                           <div className="space-y-2">
                             <div className="flex justify-between items-center">
-                              <span className="text-[9px] font-bold text-foreground">Sheet panel</span>
+                              <span className="text-xs font-bold text-foreground">Sheet panel</span>
                               <button onClick={() => setOverlaySim('none')} className="text-muted-foreground hover:text-foreground">
                                 <X className="size-2.5" />
                               </button>
@@ -776,7 +776,7 @@ export function MotionSection() {
                                   setOverlaySim('none');
                                 }}
                                 className={cn(
-                                  "rounded px-1.5 py-1 text-[9.5px] hover:bg-muted cursor-pointer font-medium truncate flex items-center justify-between",
+                                  "rounded px-1.5 py-1 text-xs hover:bg-muted cursor-pointer font-medium truncate flex items-center justify-between",
                                   i === 3 ? "text-red-500 hover:bg-red-500/10" : "text-foreground"
                                 )}
                               >
@@ -791,7 +791,7 @@ export function MotionSection() {
                       {overlaySim === 'context' && (
                         <div
                           style={{ top: `${contextPos.y}px`, left: `${contextPos.x}px` }}
-                          className="absolute w-24 bg-card border border-border rounded shadow-md p-0.75 z-20 animate-in fade-in-0 zoom-in-95 select-none duration-100 text-[9px] space-y-0.5"
+                          className="absolute w-24 bg-card border border-border rounded shadow-md p-0.75 z-20 animate-in fade-in-0 zoom-in-95 select-none duration-100 text-xs space-y-0.5"
                         >
                           {['Inspect', 'Refresh', 'Reload'].map((text) => (
                             <div
@@ -812,13 +812,13 @@ export function MotionSection() {
                 </div>
 
                 {/* Class Inspector HUD */}
-                <div className="space-y-2 rounded-lg bg-muted/40 p-3 text-[10px] font-mono leading-relaxed border border-border/40 text-foreground">
+                <div className="space-y-2 rounded-lg bg-muted/40 p-3 text-xs font-mono leading-relaxed border border-border/40 text-foreground">
                   <div>
-                    <span className="text-muted-foreground uppercase text-[8.5px] font-bold block mb-1">Active Overlay Type</span>
+                    <span className="text-muted-foreground uppercase text-xs font-bold block mb-1">Active Overlay Type</span>
                     <span className="text-primary font-bold uppercase">{overlaySim === 'none' ? 'None' : `${overlaySim} Simulator`}</span>
                   </div>
                   <div className="border-t border-border/20 pt-2">
-                    <span className="text-muted-foreground uppercase text-[8.5px] font-bold block mb-1">Active CSS transition classnames</span>
+                    <span className="text-muted-foreground uppercase text-xs font-bold block mb-1">Active CSS transition classnames</span>
                     <code className="text-foreground leading-normal break-all block">{getActiveOverlayClasses()}</code>
                   </div>
                 </div>
@@ -891,16 +891,16 @@ export function MotionSection() {
                     >
                       <div className="min-w-0">
                         <p className="font-bold text-foreground truncate">{item.title}</p>
-                        <p className="text-[9.5px] text-muted-foreground truncate mt-0.5">{item.desc}</p>
+                        <p className="text-xs text-muted-foreground truncate mt-0.5">{item.desc}</p>
                       </div>
-                      <span className="text-[8px] font-mono text-muted-foreground shrink-0">{item.time}</span>
+                      <span className="text-xs font-mono text-muted-foreground shrink-0">{item.time}</span>
                     </motion.li>
                   ))}
                 </motion.ul>
 
                 {/* Delay Pulse Timeline Indicator */}
                 <div className="space-y-1">
-                  <span className="text-[8px] font-semibold text-muted-foreground uppercase text-center block">Stagger Cascade Pulse Timeline</span>
+                  <span className="text-xs font-semibold text-muted-foreground uppercase text-center block">Stagger Cascade Pulse Timeline</span>
                   <div className="flex gap-2 justify-center py-1">
                     {STAGGER_NOTIFS.map((_, i) => (
                       <motion.div
@@ -978,7 +978,7 @@ export function MotionSection() {
                       <div className="size-1.5 rounded-full bg-red-500/80" />
                       <div className="size-1.5 rounded-full bg-amber-500/80" />
                       <div className="size-1.5 rounded-full bg-emerald-500/80" />
-                      <span className="text-[7.5px] font-mono text-muted-foreground ml-2 truncate">terminal</span>
+                      <span className="text-xs font-mono text-muted-foreground ml-2 truncate">terminal</span>
                     </div>
                     {/* Text block mockup */}
                     <div className="p-3 space-y-1.5">
@@ -989,7 +989,7 @@ export function MotionSection() {
                   </motion.div>
 
                   {/* Telemetry HUD */}
-                  <div className="absolute top-2 right-2 rounded-md bg-background/80 border border-border/30 px-2 py-1.5 text-[8px] font-mono text-muted-foreground select-none z-0 space-y-0.5">
+                  <div className="absolute top-2 right-2 rounded-md bg-background/80 border border-border/30 px-2 py-1.5 text-xs font-mono text-muted-foreground select-none z-0 space-y-0.5">
                     <p>offset_x: <span className="text-foreground font-bold">{dragCoords.x}px</span></p>
                     <p>offset_y: <span className="text-foreground font-bold">{dragCoords.y}px</span></p>
                     <p>physics_state: <span className={cn(
@@ -1054,15 +1054,15 @@ export function MotionSection() {
                             <Activity className="size-3.5" />
                           </div>
                           <div className="min-w-0">
-                            <motion.span layout="position" className="text-[10px] font-bold text-foreground block truncate leading-tight">
+                            <motion.span layout="position" className="text-xs font-bold text-foreground block truncate leading-tight">
                               {item.title}
                             </motion.span>
-                            <motion.span layout="position" className="text-[8.5px] text-muted-foreground block truncate leading-tight mt-0.5">
+                            <motion.span layout="position" className="text-xs text-muted-foreground block truncate leading-tight mt-0.5">
                               {item.category}
                             </motion.span>
                           </div>
                         </div>
-                        <motion.span layout="position" className="text-[10px] font-mono font-bold text-foreground shrink-0">
+                        <motion.span layout="position" className="text-xs font-mono font-bold text-foreground shrink-0">
                           {item.price}
                         </motion.span>
                       </motion.div>
@@ -1083,7 +1083,7 @@ export function MotionSection() {
                       <motion.div
                         key="window-anim"
                         {...recipesGated.window}
-                        className="rounded-lg bg-card border border-border p-2 shadow-sm text-[10px] text-center w-40"
+                        className="rounded-lg bg-card border border-border p-2 shadow-sm text-xs text-center w-40"
                       >
                         Mount Spring: <code>recipes.window</code>
                       </motion.div>
@@ -1106,7 +1106,7 @@ export function MotionSection() {
                 <CardHeader>
                   <CardTitle className="text-base">Page View Transitions</CardTitle>
                   <CardDescription>
-                    <span className="font-mono text-[10px] font-semibold text-primary/80">Surface 4 · Native VT API</span>
+                    <span className="font-mono text-xs font-semibold text-primary/80">Surface 4 · Native VT API</span>
                     {' — '}Wraps callbacks in <code>document.startViewTransition()</code> to trigger GPU transitions.
                   </CardDescription>
                 </CardHeader>
@@ -1121,14 +1121,14 @@ export function MotionSection() {
                     Default Crossfade (No Type)
                   </Button>
 
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     View Transitions capture screen snapshots and crossfade them off-main-thread. Custom named types let CSS dictate distinct keyframes for slides or zooms.
                   </p>
 
-                  <div className="rounded-lg bg-muted/40 p-3 text-[10px] font-mono leading-relaxed border border-border/40 text-foreground space-y-1">
-                    <span className="text-[9px] text-muted-foreground uppercase font-bold block mb-1">State Freeze Coordinator</span>
+                  <div className="rounded-lg bg-muted/40 p-3 text-xs font-mono leading-relaxed border border-border/40 text-foreground space-y-1">
+                    <span className="text-xs text-muted-foreground uppercase font-bold block mb-1">State Freeze Coordinator</span>
                     <code>html[data-vt-freeze] *</code>
-                    <p className="font-sans text-[10px] text-muted-foreground leading-normal mt-1">
+                    <p className="font-sans text-xs text-muted-foreground leading-normal mt-1">
                       Pauses infinite loaders or shimmers during captures to prevent pixelated screenshots.
                     </p>
                   </div>
@@ -1153,7 +1153,7 @@ export function MotionSection() {
                           <div>
                             <div className="relative mb-3">
                               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3 text-muted-foreground" />
-                              <div className="w-full bg-muted/50 border border-border rounded-md pl-8 pr-3 py-1 text-[10px] text-muted-foreground select-none">
+                              <div className="w-full bg-muted/50 border border-border rounded-md pl-8 pr-3 py-1 text-xs text-muted-foreground select-none">
                                 Search platform docs...
                               </div>
                             </div>
@@ -1186,18 +1186,18 @@ export function MotionSection() {
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-center gap-1.5">
-                                      <span className="text-[11px] font-bold text-foreground truncate group-hover:text-primary transition-colors">
+                                      <span className="text-xs font-bold text-foreground truncate group-hover:text-primary transition-colors">
                                         {art.title}
                                       </span>
-                                      <span className="text-[8px] text-muted-foreground shrink-0">{art.readTime}</span>
+                                      <span className="text-xs text-muted-foreground shrink-0">{art.readTime}</span>
                                     </div>
-                                    <p className="text-[9.5px] text-muted-foreground truncate">{art.snippet}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{art.snippet}</p>
                                   </div>
                                 </div>
                               ))}
                             </div>
                           </div>
-                          <p className="text-[9.5px] text-center text-muted-foreground italic leading-normal">
+                          <p className="text-xs text-center text-muted-foreground italic leading-normal">
                             Triggers <code>slide-forward</code> root animation + <code>vt-article-avatar</code> morph.
                           </p>
                         </div>
@@ -1215,7 +1215,7 @@ export function MotionSection() {
                                   { type: 'slide-back' },
                                 );
                               }}
-                              className="inline-flex items-center gap-1 text-[10px] text-primary font-bold hover:underline select-none"
+                              className="inline-flex items-center gap-1 text-xs text-primary font-bold hover:underline select-none"
                             >
                               <ArrowLeft className="size-3" /> Return to directory
                             </button>
@@ -1234,7 +1234,7 @@ export function MotionSection() {
                                 {activeArticle.avatarChar}
                               </div>
                               <div>
-                                <span className="text-[8.5px] text-primary font-bold uppercase tracking-widest">
+                                <span className="text-xs text-primary font-bold uppercase tracking-widest">
                                   {activeArticle.category}
                                 </span>
                                 <h3 className="text-xs font-black text-foreground leading-snug">
@@ -1243,12 +1243,12 @@ export function MotionSection() {
                               </div>
                             </div>
 
-                            <p className="text-[10px] text-muted-foreground leading-relaxed">
+                            <p className="text-xs text-muted-foreground leading-relaxed">
                               {activeArticle.body}
                             </p>
                           </div>
 
-                          <p className="text-[9.5px] text-center text-muted-foreground italic pt-2 border-t border-border/20">
+                          <p className="text-xs text-center text-muted-foreground italic pt-2 border-t border-border/20">
                             Back navigations leverage <code>slide-back</code> keyframes.
                           </p>
                         </div>
@@ -1264,7 +1264,7 @@ export function MotionSection() {
               <CardHeader>
                 <CardTitle className="text-base">Scroll-Driven Viewport Mockups</CardTitle>
                 <CardDescription>
-                  <span className="font-mono text-[10px] font-semibold text-primary/80">Surface 5 · CSS animation-timeline</span>
+                  <span className="font-mono text-xs font-semibold text-primary/80">Surface 5 · CSS animation-timeline</span>
                   {' — '}Scroll inside each smartphone viewport. Foreground cards trigger entrance animations, while phone 3 displays background grid drift.
                 </CardDescription>
               </CardHeader>
@@ -1272,13 +1272,13 @@ export function MotionSection() {
                 <div className="grid gap-6 md:grid-cols-3">
                   {/* Phone 1: scroll-fade-in */}
                   <div className="flex flex-col items-center gap-2">
-                    <span className="font-mono text-[10px] font-bold text-foreground">scroll-fade-in</span>
+                    <span className="font-mono text-xs font-bold text-foreground">scroll-fade-in</span>
                     <div className="relative h-[320px] w-[180px] rounded-[24px] border-[6px] border-border bg-background shadow-md overflow-hidden flex flex-col">
                       {/* Speaker / Notch */}
                       <div className="absolute top-1 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-border/80 z-20" />
                       {/* Screen Content Scrollport */}
                       <div className="flex-1 overflow-y-auto p-2 pt-6 space-y-2 select-none">
-                        <p className="text-[9px] text-center text-muted-foreground pb-2">↓ Scroll viewport</p>
+                        <p className="text-xs text-center text-muted-foreground pb-2">↓ Scroll viewport</p>
                         {SCROLL_ITEMS.map((item) => (
                           <div
                             key={item.id}
@@ -1289,11 +1289,11 @@ export function MotionSection() {
                           >
                             <div className="flex items-center gap-1.5">
                               <item.icon className="size-3 text-primary shrink-0" />
-                              <span className="text-[9.5px] font-bold text-foreground truncate leading-none">
+                              <span className="text-xs font-bold text-foreground truncate leading-none">
                                 {item.title}
                               </span>
                             </div>
-                            <p className="text-[8.5px] text-muted-foreground leading-tight truncate">{item.desc}</p>
+                            <p className="text-xs text-muted-foreground leading-tight truncate">{item.desc}</p>
                           </div>
                         ))}
                         <div className="h-12" /> {/* Bottom gap to allow scrolling final card */}
@@ -1303,12 +1303,12 @@ export function MotionSection() {
 
                   {/* Phone 2: scroll-slide-up */}
                   <div className="flex flex-col items-center gap-2">
-                    <span className="font-mono text-[10px] font-bold text-foreground">scroll-slide-up</span>
+                    <span className="font-mono text-xs font-bold text-foreground">scroll-slide-up</span>
                     <div className="relative h-[320px] w-[180px] rounded-[24px] border-[6px] border-border bg-background shadow-md overflow-hidden flex flex-col">
                       <div className="absolute top-1 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-border/80 z-20" />
                       {/* Screen Content Scrollport */}
                       <div className="flex-1 overflow-y-auto p-2 pt-6 space-y-2 select-none">
-                        <p className="text-[9px] text-center text-muted-foreground pb-2">↓ Scroll viewport</p>
+                        <p className="text-xs text-center text-muted-foreground pb-2">↓ Scroll viewport</p>
                         {SCROLL_ITEMS.map((item) => (
                           <div
                             key={item.id}
@@ -1319,11 +1319,11 @@ export function MotionSection() {
                           >
                             <div className="flex items-center gap-1.5">
                               <item.icon className="size-3 text-primary shrink-0" />
-                              <span className="text-[9.5px] font-bold text-primary truncate leading-none">
+                              <span className="text-xs font-bold text-primary truncate leading-none">
                                 {item.title}
                               </span>
                             </div>
-                            <p className="text-[8.5px] text-primary/80 leading-tight truncate">{item.desc}</p>
+                            <p className="text-xs text-primary/80 leading-tight truncate">{item.desc}</p>
                           </div>
                         ))}
                         <div className="h-12" />
@@ -1333,7 +1333,7 @@ export function MotionSection() {
 
                   {/* Phone 3: scroll-parallax */}
                   <div className="flex flex-col items-center gap-2">
-                    <span className="font-mono text-[10px] font-bold text-foreground">scroll-parallax</span>
+                    <span className="font-mono text-xs font-bold text-foreground">scroll-parallax</span>
                     <div className="relative h-[320px] w-[180px] rounded-[24px] border-[6px] border-border bg-background shadow-md overflow-hidden flex flex-col" style={{ isolation: 'isolate' }}>
                       <div className="absolute top-1 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-border/80 z-20" />
                       
@@ -1348,7 +1348,7 @@ export function MotionSection() {
 
                       {/* Screen Content Scrollport */}
                       <div className="flex-1 overflow-y-auto p-2 pt-6 space-y-2 select-none z-10">
-                        <p className="text-[9px] text-center text-muted-foreground pb-2">↓ Scroll viewport</p>
+                        <p className="text-xs text-center text-muted-foreground pb-2">↓ Scroll viewport</p>
                         {SCROLL_ITEMS.map((item) => (
                           <div
                             key={item.id}
@@ -1356,11 +1356,11 @@ export function MotionSection() {
                           >
                             <div className="flex items-center gap-1.5">
                               <item.icon className="size-3 text-foreground/80 shrink-0" />
-                              <span className="text-[9.5px] font-bold text-foreground truncate leading-none">
+                              <span className="text-xs font-bold text-foreground truncate leading-none">
                                 {item.title}
                               </span>
                             </div>
-                            <p className="text-[8.5px] text-muted-foreground leading-tight truncate">{item.desc}</p>
+                            <p className="text-xs text-muted-foreground leading-tight truncate">{item.desc}</p>
                           </div>
                         ))}
                         <div className="h-12" />
@@ -1368,7 +1368,7 @@ export function MotionSection() {
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 border-t pt-3 text-[10px] text-muted-foreground leading-normal">
+                <div className="mt-4 border-t pt-3 text-xs text-muted-foreground leading-normal">
                   Phone 3 layers drift relative to the container scroll direction (Backtrack speed coefficient: <code>{parallaxRate}×</code>).
                   All timeline animations utilize GPU-bound hardware acceleration.
                 </div>
@@ -1391,7 +1391,7 @@ export function MotionSection() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {/* Duration register */}
               <div className="space-y-1.5">
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase">duration (s) · --duration-*</span>
+                <span className="text-xs font-semibold text-muted-foreground uppercase">duration (s) · --duration-*</span>
                 {Object.entries(motionTokens.duration).map(([key, val]) => (
                   <div key={key} className="flex justify-between text-xs font-mono">
                     <span className="text-foreground">{key}</span>
@@ -1402,7 +1402,7 @@ export function MotionSection() {
 
               {/* Curve register */}
               <div className="space-y-1.5">
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase">easing · --ease-*</span>
+                <span className="text-xs font-semibold text-muted-foreground uppercase">easing · --ease-*</span>
                 {Object.entries(motionTokens.easing).map(([key, val]) => (
                   <div key={key} className="flex justify-between text-xs font-mono">
                     <span className="text-foreground">{key}</span>
@@ -1413,7 +1413,7 @@ export function MotionSection() {
 
               {/* Geometry metrics */}
               <div className="space-y-1.5">
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase">geometry · --entrance-*</span>
+                <span className="text-xs font-semibold text-muted-foreground uppercase">geometry · --entrance-*</span>
                 <div className="flex justify-between text-xs font-mono">
                   <span className="text-foreground">entranceY</span>
                   <span className="text-muted-foreground">{motionTokens.entranceY}px</span>
@@ -1434,7 +1434,7 @@ export function MotionSection() {
 
               {/* Stagger intervals */}
               <div className="space-y-1.5">
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase">stagger (s) · --stagger-*</span>
+                <span className="text-xs font-semibold text-muted-foreground uppercase">stagger (s) · --stagger-*</span>
                 <div className="flex justify-between text-xs font-mono">
                   <span className="text-foreground">staggerFast</span>
                   <span className="text-muted-foreground">{motionTokens.staggerFast}s</span>

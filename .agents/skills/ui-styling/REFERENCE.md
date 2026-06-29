@@ -14,7 +14,7 @@ hard rules and completion checklist stay in `SKILL.md`.
 | `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
 | `border` / `input` / `field` / `ring` | Hairlines, fields, input backdrops, focus ring |
-| `glass-tint` / `glass-edge` / `surface-rim-top` / `glass-shadow-edge` / `glass-scrim` / `glass-blur` | Translucent glassmorphism surfaces (5-element model, ADR-0014/0016). `surface-rim-top`/`glass-shadow-edge` = the volumetric edge pair (inset box-shadows, NOT APCA-gated); `--surface-rim-top` is glass-only since ADR-0020 (solid cards dropped it — `surface-raised` is structural-only: `--shadow-card-raised`, no rim); `glass-fallback-bg` = opaque fallback; vibrancy is the single `--glass-saturate` knob (≈1.4); dark blur uses 16px (`--blur-glass-lg`). Perf: `will-change` scoped to overlay transitions; stacked glass ≤2 layers (each layer forces a separate backdrop render pass — doc/skill rule). |
+| `glass-tint` / `glass-edge` / `surface-rim-top` / `glass-shadow-edge` / `glass-scrim` / `glass-blur` | Translucent glassmorphism surfaces (5-element model, ADR-0012). `surface-rim-top`/`glass-shadow-edge` = the volumetric edge pair (inset box-shadows, NOT APCA-gated); `--surface-rim-top` is glass-only (solid cards dropped it — `surface-raised` is structural-only: `--shadow-card-raised`, no rim); `glass-fallback-bg` = opaque fallback; vibrancy is the single `--glass-saturate` knob (≈1.4); dark blur uses 16px (`--blur-glass-lg`). Perf: `will-change` scoped to overlay transitions; stacked glass ≤2 layers (each layer forces a separate backdrop render pass — doc/skill rule). |
 | `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) |
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
@@ -27,8 +27,8 @@ scales, and raw `oklch(...)`) are restricted to token/theme files.
 
 | Role | How to build it | Use for |
 | --- | --- | --- |
-| Floating glass | `GlassSurface variant="panel\|bar\|window\|titlebar"` or the matching `glass-*` utility | Floating layers: dialogs, sheets, popovers, command palette, toast, topbar, dock, sidebar rail, OS windows, pills/overlays. Glassmorphism (5-element model): frosted vibrant fill + luminous edge pair (`--surface-rim-top`/`--glass-shadow-edge`), tokenized `--glass-saturate` (≈1.4), directional `--shadow-glass`. **Must float over a colourful backdrop** (ADR-0015): chrome glass over whatever sits behind it; feature/hero glass cards wrapped in 2-blob container. On flat backgrounds → use `Card variant="solid"`. Dense content (forms/tables) always solid. |
-| Solid card | `<Card>` / `variant="solid"` -> `border bg-card surface-raised rounded-xl` | Primary content surfaces. `surface-raised` = `--shadow-card-raised` only (structural, NO specular rim — ADR-0020 amends ADR-0018's shared seam; the rim is glass-only). |
+| Floating glass | `GlassSurface variant="panel\|bar\|window\|titlebar"` or the matching `glass-*` utility | Floating layers: dialogs, sheets, popovers, command palette, toast, topbar, dock, sidebar rail, OS windows, pills/overlays. Glassmorphism (5-element model): frosted vibrant fill + luminous edge pair (`--surface-rim-top`/`--glass-shadow-edge`), tokenized `--glass-saturate` (≈1.4), directional `--shadow-glass`. **Must float over a colourful backdrop** (ADR-0012): chrome glass over whatever sits behind it; feature/hero glass cards wrapped in 2-blob container. On flat backgrounds → use `Card variant="solid"`. Dense content (forms/tables) always solid. |
+| Solid card | `<Card>` / `variant="solid"` -> `border bg-card surface-raised rounded-xl` | Primary content surfaces. `surface-raised` = `--shadow-card-raised` only (structural, NO specular rim — the rim is glass-only, ADR-0012). |
 | Inset well | `<CardWell>` (or `<Card variant="inset">`) — never hand-roll `border bg-muted` (`pumniNoAdHocSurface` blocks it) | Nested wells inside cards: stat tiles, list rows, scroll wells. `radius` md/lg/xl, `padding` none/sm/md/lg. |
 | Control fill | `bg-muted` plus `motion-safe:hover:bg-muted/80` | Small inline controls: tabs, chips, code pills |
 | Status tint | `<Badge tone="...">` (`neutral\|primary\|success\|warning\|destructive`, optional `pulse` dot) | Inline status chips/banners — the owned status-tint pill. |
@@ -104,9 +104,37 @@ surface opacity (`bg-card/NN`, `bg-background/NN`), which remains banned.
 
 Runtime personalization rides the tier-2 semantic layer. `PersonalizationProvider`
 writes `data-accent`, `data-glass`, and `data-density`; `PersonalizationScript`
-must run before first paint. Accent values are `indigo`, `violet`, `rose`; glass
-values are `soft`, `default`, `strong`; density values are `comfortable`,
-`compact`.
+must run before first paint. Accent values are `coral`, `cyan`, `indigo`,
+`violet`, `rose` (`coral` is the brand default); glass values are `soft`,
+`default`, `strong`; density values are `comfortable`, `compact`.
+
+## Deriving an accessible foreground (inverse APCA)
+
+Don't hand-tune contrast for an overridden brand colour — derive it. `apca.ts`
+(`packages/ui/src/lib/apca.ts`) bisects the OKLCH lightness axis with the same
+`apcaContrast` the gate uses, so the result clears the gate by construction.
+
+```ts
+import { foregroundFor, backgroundFor } from '@pumni/ui'; // lib/apca
+
+// least-extreme text colour over a brand surface that hits Lc 60 (body) / Lc 25 (UI)
+const fg = foregroundFor({ l: 0.64, c: 0.14, h: 40 }, 60, { polarity: 'auto' });
+// → { oklch, l, c, h, lc, reachedTarget }
+fg.oklch;          // drop straight into a CSS token
+fg.reachedTarget;  // false when no colour over this surface can reach the target
+```
+
+- `targetLc`: **60** body text, **45** large text, **25** UI edges/chrome.
+- `polarity`: `'auto'` picks the readable side by contrast *capacity* (correct for
+  mid-lightness anchors, where `L ≥ 0.5` guesses wrong); force with
+  `'lighter'`/`'darker'`.
+- `chroma`/`hue` default to `0` (neutral → always in sRGB gamut); raise only when
+  you need a tinted foreground and accept gamut risk.
+- `backgroundFor(fg, targetLc)` is the dual — derive the least-tinted surface
+  under a fixed text colour.
+
+This is the sanctioned path behind ADR-0010 brand overrides; the live playground
+is the `apca` design-system page (`features/design-system/components/apca-section.tsx`).
 
 ## Adding a token
 

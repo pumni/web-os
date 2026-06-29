@@ -38,10 +38,10 @@ reference detail.
   orchestration. JS motion must call `useReducedMotion()`. Use
   `recipes.hoverLift`, `pressScale`, and `staggerItem` instead of hand-rolled
   `whileHover`. Motion tokens mirror in `lib/motion.ts`. CSS-only stagger
-  uses `recipes.staggerContainer*` from `@pumni/ui` (the
-  `starting-style.css` `css-stagger` utility was retired in animation-system-refactor Phase 2;
-  see ADR-missing linked plan for the audit trail).
-- Personalization: accent (`indigo`/`violet`/`rose`), glass
+  uses `recipes.staggerContainer*` from `@pumni/ui` (the `starting-style.css`
+  `css-stagger` utility was retired; the recipes in `lib/motion.ts` are now the
+  sole stagger vocabulary).
+- Personalization: accent (`coral`/`cyan`/`indigo`/`violet`/`rose`), glass
   (`soft`/`default`/`strong`), density (`comfortable`/`compact`).
   `PersonalizationScript` must be first child of `<body>` to avoid FOUC.
 
@@ -59,7 +59,7 @@ not inline its tables here.
 - [ ] Surface is one of the closed-set roles; no `bg-{card,background,popover}/NN`.
 - [ ] One `border-border`; status tint is the only `/20` border exception.
 - [ ] Floating layer uses `GlassSurface`/`glass-*`; frosted blur 8-16px only.
-- [ ] Glass backdrop (ADR-0015): glass only over colourful backdrop (blobs/media/overlay); dense content always solid; on flat backgrounds → use `Card variant="solid"`.
+- [ ] Glass backdrop (ADR-0012): glass only over colourful backdrop (blobs/media/overlay); dense content always solid; on flat backgrounds → use `Card variant="solid"`.
 - [ ] Glass perf: no `backdrop-filter` in transitions/animations; ≤2 glass layers stacked.
 - [ ] Radius/z-index use named utilities; no `rounded-[Npx]`, no raw `z-40`/`z-50` for cross-component layers.
 - [ ] Motion uses recipes / `motion-safe:` CSS; `useReducedMotion()` on JS motion.

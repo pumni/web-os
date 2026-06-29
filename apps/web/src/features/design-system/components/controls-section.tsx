@@ -201,13 +201,13 @@ export function ControlsSection() {
                     placeholder={demoInputDisabled ? 'Locked state' : 'Type something...'}
                     defaultValue={demoInputDisabled ? 'Locked' : 'Editable text'}
                   />
-                  {demoInputInvalid && (
-                    <p className="text-[11px] text-destructive">Invalid input data entered.</p>
-                  )}
+                    {demoInputInvalid && (
+                    <p className="text-xs text-destructive">Invalid input data entered.</p>
+                    )}
                 </div>
 
                 <div className="space-y-2.5 pt-2">
-                  <span className="text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
+                  <span className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
                     Configure States & Styles
                   </span>
                   <div className="space-y-2">
@@ -374,7 +374,7 @@ export function ControlsSection() {
                 </li>
               ))}
             </ul>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Matches every whitespace-split token. Empty query renders text untouched.
             </p>
           </CardContent>

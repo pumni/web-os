@@ -272,14 +272,14 @@ export function FoundationsSection({
                   <tbody className="divide-y divide-border/40">
                     {TYPO_STEPS.map((t) => (
                       <tr key={t.step} className="align-middle">
-                        <td className="py-2.5 font-mono text-[10px]">
+                        <td className="py-2.5 font-mono text-xs">
                           <span className="text-foreground block">{t.step}</span>
-                          {showSpecs && <span className="text-muted-foreground block text-[9px]">{t.var}</span>}
+                          {showSpecs && <span className="text-muted-foreground block text-xs">{t.var}</span>}
                         </td>
                         {showSpecs && (
                           <td className="py-2.5">
                             <span className="text-foreground block">{t.size}</span>
-                            <span className="text-muted-foreground block text-[10px]">LH: {t.lh}</span>
+                            <span className="text-muted-foreground block text-xs">LH: {t.lh}</span>
                           </td>
                         )}
                         <td className="py-2.5">
@@ -306,7 +306,7 @@ export function FoundationsSection({
                 ))}
               </div>
               {showSpecs && (
-                <CardWell className="p-3 text-[11px] leading-relaxed text-muted-foreground border border-border">
+                <CardWell className="p-3 text-xs leading-relaxed text-muted-foreground border border-border">
                   <span className="font-semibold text-foreground block mb-1">Concentric Nesting Rule</span>
                   To maintain geometric alignment, inner child radius must scale down: <code>R_child = R_parent - padding</code>. 
                   Use <code>rounded-nested</code> class or <code>--radius-nested-xl</code> for direct calculations.
@@ -367,18 +367,18 @@ export function FoundationsSection({
                       <span className="h-2 w-12 rounded bg-primary/20 block animate-pulse" />
                       <span className="h-3 w-2/3 rounded bg-foreground/15 block" />
                     </div>
-                    <span className="text-[9px] text-muted-foreground font-mono">Bento Main (2 cols)</span>
+                    <span className="text-xs text-muted-foreground font-mono">Bento Main (2 cols)</span>
                   </CardWell>
                   <CardWell className="col-span-1 flex flex-col justify-between p-3 bg-card border border-border h-full">
                     <div className="space-y-1">
                       <span className="size-4 rounded-full bg-primary/20 block" />
                       <span className="h-2 w-5/6 rounded bg-foreground/15 block" />
                     </div>
-                    <span className="text-[9px] text-muted-foreground font-mono">Bento Side</span>
+                    <span className="text-xs text-muted-foreground font-mono">Bento Side</span>
                   </CardWell>
                   <CardWell className="col-span-3 flex items-center justify-between p-3 bg-card border border-border">
                     <span className="h-2 w-1/3 rounded bg-foreground/15 block" />
-                    <span className="text-[9px] text-muted-foreground font-mono">Bento Footer (3 cols)</span>
+                    <span className="text-xs text-muted-foreground font-mono">Bento Footer (3 cols)</span>
                   </CardWell>
                 </div>
               </div>
@@ -406,9 +406,9 @@ export function FoundationsSection({
                       {SPACING_STEPS.map((s) => (
                         <div key={s.name} className="flex items-center gap-3 text-xs text-muted-foreground">
                           <span className="w-12 font-mono text-foreground font-semibold">Step {s.name}</span>
-                          <span className="w-20 font-mono text-[10px]">{s.tailwind}</span>
+                          <span className="w-20 font-mono text-xs">{s.tailwind}</span>
                           <div className="grow h-1.5 bg-primary/20 rounded-xs" style={{ width: s.px }} />
-                          <span className="w-24 text-right font-mono text-[10px] text-foreground">{s.px} ({s.rem})</span>
+                          <span className="w-24 text-right font-mono text-xs text-foreground">{s.px} ({s.rem})</span>
                         </div>
                       ))}
                     </div>
@@ -419,22 +419,22 @@ export function FoundationsSection({
                     <div className="grid gap-2 sm:grid-cols-2 text-xs">
                       <CardWell className="p-2.5 space-y-1 bg-card border border-border">
                         <span className="font-semibold text-foreground">Comfortable (Default)</span>
-                        <div className="flex justify-between font-mono text-[10px]">
+                        <div className="flex justify-between font-mono text-xs">
                           <span>Height:</span>
                           <span>36px (2.25rem)</span>
                         </div>
-                        <div className="flex justify-between font-mono text-[10px]">
+                        <div className="flex justify-between font-mono text-xs">
                           <span>Vertical Padding:</span>
                           <span>8px (0.5rem)</span>
                         </div>
                       </CardWell>
                       <CardWell className="p-2.5 space-y-1 bg-card border border-border">
                         <span className="font-semibold text-foreground">Compact Density</span>
-                        <div className="flex justify-between font-mono text-[10px]">
+                        <div className="flex justify-between font-mono text-xs">
                           <span>Height:</span>
                           <span>32px (2.0rem)</span>
                         </div>
-                        <div className="flex justify-between font-mono text-[10px]">
+                        <div className="flex justify-between font-mono text-xs">
                           <span>Vertical Padding:</span>
                           <span>6px (0.375rem)</span>
                         </div>
@@ -468,9 +468,9 @@ export function FoundationsSection({
               <div className="grid gap-4 md:grid-cols-2">
                 {/* Left Column: Side-Profile Blueprint Svg */}
                 <div className="border border-border rounded-xl bg-card p-4 flex flex-col justify-between min-h-[220px]">
-                  <span className="block font-mono text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Side-Profile Blueprint</span>
+                  <span className="block font-mono text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Side-Profile Blueprint</span>
                   <div className="flex items-center justify-center grow">
-                    <svg className="w-full h-36 text-muted-foreground/30 font-mono text-[9px]" viewBox="0 0 200 120">
+                    <svg className="w-full h-36 text-muted-foreground/30 font-mono text-xs" viewBox="0 0 200 120">
                       {/* Screen Base Line */}
                       <line x1="10" y1="100" x2="190" y2="100" stroke="currentColor" strokeWidth="2" />
                       <text x="12" y="112" fill="currentColor">Screen Canvas</text>
@@ -489,7 +489,7 @@ export function FoundationsSection({
                       {/* Floating Element */}
                       <g transform={`translate(40, ${elementY})`} className="transition-all duration-300">
                         <rect x="0" y="0" width="120" height="14" rx="4" className="fill-card stroke-border" strokeWidth="1" />
-                        <text x="60" y="10" textAnchor="middle" fill="currentColor" className="text-[8px] font-bold">
+                        <text x="60" y="10" textAnchor="middle" fill="currentColor" className="text-xs font-bold">
                           {activeElevation === 'control' && 'Control (1px)'}
                           {activeElevation === 'card' && 'Solid Card (4px)'}
                           {activeElevation === 'glass' && 'Glass Panel (12px)'}
@@ -500,7 +500,7 @@ export function FoundationsSection({
                       {/* Height Indicator arrow */}
                       <line x1="170" y1="100" x2="170" y2={elementY + 7} stroke="var(--primary)" strokeWidth="1.5" className="transition-all duration-300" />
                       <polygon points={`170,${elementY + 7} 167,${elementY + 12} 173,${elementY + 12}`} className="fill-primary transition-all duration-300" />
-                      <text x="175" y={Math.max(25, (elementY + 100) / 2)} fill="var(--primary)" className="text-[8px] font-bold transition-all duration-300">
+                      <text x="175" y={Math.max(25, (elementY + 100) / 2)} fill="var(--primary)" className="text-xs font-bold transition-all duration-300">
                         {activeElevation === 'control' && '1px'}
                         {activeElevation === 'card' && '4px'}
                         {activeElevation === 'glass' && '12px'}
@@ -533,14 +533,14 @@ export function FoundationsSection({
                       <span className={cn("size-2 rounded-full", activeElevation === 'glow' ? "bg-primary" : "bg-muted-foreground/30")} />
                       <span className="font-semibold text-foreground">Sandbox Card</span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground leading-normal mb-3">
+                    <p className="text-xs text-muted-foreground leading-normal mb-3">
                       {activeElevation === 'control' && 'Flat controls like buttons or sliders rest directly on the surface and use minimal shadow.'}
                       {activeElevation === 'card' && 'Solid panels and static cards utilize standard shadows to create clean architectural segments.'}
                       {activeElevation === 'glass' && 'Floating elements like menus or popovers float higher above other structural components.'}
                       {activeElevation === 'glow' && 'Active system windows carry the deepest shadow combined with a soft, theme-colored glow.'}
                     </p>
 
-                    <code className="block rounded bg-muted/40 p-2 font-mono text-[9px] text-primary/80 select-all whitespace-pre leading-none text-center">
+                    <code className="block rounded bg-muted/40 p-2 font-mono text-xs text-primary/80 select-all whitespace-pre leading-none text-center">
                       {activeElevation === 'control' && 'className="shadow-control"'}
                       {activeElevation === 'card' && 'className="shadow-card"'}
                       {activeElevation === 'glass' && 'className="glass-panel"'}
@@ -551,7 +551,7 @@ export function FoundationsSection({
               </div>
 
               {showSpecs && (
-                <CardWell className="p-3 text-[11px] leading-relaxed text-muted-foreground border border-border">
+                <CardWell className="p-3 text-xs leading-relaxed text-muted-foreground border border-border">
                   <span className="font-semibold text-foreground block mb-1">Volumetric Specular Rim</span>
                   Raised solid cards carry only drop-shadows (no specular rim) for pure structural flatness. Glass panels carry a luminous top rim (<code>--surface-rim-top</code>) + bottom shadow rim for reflection.
                 </CardWell>
@@ -576,10 +576,10 @@ export function FoundationsSection({
                       {MOTION_DURATIONS.map((d) => (
                         <div key={d.name} className="flex justify-between items-baseline border-b border-border/40 pb-1.5 last:border-0 last:pb-0">
                           <div>
-                            <code className="font-mono text-[10px] text-foreground font-semibold block">{d.name}</code>
-                            <span className="text-[10px] text-muted-foreground">{d.desc}</span>
+                            <code className="font-mono text-xs text-foreground font-semibold block">{d.name}</code>
+                            <span className="text-xs text-muted-foreground">{d.desc}</span>
                           </div>
-                          <span className="font-mono text-[10px] text-primary font-bold">{d.val}</span>
+                          <span className="font-mono text-xs text-primary font-bold">{d.val}</span>
                         </div>
                       ))}
                     </div>
@@ -590,10 +590,10 @@ export function FoundationsSection({
                       {MOTION_EASINGS.map((e) => (
                         <div key={e.name} className="space-y-0.5 border-b border-border/40 pb-1.5 last:border-0 last:pb-0">
                           <div className="flex justify-between items-baseline">
-                            <code className="font-mono text-[10px] text-foreground font-semibold">{e.name}</code>
+                            <code className="font-mono text-xs text-foreground font-semibold">{e.name}</code>
                           </div>
-                          <code className="block font-mono text-[9px] text-primary truncate">{e.val}</code>
-                          <span className="block text-[10px] text-muted-foreground">{e.desc}</span>
+                          <code className="block font-mono text-xs text-primary truncate">{e.val}</code>
+                          <span className="block text-xs text-muted-foreground">{e.desc}</span>
                         </div>
                       ))}
                     </div>
@@ -627,7 +627,7 @@ export function FoundationsSection({
                 ].map(({ role, token }) => (
                   <div key={role} className="flex justify-between py-1 border-b border-border/20 last:border-0 last:pb-0">
                     <span className="text-muted-foreground">{role}</span>
-                    <span className="font-mono text-[10px] text-foreground font-semibold">{token}</span>
+                    <span className="font-mono text-xs text-foreground font-semibold">{token}</span>
                   </div>
                 ))}
               </CardContent>
@@ -855,7 +855,7 @@ export function ApcaContrastSection({
                 <span className="block" style={{ color: apcaFg, opacity: 0.7 }}>
                   Project gate: Lc 60+ = Text, Lc 25+ = UI elements
                 </span>
-                <span className="font-mono text-[10px] opacity-50" style={{ color: apcaFg }}>
+                <span className="font-mono text-xs opacity-50" style={{ color: apcaFg }}>
                   {(() => {
                     const fgLum = apcaLuminance(...hexToRgb(apcaFg));
                     const bgLum = apcaLuminance(...hexToRgb(apcaBg));
@@ -897,10 +897,10 @@ function ColorSwatchCard({
       <div className="p-3 text-xs">
         <div className="flex items-center justify-between font-semibold">
           <span className="text-foreground">{label}</span>
-          <code className="font-mono text-[10px] text-primary">{tailwind}</code>
+          <code className="font-mono text-xs text-primary">{tailwind}</code>
         </div>
         {showSpecs && (
-          <div className="mt-2 space-y-1 font-mono text-[10px] text-muted-foreground border-t border-border/40 pt-2 transition-all">
+          <div className="mt-2 space-y-1 font-mono text-xs text-muted-foreground border-t border-border/40 pt-2 transition-all">
             <div className="flex justify-between gap-1">
               <span>Var:</span>
               <span className="text-foreground select-all break-all text-right">{variable}</span>
@@ -913,7 +913,7 @@ function ColorSwatchCard({
               <span>Dark:</span>
               <span className="text-foreground break-all text-right">{oklchDark}</span>
             </div>
-            <p className="text-[10px] text-muted-foreground leading-normal mt-1 pt-1">
+            <p className="text-xs text-muted-foreground leading-normal mt-1 pt-1">
               {description}
             </p>
           </div>
@@ -929,12 +929,12 @@ function RadiusDetailCard({ step, px, calc, desc, showSpecs }: { step: string; p
       {/* Visual Preview */}
       <div className={cn('size-12 border-2 border-primary bg-background shadow-xs', step)} />
       <div className="w-full text-center space-y-1">
-        <span className="block font-mono text-[10px] font-bold text-foreground truncate">{step}</span>
+        <span className="block font-mono text-xs font-bold text-foreground truncate">{step}</span>
         {showSpecs && (
           <div className="space-y-1 border-t border-border/40 pt-1.5 mt-1 transition-all">
             <span className="block text-xs font-semibold text-primary">{px}</span>
-            <code className="block font-mono text-[9px] text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">{calc}</code>
-            <span className="block text-[9px] text-muted-foreground leading-normal">{desc}</span>
+            <code className="block font-mono text-xs text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">{calc}</code>
+            <span className="block text-xs text-muted-foreground leading-normal">{desc}</span>
           </div>
         )}
       </div>
@@ -970,7 +970,7 @@ function ColorDerivationDemo({ targetLc }: { targetLc: number }) {
           className="size-8 rounded-md border border-border"
           style={{ backgroundColor: anchorBg }}
         />
-        <code className="font-mono text-[11px] break-all text-muted-foreground">{anchorBg}</code>
+        <code className="font-mono text-xs break-all text-muted-foreground">{anchorBg}</code>
       </div>
 
       <div className="space-y-2 rounded-lg border border-border p-3">
@@ -989,7 +989,7 @@ function ColorDerivationDemo({ targetLc }: { targetLc: number }) {
           >
             Aa
           </div>
-          <code className="font-mono text-[11px] break-all text-muted-foreground">{fg.oklch}</code>
+          <code className="font-mono text-xs break-all text-muted-foreground">{fg.oklch}</code>
         </div>
       </div>
 
@@ -1009,11 +1009,11 @@ function ColorDerivationDemo({ targetLc }: { targetLc: number }) {
           >
             Aa
           </div>
-          <code className="font-mono text-[11px] break-all text-muted-foreground">{bg.oklch}</code>
+          <code className="font-mono text-xs break-all text-muted-foreground">{bg.oklch}</code>
         </div>
       </div>
 
-      <p className="text-[11px] leading-relaxed text-muted-foreground">
+      <p className="text-xs leading-relaxed text-muted-foreground">
         Round-trip <code>parseOklch</code> → <code>oklchToSrgb</code> → <code>apcaContrast</code>{' '}
         verifies <span className="font-mono">Lc {verifiedLc.toFixed(1)}</span> — the same pair the
         contrast gate uses.
