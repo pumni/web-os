@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { apcaContrast, apcaLuminance, foregroundFor } from '@pumni/ui/lib/apca';
+import { apcaContrast, foregroundFor } from '@pumni/ui/lib/apca';
+import { formatOklch, oklchToSrgb } from '@pumni/ui/lib/oklch';
 import { Badge } from '@pumni/ui/feedback';
 import { Button, Input, Label, SegmentedPicker } from '@pumni/ui/form';
 import {
@@ -18,6 +19,7 @@ import { ShowcaseSection } from './showcase-section';
 
 // ──────────────────────── helpers ────────────────────────
 
+/** Parse a `#rrggbb` hex string into the `[r, g, b]` triple that `apcaContrast` expects. */
 function hexToRgb(hex: string): [number, number, number] {
   const clean = hex.replace('#', '');
   return [
@@ -27,9 +29,41 @@ function hexToRgb(hex: string): [number, number, number] {
   ];
 }
 
-function getLcValue(fg: string, bg: string): number {
+function srgbToOklch(r: number, g: number, b: number): { l: number; c: number; h: number } {
+  const linearize = (c: number) => {
+    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  };
+  const lr = linearize(r);
+  const lg = linearize(g);
+  const lb = linearize(b);
+
+  const x = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
+  const y = 0.2119034982 * lr + 0.6806995477 * lg + 0.1073969541 * lb;
+  const z = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
+
+  const lPrime = Math.cbrt(0.8189330101 * x + 0.3618667424 * y - 0.1288597155 * z);
+  const mPrime = Math.cbrt(0.0329845436 * x + 0.9293118715 * y + 0.0361451849 * z);
+  const sPrime = Math.cbrt(0.0482003018 * x + 0.2643542568 * y + 0.6338517070 * z);
+
+  const L = 0.2104542553 * lPrime + 0.7936177850 * mPrime - 0.0040720403 * sPrime;
+  const oklabA = 1.9779984951 * lPrime - 2.4285922050 * mPrime + 0.4505937099 * sPrime;
+  const oklabB = 0.0259040371 * lPrime + 0.7827717662 * mPrime - 0.8086757660 * sPrime;
+
+  const C = Math.sqrt(oklabA * oklabA + oklabB * oklabB);
+  let h = (Math.atan2(oklabB, oklabA) * 180) / Math.PI;
+  if (h < 0) h += 360;
+
+  return { l: L, c: C, h };
+}
+
+function hexToOklch(hex: string): { l: number; c: number; h: number } {
+  const [r, g, b] = hexToRgb(hex);
+  return srgbToOklch(r, g, b);
+}
+
+function getLcValue(fgHex: string, bgHex: string): number {
   try {
-    return apcaContrast(hexToRgb(fg), hexToRgb(bg));
+    return apcaContrast(oklchToSrgb(hexToOklch(fgHex)), oklchToSrgb(hexToOklch(bgHex)));
   } catch {
     return 0;
   }
@@ -57,7 +91,7 @@ const PRESET_PAIRS = [
   { label: 'Classic B/W', fg: '#0a0a0a', bg: '#fafafa' },
   { label: 'Coral on Dark', fg: '#e87b4f', bg: '#1a1614' },
   { label: 'Muted on Card', fg: '#6b7280', bg: '#ffffff' },
-  { label: 'Yellow ⚠️', fg: '#f0c000', bg: '#ffffff' },
+  { label: 'Yellow Warning', fg: '#f0c000', bg: '#ffffff' },
   { label: 'White on Primary', fg: '#ffffff', bg: '#c05a28' },
   { label: 'Low Contrast', fg: '#9a9a9a', bg: '#c0c0c0' },
 ] as const;
@@ -65,43 +99,55 @@ const PRESET_PAIRS = [
 const SEMANTIC_PAIRS = [
   {
     name: 'foreground / background',
-    lightFg: '#161412', lightBg: '#f9f5f0',
-    darkFg: '#f9f5f0', darkBg: '#1e1b18',
+    lightFg: { l: 0.085, c: 0.003, h: 70 },
+    lightBg: { l: 0.985, c: 0.005, h: 75 },
+    darkFg: { l: 0.985, c: 0.005, h: 75 },
+    darkBg: { l: 0.19, c: 0.0035, h: 70 },
     usage: 'Body text',
     target: 60,
   },
   {
     name: 'primary-fg / primary',
-    lightFg: '#ffffff', lightBg: '#c05a28',
-    darkFg: '#ffffff', darkBg: '#c86030',
+    lightFg: { l: 0.985, c: 0.005, h: 75 },
+    lightBg: { l: 0.545, c: 0.14, h: 38 },
+    darkFg: { l: 0.985, c: 0.005, h: 75 },
+    darkBg: { l: 0.61, c: 0.134, h: 40 },
     usage: 'Primary button label',
     target: 60,
   },
   {
     name: 'muted-fg / card',
-    lightFg: '#707070', lightBg: '#ffffff',
-    darkFg: '#9a9a9a', darkBg: '#252320',
+    lightFg: { l: 0.555, c: 0.005, h: 70 },
+    lightBg: { l: 1, c: 0, h: 0 },
+    darkFg: { l: 0.884, c: 0.006, h: 72 },
+    darkBg: { l: 0.215, c: 0.004, h: 70 },
     usage: 'Subdued / caption text',
     target: 45,
   },
   {
     name: 'border / background',
-    lightFg: '#d8d0c8', lightBg: '#f9f5f0',
-    darkFg: '#353028', darkBg: '#1e1b18',
+    lightFg: { l: 0.929, c: 0.006, h: 73 },
+    lightBg: { l: 0.985, c: 0.005, h: 75 },
+    darkFg: { l: 0.275, c: 0.005, h: 70 },
+    darkBg: { l: 0.19, c: 0.0035, h: 70 },
     usage: 'Structural dividers',
     target: 15,
   },
   {
     name: 'success-fg / success',
-    lightFg: '#ffffff', lightBg: '#4a9c5a',
-    darkFg: '#ffffff', darkBg: '#3d8a4a',
+    lightFg: { l: 0.985, c: 0.005, h: 75 },
+    lightBg: { l: 0.596, c: 0.145, h: 163.225 },
+    darkFg: { l: 0.085, c: 0.003, h: 70 },
+    darkBg: { l: 0.696, c: 0.17, h: 162.48 },
     usage: 'Status badge labels',
     target: 60,
   },
   {
     name: 'destructive-fg / destructive',
-    lightFg: '#ffffff', lightBg: '#b83030',
-    darkFg: '#ffffff', darkBg: '#a02828',
+    lightFg: { l: 0.985, c: 0.005, h: 75 },
+    lightBg: { l: 0.577, c: 0.245, h: 27.325 },
+    darkFg: { l: 0.985, c: 0.005, h: 75 },
+    darkBg: { l: 0.637, c: 0.237, h: 25.331 },
     usage: 'Error badge labels',
     target: 60,
   },
@@ -126,9 +172,26 @@ const FONT_SIZE_GATES = [
   { size: '32px+', w400: 35, w700: 25 },
 ];
 
+/**
+ * OKLCH anchor presets — real design-system token values from tokens.css / brand.css.
+ * Pass directly to foregroundFor() as { l, c, h }.
+ */
+const OKLCH_ANCHORS = [
+  { label: 'Page bg (light)', token: '--neutral-50', css: 'oklch(0.985 0.005 75)', l: 0.985, c: 0.005, h: 75 },
+  { label: 'Card (light)', token: '--neutral-0', css: 'oklch(1 0 0)', l: 1, c: 0, h: 0 },
+  { label: 'Secondary', token: '--neutral-100', css: 'oklch(0.968 0.006 74)', l: 0.968, c: 0.006, h: 74 },
+  { label: 'Muted (dark)', token: '--neutral-800', css: 'oklch(0.275 0.005 70)', l: 0.275, c: 0.005, h: 70 },
+  { label: 'Card (dark)', token: '--neutral-880', css: 'oklch(0.215 0.004 70)', l: 0.215, c: 0.004, h: 70 },
+  { label: 'Page bg (dark)', token: '--neutral-890', css: 'oklch(0.19 0.0035 70)', l: 0.19, c: 0.0035, h: 70 },
+  { label: 'Primary (light)', token: '--coral-600', css: 'oklch(0.545 0.14 38)', l: 0.545, c: 0.14, h: 38 },
+  { label: 'Primary (dark)', token: '--coral-500', css: 'oklch(0.61 0.134 40)', l: 0.61, c: 0.134, h: 40 },
+  { label: 'Coral mid', token: '--coral-400', css: 'oklch(0.71 0.115 41)', l: 0.71, c: 0.115, h: 41 },
+] as const;
+
+type AnchorLabel = typeof OKLCH_ANCHORS[number]['label'];
+
 // ──────────────────────── sub-components ────────────────────────
 
-/** Animated Lc progress bar with milestone ticks */
 function LcScaleBar({ lc }: { lc: number }) {
   const absLc = Math.abs(lc);
   const pct = Math.min(100, (absLc / 110) * 100);
@@ -136,21 +199,14 @@ function LcScaleBar({ lc }: { lc: number }) {
 
   return (
     <div className="space-y-2">
-      {/* Track */}
       <div className="relative h-3 w-full overflow-hidden rounded-full bg-muted">
-        {/* Fill — uses Tailwind semantic color classes, no inline style */}
         <div
           className={cn(
             'absolute inset-y-0 left-0 rounded-full transition-[width] duration-(--duration-slow) ease-fluid',
-            absLc >= 60
-              ? 'bg-success'
-              : absLc >= 25
-              ? 'bg-warning'
-              : 'bg-destructive',
+            absLc >= 60 ? 'bg-success' : absLc >= 25 ? 'bg-warning' : 'bg-destructive',
           )}
           style={{ width: `${pct}%` }}
         />
-        {/* Milestone tick marks */}
         {[15, 25, 45, 60, 75, 90].map((tick) => (
           <div
             key={tick}
@@ -159,8 +215,6 @@ function LcScaleBar({ lc }: { lc: number }) {
           />
         ))}
       </div>
-
-      {/* Tick labels */}
       <div className="relative h-4">
         {[15, 25, 45, 60, 75, 90].map((v) => (
           <span
@@ -175,8 +229,6 @@ function LcScaleBar({ lc }: { lc: number }) {
           </span>
         ))}
       </div>
-
-      {/* Grade badge */}
       <div className="flex items-center justify-between text-sm">
         <span className="text-muted-foreground">{grade.desc}</span>
         <Badge tone={grade.tone} size="sm">{grade.label}</Badge>
@@ -185,35 +237,17 @@ function LcScaleBar({ lc }: { lc: number }) {
   );
 }
 
-/**
- * Live text preview panel — renders the picked FG on BG at all Tailwind type
- * scale steps so the user sees readability at every size simultaneously.
- */
 function TextPreview({ fg, bg, lc }: { fg: string; bg: string; lc: number }) {
   const polarity = lc > 0 ? 'BoW' : lc < 0 ? 'WoB' : '—';
-
   return (
     <div className="overflow-hidden rounded-xl border border-border" style={{ backgroundColor: bg }}>
-      {/* Type scale preview — using project Tailwind text-* utilities */}
       <div className="space-y-2 p-5">
-        <p className="text-4xl font-black leading-tight" style={{ color: fg }}>
-          The quick brown fox
-        </p>
-        <p className="text-xl font-semibold" style={{ color: fg }}>
-          Design systems enable consistency
-        </p>
-        <p className="text-base font-normal" style={{ color: fg }}>
-          Body text (text-base / 16px) — the most common reading context.
-        </p>
-        <p className="text-sm font-normal" style={{ color: fg }}>
-          Small (text-sm / 14px) — captions, data tables, secondary metadata.
-        </p>
-        <p className="text-xs font-normal" style={{ color: fg }}>
-          Micro (text-xs / 12px) — requires Lc 75+ for comfortable readability.
-        </p>
+        <p className="text-4xl font-black leading-tight" style={{ color: fg }}>The quick brown fox</p>
+        <p className="text-xl font-semibold" style={{ color: fg }}>Design systems enable consistency</p>
+        <p className="text-base font-normal" style={{ color: fg }}>Body text (text-base / 16px) — the most common reading context.</p>
+        <p className="text-sm font-normal" style={{ color: fg }}>Small (text-sm / 14px) — captions, data tables, secondary metadata.</p>
+        <p className="text-xs font-normal" style={{ color: fg }}>Micro (text-xs / 12px) — requires Lc 75+ for comfortable readability.</p>
       </div>
-
-      {/* Stats footer — color applied via inline style since it tracks the live FG */}
       <div
         className="flex items-center justify-between border-t px-5 py-2"
         style={{ borderColor: `${fg}25`, backgroundColor: `${fg}08` }}
@@ -221,15 +255,12 @@ function TextPreview({ fg, bg, lc }: { fg: string; bg: string; lc: number }) {
         <span className="font-mono text-sm" style={{ color: fg, opacity: 0.7 }}>
           Lc {Math.abs(lc).toFixed(1)} — {polarity}
         </span>
-        <span className="font-mono text-xs" style={{ color: fg, opacity: 0.4 }}>
-          fg: {fg} · bg: {bg}
-        </span>
+        <span className="font-mono text-xs" style={{ color: fg, opacity: 0.4 }}>fg: {fg} · bg: {bg}</span>
       </div>
     </div>
   );
 }
 
-/** Education concept card */
 function ConceptCard({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) {
   return (
     <CardWell className="h-full space-y-2 p-4">
@@ -237,9 +268,7 @@ function ConceptCard({ icon, title, children }: { icon: string; title: string; c
         <span className="text-xl" aria-hidden>{icon}</span>
         <span className="text-sm font-semibold text-foreground">{title}</span>
       </div>
-      <div className="space-y-1 text-sm leading-relaxed text-muted-foreground">
-        {children}
-      </div>
+      <div className="space-y-1 text-sm leading-relaxed text-muted-foreground">{children}</div>
     </CardWell>
   );
 }
@@ -247,43 +276,29 @@ function ConceptCard({ icon, title, children }: { icon: string; title: string; c
 // ──────────────────────── main component ────────────────────────
 
 export function ApcaSection() {
-  // Playground state
+  // Playground
   const [fg, setFg] = React.useState('#0f0f0f');
   const [bg, setBg] = React.useState('#fafafa');
   const lc = getLcValue(fg, bg);
   const absLc = Math.abs(lc);
+  const swapColors = () => { const tmp = fg; setFg(bg); setBg(tmp); };
 
-  const swapColors = () => {
-    const tmp = fg;
-    setFg(bg);
-    setBg(tmp);
-  };
-
-  // Color derivation state
-  const [anchorHex, setAnchorHex] = React.useState('#d9c8b0');
+  // Derivation
+  const [anchorLabel, setAnchorLabel] = React.useState<AnchorLabel>('Primary (light)');
   const [deriveTargetLc, setDeriveTargetLc] = React.useState(60);
+  const anchor = OKLCH_ANCHORS.find((a) => a.label === anchorLabel) ?? OKLCH_ANCHORS[6];
 
   const derivedFg = React.useMemo(() => {
     try {
-      const [r, g, b] = hexToRgb(anchorHex);
-      // apcaLuminance returns Y (relative luminance, linear-light weighted sum).
-      // OKLCH L is defined via the OKLab cube-root path: L ≈ Y^(1/3).
-      // This is the correct approximation — NOT Y^(1/2.4) which would be the
-      // inverse of sRGB gamma on a single channel, not luminance.
-      const Y = apcaLuminance(r, g, b);
-      const approxL = Math.max(0.01, Math.min(0.99, Y ** (1 / 3)));
-      // Use neutral chroma (c=0, h=0) for the anchor so that oklchToSrgb(anchor)
-      // produces a neutral grey at the same luminance — consistent with the
-      // neutral-grey foreground the bisection will derive.
       return foregroundFor(
-        { l: approxL, c: 0, h: 0 },
+        { l: anchor.l, c: anchor.c, h: anchor.h },
         deriveTargetLc,
         { polarity: 'auto', chroma: 0, hue: 0 },
       );
     } catch {
       return null;
     }
-  }, [anchorHex, deriveTargetLc]);
+  }, [anchor, deriveTargetLc]);
 
   return (
     <ShowcaseSection
@@ -293,12 +308,12 @@ export function ApcaSection() {
     >
       <div className="space-y-8">
 
-        {/* ── 1. Concept education strip ── */}
+        {/* 1 — Concept education */}
         <div className="grid gap-4 md:grid-cols-3">
           <ConceptCard icon="📐" title="What is Lc?">
             <p>
-              <strong className="text-foreground">Lc (Lightness contrast)</strong> is APCA&apos;s output —
-              a signed number from approximately −110 to +110.
+              <strong className="text-foreground">Lc (Lightness contrast)</strong> is APCA&apos;s
+              output — a signed number from approximately −110 to +110.
             </p>
             <p>
               Unlike WCAG&apos;s ratio (e.g. 4.5:1), Lc maps directly to visual perception.
@@ -306,11 +321,10 @@ export function ApcaSection() {
               <strong className="text-foreground"> Lc 25</strong> = UI chrome minimum.
             </p>
           </ConceptCard>
-
           <ConceptCard icon="🔄" title="BoW vs WoB Polarity">
             <p>
-              APCA returns a <strong className="text-foreground">signed value</strong>
-              because dark-on-light and light-on-dark are perceptually asymmetric:
+              APCA returns a <strong className="text-foreground">signed value</strong> because
+              dark-on-light and light-on-dark are perceptually asymmetric:
             </p>
             <ul className="mt-1 list-inside list-disc space-y-0.5">
               <li><strong className="text-foreground">+ Positive</strong>: dark text on light bg (BoW)</li>
@@ -318,7 +332,6 @@ export function ApcaSection() {
             </ul>
             <p className="mt-1">WCAG 2.x ignores this — APCA uses different exponents per polarity.</p>
           </ConceptCard>
-
           <ConceptCard icon="⚖️" title="Why not WCAG 2.x?">
             <p>WCAG 2.x contrast ratio has known perceptual failures:</p>
             <ul className="mt-1 list-inside list-disc space-y-0.5">
@@ -329,7 +342,7 @@ export function ApcaSection() {
           </ConceptCard>
         </div>
 
-        {/* ── 2. Lc scale reference ── */}
+        {/* 2 — Lc scale reference */}
         <Card>
           <CardHeader>
             <CardTitle>Lc Scale Reference</CardTitle>
@@ -342,16 +355,10 @@ export function ApcaSection() {
               {LC_SCALE_ROWS.map(({ lc: v, label, desc, tone }) => (
                 <div key={label} className="flex items-center gap-3 border-b border-border py-2 last:border-0">
                   <div className="w-36 shrink-0">
-                    <Badge tone={tone} size="sm" className="w-full justify-center font-mono text-xs">
-                      {label}
-                    </Badge>
+                    <Badge tone={tone} size="sm" className="w-full justify-center font-mono text-xs">{label}</Badge>
                   </div>
-                  {/* Progress bar using semantic color class */}
                   <div
-                    className={cn(
-                      'h-2 shrink-0 rounded-full opacity-60',
-                      tone === 'success' ? 'bg-success' : tone === 'warning' ? 'bg-warning' : 'bg-destructive',
-                    )}
+                    className={cn('h-2 shrink-0 rounded-full opacity-60', tone === 'success' ? 'bg-success' : tone === 'warning' ? 'bg-warning' : 'bg-destructive')}
                     style={{ width: `${Math.max(8, (v / 110) * 180)}px` }}
                   />
                   <span className="text-sm text-muted-foreground">{desc}</span>
@@ -361,7 +368,7 @@ export function ApcaSection() {
           </CardContent>
         </Card>
 
-        {/* ── 3. Interactive Lc Playground ── */}
+        {/* 3 — Interactive Playground */}
         <Card>
           <CardHeader>
             <CardTitle>Interactive Lc Playground</CardTitle>
@@ -371,8 +378,6 @@ export function ApcaSection() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
-
-            {/* Preset chips */}
             <div className="space-y-2">
               <span className="text-sm font-semibold text-muted-foreground">Quick presets:</span>
               <div className="flex flex-wrap gap-2">
@@ -386,9 +391,7 @@ export function ApcaSection() {
                       onClick={() => { setFg(pair.fg); setBg(pair.bg); }}
                       className={cn(
                         'flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm transition-colors duration-(--duration-base) ease-fluid',
-                        isActive
-                          ? 'border-primary bg-primary text-primary-foreground font-semibold'
-                          : 'border-border text-foreground state-hover',
+                        isActive ? 'border-primary bg-primary text-primary-foreground font-semibold' : 'border-border text-foreground state-hover',
                       )}
                     >
                       <span
@@ -396,11 +399,7 @@ export function ApcaSection() {
                         style={{ background: `linear-gradient(135deg, ${pair.fg} 50%, ${pair.bg} 50%)` }}
                       />
                       {pair.label}
-                      <span className={cn(
-                        'font-mono text-xs',
-                        pLc >= 60 ? 'text-success' : pLc >= 25 ? 'text-warning' : 'text-destructive',
-                        isActive && 'text-primary-foreground',
-                      )}>
+                      <span className={cn('font-mono text-xs', pLc >= 60 ? 'text-success' : pLc >= 25 ? 'text-warning' : 'text-destructive', isActive && 'text-primary-foreground')}>
                         {pLc.toFixed(0)}
                       </span>
                     </button>
@@ -408,107 +407,65 @@ export function ApcaSection() {
                 })}
               </div>
             </div>
-
             <Separator />
-
             <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-
-              {/* ── Controls column ── */}
               <div className="space-y-4">
-
-                {/* Foreground picker */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="play-fg" className="text-sm font-semibold">
-                    Foreground (text / icon)
-                  </Label>
+                  <Label htmlFor="play-fg" className="text-sm font-semibold">Foreground (text / icon)</Label>
                   <div className="flex items-center gap-2">
-                    <input
-                      id="play-fg"
-                      type="color"
-                      value={fg}
-                      onChange={(e) => setFg(e.target.value)}
-                      className="size-10 cursor-pointer rounded-md border border-border bg-transparent"
-                    />
-                    <Input
-                      value={fg}
-                      onChange={(e) => { if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) setFg(e.target.value); }}
-                      className="h-9 w-28 font-mono text-sm"
-                      aria-label="Foreground hex value"
-                    />
+                    <input id="play-fg" type="color" value={fg} onChange={(e) => setFg(e.target.value)}
+                      className="size-10 cursor-pointer rounded-md border border-border bg-transparent" />
+                    <div className="flex flex-col">
+                      <Input
+                        value={fg}
+                        onChange={(e) => { if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) setFg(e.target.value); }}
+                        className="h-9 w-28 font-mono text-sm"
+                        aria-label="Foreground hex value"
+                      />
+                      <span className="font-mono text-[10px] text-muted-foreground mt-0.5 select-all">
+                        {formatOklch(hexToOklch(fg))}
+                      </span>
+                    </div>
                   </div>
                 </div>
-
-                {/* Swap */}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={swapColors}
-                  className="w-full"
-                  aria-label="Swap foreground and background"
-                >
+                <Button type="button" variant="outline" size="sm" onClick={swapColors} className="w-full" aria-label="Swap foreground and background">
                   ⇅ Swap FG ↔ BG
                 </Button>
-
-                {/* Background picker */}
                 <div className="space-y-1.5">
-                  <Label htmlFor="play-bg" className="text-sm font-semibold">
-                    Background
-                  </Label>
+                  <Label htmlFor="play-bg" className="text-sm font-semibold">Background</Label>
                   <div className="flex items-center gap-2">
-                    <input
-                      id="play-bg"
-                      type="color"
-                      value={bg}
-                      onChange={(e) => setBg(e.target.value)}
-                      className="size-10 cursor-pointer rounded-md border border-border bg-transparent"
-                    />
-                    <Input
-                      value={bg}
-                      onChange={(e) => { if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) setBg(e.target.value); }}
-                      className="h-9 w-28 font-mono text-sm"
-                      aria-label="Background hex value"
-                    />
+                    <input id="play-bg" type="color" value={bg} onChange={(e) => setBg(e.target.value)}
+                      className="size-10 cursor-pointer rounded-md border border-border bg-transparent" />
+                    <div className="flex flex-col">
+                      <Input
+                        value={bg}
+                        onChange={(e) => { if (/^#[0-9a-fA-F]{6}$/.test(e.target.value)) setBg(e.target.value); }}
+                        className="h-9 w-28 font-mono text-sm"
+                        aria-label="Background hex value"
+                      />
+                      <span className="font-mono text-[10px] text-muted-foreground mt-0.5 select-all">
+                        {formatOklch(hexToOklch(bg))}
+                      </span>
+                    </div>
                   </div>
                 </div>
-
                 <Separator />
-
-                {/* Live score card */}
                 <CardWell className="space-y-1 p-4 text-center">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    APCA Lc Score
-                  </p>
-                  <p
-                    className={cn(
-                      'text-4xl font-black tabular-nums transition-colors duration-(--duration-base)',
-                      absLc >= 60 ? 'text-success' : absLc >= 25 ? 'text-warning' : 'text-destructive',
-                    )}
-                  >
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">APCA Lc Score</p>
+                  <p className={cn('text-4xl font-black tabular-nums transition-colors duration-(--duration-base)', absLc >= 60 ? 'text-success' : absLc >= 25 ? 'text-warning' : 'text-destructive')}>
                     {absLc.toFixed(1)}
                   </p>
                   <p className="font-mono text-sm text-muted-foreground">
                     {lc > 0 ? '+ BoW (dark on light)' : lc < 0 ? '− WoB (light on dark)' : '—'}
                   </p>
                 </CardWell>
-
-                {/* Animated scale bar */}
                 <LcScaleBar lc={lc} />
               </div>
-
-              {/* ── Preview column ── */}
               <div className="min-w-0 space-y-3">
-                <span className="text-sm font-semibold text-muted-foreground">
-                  Live preview — all type-scale steps simultaneously:
-                </span>
-
+                <span className="text-sm font-semibold text-muted-foreground">Live preview — all type-scale steps simultaneously:</span>
                 <TextPreview fg={fg} bg={bg} lc={lc} />
-
-                {/* Font-size gate reference */}
                 <CardWell className="p-4">
-                  <p className="mb-3 text-sm font-semibold text-foreground">
-                    APCA minimum Lc by font size
-                  </p>
+                  <p className="mb-3 text-sm font-semibold text-foreground">APCA minimum Lc by font size</p>
                   <table className="w-full border-collapse text-sm">
                     <thead>
                       <tr className="border-b border-border text-xs text-muted-foreground">
@@ -526,20 +483,13 @@ export function ApcaSection() {
                           <tr key={size}>
                             <td className="py-1.5 font-mono text-xs text-foreground">{size}</td>
                             <td className="py-1.5 text-center">
-                              <span className={cn('font-mono text-xs', passNormal ? 'text-success' : 'text-muted-foreground/50')}>
-                                ≥{w400}
-                              </span>
+                              <span className={cn('font-mono text-xs', passNormal ? 'text-success' : 'text-muted-foreground/50')}>≥{w400}</span>
                             </td>
                             <td className="py-1.5 text-center">
-                              <span className={cn('font-mono text-xs', passBold ? 'text-success' : 'text-muted-foreground/50')}>
-                                ≥{w700}
-                              </span>
+                              <span className={cn('font-mono text-xs', passBold ? 'text-success' : 'text-muted-foreground/50')}>≥{w700}</span>
                             </td>
                             <td className="py-1.5 text-center">
-                              <Badge
-                                tone={passNormal ? 'success' : passBold ? 'warning' : 'destructive'}
-                                size="sm"
-                              >
+                              <Badge tone={passNormal ? 'success' : passBold ? 'warning' : 'destructive'} size="sm">
                                 {passNormal ? '✓ All' : passBold ? 'Bold only' : '✗ Fail'}
                               </Badge>
                             </td>
@@ -554,13 +504,11 @@ export function ApcaSection() {
           </CardContent>
         </Card>
 
-        {/* ── 4. Semantic token pair audit ── */}
+        {/* 4 — Semantic token audit */}
         <Card>
           <CardHeader>
             <CardTitle>Semantic Token Pair Audit</CardTitle>
-            <CardDescription>
-              Lc verification for all semantic color pairs in both light and dark mode.
-            </CardDescription>
+            <CardDescription>Lc verification for all semantic color pairs in both light and dark mode.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -577,43 +525,36 @@ export function ApcaSection() {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {SEMANTIC_PAIRS.map((pair) => {
-                    const lightLc = Math.abs(getLcValue(pair.lightFg, pair.lightBg));
-                    const darkLc = Math.abs(getLcValue(pair.darkFg, pair.darkBg));
+                    const lightLc = Math.abs(apcaContrast(oklchToSrgb(pair.lightFg), oklchToSrgb(pair.lightBg)));
+                    const darkLc = Math.abs(apcaContrast(oklchToSrgb(pair.darkFg), oklchToSrgb(pair.darkBg)));
                     const lightPass = lightLc >= pair.target;
                     const darkPass = darkLc >= pair.target;
                     const allPass = lightPass && darkPass;
-
                     return (
                       <tr key={pair.name} className="align-middle">
                         <td className="py-2.5 pr-3">
                           <div className="flex items-center gap-2">
-                            <div
-                              className="size-5 shrink-0 rounded border border-border"
-                              style={{ background: `linear-gradient(135deg, ${pair.lightFg} 50%, ${pair.lightBg} 50%)` }}
-                              title={`Light: ${pair.lightFg} on ${pair.lightBg}`}
-                            />
-                            <code className="font-mono text-xs text-foreground">{pair.name}</code>
+                            <div className="size-5 shrink-0 rounded border border-border"
+                              style={{ background: `linear-gradient(135deg, ${formatOklch(pair.lightFg)} 50%, ${formatOklch(pair.lightBg)} 50%)` }}
+                              title={`Light: ${formatOklch(pair.lightFg)} on ${formatOklch(pair.lightBg)} · Dark: ${formatOklch(pair.darkFg)} on ${formatOklch(pair.darkBg)}`} />
+                            <div className="flex flex-col">
+                              <code className="font-mono text-xs text-foreground">{pair.name}</code>
+                              <span className="font-mono text-[9px] text-muted-foreground select-all">
+                                L: {formatOklch(pair.lightFg)} · D: {formatOklch(pair.darkFg)}
+                              </span>
+                            </div>
                           </div>
                         </td>
                         <td className="py-2.5 pr-3 text-sm text-muted-foreground">{pair.usage}</td>
                         <td className="py-2.5 text-center">
-                          <span className={cn('font-mono text-sm font-bold', lightPass ? 'text-success' : 'text-destructive')}>
-                            {lightLc.toFixed(1)}
-                          </span>
+                          <span className={cn('font-mono text-sm font-bold', lightPass ? 'text-success' : 'text-destructive')}>{lightLc.toFixed(1)}</span>
                         </td>
                         <td className="py-2.5 text-center">
-                          <span className={cn('font-mono text-sm font-bold', darkPass ? 'text-success' : 'text-destructive')}>
-                            {darkLc.toFixed(1)}
-                          </span>
+                          <span className={cn('font-mono text-sm font-bold', darkPass ? 'text-success' : 'text-destructive')}>{darkLc.toFixed(1)}</span>
                         </td>
-                        <td className="py-2.5 text-center font-mono text-xs text-muted-foreground">
-                          ≥ Lc {pair.target}
-                        </td>
+                        <td className="py-2.5 text-center font-mono text-xs text-muted-foreground">≥ Lc {pair.target}</td>
                         <td className="py-2.5 text-center">
-                          <Badge
-                            tone={allPass ? 'success' : !lightPass && !darkPass ? 'destructive' : 'warning'}
-                            size="sm"
-                          >
+                          <Badge tone={allPass ? 'success' : !lightPass && !darkPass ? 'destructive' : 'warning'} size="sm">
                             {allPass ? 'Both ✓' : !lightPass && !darkPass ? 'Both ✗' : lightPass ? 'Light ✓' : 'Dark ✓'}
                           </Badge>
                         </td>
@@ -630,41 +571,49 @@ export function ApcaSection() {
           </CardContent>
         </Card>
 
-        {/* ── 5. Inverse APCA — color derivation ── */}
+        {/* 5 — Inverse APCA: Color Derivation */}
         <Card>
           <CardHeader>
             <CardTitle>Inverse APCA — Color Derivation</CardTitle>
             <CardDescription>
-              <code>foregroundFor(bg, targetLc)</code> bisects the OKLCH lightness axis to find the{' '}
-              <em>least extreme</em> foreground that hits the target Lc by construction.
-              Change the anchor background to see it adapt.
+              <code>foregroundFor(bg, targetLc)</code> takes a native OKLCH background token and
+              binary-searches the lightness axis for the{' '}
+              <em>least extreme</em> neutral foreground that meets targetLc by construction.
+              Anchor and result stay in the same OKLCH pipeline — no hex approximation involved.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-6 md:grid-cols-2">
-
               {/* Controls */}
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="derive-anchor" className="text-sm font-semibold">
-                    Anchor Background
-                  </Label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      id="derive-anchor"
-                      type="color"
-                      value={anchorHex}
-                      onChange={(e) => setAnchorHex(e.target.value)}
-                      className="size-12 cursor-pointer rounded-lg border-2 border-border bg-transparent"
-                    />
-                    <div>
-                      <span className="font-mono text-sm font-semibold text-foreground">{anchorHex}</span>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        Y = {apcaLuminance(...hexToRgb(anchorHex)).toFixed(3)}
-                        {' '}· L ≈ {(apcaLuminance(...hexToRgb(anchorHex)) ** (1/3)).toFixed(3)}
-                      </p>
-                    </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-semibold">Anchor Background (OKLCH design-system token)</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {OKLCH_ANCHORS.map((a) => (
+                      <button
+                        key={a.label}
+                        type="button"
+                        onClick={() => setAnchorLabel(a.label as AnchorLabel)}
+                        className={cn(
+                          'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-sm transition-colors duration-(--duration-base) ease-fluid',
+                          anchorLabel === a.label ? 'border-primary bg-primary text-primary-foreground font-semibold' : 'border-border text-foreground state-hover',
+                        )}
+                      >
+                        <span className="inline-flex size-3 shrink-0 rounded-full border border-border/50" style={{ backgroundColor: a.css }} />
+                        {a.label}
+                      </button>
+                    ))}
                   </div>
+                  <CardWell className="p-3">
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 shrink-0 rounded-lg border border-border" style={{ backgroundColor: anchor.css }} />
+                      <div className="min-w-0 space-y-0.5">
+                        <code className="block font-mono text-xs text-foreground">{anchor.token}</code>
+                        <code className="block font-mono text-xs text-muted-foreground">{anchor.css}</code>
+                        <p className="text-xs text-muted-foreground">L = {anchor.l} · c = {anchor.c} · h = {anchor.h}°</p>
+                      </div>
+                    </div>
+                  </CardWell>
                 </div>
 
                 <div className="space-y-1.5">
@@ -677,7 +626,7 @@ export function ApcaSection() {
                     labels={{ '25': 'Lc 25', '45': 'Lc 45', '60': 'Lc 60', '75': 'Lc 75' }}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {deriveTargetLc >= 60 ? 'Gate: body text' : deriveTargetLc >= 25 ? 'Gate: UI chrome' : 'Decorative only'}
+                    {deriveTargetLc >= 60 ? 'Gate: body text minimum' : deriveTargetLc >= 25 ? 'Gate: UI chrome minimum' : 'Decorative only'}
                   </p>
                 </div>
 
@@ -686,59 +635,64 @@ export function ApcaSection() {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold text-foreground">Derived foreground</span>
                       <Badge tone={derivedFg.reachedTarget ? 'success' : 'destructive'} size="sm">
-                        {derivedFg.reachedTarget
-                          ? `Achieved Lc ${derivedFg.lc.toFixed(1)}`
-                          : 'Unreachable'}
+                        {derivedFg.reachedTarget ? `Lc ${derivedFg.lc.toFixed(1)} ✓` : 'Unreachable — surface too mid-tone'}
                       </Badge>
                     </div>
-
                     <div className="flex items-center gap-4">
                       <div
                         className="flex size-20 shrink-0 items-center justify-center rounded-xl border border-border text-2xl font-black"
-                        style={{ backgroundColor: anchorHex, color: derivedFg.oklch }}
+                        style={{ backgroundColor: anchor.css, color: derivedFg.oklch }}
                       >
                         Aa
                       </div>
                       <div className="min-w-0 space-y-1">
-                        <code className="block break-all font-mono text-xs text-muted-foreground">
-                          {derivedFg.oklch}
-                        </code>
+                        <p className="text-xs font-semibold text-muted-foreground">Foreground CSS value:</p>
+                        <code className="block break-all font-mono text-xs text-foreground">{derivedFg.oklch}</code>
                         <p className="text-xs text-muted-foreground">
-                          L = {derivedFg.l.toFixed(3)} · {derivedFg.l < 0.5 ? 'darker direction' : 'lighter direction'}
+                          L = {derivedFg.l.toFixed(4)} · neutral (c=0) · {derivedFg.l < 0.5 ? 'dark side ⬇' : 'light side ⬆'}
                         </p>
                       </div>
                     </div>
-
                     <LcScaleBar lc={derivedFg.lc} />
                   </CardWell>
                 )}
               </div>
 
-              {/* Algorithm explanation */}
+              {/* Algorithm panel */}
               <CardWell className="h-fit space-y-4 p-4">
                 <p className="text-sm font-semibold text-foreground">Algorithm — 4 steps</p>
-                <ol className="space-y-2.5 text-sm text-muted-foreground">
+                <ol className="space-y-3 text-sm text-muted-foreground">
                   {[
-                    'Convert anchor hex → sRGB → Y (APCA luminance). Approximate OKLCH L via cube-root: L ≈ Y^(1/3). Neutral chroma (c=0) is used so the derivation stays in-gamut.',
-                    'Resolve polarity via contrast capacity: compare |Lc| achievable at pure black (L=0) vs pure white (L=1) against this anchor. The side with higher capacity wins — correct for mid-tones where a simple L>0.5 rule would fail.',
-                    'Binary-search the L axis in 48 iterations — converges to the least-extreme L that achieves targetLc. Avoids pure black/white eye strain.',
-                    'Returns { oklch, lc, reachedTarget }. lc is always |Lc| (absolute). Drop oklch directly into a CSS token.',
-                  ].map((step, i) => (
+                    {
+                      t: 'Convert anchor',
+                      b: 'OKLCH token passed to foregroundFor as { l, c, h }. The library handles all internal math.',
+                    },
+                    {
+                      t: 'Resolve polarity',
+                      b: 'Compare |Lc| capacity at L=0 (black fg) vs L=1 (white fg) against this anchor. The side with higher capacity wins — correct for mid-tones where a naïve L > 0.5 rule would fail.',
+                    },
+                    {
+                      t: 'Binary search',
+                      b: 'Bisect the OKLCH L axis in 48 iterations at c=0 (neutral grey). Converges to the least-extreme L meeting targetLc — avoids pure black/white eye strain.',
+                    },
+                    {
+                      t: 'Result',
+                      b: 'Returns { oklch, l, lc, reachedTarget }. lc is always |Lc| (absolute). Drop oklch directly into a CSS token.',
+                    },
+                  ].map(({ t, b }, i) => (
                     <li key={i} className="flex gap-2.5">
                       <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">
                         {i + 1}
                       </span>
-                      <span>{step}</span>
+                      <span><strong className="text-foreground">{t}:</strong>{' '}{b}</span>
                     </li>
                   ))}
                 </ol>
-
                 <Separator />
-
                 <div>
                   <p className="mb-1.5 text-xs font-semibold text-foreground">API</p>
                   <pre className="overflow-x-auto rounded-lg bg-muted p-3 font-mono text-xs leading-relaxed text-muted-foreground">
-                    {`const fg = foregroundFor(\n  bg,  // { l, c, h } oklch\n  ${deriveTargetLc},   // target Lc\n  { polarity: 'auto' }\n);\n// → { oklch, lc, reachedTarget }`}
+                    {`import { foregroundFor } from '@pumni/ui/lib/apca';\n\nconst fg = foregroundFor(\n  bg,  // { l, c, h } — native OKLCH\n  ${deriveTargetLc},   // target Lc\n  { polarity: 'auto' }\n);\n// → { oklch, l, lc, reachedTarget }`}
                   </pre>
                 </div>
               </CardWell>

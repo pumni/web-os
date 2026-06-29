@@ -61,7 +61,7 @@ describe('DesignSystemShowcase', () => {
     expect(screen.getByRole('navigation', { name: 'Application dock' })).toBeInTheDocument();
 
     // Additional coverage for new primitives and structures
-    expect(screen.getByRole('slider')).toBeInTheDocument();
+    expect(screen.getAllByRole('slider')[0]).toBeInTheDocument();
     expect(screen.getByText('Volume Adjustment')).toBeInTheDocument();
     expect(screen.getByText('Button Variants')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Destructive' })).toBeInTheDocument();
@@ -73,11 +73,15 @@ describe('DesignSystemShowcase', () => {
     expect(screen.getAllByRole('button', { name: 'Secondary' })[0]).toBeInTheDocument();
   });
 
-  it('renders the motion window demo mounted by default', () => {
+  it('renders the Kinetic OS Window demo and resets coordinates', () => {
     renderShowcase();
 
-    expect(screen.getByRole('button', { name: 'Unmount Window' })).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'Motion-tracked window' })).toBeInTheDocument();
+    const jsTabButton = screen.getByRole('radio', { name: 'JS Orchestration' });
+    fireEvent.click(jsTabButton);
+
+    expect(screen.getByText('Kinetic OS Window')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reset' })).toBeInTheDocument();
+    expect(screen.getByText('Momentum')).toBeInTheDocument();
   });
 
   it('renders form-control primitives with the default active tab', () => {
@@ -104,7 +108,7 @@ describe('DesignSystemShowcase', () => {
   it('opens dialog and sends toast feedback', () => {
     renderShowcase();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Success' }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Success' })[0]);
     expect(toast.success).toHaveBeenCalledWith('Changes saved successfully.');
 
     fireEvent.click(screen.getByRole('button', { name: 'Trigger Dialog' }));
@@ -135,46 +139,43 @@ describe('DesignSystemShowcase', () => {
     expect(screen.getByText('+3')).toBeInTheDocument();
   });
 
-  it('toggles APCA contrast preview states', () => {
+  it('toggles APCA presets and updates Lc score', () => {
     renderShowcase();
 
-    const solidToggle = screen.getByRole('radio', { name: 'Opaque Solid' });
-    const highToggle = screen.getByRole('radio', { name: 'High Contrast' });
+    expect(screen.getByText('Interactive Lc Playground')).toBeInTheDocument();
 
-    expect(solidToggle).toHaveAttribute('aria-checked', 'false');
-    expect(highToggle).toHaveAttribute('aria-checked', 'false');
+    const presetButton = screen.getByRole('button', { name: /Coral on Dark/i });
+    fireEvent.click(presetButton);
 
-    fireEvent.click(solidToggle);
-    fireEvent.click(highToggle);
-
-    expect(solidToggle).toHaveAttribute('aria-checked', 'true');
-    expect(highToggle).toHaveAttribute('aria-checked', 'true');
-    expect(screen.getByText('Contrast Boosted')).toBeInTheDocument();
+    expect(screen.getByText('Lc 60+ — Pass Text')).toBeInTheDocument();
   });
 
-  it('renders fadeRise recipe demo and toggles visibility toggle', () => {
+  it('toggles reduced motion simulation in Motion section', () => {
     renderShowcase();
 
-    expect(screen.getByText('fadeRise Recipe')).toBeInTheDocument();
-    expect(screen.getByText('Fade + Rise')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Hide' })).toBeInTheDocument();
+    expect(screen.getByText(/All Animations Active/)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Hide' }));
-    expect(screen.getByRole('button', { name: 'Show' })).toBeInTheDocument();
+    const toggleButton = screen.getByRole('button', { name: /Simulate Reduced Motion/i });
+    fireEvent.click(toggleButton);
+
+    expect(screen.getByText(/Animations Blocked/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Stop Simulation/i })).toBeInTheDocument();
   });
 
-  it('renders withViewTransition demo', () => {
+  it('renders View Transitions demo inside Navigation & Scroll tab', () => {
     renderShowcase();
 
-    expect(screen.getByText('View Transitions')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Default crossfade' })).toBeInTheDocument();
+    const navTabButton = screen.getByRole('radio', { name: 'Navigation & Scroll' });
+    fireEvent.click(navTabButton);
+
+    expect(screen.getByText('Page View Transitions')).toBeInTheDocument();
   });
 
   it('renders APCA contrast calculator with pass/fail indicator', () => {
     renderShowcase();
 
-    expect(screen.getByText('APCA Contrast Verification')).toBeInTheDocument();
-    expect(screen.getByText('Pass — Text')).toBeInTheDocument();
+    expect(screen.getByText('APCA Contrast')).toBeInTheDocument();
+    expect(screen.getByText('Lc 90+ — Max')).toBeInTheDocument();
   });
 
   it('renders the Spinner primitive in the Feedback section', () => {

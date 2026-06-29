@@ -45,6 +45,7 @@ import { Skeleton } from '@pumni/ui/feedback';
 import { ShowcaseSidebar, SHOWCASE_SECTION_IDS } from './showcase-sidebar';
 import { ShowcaseHeader } from './showcase-header';
 import { FoundationsSection } from './foundations-section';
+import { ApcaSection } from './apca-section';
 import { ControlsSection } from './controls-section';
 import { SurfacesSection } from './surfaces-section';
 import { OverlaysSection } from './overlays-section';
@@ -85,7 +86,6 @@ export function DesignSystemShowcase() {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [commandOpen, setCommandOpen] = React.useState(false);
-  const [previewContrast, setPreviewContrast] = React.useState<'standard' | 'more'>('standard');
 
   const activeSection = useActiveSection(SHOWCASE_SECTION_IDS);
 
@@ -96,10 +96,9 @@ export function DesignSystemShowcase() {
       <div className="min-w-0 flex-1 space-y-12">
         <ShowcaseHeader onOpenCommand={() => setCommandOpen(true)} />
 
-        <FoundationsSection
-          previewContrast={previewContrast}
-          setPreviewContrast={setPreviewContrast}
-        />
+        <FoundationsSection />
+
+        <ApcaSection />
 
         <ControlsSection />
 

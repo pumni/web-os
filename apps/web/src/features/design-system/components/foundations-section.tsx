@@ -1,6 +1,5 @@
-import { apcaContrast, apcaLuminance, backgroundFor, foregroundFor } from '@pumni/ui/lib/apca';
 import { Badge } from '@pumni/ui/feedback';
-import { Button, Input, Label, SegmentedPicker, Switch } from '@pumni/ui/form';
+import { Button, Label, SegmentedPicker, Switch } from '@pumni/ui/form';
 import {
   Card,
   CardContent,
@@ -11,21 +10,18 @@ import {
   Separator,
 } from '@pumni/ui/layout';
 import { cn } from '@pumni/ui/lib/cn';
-import { formatOklch, oklchToSrgb, parseOklch } from '@pumni/ui/lib/oklch';
+
 import { GlassSurface } from '@pumni/ui/identity';
 import { Window } from '@pumni/ui/os';
 import * as React from 'react';
 import { ShowcaseSection } from './showcase-section';
 
 interface FoundationsSectionProps {
-  previewContrast?: 'standard' | 'more';
-  setPreviewContrast?: React.Dispatch<React.SetStateAction<'standard' | 'more'>>;
   hideApca?: boolean;
 }
 
 type TransparencyOption = 'standard' | 'reduced';
 type ContrastOption = 'standard' | 'more';
-type ApcTarget = 'text' | 'ui';
 
 const TRANSPARENCY_OPTIONS: readonly TransparencyOption[] = ['standard', 'reduced'];
 const TRANSPARENCY_LABELS: Record<TransparencyOption, string> = {
@@ -37,20 +33,9 @@ const CONTRAST_LABELS: Record<ContrastOption, string> = {
   standard: 'Normal Contrast',
   more: 'High Contrast',
 };
-const APCA_TARGETS: readonly ApcTarget[] = ['text', 'ui'];
-const APCA_TARGET_LABELS: Record<ApcTarget, string> = {
-  text: 'Text (Lc 60)',
-  ui: 'UI (Lc 25)',
-};
-const APCA_TARGET_LC: Record<ApcTarget, number> = { text: 60, ui: 25 };
 
-function hexToRgb(hex: string): [number, number, number] {
-  return [
-    Number.parseInt(hex.slice(1, 3), 16) / 255,
-    Number.parseInt(hex.slice(3, 5), 16) / 255,
-    Number.parseInt(hex.slice(5, 7), 16) / 255,
-  ];
-}
+
+
 
 const SEMANTIC_COLORS = [
   {
@@ -209,8 +194,6 @@ const MOTION_EASINGS = [
 ];
 
 export function FoundationsSection({
-  previewContrast = 'standard',
-  setPreviewContrast = () => {},
   hideApca = false,
 }: FoundationsSectionProps) {
   const [showSpecs, setShowSpecs] = React.useState(false);
@@ -636,240 +619,12 @@ export function FoundationsSection({
         )}
       </div>
 
-      {!hideApca && (
-        <ApcaContrastSection
-          previewContrast={previewContrast}
-          setPreviewContrast={setPreviewContrast}
-        />
-      )}
+
     </ShowcaseSection>
   );
 }
 
-export function ApcaContrastSection({
-  previewContrast: externalPreviewContrast,
-  setPreviewContrast: externalSetPreviewContrast,
-}: {
-  previewContrast?: 'standard' | 'more';
-  setPreviewContrast?: React.Dispatch<React.SetStateAction<'standard' | 'more'>>;
-}) {
-  const [localContrast, setLocalContrast] = React.useState<'standard' | 'more'>('standard');
-  const previewContrast = externalPreviewContrast ?? localContrast;
-  const setPreviewContrast = externalSetPreviewContrast ?? setLocalContrast;
 
-  const [previewTransparency, setPreviewTransparency] =
-    React.useState<TransparencyOption>('standard');
-  const [apcaFg, setApcaFg] = React.useState('#0a0a0a');
-  const [apcaBg, setApcaBg] = React.useState('#fafafa');
-  const [deriveTarget, setDeriveTarget] = React.useState<ApcTarget>('text');
-
-  return (
-    <div className="space-y-8">
-      {/* Color Derivation — covers foregroundFor / backgroundFor / parseOklch /
-          oklchToSrgb / formatOklch. The inverse-APCA pair is the sanctioned
-          path for deriving an accessible brand-override foreground by
-          construction (design-system.md §Brand contract); until now it was
-          not demonstrated anywhere in the showcase. */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Color Derivation</CardTitle>
-          <CardDescription>
-            Inverse-APCA utilities derive a foreground or background that meets a target Lc by
-            construction — the sanctioned path for brand overrides.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <SegmentedPicker
-            aria-label="Derive target"
-            options={APCA_TARGETS}
-            value={deriveTarget}
-            onChange={(v) => setDeriveTarget(v as ApcTarget)}
-            labels={APCA_TARGET_LABELS}
-          />
-          <ColorDerivationDemo targetLc={APCA_TARGET_LC[deriveTarget]} />
-        </CardContent>
-      </Card>
-
-      {/* APCA Contrast Verification */}
-      <div className="space-y-4 pt-4">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div className="space-y-1">
-            <h3 className="text-lg font-semibold tracking-tight text-foreground">
-              APCA Contrast Verification
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Perceptual contrast (APCA Lc) across surface opacities, accent layers, and
-              high-contrast mode. This is the single contrast source of truth — APCA, not WCAG 2.x.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <SegmentedPicker
-              aria-label="Glass transparency"
-              options={TRANSPARENCY_OPTIONS}
-              value={previewTransparency}
-              onChange={setPreviewTransparency}
-              labels={TRANSPARENCY_LABELS}
-            />
-            <SegmentedPicker
-              aria-label="Contrast mode"
-              options={CONTRAST_OPTIONS}
-              value={previewContrast}
-              onChange={setPreviewContrast}
-              labels={CONTRAST_LABELS}
-            />
-          </div>
-        </div>
-
-        <div
-          className="glass-a11y-preview relative min-h-80 overflow-hidden rounded-xl border bg-background p-6"
-          data-transparency={previewTransparency}
-          data-contrast={previewContrast}
-        >
-          {/* Animated decorative blobs in background */}
-          <div aria-hidden className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-32 -left-24 size-96 rounded-full bg-(--desktop-blob-primary) opacity-55 blur-3xl" />
-            <div className="absolute -top-24 -right-24 size-96 rounded-full bg-(--desktop-blob-secondary) opacity-55 blur-3xl" />
-            <div className="absolute -bottom-32 left-1/3 size-96 rounded-full bg-(--desktop-blob-accent) opacity-50 blur-3xl" />
-            <div className="absolute inset-0 bg-muted/30" />
-          </div>
-
-          <div className="relative grid gap-4 md:grid-cols-2">
-            <GlassSurface variant="panel" className="flex min-h-64 flex-col justify-between p-5">
-              <div className="space-y-2">
-                <span className="case-upper text-xs font-semibold text-primary">
-                  APCA Contrast Gate
-                </span>
-                <h4 className="text-2xl font-bold tracking-tight text-foreground">Lc 60 / Lc 25</h4>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  All semantic color pairs are gated: body text ≥ Lc 60, UI elements ≥ Lc 25. APCA
-                  is perceptually accurate across both light and dark backgrounds.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Badge tone="success" size="sm">
-                  Lc 60+ Text
-                </Badge>
-                <Badge tone="primary" size="sm">
-                  Lc 25+ UI
-                </Badge>
-              </div>
-            </GlassSurface>
-
-            <Window title="Surface Contrast Monitor" className="min-h-64">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">APCA Gate Status</span>
-                  <Badge tone={previewContrast === 'more' ? 'warning' : 'success'} size="sm">
-                    {previewContrast === 'more' ? 'Contrast Boosted' : 'Verified'}
-                  </Badge>
-                </div>
-                <Input aria-label="Quick focus text" placeholder="Focus outline validation" />
-                <div className="flex gap-2">
-                  <Button className="grow">Primary Action</Button>
-                  <Button variant="outline">Dismiss</Button>
-                </div>
-              </div>
-            </Window>
-          </div>
-
-          <Separator className="my-6" />
-          <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-foreground">APCA Contrast Utility</h4>
-            <p className="text-xs text-muted-foreground">
-              <code>apcaContrast</code> and <code>apcaLuminance</code> from <code>@pumni/ui</code>{' '}
-              compute perceptual contrast (Lc) using the APCA algorithm. Drag the color pickers to
-              see live values.
-            </p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1">
-                <Label htmlFor="apca-fg" className="text-xs">
-                  Foreground
-                </Label>
-                <div className="flex items-center gap-2">
-                  <input
-                    id="apca-fg"
-                    type="color"
-                    value={apcaFg}
-                    onChange={(e) => setApcaFg(e.target.value)}
-                    className="size-8 cursor-pointer rounded border bg-transparent"
-                  />
-                  <span className="font-mono text-xs text-muted-foreground">{apcaFg}</span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label htmlFor="apca-bg" className="text-xs">
-                  Background
-                </Label>
-                <div className="flex items-center gap-2">
-                  <input
-                    id="apca-bg"
-                    type="color"
-                    value={apcaBg}
-                    onChange={(e) => setApcaBg(e.target.value)}
-                    className="size-8 cursor-pointer rounded border bg-transparent"
-                  />
-                  <span className="font-mono text-xs text-muted-foreground">{apcaBg}</span>
-                </div>
-              </div>
-            </div>
-            <div
-              className="flex items-center gap-3 rounded-lg border p-3"
-              style={{ backgroundColor: apcaBg }}
-            >
-              <span className="text-lg font-bold" style={{ color: apcaFg }}>
-                Aa
-              </span>
-              <div className="space-y-0.5 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-semibold" style={{ color: apcaFg }}>
-                    {(() => {
-                      const fgRgb = hexToRgb(apcaFg);
-                      const bgRgb = hexToRgb(apcaBg);
-                      const val = apcaContrast(fgRgb, bgRgb);
-                      const absVal = Math.abs(val);
-                      const polarity = val > 0 ? 'BoW' : val < 0 ? 'WoB' : '';
-                      return `Lc ${absVal.toFixed(1)} ${polarity}`.trim();
-                    })()}
-                  </span>
-                  {(() => {
-                    const val = Math.abs(apcaContrast(hexToRgb(apcaFg), hexToRgb(apcaBg)));
-                    if (val >= 60)
-                      return (
-                        <Badge tone="success" size="sm">
-                          Pass — Text
-                        </Badge>
-                      );
-                    if (val >= 25)
-                      return (
-                        <Badge tone="warning" size="sm">
-                          Pass — UI
-                        </Badge>
-                      );
-                    return (
-                      <Badge tone="destructive" size="sm">
-                        Fail
-                      </Badge>
-                    );
-                  })()}
-                </div>
-                <span className="block" style={{ color: apcaFg, opacity: 0.7 }}>
-                  Project gate: Lc 60+ = Text, Lc 25+ = UI elements
-                </span>
-                <span className="font-mono text-xs opacity-50" style={{ color: apcaFg }}>
-                  {(() => {
-                    const fgLum = apcaLuminance(...hexToRgb(apcaFg));
-                    const bgLum = apcaLuminance(...hexToRgb(apcaBg));
-                    return `Lum fg=${fgLum.toFixed(3)} bg=${bgLum.toFixed(3)}`;
-                  })()}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 interface SwatchProps {
   label: string;
@@ -942,82 +697,3 @@ function RadiusDetailCard({ step, px, calc, desc, showSpecs }: { step: string; p
   );
 }
 
-/**
- * Demonstrates the inverse-APCA pair (`foregroundFor` / `backgroundFor`) plus the
- * OKLCH conversion utilities (`parseOklch`, `oklchToSrgb`, `formatOklch`). Given a
- * fixed anchor surface, it derives the least-extreme foreground meeting `targetLc`
- * — the sanctioned path for brand overrides (design-system.md §Brand contract) —
- * then the dual background under that derived foreground, and verifies the result
- * with the same `oklchToSrgb` + `apcaContrast` pair the contrast gate uses.
- */
-function ColorDerivationDemo({ targetLc }: { targetLc: number }) {
-  // Anchor built via formatOklch so no raw oklch literal leaks into source
-  // (pumniNoRawColor guards token boundaries). A mid-light warm surface forces a
-  // non-trivial polarity decision for `auto`.
-  const anchorBg = formatOklch({ l: 0.85, c: 0.02, h: 70 });
-  const bgParsed = parseOklch(anchorBg);
-  const fg = foregroundFor(bgParsed, targetLc, { polarity: 'auto' });
-  const bg = backgroundFor({ l: fg.l, c: fg.c, h: fg.h }, targetLc, { polarity: 'auto' });
-  const verifiedLc = Math.abs(
-    apcaContrast(oklchToSrgb({ l: fg.l, c: fg.c, h: fg.h }), oklchToSrgb(bgParsed)),
-  );
-
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-3">
-        <span className="w-20 text-xs font-medium text-muted-foreground">Anchor bg</span>
-        <div
-          className="size-8 rounded-md border border-border"
-          style={{ backgroundColor: anchorBg }}
-        />
-        <code className="font-mono text-xs break-all text-muted-foreground">{anchorBg}</code>
-      </div>
-
-      <div className="space-y-2 rounded-lg border border-border p-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-foreground">
-            foregroundFor → Lc {targetLc}
-          </span>
-          <Badge tone={fg.reachedTarget ? 'success' : 'destructive'} size="sm">
-            {fg.reachedTarget ? `Lc ${fg.lc.toFixed(0)}` : 'Unreachable'}
-          </Badge>
-        </div>
-        <div className="flex items-center gap-3">
-          <div
-            className="flex size-12 items-center justify-center rounded-md border border-border text-sm font-semibold"
-            style={{ backgroundColor: anchorBg, color: fg.oklch }}
-          >
-            Aa
-          </div>
-          <code className="font-mono text-xs break-all text-muted-foreground">{fg.oklch}</code>
-        </div>
-      </div>
-
-      <div className="space-y-2 rounded-lg border border-border p-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-foreground">
-            backgroundFor → Lc {targetLc}
-          </span>
-          <Badge tone={bg.reachedTarget ? 'success' : 'destructive'} size="sm">
-            {bg.reachedTarget ? `Lc ${bg.lc.toFixed(0)}` : 'Unreachable'}
-          </Badge>
-        </div>
-        <div className="flex items-center gap-3">
-          <div
-            className="flex size-12 items-center justify-center rounded-md border border-border text-sm font-semibold"
-            style={{ backgroundColor: bg.oklch, color: fg.oklch }}
-          >
-            Aa
-          </div>
-          <code className="font-mono text-xs break-all text-muted-foreground">{bg.oklch}</code>
-        </div>
-      </div>
-
-      <p className="text-xs leading-relaxed text-muted-foreground">
-        Round-trip <code>parseOklch</code> → <code>oklchToSrgb</code> → <code>apcaContrast</code>{' '}
-        verifies <span className="font-mono">Lc {verifiedLc.toFixed(1)}</span> — the same pair the
-        contrast gate uses.
-      </p>
-    </div>
-  );
-}
