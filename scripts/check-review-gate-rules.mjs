@@ -22,6 +22,7 @@
  *   server-only-in-client           server module in client      B1
  *   cache-life-too-short            cacheLife('seconds')         B2
  *   cache-tag-unparameterized       cacheTag('literal')          B1
+ *   test-weakening                  .only/.skip/empty catch test B1
  *
  * Note: a direct-env-access rule was considered but dropped — the project's
  * convention (docs/conventions/supabase-security.md, a P2 source) states that
@@ -873,6 +874,62 @@ function analyzeSingleArgRevalidateTag(files, findings) {
   }
 }
 
+// Guards the verify-loop against reward-hacking: an agent told to "make the
+// suite pass" can game a gate by focusing (`.only`), disabling (`.skip`), or
+// swallowing a throwing assertion (empty `catch`) instead of fixing the code.
+// Static presence is the signal — `.only` should never be committed; an
+// intentional `.skip` goes through ai-review-rule-allowlist.json with a reason.
+const TEST_FILE_PATTERN = /(?:__tests__|\.test\.|\.spec\.)/;
+
+function analyzeTestWeakening(files, findings) {
+  const focusRegex = /(?:describe|it|test)\s*\.\s*(only|skip)\b/g;
+  const catchRegex = /catch\s*(?:\([^)]*\))?\s*\{/g;
+  for (const file of files) {
+    const rel = relPath(file);
+    if (!TEST_FILE_PATTERN.test(rel)) continue;
+    const content = readText(file);
+
+    focusRegex.lastIndex = 0;
+    let match;
+    while ((match = focusRegex.exec(content)) !== null) {
+      const kind = match[1];
+      addFinding(
+        findings,
+        RULES.TEST_WEAKENING,
+        rel,
+        content,
+        match.index,
+        content.slice(match.index, match.index + 40),
+        kind === 'only'
+          ? '`.only` silently disables every other test in the file — never commit it.'
+          : '`.skip` disables a test; remove it or allowlist it with a tracked reason.',
+      );
+    }
+
+    catchRegex.lastIndex = 0;
+    while ((match = catchRegex.exec(content)) !== null) {
+      const openIndex = content.indexOf('{', match.index);
+      const closeIndex = findBlockEnd(content, openIndex);
+      if (closeIndex < 0) continue;
+      const body = content
+        .slice(openIndex + 1, closeIndex)
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/\/\/.*$/gm, '')
+        .trim();
+      if (body) continue; // only a truly-empty catch swallows the failure
+      addFinding(
+        findings,
+        RULES.TEST_WEAKENING,
+        rel,
+        content,
+        match.index,
+        content.slice(match.index, Math.min(closeIndex + 1, match.index + 80)),
+        'Empty catch in a test swallows a failing assertion; assert the error with expect(...).toThrow().',
+      );
+    }
+  }
+}
+
 // -- driver -------------------------------------------------------------------
 
 function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
@@ -895,6 +952,7 @@ function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
   analyzeLegacyMiddleware(files, findings);
   analyzeImagePriority(files, findings);
   analyzeSingleArgRevalidateTag(files, findings);
+  analyzeTestWeakening(files, findings);
   return findings.filter((f) => !isAllowlisted(allowlist, f));
 }
 
@@ -914,6 +972,7 @@ function runSelfTest() {
   const routeFile = 'apps/web/src/app/selftest/page.tsx';
   const sqlFile = 'supabase/migrations/00000000000000_selftest.sql';
   const middlewareFile = 'apps/web/src/middleware.ts';
+  const testFile = 'apps/web/src/test/selftest/weak.test.ts';
 
   const serverFixture = `
     "use server";
@@ -989,6 +1048,21 @@ function runSelfTest() {
       begin return jsonb_build_object('user_id', p_user_id); end; $$;
   `;
 
+  const testFixture = `
+    import { describe, it, expect } from 'vitest';
+    describe.only('weak suite', () => {
+      it('does a thing', () => {
+        expect(1).toBe(1);
+      });
+      it.skip('pending', () => {});
+      it('swallows', () => {
+        try {
+          mightThrow();
+        } catch (error) {
+        }
+      });
+    });
+  `;
   const map = {
     [resolveRel(serverFile)]: serverFixture,
     [resolveRel(clientFile)]: clientFixture,
@@ -996,6 +1070,7 @@ function runSelfTest() {
     [resolveRel(routeFile)]: routeFixture,
     [resolveRel(sqlFile)]: sqlFixture,
     [resolveRel(middlewareFile)]: 'export default function middleware() {}',
+    [resolveRel(testFile)]: testFixture,
   };
   const original = fs.readFileSync;
   fs.readFileSync = (filePath, ...rest) =>
@@ -1009,6 +1084,7 @@ function runSelfTest() {
         resolveRel(stateFile),
         resolveRel(routeFile),
         resolveRel(middlewareFile),
+        resolveRel(testFile),
       ],
       sqlFiles: [resolveRel(sqlFile)],
       sqlEvidence: sqlFixture,

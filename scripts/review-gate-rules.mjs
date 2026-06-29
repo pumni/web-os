@@ -18,6 +18,7 @@ export const RULES = {
   LEGACY_MIDDLEWARE: 'legacy-middleware',
   IMAGE_PRIORITY_DEPRECATED: 'image-priority-deprecated',
   SINGLE_ARG_REVALIDATE_TAG: 'single-arg-revalidate-tag',
+  TEST_WEAKENING: 'test-weakening',
 };
 
 export const RULE_INFO = {
@@ -99,7 +100,7 @@ export const RULE_INFO = {
   [RULES.CACHE_TAG_UNPARAMETERIZED]: {
     severity: 'B1',
     summary: 'cacheTag() with a non-parameterized literal collides across users.',
-    fix: 'Pass an identifying parameter: cacheTag(`profile:${userId}`) instead of cacheTag(\'profile\').',
+    fix: "Pass an identifying parameter: cacheTag(`profile:${userId}`) instead of cacheTag('profile').",
   },
   [RULES.LEGACY_MIDDLEWARE]: {
     severity: 'B1',
@@ -114,6 +115,12 @@ export const RULE_INFO = {
   [RULES.SINGLE_ARG_REVALIDATE_TAG]: {
     severity: 'B1',
     summary: 'revalidateTag() must be called with two arguments in Next.js 16.',
-    fix: 'Specify a revalidation profile: revalidateTag(tag, \'max\').',
+    fix: "Specify a revalidation profile: revalidateTag(tag, 'max').",
+  },
+  [RULES.TEST_WEAKENING]: {
+    severity: 'B1',
+    summary:
+      'Test files must not be silently weakened (.only / .skip / empty catch that swallows a failing assertion).',
+    fix: 'Remove `.only`/`.skip` and the empty catch; assert the error with expect(...).toThrow(). For an intentional skip, allowlist it with a tracked reason.',
   },
 };

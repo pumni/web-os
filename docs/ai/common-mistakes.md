@@ -32,8 +32,6 @@ const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: getProfile 
 ❌ `supabase.from('profiles').select('*')`
 ✅ `supabase.from('profiles').select('id, display_name, avatar_url')`
 
-Explicit columns survive schema drift and make reviews meaningful.
-
 ## 3. Service-role in client code (`service-role-client`, P0)
 
 ❌ Importing the admin/service-role client into a `"use client"` component.
@@ -51,8 +49,7 @@ create policy "owner reads" on public.notes for select
   to authenticated using (user_id = (select auth.uid()));
 ```
 
-Follow `docs/conventions/supabase-security.md` — RLS + policies + grants in the
-same migration.
+`docs/conventions/supabase-security.md`: RLS + policies + grants, one migration.
 
 ## 5. Trusting a client-supplied user_id (`trusted-client-user-id-write`)
 
@@ -75,8 +72,8 @@ useMutation({
 ## 7. Logic in route files (`route-business-logic`)
 
 ❌ A `page.tsx` defining `useMutation`, calling external `fetch`, or running timers.
-✅ Route files compose UI and read server data; behaviour lives in a feature hook
-or `actions.ts`/`queries.ts` (`docs/conventions/feature-module.md`).
+✅ Route files compose UI; behaviour lives in a feature hook or
+`actions.ts`/`queries.ts` (`docs/conventions/feature-module.md`).
 
 ## 8. Missing loading state (`missing-loading-state`)
 
@@ -91,12 +88,15 @@ or `actions.ts`/`queries.ts` (`docs/conventions/feature-module.md`).
 ## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`)
 
 Single source of truth: [`.claude/rules/nextjs-cache-components.md`](/.claude/rules/nextjs-cache-components.md) (auto-loads on App Router files).
-The static rules `cache-life-too-short` and `cache-tag-unparameterized` enforce
-the two regex-catchable cases.
 
-## 11. Premature abstraction / speculative features (simplicity — no static rule)
+## 11. Weakening a test to make it pass (`test-weakening`)
 
-The karpathy "simplicity first" principle; a reviewer rule, not a regex.
+❌ `describe.only` / `it.skip`, or `try { x() } catch {}` to silence a throwing
+assertion. `.only` silently disables every other test.
+✅ Fix the code; assert with `expect(() => x()).toThrow()`. Intentional skip →
+allowlist with a reason (`ai-review-rule-allowlist.json`).
+
+## 12. Premature abstraction / speculative features (simplicity — no static rule)
 
 ❌ A strategy/factory/registry for one case; an interface with a single
 implementation; caching, validation, or config flags nobody asked for.

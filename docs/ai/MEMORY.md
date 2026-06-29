@@ -22,3 +22,5 @@ Owner: `docs/adr/0004-memory-layer-harness-managed.md`.
 - Next.js 16 cache API → [data-fetching.md](../conventions/data-fetching.md) and [common-mistakes.md](common-mistakes.md).
 - transpilePackages necessity → [transpile-packages.md](../conventions/transpile-packages.md).
 - MCP runtime role → [mcp.md](mcp.md).
+- Context layer is settled (frozen) — no new context-layer ADR without a *measured* regression → [ADR-0009](../adr/0009-context-layer-lean-2026.md), [ADR-0013](../adr/0013-context-layer-cleanup-2026-06.md), [adr/README.md](../adr/README.md).
+- Enforcement is deterministic gates over discipline: doc→code drift caught by `checkCodeReferences` (`path#symbol` anchors); verify-loop reward-hacking caught by the `test-weakening` rule → `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`, [common-mistakes.md](common-mistakes.md).

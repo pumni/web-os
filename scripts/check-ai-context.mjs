@@ -614,7 +614,7 @@ function checkRuleInventory() {
   }
 
   // The rule registry (scripts/review-gate-rules.mjs) is the single source of
-  // truth for the 16 static rules — it already carries id + severity + summary +
+  // truth for the static rules — it already carries id + severity + summary +
   // fix per rule. The doc must point at it, not re-transcribe the table (which
   // drifts and burns review tokens). Enforce only that the pointer is present.
   const inventory = content.slice(headingIndex);
