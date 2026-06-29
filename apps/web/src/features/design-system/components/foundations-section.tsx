@@ -18,8 +18,9 @@ import * as React from 'react';
 import { ShowcaseSection } from './showcase-section';
 
 interface FoundationsSectionProps {
-  previewContrast: 'standard' | 'more';
-  setPreviewContrast: React.Dispatch<React.SetStateAction<'standard' | 'more'>>;
+  previewContrast?: 'standard' | 'more';
+  setPreviewContrast?: React.Dispatch<React.SetStateAction<'standard' | 'more'>>;
+  hideApca?: boolean;
 }
 
 type TransparencyOption = 'standard' | 'reduced';
@@ -52,8 +53,9 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 export function FoundationsSection({
-  previewContrast,
-  setPreviewContrast,
+  previewContrast = 'standard',
+  setPreviewContrast = () => {},
+  hideApca = false,
 }: FoundationsSectionProps) {
   const [previewTransparency, setPreviewTransparency] =
     React.useState<TransparencyOption>('standard');
@@ -190,31 +192,61 @@ export function FoundationsSection({
           </CardContent>
         </Card>
 
-        {/* Color Derivation — covers foregroundFor / backgroundFor / parseOklch /
-            oklchToSrgb / formatOklch. The inverse-APCA pair is the sanctioned
-            path for deriving an accessible brand-override foreground by
-            construction (design-system.md §Brand contract); until now it was
-            not demonstrated anywhere in the showcase. */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Color Derivation</CardTitle>
-            <CardDescription>
-              Inverse-APCA utilities derive a foreground or background that meets a target Lc by
-              construction — the sanctioned path for brand overrides.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <SegmentedPicker
-              aria-label="Derive target"
-              options={APCA_TARGETS}
-              value={deriveTarget}
-              onChange={(v) => setDeriveTarget(v as ApcTarget)}
-              labels={APCA_TARGET_LABELS}
-            />
-            <ColorDerivationDemo targetLc={APCA_TARGET_LC[deriveTarget]} />
-          </CardContent>
-        </Card>
       </div>
+
+      {!hideApca && (
+        <ApcaContrastSection
+          previewContrast={previewContrast}
+          setPreviewContrast={setPreviewContrast}
+        />
+      )}
+    </ShowcaseSection>
+  );
+}
+
+export function ApcaContrastSection({
+  previewContrast: externalPreviewContrast,
+  setPreviewContrast: externalSetPreviewContrast,
+}: {
+  previewContrast?: 'standard' | 'more';
+  setPreviewContrast?: React.Dispatch<React.SetStateAction<'standard' | 'more'>>;
+}) {
+  const [localContrast, setLocalContrast] = React.useState<'standard' | 'more'>('standard');
+  const previewContrast = externalPreviewContrast ?? localContrast;
+  const setPreviewContrast = externalSetPreviewContrast ?? setLocalContrast;
+
+  const [previewTransparency, setPreviewTransparency] =
+    React.useState<TransparencyOption>('standard');
+  const [apcaFg, setApcaFg] = React.useState('#0a0a0a');
+  const [apcaBg, setApcaBg] = React.useState('#fafafa');
+  const [deriveTarget, setDeriveTarget] = React.useState<ApcTarget>('text');
+
+  return (
+    <div className="space-y-8">
+      {/* Color Derivation — covers foregroundFor / backgroundFor / parseOklch /
+          oklchToSrgb / formatOklch. The inverse-APCA pair is the sanctioned
+          path for deriving an accessible brand-override foreground by
+          construction (design-system.md §Brand contract); until now it was
+          not demonstrated anywhere in the showcase. */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Color Derivation</CardTitle>
+          <CardDescription>
+            Inverse-APCA utilities derive a foreground or background that meets a target Lc by
+            construction — the sanctioned path for brand overrides.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <SegmentedPicker
+            aria-label="Derive target"
+            options={APCA_TARGETS}
+            value={deriveTarget}
+            onChange={(v) => setDeriveTarget(v as ApcTarget)}
+            labels={APCA_TARGET_LABELS}
+          />
+          <ColorDerivationDemo targetLc={APCA_TARGET_LC[deriveTarget]} />
+        </CardContent>
+      </Card>
 
       {/* APCA Contrast Verification */}
       <div className="space-y-4 pt-4">
@@ -393,7 +425,7 @@ export function FoundationsSection({
           </div>
         </div>
       </div>
-    </ShowcaseSection>
+    </div>
   );
 }
 

@@ -86,7 +86,9 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
       <nav className={cn('space-y-1 p-3', !collapsed && 'px-4')}>
         {sidebarNavItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/' && pathname.startsWith((item.href as string) + '/'));
           const link = (
             <Link
               key={item.href}

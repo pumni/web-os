@@ -1,9 +1,5 @@
-import { DesignSystemShowcase } from '@/features/design-system';
-
-export const metadata = {
-  title: 'Design System',
-};
+import { redirect } from 'next/navigation';
 
 export default function DesignSystemPage() {
-  return <DesignSystemShowcase />;
+  redirect('/design-system/tokens');
 }
