@@ -22,9 +22,16 @@ features/my-feature/
 │   └── use-sync-engine.ts
 ├── actions.ts            # 3. Data Access Layer (mutations)
 ├── queries.ts            # 3. Data Access Layer (server reads)
+├── client-queries.ts     # 3b. Client Data Access (optional, browser-side reads)
 ├── types.ts              # 4. Type Safety Boundary (domain types)
+├── stores/               # 4b. Client UI Stores (optional, Zustand for feature-local state)
+│   └── volume-store.ts
 └── index.ts              # 5. Public API Firewall (entry point)
 ```
+
+> `client-queries.ts` và `stores/` là các phần mở rộng không bắt buộc, chỉ dùng khi
+> feature có nhu cầu thực tế về client-side data access hoặc UI state riêng.
+> Feature đơn giản có thể để file flat mà không cần thư mục con.
 
 ### Layer Responsibilities & Data Flow
 

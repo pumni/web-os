@@ -44,7 +44,7 @@ import { TapToPlayOverlay } from './tap-to-play-overlay';
 import { HostClaimBanner } from './host-claim-banner';
 import { useHostHeartbeat } from '../hooks/use-host-heartbeat';
 import { useMemberProfiles } from '../hooks/use-room-members';
-import { useAppUiStore } from '@/shared/stores/app-ui-store';
+import { useWatchVolumeStore } from '../stores/volume-store';
 
 import { useRoomMembership } from '../hooks/use-room-membership';
 
@@ -195,8 +195,8 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   const [newSourceRef, setNewSourceRef] = useState('');
 
   const queryClient = useQueryClient();
-  const watchPlayerVolume = useAppUiStore((state) => state.watchPlayerVolume);
-  const setWatchPlayerVolume = useAppUiStore((state) => state.setWatchPlayerVolume);
+  const watchPlayerVolume = useWatchVolumeStore((state) => state.watchPlayerVolume);
+  const setWatchPlayerVolume = useWatchVolumeStore((state) => state.setWatchPlayerVolume);
 
   // 1. Join room membership on mount, then refetch member-gated data.
   const membership = useRoomMembership(room.id, queryClient);

@@ -33,6 +33,12 @@ for the architecture rules before copying.
 - `apps/web/src/test/features/watch-sync-machine.test.ts`: transition-by-transition
   test mapping — the template for adding new sync behavior.
 
+## Feature-Local State (Zustand)
+
+- `apps/web/src/features/watch/stores/volume-store.ts`: feature-scoped Zustand
+  store with localStorage persistence — the template for UI state that belongs
+  to one feature, not the global shared layer.
+
 ## Supabase
 
 - `supabase/migrations/001_initial_profiles.sql`: table, RLS policies, explicit

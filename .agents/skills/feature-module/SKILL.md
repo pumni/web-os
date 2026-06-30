@@ -13,7 +13,8 @@ piece and routes the detail to the matching implementation skill.
 
 - Read `docs/conventions/feature-module.md` and `apps/web/AGENTS.md` first.
 - Default shape: `features/<feature>/{queries.ts, actions.ts, <feature>-form.tsx
-  or components}`.
+  or components}`. Optionally `client-queries.ts` for browser-side reads and
+  `stores/` for feature-scoped Zustand stores.
 - Server reads go in `queries.ts` (Server Components, cached); mutations go in
   `actions.ts` (`"use server"` Server Actions); `"use client"` is only for
   interactivity (form state, handlers, optimistic UI, local view state).
