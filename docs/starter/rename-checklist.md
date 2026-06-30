@@ -30,7 +30,7 @@ Use this checklist when cloning the starter for a new product.
 
 Run:
 
-```bash
+```pwsh
 bun run lint
 bun run typecheck
 bun run test

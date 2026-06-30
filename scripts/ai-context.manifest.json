@@ -15,6 +15,7 @@
     "scripts/review-gate-rules.mjs",
     "scripts/sync-project-graph.mjs",
     "scripts/sync-skills.mjs",
+    "scripts/sync-adr-register.mjs",
     ".claude/rules/nextjs-async-apis.md",
     ".claude/rules/nextjs-cache-components.md",
     "apps/web/AGENTS.md",

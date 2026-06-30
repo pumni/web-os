@@ -555,6 +555,21 @@ function checkProjectGraphSync() {
   }
 }
 
+function checkAdrRegisterSync() {
+  const syncScript = path.join(__dirname, 'sync-adr-register.mjs');
+  if (!fs.existsSync(syncScript)) {
+    reportWarn('sync-adr-register.mjs not found — skipping ADR register sync check.');
+    return;
+  }
+  try {
+    execFileSync(process.execPath, [syncScript, '--check'], { stdio: 'inherit', cwd: ROOT });
+  } catch {
+    reportError(
+      'docs/adr/README.md ADR register is out of sync. Run `bun run ai:adr:sync` and commit.',
+    );
+  }
+}
+
 function checkStructuredMarkdown({ dir, kind, validation, isFileEntry }) {
   const baseDir = resolveRel(dir);
   if (!fs.existsSync(baseDir)) return;
@@ -692,6 +707,40 @@ function checkDesignTokenBoundaries() {
   }
 }
 
+function checkDocApiDenylist() {
+  // Framework/API identifiers known to be phantom or removed. A convention doc
+  // (P2) naming a non-existent API outranks real code (P4) and makes agents write
+  // code that fails to build (cf. the `unstable_instant` incident, 2026-07).
+  // This is a denylist, NOT a freshness table (ADR-0009/0013 removed version-table
+  // upkeep): add an entry when a phantom API is caught. Verify *real* APIs at edit
+  // time against apps/web/node_modules/next, not here.
+  const DENY = [
+    {
+      token: 'unstable_instant',
+      reason: 'not exported by the installed Next.js (phantom route-segment API)',
+    },
+  ];
+  const targets = [
+    'AGENTS.md',
+    'apps/web/AGENTS.md',
+    ...collectMarkdownFiles('docs/conventions'),
+    ...collectMarkdownFiles('docs/ai'),
+    ...collectMarkdownFiles('.claude/rules'),
+  ];
+  for (const relativePath of targets) {
+    if (!fs.existsSync(resolveRel(relativePath))) continue;
+    const content = readFile(relativePath);
+    for (const { token, reason } of DENY) {
+      const idx = content.indexOf(token);
+      if (idx >= 0) {
+        reportError(
+          `Denylisted API '${token}' in ${relativePath}:${lineNumber(content, idx)} — ${reason}. Remove it or replace with a verified API.`,
+        );
+      }
+    }
+  }
+}
+
 function checkUiPackageBoundaries() {
   const files = collectFiles('packages/ui/src', ['.ts', '.tsx']);
   const forbiddenImportPattern =
@@ -736,9 +785,11 @@ checkRuleInventory();
 checkPackageScripts();
 checkDesignTokenBoundaries();
 checkUiPackageBoundaries();
+checkDocApiDenylist();
 checkSecretsIntegration();
 checkSkillShimsSync();
 checkProjectGraphSync();
+checkAdrRegisterSync();
 
 if (errors > 0) {
   console.error(`\nValidation failed with ${errors} error(s) and ${warnings} warning(s).`);

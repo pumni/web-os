@@ -91,16 +91,15 @@ Single source of truth: `.claude/rules/nextjs-cache-components.md` (auto-loads o
 
 ## 11. Weakening a test to make it pass (`test-weakening`)
 
-❌ `describe.only` / `it.skip`, or `try { x() } catch {}` to silence a throwing
-assertion. `.only` silently disables every other test.
+❌ `describe.only` / `it.skip`, or `try { x() } catch {}` to silence a throw
+(`.only` disables every other test).
 ✅ Fix the code; assert with `expect(() => x()).toThrow()`. Intentional skip →
 allowlist with a reason (`ai-review-rule-allowlist.json`).
 
-## 12. Premature abstraction / speculative features (simplicity — no static rule)
+## 12. Premature abstraction (simplicity — no static rule)
 
-❌ A strategy/factory/registry for one case; an interface with a single
-implementation; caching, validation, or config flags nobody asked for.
-✅ Minimum code that solves today's task; add the abstraction when a second
-real caller appears. Reversible/cosmetic decisions get no ADR
-(`docs/adr/README.md`).
+❌ A strategy/factory/registry for one case; an interface with one impl; caching
+or config flags nobody asked for.
+✅ Minimum code for today's task; add the abstraction when a second real caller
+appears. Reversible/cosmetic decisions get no ADR (`docs/adr/README.md`).
 

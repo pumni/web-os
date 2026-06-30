@@ -78,6 +78,7 @@
     "ai:tw": "tailwind-lint --config apps/web/src/app/globals.css \"apps/web/**/*.{ts,tsx}\" \"packages/ui/src/**/*.{ts,tsx}\"",
     "ai:eval": "bun scripts/run-ai-evals.mjs",
     "ai:graph:sync": "bun scripts/sync-project-graph.mjs",
+    "ai:adr:sync": "bun scripts/sync-adr-register.mjs",
     "ai:skills:sync": "bun scripts/sync-skills.mjs",
     "ai:premerge": "bun run ai:check && bun run ai:eval && bun run lint && bun run typecheck && bun run test && bun run build",
     "clean": "bun run scripts/clean.mjs"

@@ -72,4 +72,4 @@ gate that matches your change scope.
 
 | Need | Load |
 |---|---|
-| Self-review your diff before reporting "done" | `.agents/workflows/review-gate.md` |
+| Self-review your diff before reporting "done" | `review-gate` → `.agents/workflows/review-gate.md` |
