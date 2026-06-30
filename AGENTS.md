@@ -51,7 +51,7 @@ Stack: Supabase (RLS-first), TanStack Query (client async only), Zustand (client
 UI state only), Zod validators.
 
 - `apps/web/src/{app,components,features,lib,stores}` — Next.js delivery layer.
-- `packages/*` — `auth`, `env`, `supabase`, `ui`, `validators`, `config`, `features`, `test-utils` (each has a nearest-file `AGENTS.md`).
+- `packages/*` — `auth`, `env`, `supabase`, `ui`, `validators`, `config`, `features`, `test-utils`, `workflows` (each has a nearest-file `AGENTS.md`).
 - `supabase/migrations` — schema + RLS + grants together.
 
 State ownership: server state stays in Server Components or TanStack Query cache;

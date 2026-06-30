@@ -41,7 +41,7 @@ import { cn } from '../../lib/cn';
  * nesting violations. String content keeps its pre-wrap semantics.
  */
 const chatBubbleVariants = cva(
-  'rounded-xl px-3 py-2 text-xs break-words shadow-control select-text',
+  'rounded-xl px-3 py-2 text-xs wrap-break-word shadow-control select-text',
   {
     variants: {
       tone: {

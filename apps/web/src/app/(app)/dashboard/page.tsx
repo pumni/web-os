@@ -33,7 +33,7 @@ export default async function DashboardPage() {
         <BentoSection recentRooms={recentRooms} />
      </Suspense>
 
-      <Suspense fallback={<div className="h-[210px] w-full animate-pulse rounded-xl bg-muted/40" />}>
+      <Suspense fallback={<div className="h-52.5 w-full animate-pulse rounded-xl bg-muted/40" />}>
         <section aria-labelledby="dashboard-recent-rooms" className="space-y-1">
           <h2
             id="dashboard-recent-rooms"

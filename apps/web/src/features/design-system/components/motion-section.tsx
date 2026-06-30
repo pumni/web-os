@@ -412,7 +412,7 @@ export function MotionSection() {
                 Oscillation Decay Graph
               </span>
               <div className="relative flex-1 min-h-24">
-                <svg className="w-full h-full min-h-[96px]" viewBox="0 0 300 120" preserveAspectRatio="none">
+                <svg className="w-full h-full min-h-24" viewBox="0 0 300 120" preserveAspectRatio="none">
                   {/* Base line */}
                   <line x1="0" y1="90" x2="300" y2="90" stroke="currentColor" className="text-border" strokeWidth="1" />
                   {/* Target line */}
@@ -656,7 +656,7 @@ export function MotionSection() {
                 </div>
 
                 {/* Dashboard Arena viewport */}
-                <div className="relative h-[180px] bg-background border border-border rounded-xl overflow-hidden shadow-inner p-3 flex flex-col justify-between">
+                <div className="relative h-45 bg-background border border-border rounded-xl overflow-hidden shadow-inner p-3 flex flex-col justify-between">
                   <div
                     onContextMenu={handleContextClick}
                     className="flex-1 flex flex-col justify-between select-none relative"
@@ -1113,7 +1113,7 @@ export function MotionSection() {
                 <CardContent>
                   <div className="rounded-xl border border-border bg-muted/15 p-3.5">
                     {/* Viewport Frame */}
-                    <div className="relative min-h-[240px] bg-background border border-border rounded-xl overflow-hidden shadow-inner p-4 flex flex-col justify-between">
+                    <div className="relative min-h-60 bg-background border border-border rounded-xl overflow-hidden shadow-inner p-4 flex flex-col justify-between">
                       {vtView === 'list' ? (
                         /* List view */
                         <div className="space-y-3.5 flex-1 flex flex-col justify-between">
@@ -1240,7 +1240,7 @@ export function MotionSection() {
                   {/* Phone 1: scroll-fade-in */}
                   <div className="flex flex-col items-center gap-2">
                     <span className="font-mono text-xs font-bold text-foreground">scroll-fade-in</span>
-                    <div className="relative h-[320px] w-[180px] rounded-[24px] border-[6px] border-border bg-background shadow-md overflow-hidden flex flex-col">
+                    <div className="relative h-80 w-45 rounded-3xl border-[6px] border-border bg-background shadow-md overflow-hidden flex flex-col">
                       {/* Speaker / Notch */}
                       <div className="absolute top-1 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-border/80 z-20" />
                       {/* Screen Content Scrollport */}
@@ -1271,7 +1271,7 @@ export function MotionSection() {
                   {/* Phone 2: scroll-slide-up */}
                   <div className="flex flex-col items-center gap-2">
                     <span className="font-mono text-xs font-bold text-foreground">scroll-slide-up</span>
-                    <div className="relative h-[320px] w-[180px] rounded-[24px] border-[6px] border-border bg-background shadow-md overflow-hidden flex flex-col">
+                    <div className="relative h-80 w-45 rounded-3xl border-[6px] border-border bg-background shadow-md overflow-hidden flex flex-col">
                       <div className="absolute top-1 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-border/80 z-20" />
                       {/* Screen Content Scrollport */}
                       <div className="flex-1 overflow-y-auto p-2 pt-6 space-y-2 select-none">
@@ -1301,14 +1301,14 @@ export function MotionSection() {
                   {/* Phone 3: scroll-parallax */}
                   <div className="flex flex-col items-center gap-2">
                     <span className="font-mono text-xs font-bold text-foreground">scroll-parallax</span>
-                    <div className="relative h-[320px] w-[180px] rounded-[24px] border-[6px] border-border bg-background shadow-md overflow-hidden flex flex-col" style={{ isolation: 'isolate' }}>
+                    <div className="relative h-80 w-45 rounded-3xl border-[6px] border-border bg-background shadow-md overflow-hidden flex flex-col" style={{ isolation: 'isolate' }}>
                       <div className="absolute top-1 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-border/80 z-20" />
                       
                       {/* Dotted Grid Background - offset translateY via scroll-parallax */}
                       <div
                         className={cn(
                           !isReduced && 'scroll-parallax',
-                          'absolute -inset-y-16 left-0 right-0 opacity-40 z-0 bg-[radial-gradient(color-mix(in_oklch,var(--primary)_22%,transparent)_1.5px,transparent_1.5px)] [background-size:14px_14px]'
+                          'absolute -inset-y-16 left-0 right-0 opacity-40 z-0 bg-[radial-gradient(color-mix(in_oklch,var(--primary)_22%,transparent)_1.5px,transparent_1.5px)] bg-size-[14px_14px]'
                         )}
                         aria-hidden
                       />
@@ -1373,7 +1373,7 @@ export function MotionSection() {
                 {Object.entries(motionTokens.easing).map(([key, val]) => (
                   <div key={key} className="flex justify-between text-xs font-mono">
                     <span className="text-foreground">{key}</span>
-                    <span className="text-muted-foreground truncate max-w-[120px]">[{(val as number[]).join(',')}]</span>
+                    <span className="text-muted-foreground truncate max-w-30">[{(val as number[]).join(',')}]</span>
                   </div>
                 ))}
               </div>

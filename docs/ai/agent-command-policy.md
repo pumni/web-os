@@ -8,7 +8,7 @@ PowerShell 7 (`pwsh`) is the only allowed shell for AI-issued commands.
 The harness tools (Read/Grep/Glob) handle file operations — no shell needed.
 Use `pwsh` for non-file ops: git, npm, bun, `jq`.
 
-## Validation (altitude table)
+## Validation
 
 Run the narrowest gate for your change scope:
 

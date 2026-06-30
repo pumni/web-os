@@ -418,7 +418,7 @@ export function FoundationsSection({
             <CardContent className="space-y-4">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
                 <span className="text-xs font-semibold text-muted-foreground">Select Elevation Level:</span>
-                <div className="w-full sm:w-auto max-w-[280px]">
+                <div className="w-full sm:w-auto max-w-70">
                   <SegmentedPicker
                     aria-label="Elevation Level"
                     options={['control', 'card', 'glass', 'glow']}
@@ -430,7 +430,7 @@ export function FoundationsSection({
 
               <div className="grid gap-4 md:grid-cols-2">
                 {/* Left Column: Side-Profile Blueprint Svg */}
-                <div className="border border-border rounded-xl bg-card p-4 flex flex-col justify-between min-h-[220px]">
+                <div className="border border-border rounded-xl bg-card p-4 flex flex-col justify-between min-h-55">
                   <span className="block font-mono text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Side-Profile Blueprint</span>
                   <div className="flex items-center justify-center grow">
                     <svg className="w-full h-36 text-muted-foreground/30 font-mono text-xs" viewBox="0 0 200 120">
@@ -474,7 +474,7 @@ export function FoundationsSection({
                 </div>
 
                 {/* Right Column: 2D Sandbox Card on Wallpaper Blobs */}
-                <div className="relative border border-border rounded-xl bg-background p-4 flex items-center justify-center min-h-[220px] overflow-hidden">
+                <div className="relative border border-border rounded-xl bg-background p-4 flex items-center justify-center min-h-55 overflow-hidden">
                   {/* Wallpaper blobs */}
                   <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-1/4 left-1/4 size-48 rounded-full bg-(--desktop-blob-primary) opacity-40 blur-2xl animate-pulse" />
@@ -485,7 +485,7 @@ export function FoundationsSection({
                   {/* Visual Sandbox Card */}
                   <div 
                     className={cn(
-                      "w-full max-w-[200px] rounded-xl p-4 transition-all duration-300 ease-fluid text-xs relative z-10",
+                      "w-full max-w-50 rounded-xl p-4 transition-all duration-300 ease-fluid text-xs relative z-10",
                       activeElevation === 'control' && 'bg-background shadow-control border border-border',
                       activeElevation === 'card' && 'bg-card shadow-card border border-border',
                       activeElevation === 'glass' && 'glass-panel border-none',
