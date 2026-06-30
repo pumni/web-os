@@ -2,7 +2,6 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  reactStrictMode: true,
   poweredByHeader: false,
   typedRoutes: true,
   reactCompiler: true,
@@ -20,6 +19,12 @@ const nextConfig: NextConfig = {
     // @supports (view-transition-name: none) in CSS.
     viewTransition: true,
     scrollRestoration: true,
+    // Single root-level 404 for unmatched URLs across all route groups
+    // ((app)/(public)/(watch)). Pairs with app/global-not-found.tsx.
+    globalNotFound: true,
+    // lucide-react is in Next's built-in default optimizePackageImports list
+    // (since 13.5) — listing it here is redundant. Only non-default barrel
+    // packages need explicit entries.
     optimizePackageImports: [
       '@vidstack/react',
       '@dnd-kit/core',
@@ -60,4 +65,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-
