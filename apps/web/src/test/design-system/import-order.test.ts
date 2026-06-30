@@ -28,7 +28,7 @@ const globals = readFileSync(path.join(repoRoot, 'apps/web/src/app/globals.css')
 
 /** The `@pumni/ui/styles/<name>.css` imports in source order. */
 const importedStyles = [...globals.matchAll(/@import\s+'@pumni\/ui\/styles\/([\w-]+)\.css'/g)].map(
-  (match) => match[1],
+  (match) => match[1]!,
 );
 
 const orderOf = (name: string) => {
