@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { apcaContrast } from '@pumni/ui/lib/apca';
-import { oklchToSrgb, parseOklch } from '@pumni/ui/lib/oklch';
+import { apcaContrast } from '../lib/apca';
+import { oklchToSrgb, parseOklch } from '../lib/oklch';
 import { describe, expect, it } from 'vitest';
 import { repoRoot, tokenCss } from './token-test-utils';
 

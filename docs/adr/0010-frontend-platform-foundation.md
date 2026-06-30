@@ -196,6 +196,10 @@ not adopted.
   subpaths — the subpaths, not the barrel's removal, are what deliver the
   concern boundary and tree-shakeable public surface for a second project.
 
+## Amendment (Mid-2026)
+
+**Root Barrel Removal:** Contrary to the initial decision to keep the root barrel as a convenience facade, the root barrel export has been completely removed from `packages/ui`'s `exports` map, and all client imports have been migrated to subpaths. This guarantees absolute concern boundaries, prevents any implicit loading of OS-shell components, and ensures bulletproof tree-shaking across all consuming applications without depending on Next.js/bundler-specific configuration (`optimizePackageImports`).
+
 ## References
 
 - `docs/conventions/design-system.md` — token tiers, surface rules, APCA targets

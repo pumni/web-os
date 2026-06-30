@@ -2,7 +2,7 @@ import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { PersonalizationProvider, usePersonalization } from '@pumni/ui/identity';
+import { PersonalizationProvider, usePersonalization } from './index';
 
 function Consumer() {
   const { accent, glass, density, setAccent, setGlass, setDensity } = usePersonalization();

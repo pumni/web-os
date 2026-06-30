@@ -35,7 +35,7 @@ import {
   Textarea,
   RadioGroup,
   RadioGroupItem,
-} from '@pumni/ui/form';
+} from '../components/form';
 
 import {
   Card,
@@ -66,7 +66,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from '@pumni/ui/layout';
+} from '../components/layout';
 
 import {
   Dialog,
@@ -136,7 +136,7 @@ import {
   AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
-} from '@pumni/ui/overlay';
+} from '../components/overlay';
 
 import {
   Badge,
@@ -148,11 +148,11 @@ import {
   Spinner,
   Toaster,
   Progress,
-} from '@pumni/ui/feedback';
+} from '../components/feedback';
 
-import { GlassSurface, PersonalizationProvider } from '@pumni/ui/identity';
+import { GlassSurface, PersonalizationProvider } from '../components/identity';
 
-import { BentoGrid, BentoGridItem, Dock, DockItem, Window } from '@pumni/ui/os';
+import { BentoGrid, BentoGridItem, Dock, DockItem, Window } from '../components/os';
 
 // ---------------------------------------------------------------------------
 // Wrapper Components for Complex Contexts

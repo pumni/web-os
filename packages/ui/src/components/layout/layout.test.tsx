@@ -15,7 +15,7 @@ import {
   ScrollBar,
   Separator,
   Tabs,
-} from '@pumni/ui/layout';
+} from './index';
 
 // Radix ScrollArea / Tabs use ResizeObserver internally.
 beforeAll(() => {

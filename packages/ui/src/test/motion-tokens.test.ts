@@ -12,7 +12,7 @@ import {
   staggerBase,
   staggerFast,
   staggerSlow,
-} from '@pumni/ui/lib/motion';
+} from '../lib/motion';
 import { readDurationSeconds, readUnitless, tokenCss, themeCss } from './token-test-utils';
 
 /**

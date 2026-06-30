@@ -2,8 +2,8 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { ChatBubble, PingDot } from '@pumni/ui/feedback';
-import { Button } from '@pumni/ui/form';
+import { ChatBubble, PingDot } from './index';
+import { Button } from '../form/index';
 
 function getBubbleRoot(testid: string): HTMLElement {
   // ChatBubble renders the design-system root (`data-slot`/`data-tone`/`data-shape`)

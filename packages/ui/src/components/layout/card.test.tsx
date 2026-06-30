@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { Card } from '@pumni/ui/layout';
+import { Card } from './card';
 
 describe('Card', () => {
   it('renders as a div with solid variant by default', () => {

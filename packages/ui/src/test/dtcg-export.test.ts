@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 
 import { describe, expect, it } from 'vitest';
 
-import { buildDtcgJson, OUTPUT_PATH } from '../../../../../packages/ui/scripts/export-dtcg';
+import { buildDtcgJson, OUTPUT_PATH } from '../../scripts/export-dtcg';
 
 /**
  * Keeps the committed DTCG export (`packages/ui/tokens.dtcg.json`) in lockstep

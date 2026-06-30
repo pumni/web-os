@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { Banner, KbdChip } from '@pumni/ui/feedback';
+import { Banner, KbdChip } from './index';
 
 describe('KbdChip', () => {
   it('renders a native <kbd> with the neutral tone', () => {

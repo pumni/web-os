@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { tokenCss } from './token-test-utils';
+import { tokenCss } from '../../test/token-test-utils';
 
 beforeAll(() => {
   // Radix Slider uses ResizeObserver internally.
@@ -29,7 +29,7 @@ import {
   FormLabel,
   FormMessage,
   useFormField,
-} from '@pumni/ui/form';
+} from './index';
 import { useForm } from 'react-hook-form';
 
 // ---------------------------------------------------------------------------
