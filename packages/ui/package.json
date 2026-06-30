@@ -16,7 +16,8 @@
   "scripts": {
     "lint": "bun --bun eslint .",
     "typecheck": "bun --bun tsc --noEmit",
-    "generate-exports": "bun run scripts/generate-exports.ts"
+    "generate-exports": "bun run scripts/generate-exports.ts",
+    "export-dtcg": "bun run scripts/export-dtcg.ts"
   },
   "dependencies": {
     "class-variance-authority": "catalog:",

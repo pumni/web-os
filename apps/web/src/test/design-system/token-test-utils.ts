@@ -56,3 +56,16 @@ export function readZIndex(name: string): number {
   if (!match?.[1]) throw new Error(`Missing z-index token: ${name}`);
   return Number(match[1]);
 }
+
+/**
+ * Reads the raw (trimmed) value of any `tokens.css` `:root` token — the first
+ * definition wins, which is the light/root value (the `.dark` override, if any,
+ * comes later in the file). Use when the value is not a bare number (e.g.
+ * `0.625rem`, `8px`, `8%`) and the typed readers above don't fit.
+ * @example readToken('--radius-base') // '0.625rem'
+ */
+export function readToken(name: string): string {
+  const match = tokenCss.match(new RegExp(`${name}:\\s*([^;]+);`));
+  if (!match?.[1]) throw new Error(`Missing token: ${name}`);
+  return match[1].trim();
+}

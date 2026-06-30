@@ -1,8 +1,12 @@
 # 0010. Frontend Platform Foundation — `@pumni/ui` as a Reusable OS Skeleton
 
-- **Status:** Accepted
+- **Status:** Accepted (two rejections revised by ADR-0021)
 - **Date:** 2026-06-20
 - **Owner:** Design system / `@pumni/ui`
+
+> **Update (ADR-0021, 2026-06-30):** the *Storybook* and *Style Dictionary /
+> DTCG* rejections below are reopened by `docs/adr/0021-revisit-platform-rejections.md`.
+> The *WCAG 2.x* rejection stands — Pumni OS remains APCA-only.
 
 ## Context
 
@@ -109,7 +113,8 @@ multi-concern import lines across the app for no consumer benefit, since the app
 is itself a valid barrel consumer and already tree-shaken. The subpath exports
 deliver every stated benefit additively.)
 
-**Deliberately rejected (for now):**
+**Deliberately rejected (for now):** *(Storybook + Style Dictionary/DTCG revised
+by ADR-0021; WCAG rejection stands.)*
 
 - **No Style Dictionary / DTCG / Figma pipeline.** It pays off only with a
   designer authoring Figma Variables and multiple brands fed from design. We

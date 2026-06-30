@@ -1,0 +1,25 @@
+{
+  "name": "catalog",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "catalog:dev": "ladle serve",
+    "catalog:build": "ladle build",
+    "catalog:typecheck": "bun --bun tsc --noEmit"
+  },
+  "dependencies": {
+    "@pumni/ui": "workspace:*",
+    "lucide-react": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@ladle/react": "5.1.1",
+    "@tailwindcss/vite": "^4",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vite": "^6"
+  }
+}

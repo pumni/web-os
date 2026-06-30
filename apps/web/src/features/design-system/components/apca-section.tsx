@@ -308,7 +308,7 @@ export function ApcaSection() {
           <ConceptCard icon="⚖️" title="Why not WCAG 2.x?">
             <p>WCAG 2.x contrast ratio has known perceptual failures:</p>
             <ul className="mt-1 list-inside list-disc space-y-0.5">
-              <li>Yellow on white: WCAG ≈1.07:1 (pass!), APCA Lc ≈10 — <strong className="text-destructive">Fail</strong></li>
+              <li>Black on light blue (e.g. #00a2ff): WCAG ≈7.7:1 (pass), APCA Lc ≈44 — <strong className="text-destructive">Fail</strong></li>
               <li>Dark-mode: WCAG is symmetric, APCA is polarity-aware</li>
               <li>Font size: WCAG ignores it, APCA tables by weight + size</li>
             </ul>

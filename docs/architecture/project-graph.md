@@ -28,10 +28,12 @@ graph TD
   TestUtils[@pumni/test-utils]
   Ui[@pumni/ui]
   Validators[@pumni/validators]
+  Catalog[catalog]
   Web[apps/web]
   Auth --> Supabase
   Supabase --> Env
   Ui --> Config
+  Catalog --> Ui
   Web --> Auth
   Web --> Config
   Web --> Env

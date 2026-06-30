@@ -111,7 +111,7 @@
 }
 .dark[data-accent='rose'] {
   /* Red is high-chroma: a lighter red-500 drops white `--primary-foreground` below
-     WCAG AA (3.85:1), so dark rose keeps red-600 to stay readable (gated by
+     the APCA Lc 60 text gate, so dark rose keeps red-600 to stay readable (gated by
      glass-contrast.test.ts). */
   --primary: var(--red-600);
   --ring: var(--red-500);
@@ -134,7 +134,7 @@
 
 /*
  * Dark mode: the dark accent surface is dark, so an 80%-primary on-accent text
- * dips below WCAG AA (≈2.8:1). Lean the on-accent text toward the light
+ * dips below the APCA Lc 60 text gate. Lean the on-accent text toward the light
  * `--foreground` so accent hover/selected text stays readable (gated by
  * glass-contrast.test.ts). `.dark[data-accent]` (0,2,0) outranks `[data-accent]`.
  */

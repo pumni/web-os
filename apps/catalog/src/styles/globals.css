@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* Register @pumni/ui as a Tailwind source so its component class names are not
+   purged (it lives in a sibling workspace package). Same pattern as the web app. */
+@source '../../../../packages/ui/src';
+
+/* Pumni OS design system — 3-tier tokens + shared surface utilities.
+   Order is load-bearing (mirrors apps/web/src/app/globals.css and the
+   import-order drift guard): tokens → brand → theme → personalization. */
+@import '@pumni/ui/styles/tokens.css';
+@import '@pumni/ui/styles/brand.css';
+@import '@pumni/ui/styles/theme.css';
+@import '@pumni/ui/styles/personalization.css';
+@import '@pumni/ui/styles/glass.css';
+@import '@pumni/ui/styles/motion.css';
+@import '@pumni/ui/styles/desktop.css';
+@import '@pumni/ui/styles/scroll.css';
+@import '@pumni/ui/styles/view-transitions.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-weight: var(--font-weight-body);
+    letter-spacing: var(--tracking-body);
+  }
+}
