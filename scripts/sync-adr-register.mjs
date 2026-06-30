@@ -16,7 +16,7 @@ function field(content, label) {
   return m ? m[1].trim() : '';
 }
 
-function buildRegister() {
+function buildRegister(eol) {
   const files = fs
     .readdirSync(ADR_DIR)
     .filter((f) => /^\d{4}-.+\.md$/.test(f))
@@ -43,18 +43,26 @@ function buildRegister() {
     '> Number gaps are intentional: 0005–0007 squashed into 0009; 0014–0020 are',
     '> retired draft numbers. A gap never implies a missing decision.',
     END,
-  ].join('\n');
+  ].join(eol);
 }
 
 const readme = fs.readFileSync(README, 'utf8');
-const block = buildRegister();
+// Match the file's existing line endings so the byte-exact `--check` comparison
+// survives autocrlf: a `git checkout` on Windows re-materializes README with CRLF
+// while a naive LF-joined block would read as "out of sync".
+const eol = readme.includes('\r\n') ? '\r\n' : '\n';
+const block = buildRegister(eol);
 
 if (!readme.includes(BEGIN) || !readme.includes(END)) {
   if (check) {
-    console.error('[ERROR] adr/README.md is missing the ADR register block. Run `bun run ai:adr:sync`.');
+    console.error(
+      '[ERROR] adr/README.md is missing the ADR register block. Run `bun run ai:adr:sync`.',
+    );
     process.exit(1);
   }
-  console.error('[ERROR] Add the BEGIN/END markers to adr/README.md first (see plan v2 Task P5 Edit 2).');
+  console.error(
+    '[ERROR] Add the BEGIN/END markers to adr/README.md first (see plan v2 Task P5 Edit 2).',
+  );
   process.exit(1);
 }
 
