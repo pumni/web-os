@@ -73,15 +73,10 @@
     "clean": "bun run scripts/clean.mjs"
   },
   "devDependencies": {
-    "@storybook/addon-docs": "10.4.6",
-    "@storybook/react": "10.4.6",
-    "@storybook/react-vite": "10.4.6",
     "@types/bun": "catalog:",
     "catalog": "workspace:*",
-    "eslint-plugin-storybook": "10.4.6",
     "prettier": "catalog:",
     "prettier-plugin-tailwindcss": "catalog:",
-    "storybook": "10.4.6",
     "tailwind-lint": "catalog:",
     "tailwindcss": "4.3.2",
     "turbo": "catalog:",
