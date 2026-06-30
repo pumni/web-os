@@ -17,12 +17,14 @@ export default function GlobalError({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>Something went wrong | Pumni Web OS</title>
+      </head>
       <body
         suppressHydrationWarning
         className="min-h-screen bg-background text-foreground antialiased"
       >
         <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-          <title>Something went wrong | Pumni Web OS</title>
           <h1 className="text-2xl font-bold text-destructive">Something went wrong</h1>
           <p className="max-w-sm text-sm text-muted-foreground">
             The application hit an unrecoverable error. Try again to reload this screen.

@@ -27,10 +27,7 @@ function SheetOverlay({
   style,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ zIndex: 'var(--z-overlay)', ...style }),
-    [style],
-  );
+  const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-overlay)', ...style };
   return (
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
@@ -55,10 +52,7 @@ function SheetContent({
   side?: 'top' | 'right' | 'bottom' | 'left';
   showCloseButton?: boolean;
 }) {
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ zIndex: 'var(--z-modal)', ...style }),
-    [style],
-  );
+  const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-modal)', ...style };
   return (
     <SheetPortal>
       <SheetOverlay />

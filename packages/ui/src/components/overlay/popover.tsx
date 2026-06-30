@@ -25,10 +25,7 @@ function PopoverContent({
   style,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content>) {
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ zIndex: 'var(--z-popover)', ...style }),
-    [style],
-  );
+  const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-popover)', ...style };
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content

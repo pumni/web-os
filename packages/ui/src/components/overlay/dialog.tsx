@@ -29,13 +29,8 @@ function DialogOverlay({
   style,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
-  // Memoise the merged style so the object identity is stable across re-renders
-  // for the same consumer `style` (the inline object was recreated every render
-  // before). `--z-overlay` is owned by the scrim — never overridable per-instance.
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ zIndex: 'var(--z-overlay)', ...style }),
-    [style],
-  );
+  // `--z-overlay` is owned by the scrim — never overridable per-instance.
+  const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-overlay)', ...style };
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
@@ -58,10 +53,7 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean;
 }) {
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ zIndex: 'var(--z-modal)', ...style }),
-    [style],
-  );
+  const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-modal)', ...style };
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />

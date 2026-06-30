@@ -29,10 +29,7 @@ function DropdownMenuContent({
   style,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ zIndex: 'var(--z-popover)', ...style }),
-    [style],
-  );
+  const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-popover)', ...style };
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
@@ -206,10 +203,7 @@ function DropdownMenuSubContent({
   style,
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ zIndex: 'var(--z-popover)', ...style }),
-    [style],
-  );
+  const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-popover)', ...style };
   return (
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"

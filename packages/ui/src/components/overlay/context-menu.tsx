@@ -40,10 +40,7 @@ function ContextMenuContent({
   style,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Content>) {
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ zIndex: 'var(--z-popover)', ...style }),
-    [style],
-  );
+  const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-popover)', ...style };
   return (
     <ContextMenuPrimitive.Portal>
       <ContextMenuPrimitive.Content
@@ -202,10 +199,7 @@ function ContextMenuSubContent({
   style,
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.SubContent>) {
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ zIndex: 'var(--z-popover)', ...style }),
-    [style],
-  );
+  const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-popover)', ...style };
   return (
     <ContextMenuPrimitive.SubContent
       data-slot="context-menu-sub-content"

@@ -43,12 +43,10 @@ function CommandPalette({
 
   // match-sorter gives fuzzy matching (typo tolerance), relevance ranking, and
   // acronym support ("db" → "Dashboard") across both label and keywords.
-  const filtered = React.useMemo(() => {
-    const q = query.trim();
-    if (!q) return items;
-    const results = matchSorter(items, q, { keys: ['label', 'keywords'] });
-    return results.slice(0, 25);
-  }, [items, query]);
+  const q = query.trim();
+  const filtered = q
+    ? matchSorter(items, q, { keys: ['label', 'keywords'] }).slice(0, 25)
+    : items;
 
   // Bucket results by `group` (first-seen order) so grouped items render under
   // a heading. Ungrouped items fall into a synthetic "Other" bucket only when
