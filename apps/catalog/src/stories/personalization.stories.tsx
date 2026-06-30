@@ -1,9 +1,14 @@
-import type { Story } from '@ladle/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Badge } from '@pumni/ui/feedback';
 import { Button } from '@pumni/ui/form';
 import { ACCENTS, DENSITIES, GLASS_LEVELS, usePersonalization } from '@pumni/ui/identity';
 
-export default { title: 'Identity / Personalization' };
+const meta = {
+  title: 'Identity / Personalization',
+} satisfies Meta;
+export default meta;
+
+type Story = StoryObj<typeof meta>;
 
 function Row({
   label,
@@ -35,7 +40,7 @@ function Row({
   );
 }
 
-export const Playground: Story = () => {
+function PlaygroundComponent() {
   const p = usePersonalization();
 
   return (
@@ -65,9 +70,13 @@ export const Playground: Story = () => {
         <Button>Primary action</Button>
       </div>
       <p className="type-caption text-muted-foreground">
-        Theme (light/dark) lives in the Ladle toolbar; accent / glass / density are driven by
+        Theme (light/dark) lives in the Storybook toolbar; accent / glass / density are driven by
         PersonalizationProvider here.
       </p>
     </div>
   );
+}
+
+export const Playground: Story = {
+  render: () => <PlaygroundComponent />,
 };

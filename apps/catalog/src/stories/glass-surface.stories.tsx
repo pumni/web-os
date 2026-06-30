@@ -1,8 +1,14 @@
 import type { ReactNode } from 'react';
-import type { Story } from '@ladle/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { GlassSurface } from '@pumni/ui/identity';
 
-export default { title: 'Identity / GlassSurface' };
+const meta = {
+  title: 'Identity / GlassSurface',
+  component: GlassSurface,
+} satisfies Meta<typeof GlassSurface>;
+export default meta;
+
+type Story = StoryObj<typeof meta>;
 
 /** Glass only reads over a colourful backdrop (ADR-0012): a 2-blob + scrim container. */
 function Backdrop({ children }: { children: ReactNode }) {
@@ -21,13 +27,15 @@ function Backdrop({ children }: { children: ReactNode }) {
   );
 }
 
-export const Panel: Story = () => (
-  <Backdrop>
-    <GlassSurface variant="panel" className="max-w-sm p-6">
-      <p className="type-heading">Glass panel</p>
-      <p className="type-body text-muted-foreground">
-        Floating frosted surface — toggle the theme in the toolbar to see the dark frost.
-      </p>
-    </GlassSurface>
-  </Backdrop>
-);
+export const Panel: Story = {
+  render: () => (
+    <Backdrop>
+      <GlassSurface variant="panel" className="max-w-sm p-6">
+        <p className="type-heading">Glass panel</p>
+        <p className="type-body text-muted-foreground">
+          Floating frosted surface — toggle the theme in the toolbar to see the dark frost.
+        </p>
+      </GlassSurface>
+    </Backdrop>
+  ),
+};

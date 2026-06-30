@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "catalog:dev": "ladle serve",
-    "catalog:build": "ladle build",
+    "catalog:dev": "storybook dev -p 61000",
+    "catalog:build": "storybook build",
+    "catalog:lint": "bun --bun eslint .",
     "catalog:typecheck": "bun --bun tsc --noEmit"
   },
   "dependencies": {
@@ -15,11 +16,17 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
-    "@ladle/react": "5.1.1",
+    "@storybook/addon-docs": "10.4.6",
+    "@storybook/react": "10.4.6",
+    "@storybook/react-vite": "10.4.6",
     "@tailwindcss/vite": "^4",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "eslint": "catalog:",
+    "eslint-plugin-storybook": "10.4.6",
+    "storybook": "10.4.6",
     "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
     "vite": "^6"
   }
 }
