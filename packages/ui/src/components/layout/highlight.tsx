@@ -5,16 +5,15 @@ import { cn } from '../../lib/cn';
 /**
  * Renders `text` with the substring(s) matching `query` emphasized.
  *
- * Pure client/server component — no state. Matching is case-insensitive and
+ * Pure server/client component — no state. Matching is case-insensitive and
  * highlights every query token (whitespace-split) wherever it appears, so a
  * query like "set" bolds the "Set" in "Settings". Empty/whitespace queries
  * render the text untouched.
  *
- * The two RegExps are memoized on the token set so a re-render with an
- * unchanged query (e.g. parent state churn while typing in an unrelated
- * field) doesn't rebuild them. Highlight typically renders inside a list that
- * re-renders on every keystroke, so avoiding per-item RegExp construction
- * matters.
+ * The two RegExps are derived values that the React Compiler memoizes on the
+ * token set, preventing rebuild on re-renders with an unchanged query.
+ * Highlight typically renders inside a list that re-renders on every keystroke,
+ * so per-item RegExp construction is avoided.
  */
 type HighlightProps = Readonly<{
   text: string;

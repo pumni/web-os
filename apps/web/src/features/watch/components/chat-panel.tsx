@@ -65,6 +65,11 @@ function MessageAvatar({
   );
 }
 
+function formatChatTime(ms: number): string {
+  const d = new Date(ms);
+  return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+}
+
 // fallow-ignore-next-line complexity
 function ChatBubbleRow({ msg, isMe, profile, groupPosition }: ChatBubbleRowProps) {
   const displayName = profile?.username ?? (isMe ? 'B?n' : `User #${msg.userId.slice(0, 6)}`);
@@ -86,7 +91,7 @@ function ChatBubbleRow({ msg, isMe, profile, groupPosition }: ChatBubbleRowProps
           avatarUrl={profile?.avatar_url ?? null}
         />
       )}
-      <ChatBubble tone={isMe ? 'me' : 'them'} shape={groupPosition} timestamp={msg.sentAt}>
+      <ChatBubble tone={isMe ? 'me' : 'them'} shape={groupPosition} timeLabel={formatChatTime(msg.sentAt)}>
         {msg.text}
       </ChatBubble>
     </div>

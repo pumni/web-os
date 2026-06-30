@@ -25,9 +25,9 @@ import { transition } from '../../lib/motion';
  *
  * The sliding pill uses `motion`'s shared-`layoutId` animation: the pill
  * element lives inside whichever item is `checked`, and motion tweens its
- * position/size between mounts. `useReducedMotion()` neutralises the tween
- * (motion's JS animations are not silenced by the CSS media query — see
- * `Window` for the same gating pattern).
+ * position/size between mounts. Reduced-motion is neutralised at the app root
+ * by `MotionConfig` (see `app/layout.tsx`), matching the same mechanism used
+ * by other recipe-based motion primitives.
  *
  * Backward-compatible API: `options` / `value` / `onChange` / `labels` /
  * `aria-label` are unchanged. New: `size`, `fullWidth`, and per-option `icon`

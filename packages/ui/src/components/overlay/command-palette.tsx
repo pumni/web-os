@@ -37,13 +37,16 @@ function CommandPalette({
   emptyMessage = 'No results found.',
 }: CommandPaletteProps) {
   const [query, setQuery] = React.useState('');
-  const [isPending, startTransition] = React.useTransition();
   const [activeIndex, setActiveIndex] = React.useState(0);
   const listRef = React.useRef<HTMLDivElement>(null);
 
-  // match-sorter gives fuzzy matching (typo tolerance), relevance ranking, and
-  // acronym support ("db" → "Dashboard") across both label and keywords.
-  const q = query.trim();
+  // Defer the expensive fuzzy-filter so keystrokes stay responsive even with
+  // hundreds of items. The input shows the raw query immediately; filtering
+  // and re-rendering of the list runs at a lower priority.
+  const deferredQuery = React.useDeferredValue(query);
+  const isPending = query !== deferredQuery;
+
+  const q = deferredQuery.trim();
   const filtered = q
     ? matchSorter(items, q, { keys: ['label', 'keywords'] }).slice(0, 25)
     : items;
@@ -98,12 +101,12 @@ function CommandPalette({
     item.onSelect();
   }
 
-  // Keep the active row valid as the result set shrinks: if filtering removes
-  // every item, drop the stale highlight so Enter (which goes through `select`)
-  // and aria-activedescendant can't point at a vanished row.
+  // Keep the active row valid as deferred results change: if filtering removes
+  // every item or the current selection goes out of bounds, drop it so Enter
+  // (which goes through `select`) and aria-activedescendant stay consistent.
   React.useEffect(() => {
-    if (filtered.length === 0 && activeIndex !== 0) setActiveIndex(0);
-  }, [filtered.length, activeIndex]);
+    if (activeIndex >= filtered.length) setActiveIndex(0);
+  }, [deferredQuery, filtered.length, activeIndex]);
 
   function onKeyDown(event: React.KeyboardEvent) {
     if (event.key === 'ArrowDown') {
@@ -176,11 +179,7 @@ function CommandPalette({
               autoFocus
               value={query}
               onChange={(event) => {
-                const val = event.target.value;
-                setQuery(val);
-                startTransition(() => {
-                  setActiveIndex(0);
-                });
+                setQuery(event.target.value);
               }}
               placeholder={placeholder}
               aria-label={placeholder}

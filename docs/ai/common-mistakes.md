@@ -4,8 +4,8 @@ description: Common AI mistakes in this codebase as ❌/✅ pairs, cross-referen
 
 # Common Mistakes
 
-The static analyzer (`bun run ai:eval`) _catches_ these; this doc helps you _avoid_
-them. Rule ids in parentheses map to `scripts/check-review-gate-rules.mjs`.
+`bun run ai:eval` _catches_ these; this doc helps you _avoid_ them. Rule ids
+map to `scripts/check-review-gate-rules.mjs`.
 
 ## 1. State ownership (`query-result-in-zustand`)
 
@@ -24,7 +24,7 @@ useEffect(() => {
 
 ```ts
 const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: getProfile });
-// Read `profile` directly. Zustand only holds client UI state (sidebar, modals).
+// Read `profile` directly. Zustand holds client UI state only.
 ```
 
 ## 2. Supabase select-all (`supabase-select-star`)
@@ -87,7 +87,7 @@ useMutation({
 
 ## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`)
 
-Single source of truth: [`.claude/rules/nextjs-cache-components.md`](/.claude/rules/nextjs-cache-components.md) (auto-loads on App Router files).
+Single source of truth: `.claude/rules/nextjs-cache-components.md` (auto-loads on App Router files).
 
 ## 11. Weakening a test to make it pass (`test-weakening`)
 

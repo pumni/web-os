@@ -55,7 +55,7 @@ notification center), it belongs in `overlay/`.
 ## Stack
 
 Radix UI, class-variance-authority, motion, next-themes, tailwind-merge,
-react-hook-form, sonner. Peer deps: React 19. Workspace dep: `@pumni/config`.
+react-hook-form, sonner. Peer deps: React 19 (React Compiler enabled). Workspace dep: `@pumni/config`.
 
 ## Commands
 

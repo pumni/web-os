@@ -33,6 +33,7 @@ graph TD
   Auth --> Supabase
   Supabase --> Env
   Ui --> Config
+  Ui --> TestUtils
   Catalog --> Ui
   Web --> Auth
   Web --> Config

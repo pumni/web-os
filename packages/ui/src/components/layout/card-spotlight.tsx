@@ -56,7 +56,6 @@ function CardSpotlight({
 }: CardSpotlightProps) {
   const rectRef = React.useRef<DOMRect | null>(null);
   const scrollRef = React.useRef({ x: 0, y: 0 });
-  const coordsRef = React.useRef<{ x?: string; y?: string }>({});
   const frameIdRef = React.useRef<number | null>(null);
   const pendingCoordsRef = React.useRef<{ clientX: number; clientY: number } | null>(null);
 
@@ -85,6 +84,9 @@ function CardSpotlight({
         frameIdRef.current = null;
       }
       pendingCoordsRef.current = null;
+      // Clear the imperative CSS vars so a stale re-render doesn't reapply them.
+      e.currentTarget.style.removeProperty('--spot-x');
+      e.currentTarget.style.removeProperty('--spot-y');
       onPointerLeave?.(e);
     },
     [onPointerLeave],
@@ -126,8 +128,6 @@ function CardSpotlight({
         const xStr = `${x}%`;
         const yStr = `${y}%`;
 
-        coordsRef.current = { x: xStr, y: yStr };
-
         // Update CSS vars inline; the CSS utility reads them for gradient position.
         element.style.setProperty('--spot-x', xStr);
         element.style.setProperty('--spot-y', yStr);
@@ -136,12 +136,6 @@ function CardSpotlight({
     [onPointerMove],
   );
 
-  const mergedStyle = {
-    ...style,
-    ...(coordsRef.current.x ? { '--spot-x': coordsRef.current.x } : {}),
-    ...(coordsRef.current.y ? { '--spot-y': coordsRef.current.y } : {}),
-  } as React.CSSProperties;
-
   return (
     <Card
       ref={ref}
@@ -149,7 +143,7 @@ function CardSpotlight({
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
       onPointerMove={handlePointerMove}
-      style={mergedStyle}
+      style={style}
       className={className}
       {...props}
     />

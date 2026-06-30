@@ -110,11 +110,10 @@ describe('ChatBubble', () => {
     expect(skin.className).not.toContain('rounded-tl-xs');
   });
 
-  it('renders a hover-reveal timestamp when timestamp is given', () => {
-    const epoch = new Date('2024-01-02T03:04:00').getTime();
+  it('renders a hover-reveal timestamp when timeLabel is given', () => {
     render(
       <div className="group">
-        <ChatBubble timestamp={epoch} data-testid="skin">
+        <ChatBubble timeLabel="03:04" data-testid="skin">
           Body
         </ChatBubble>
       </div>,

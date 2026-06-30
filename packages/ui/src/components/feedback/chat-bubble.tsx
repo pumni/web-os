@@ -30,10 +30,11 @@ import { cn } from '../../lib/cn';
  * - `last` — only the floor-side corner tucks in.
  *
  * ### Timestamp
- * Optional `timestamp` (epoch ms) renders an opacity-0 hover-reveal
- * label next to the bubble. The parent container must carry
- * `className="group"` for the hover to fire (the radius map lives
- * inside the bubble, so this works for any layout the consumer picks).
+ * Optional `timeLabel` (pre-formatted string, e.g. "14:30") renders an
+ * opacity-0 hover-reveal label next to the bubble. The consumer owns
+ * timezone formatting so hydration never mismatches. The parent container
+ * must carry `className="group"` for the hover to fire (the radius map
+ * lives inside the bubble, so this works for any layout the consumer picks).
  *
  * ### Children
  * `children` is rendered inside a `<div>` (not a `<p>`) so callers may
@@ -111,31 +112,23 @@ const chatBubbleVariants = cva(
   },
 );
 
-function formatChatTime(ms: number): string {
-  const d = new Date(ms);
-  const hours = d.getHours().toString().padStart(2, '0');
-  const mins = d.getMinutes().toString().padStart(2, '0');
-  return `${hours}:${mins}`;
-}
-
 function ChatBubble({
   className,
   tone = 'them',
   shape = 'single',
-  timestamp,
+  timeLabel,
   align,
   children,
   ...props
 }: React.ComponentProps<'div'> &
   VariantProps<typeof chatBubbleVariants> & {
-    /** Optional epoch ms — renders a hover-reveal timestamp next to
-     *  the bubble. Requires `group` on an ancestor for hover to fire. */
-    timestamp?: number;
+    /** Pre-formatted time string (e.g. "14:30"). The consumer owns timezone
+     *  formatting so hydration never mismatches across server/client TZ. */
+    timeLabel?: string;
     /** Override the bubble column alignment (defaults follow the tone). */
     align?: 'start' | 'end';
   }) {
   const resolvedAlign = align ?? (tone === 'me' ? 'end' : 'start');
-  const timeLabel = timestamp != null ? formatChatTime(timestamp) : null;
   const timePosition = tone === 'me' ? 'right-full mr-1.5' : 'left-full ml-1.5';
 
   return (
@@ -152,7 +145,7 @@ function ChatBubble({
         <div className={cn(chatBubbleVariants({ tone, shape }), className)} {...props}>
           <div className="leading-snug whitespace-pre-wrap">{children}</div>
         </div>
-        {timeLabel !== null ? (
+        {timeLabel ? (
           <span
             className={cn(
               'pointer-events-none absolute top-1/2 hidden -translate-y-1/2 type-caption whitespace-nowrap text-muted-foreground opacity-0 transition-opacity duration-(--duration-fast) group-hover:opacity-100 sm:block',

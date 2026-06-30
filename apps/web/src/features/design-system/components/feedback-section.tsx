@@ -21,6 +21,11 @@ import { ShowcaseSection } from './showcase-section';
 
 const DEMO_NOW = Date.now();
 
+function formatDemoTime(ms: number): string {
+  const d = new Date(ms);
+  return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+}
+
 export function FeedbackSection() {
   return (
     <ShowcaseSection
@@ -353,14 +358,14 @@ export function FeedbackSection() {
             <div className="space-y-1">
               <div className="flex items-end gap-2.5">
                 <div className="size-8 shrink-0" />
-                <ChatBubble tone="them" shape="first" timestamp={DEMO_NOW - 600000}>
+                <ChatBubble tone="them" shape="first" timeLabel={formatDemoTime(DEMO_NOW - 600000)}>
                   Hey team, did we approve the new Next.js 16 layouts?
                 </ChatBubble>
               </div>
 
               <div className="flex items-end gap-2.5">
                 <div className="size-8 shrink-0" />
-                <ChatBubble tone="them" shape="middle" timestamp={DEMO_NOW - 580000}>
+                <ChatBubble tone="them" shape="middle" timeLabel={formatDemoTime(DEMO_NOW - 580000)}>
                   I want to make sure the view transition is applied correctly.
                 </ChatBubble>
               </div>
@@ -373,7 +378,7 @@ export function FeedbackSection() {
                   />
                   <AvatarFallback>JN</AvatarFallback>
                 </Avatar>
-                <ChatBubble tone="them" shape="last" timestamp={DEMO_NOW - 560000}>
+                <ChatBubble tone="them" shape="last" timeLabel={formatDemoTime(DEMO_NOW - 560000)}>
                   Let me know if there&apos;s any feedback.
                 </ChatBubble>
               </div>
@@ -381,7 +386,7 @@ export function FeedbackSection() {
 
             {/* Outgoing message */}
             <div className="flex justify-end">
-              <ChatBubble tone="me" shape="single" timestamp={DEMO_NOW - 40000}>
+              <ChatBubble tone="me" shape="single" timeLabel={formatDemoTime(DEMO_NOW - 40000)}>
                 Yes Jane! The layout transition is approved and looks stunning.
               </ChatBubble>
             </div>
@@ -395,7 +400,7 @@ export function FeedbackSection() {
                 />
                 <AvatarFallback>JN</AvatarFallback>
               </Avatar>
-              <ChatBubble tone="them" shape="single" timestamp={DEMO_NOW - 10000}>
+              <ChatBubble tone="them" shape="single" timeLabel={formatDemoTime(DEMO_NOW - 10000)}>
                 Awesome! Testing with Playwright is now passing.
               </ChatBubble>
             </div>

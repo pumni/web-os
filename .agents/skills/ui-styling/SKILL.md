@@ -24,7 +24,7 @@ reference detail.
   inline status pills, or icon chips — `pumniNoAdHocSurface` blocks the well.
   `BentoGridItem` is layout-only and renders through these primitives.
 - Contrast is APCA-gated: Lc 60 text / Lc 25 UI via
-  `apps/web/src/test/design-system/glass-contrast.test.ts`. Do not reintroduce a
+  `packages/ui/src/test/glass-contrast.test.ts`. Do not reintroduce a
   WCAG 2.x ratio gate.
 - Glass performance: never animate `backdrop-filter`; cap stacked glass at 2
   layers (each layer forces a separate backdrop render pass; doc/skill rule);

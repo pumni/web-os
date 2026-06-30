@@ -119,7 +119,7 @@ icon chip, `tone` `primary-soft`/`raised`/`muted`). `BentoGridItem` owns layout
 only and renders through these same primitives, so a bento tile and a feature
 card share one surface vocabulary. APCA contrast is gated at Lc 60 text / Lc 25
 UI in
-`apps/web/src/test/design-system/glass-contrast.test.ts`; do not add a WCAG 2.x
+`packages/ui/src/test/glass-contrast.test.ts`; do not add a WCAG 2.x
 ratio gate. The rim tokens are specular (inset shadows) and are NOT subject to
 the APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
 
@@ -196,7 +196,7 @@ SHELL CHROME (sidebar rail, topbar, dock)?
    hand-rolled `border-{tone}/20`, no `border-2`, no `border-l-4` in features.
 
 The solid-vs-glass hairline separation is pinned by the `border-consumption`
-drift guard (`apps/web/src/test/design-system/border-consumption.test.ts`).
+drift guard (`packages/ui/src/test/border-consumption.test.ts`).
 
 ## Tailwind v4 variant syntax (canonical form)
 
