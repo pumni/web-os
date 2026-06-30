@@ -98,6 +98,11 @@ const cardVariants = cva('flex flex-col gap-6 py-6 text-card-foreground', {
   },
 });
 
+/**
+ * Card Component - Thẻ giao diện chứa nội dung trong Pumni OS.
+ * Hỗ trợ các biến thể bề mặt (solid, inset, glass, spotlight), tương tác hover/press,
+ * các mức độ bo góc và trạng thái phản hồi động (idle, loading, error, success).
+ */
 function Card({
   ref,
   className,
@@ -126,6 +131,10 @@ function Card({
   );
 }
 
+/**
+ * CardHeader Component - Phần đầu của thẻ, chứa tiêu đề, mô tả và hành động.
+ * Hỗ trợ tự động chia cột khi có `CardAction` đi kèm.
+ */
 function CardHeader({ ref, className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -140,12 +149,18 @@ function CardHeader({ ref, className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * CardTitle Component - Tiêu đề chính của thẻ Card.
+ */
 function CardTitle({ ref, className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div ref={ref} data-slot="card-title" className={cn('type-heading', className)} {...props} />
   );
 }
 
+/**
+ * CardDescription Component - Đoạn văn bản mô tả ngắn đi kèm tiêu đề.
+ */
 function CardDescription({ ref, className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -157,6 +172,9 @@ function CardDescription({ ref, className, ...props }: React.ComponentProps<'div
   );
 }
 
+/**
+ * CardAction Component - Khu vực chứa nút hành động (ví dụ: Close, Settings) đặt ở góc phải đầu thẻ.
+ */
 function CardAction({ ref, className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -168,10 +186,16 @@ function CardAction({ ref, className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
+/**
+ * CardContent Component - Phần thân chứa nội dung chính của thẻ Card.
+ */
 function CardContent({ ref, className, ...props }: React.ComponentProps<'div'>) {
   return <div ref={ref} data-slot="card-content" className={cn('px-6', className)} {...props} />;
 }
 
+/**
+ * CardFooter Component - Phần chân đế của thẻ, thường chứa các nút thao tác chính.
+ */
 function CardFooter({ ref, className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

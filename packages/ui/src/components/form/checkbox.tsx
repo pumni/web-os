@@ -6,6 +6,16 @@ import { Checkbox as CheckboxPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/cn';
 
+/**
+ * Checkbox Component - Ô đánh dấu lựa chọn trong Pumni OS.
+ * Được xây dựng trên nền tảng Headless primitive của Radix UI Checkbox.
+ * Có hiệu ứng zoom và fade-in mượt mà của dấu check khi được kích hoạt.
+ *
+ * @example
+ * ```tsx
+ * <Checkbox checked={isChecked} onCheckedChange={setIsChecked} />
+ * ```
+ */
 function Checkbox({
   ref,
   className,

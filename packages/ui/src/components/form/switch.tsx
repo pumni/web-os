@@ -5,6 +5,16 @@ import * as React from 'react';
 
 import { cn } from '../../lib/cn';
 
+/**
+ * Switch Component - Cần gạt chuyển đổi trạng thái Bật/Tắt trong Pumni OS.
+ * Được xây dựng trên nền tảng Radix UI Switch.
+ * Sử dụng các token biến chuyển màu và dịch chuyển vòng tròn thumb có gia tốc lò xo (ease-spring).
+ *
+ * @example
+ * ```tsx
+ * <Switch checked={isActive} onCheckedChange={setIsActive} />
+ * ```
+ */
 function Switch({ ref, className, ...props }: React.ComponentProps<typeof SwitchPrimitive.Root>) {
   return (
     <SwitchPrimitive.Root

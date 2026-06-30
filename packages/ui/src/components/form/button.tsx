@@ -50,6 +50,17 @@ const buttonVariants = cva(
   },
 );
 
+/**
+ * Button Component - Cấu phần Nút tương tác đa năng trong Pumni OS.
+ * Hỗ trợ các biến thể (variants), kích thước (sizes), và hiệu ứng nhấn tactile đặc thù.
+ *
+ * @example
+ * ```tsx
+ * <Button variant="default" size="default" onClick={handleClick}>
+ *   Click me
+ * </Button>
+ * ```
+ */
 function Button({
   ref,
   className,
@@ -63,12 +74,21 @@ function Button({
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
+    /** 
+     * Hỗ trợ cơ chế Slot của Radix UI. Khi đặt thành `true`, component sẽ không render thẻ `<button>` 
+     * mà chuyển toàn bộ props và ref sang phần tử con đầu tiên của nó.
+     */
     asChild?: boolean;
+    /** 
+     * Trạng thái chờ/tải dữ liệu. Khi được bật, nút sẽ tự động bị vô hiệu hóa (disabled), 
+     * ẩn nội dung chữ và hiển thị cấu phần quay Spinner trung tâm.
+     */
     loading?: boolean;
-    /** Disable the tactile press-depress scale on :active.
-     *  Set to false when the Button is a trigger anchor for a floating
-     *  menu (DropdownMenu, Popover, Select) — the scale change causes
-     *  the anchored content to reposition mid-animation. */
+    /** 
+     * Cho phép hoặc vô hiệu hóa hiệu ứng co giãn tactile khi nhấn nút (:active).
+     * Cần đặt thành `false` khi nút đóng vai trò là Trigger (neo) cho các trình đơn nổi 
+     * (như DropdownMenu, Popover, Select) để tránh việc vị trí popup bị tính toán sai khi co giãn.
+     */
     pressable?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : 'button';

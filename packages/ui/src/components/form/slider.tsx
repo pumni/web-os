@@ -5,6 +5,16 @@ import { Slider as SliderPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/cn';
 
+/**
+ * Slider Component - Thanh trượt chọn giá trị số trong Pumni OS.
+ * Được xây dựng trên nền tảng Radix UI Slider.
+ * Thường dùng trong các bảng điều khiển âm lượng, độ sáng hoặc điều chỉnh sắc độ màu oklch.
+ *
+ * @example
+ * ```tsx
+ * <Slider defaultValue={[50]} min={0} max={100} step={1} onValueChange={handleValueChange} />
+ * ```
+ */
 function Slider({
   ref,
   className,

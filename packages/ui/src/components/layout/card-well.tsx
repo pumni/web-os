@@ -43,6 +43,11 @@ const cardWellVariants = cva('border border-border bg-muted', {
   },
 });
 
+/**
+ * CardWell Component - Khung chứa chìm nằm lõm bên trong một bề mặt khác (inset well).
+ * Thường được sử dụng để làm nổi bật danh sách, vùng dữ liệu con hoặc nhóm nội dung phụ.
+ * Giúp tránh việc lặp lại mã nguồn CSS thô của các ô phụ trong ứng dụng.
+ */
 function CardWell({
   ref,
   className,

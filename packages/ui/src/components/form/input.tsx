@@ -18,6 +18,17 @@ const inputVariants = cva(
   },
 );
 
+/**
+ * Input Component - Ô nhập liệu chuẩn hóa trong Pumni OS.
+ * Hỗ trợ hai biến thể chính:
+ * - `outline` (mặc định): có đường viền bo quanh, dùng cho hầu hết các form chuẩn.
+ * - `filled`: không có viền ngoài, nền xám nhẹ, đổi màu sang nền trắng và viền khi focus.
+ *
+ * @example
+ * ```tsx
+ * <Input variant="outline" type="text" placeholder="Nhập tên đăng nhập..." />
+ * ```
+ */
 function Input({
   ref,
   className,

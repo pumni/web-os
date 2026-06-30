@@ -39,6 +39,19 @@ const glassSurfaceVariants = cva('', {
   },
 });
 
+/**
+ * GlassSurface Component - Bề mặt kính mờ (Glassmorphic surface) trong Pumni OS.
+ * Chỉ áp dụng cho các lớp giao diện nổi (floating layers - dialogs, popovers, docks, windows) 
+ * ngồi trên nền có màu sắc rực rỡ để tối ưu hiệu quả hiển thị và chi phí phần cứng.
+ * Tự động kích hoạt cơ chế giảm độ trong suốt (fallbacks) khi người dùng bật chế độ giảm hiệu ứng.
+ *
+ * @example
+ * ```tsx
+ * <GlassSurface variant="panel" radius="xl">
+ *   <div>Floating Panel Content</div>
+ * </GlassSurface>
+ * ```
+ */
 function GlassSurface({
   className,
   variant,

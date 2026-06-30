@@ -5,4 +5,7 @@ process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??=
 
 import '@testing-library/jest-dom/vitest';
 
-Element.prototype.scrollIntoView ??= function scrollIntoView() {};
+if (typeof Element !== 'undefined') {
+  Element.prototype.scrollIntoView ??= function scrollIntoView() {};
+}
+

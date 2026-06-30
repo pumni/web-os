@@ -51,6 +51,17 @@ const iconBadgeVariants = cva('inline-flex shrink-0 items-center justify-center'
   },
 });
 
+/**
+ * IconBadge Component - Khung chứa biểu tượng (icon) dạng hình vuông bo góc trong Pumni OS.
+ * Đồng bộ các kiểu dáng icon xuất hiện lặp lại trong các ô bento dashboard, room cards, v.v.
+ *
+ * @example
+ * ```tsx
+ * <IconBadge tone="primary-soft" size="md">
+ *   <SearchIcon />
+ * </IconBadge>
+ * ```
+ */
 function IconBadge({
   ref,
   className,
