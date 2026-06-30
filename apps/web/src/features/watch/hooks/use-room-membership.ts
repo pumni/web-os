@@ -33,6 +33,7 @@ export function useRoomMembership(roomId: string, queryClient: QueryClient): Roo
 
   useEffect(() => {
     let cancelled = false;
+    const retryTimers = new Set<ReturnType<typeof setTimeout>>();
 
     async function join(attempt = 0) {
       try {
@@ -47,7 +48,11 @@ export function useRoomMembership(roomId: string, queryClient: QueryClient): Roo
       } catch (err) {
         if (cancelled) return;
         if (attempt < 3) {
-          setTimeout(() => void join(attempt + 1), 1000 * (attempt + 1));
+          const id = setTimeout(() => {
+            retryTimers.delete(id);
+            void join(attempt + 1);
+          }, 1000 * (attempt + 1));
+          retryTimers.add(id);
           return;
         }
 
@@ -63,6 +68,8 @@ export function useRoomMembership(roomId: string, queryClient: QueryClient): Roo
     void join();
     return () => {
       cancelled = true;
+      for (const id of retryTimers) clearTimeout(id);
+      retryTimers.clear();
     };
   }, [roomId, queryClient]);
 

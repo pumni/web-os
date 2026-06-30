@@ -1,11 +1,5 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": [
-    "NEXT_PUBLIC_APP_URL",
-    "NEXT_PUBLIC_SUPABASE_URL",
-    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-    "SUPABASE_SERVICE_ROLE_KEY"
-  ],
   "tasks": {
     "dev": {
       "cache": false,
@@ -14,7 +8,13 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "dist/**"]
+      "outputs": [".next/**", "dist/**"],
+      "env": [
+        "NEXT_PUBLIC_APP_URL",
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"],
@@ -25,6 +25,7 @@
       "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json", "tsconfig.base.json"]
     },
     "test": {
+      "dependsOn": ["^test"],
       "inputs": ["src/**/*.{ts,tsx}", "vitest.config.ts", "tsconfig.json"]
     },
     "format": {

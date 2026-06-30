@@ -86,14 +86,28 @@ export const useTasksStore = create<TasksState>((set) => ({
   },
 }));
 
-// Sync cross-tab/window storage updates dynamically
+// Sync cross-tab/window storage updates dynamically.
+// On each HMR, the module re-evaluates and creates a fresh Zustand store.
+// We must remove listeners from the previous evaluation and register new
+// ones that reference the current store, without accumulating duplicates.
 if (typeof window !== 'undefined') {
+  const CLEANUP = Symbol.for('pumni.tasks.sync.cleanup');
+  const w = window as unknown as Record<symbol, unknown>;
+  const prevCleanup = w[CLEANUP];
+  if (typeof prevCleanup === 'function') prevCleanup();
+
   const handleSync = () => {
     useTasksStore.getState().sync();
   };
   window.addEventListener('storage', handleSync);
   window.addEventListener('focus', handleSync);
   window.addEventListener(TASKS_UPDATED_EVENT, handleSync);
+
+  (w as Record<symbol, () => void>)[CLEANUP] = () => {
+    window.removeEventListener('storage', handleSync);
+    window.removeEventListener('focus', handleSync);
+    window.removeEventListener(TASKS_UPDATED_EVENT, handleSync);
+  };
 }
 
 /**

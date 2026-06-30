@@ -183,7 +183,14 @@ export function MotionSection() {
   const [dragStatus, setDragStatus] = React.useState<'idle' | 'dragging' | 'coasting'>('idle');
   const [dragMomentum, setDragMomentum] = React.useState(true);
   const [dragElastic, setDragElastic] = React.useState(0.12);
-  
+  const dragTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (dragTimeoutRef.current) clearTimeout(dragTimeoutRef.current);
+    };
+  }, []);
+
   const [motionWindowOpen, setMotionWindowOpen] = React.useState(true);
 
   // Tab 3 View Transitions state
@@ -937,7 +944,8 @@ export function MotionSection() {
                     onDrag={(e, info) => setDragCoords({ x: Math.round(info.offset.x), y: Math.round(info.offset.y) })}
                     onDragEnd={() => {
                       setDragStatus('coasting');
-                      setTimeout(() => setDragStatus('idle'), 600);
+                      if (dragTimeoutRef.current) clearTimeout(dragTimeoutRef.current);
+                      dragTimeoutRef.current = setTimeout(() => setDragStatus('idle'), 600);
                     }}
                   >
                     {/* Window Controls */}

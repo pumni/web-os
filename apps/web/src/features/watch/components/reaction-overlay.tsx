@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, forwardRef, useImperativeHandle, useEffect, useRef } from 'react';
 import type { ReactionEvent } from '../types';
 
 export interface ReactionOverlayRef {
@@ -20,19 +20,28 @@ interface ReactionOverlayProps {
 export const ReactionOverlay = forwardRef<ReactionOverlayRef, ReactionOverlayProps>(
   ({ className }, ref) => {
     const [emojis, setEmojis] = useState<FloatingEmoji[]>([]);
+    const timeoutIdsRef = useRef(new Set<ReturnType<typeof setTimeout>>());
+
+    useEffect(() => {
+      const ids = timeoutIdsRef.current;
+      return () => {
+        for (const id of ids) clearTimeout(id);
+        ids.clear();
+      };
+    }, []);
 
     useImperativeHandle(ref, () => ({
       pushReaction(reaction) {
-        const id = reaction.id;
-        const emoji = reaction.emoji;
+        const { id, emoji } = reaction;
         const left = Math.random() * 80 + 10; // Random horizontal position between 10% and 90%
 
         setEmojis((prev) => [...prev, { id, emoji, left }]);
 
-        // Auto-remove after 2.5 seconds (matches animation duration)
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
+          timeoutIdsRef.current.delete(timeoutId);
           setEmojis((prev) => prev.filter((item) => item.id !== id));
         }, 2500);
+        timeoutIdsRef.current.add(timeoutId);
       },
     }));
 
