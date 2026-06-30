@@ -125,6 +125,6 @@ tệp được gộp vào **một** rule duy nhất, chia theo 3 phạm vi rời
 > `bun run ai:eval`) tự kiểm chứng rằng mọi feature được enforce ở cả 3 phạm vi.
 
 Chạy lệnh kiểm tra thủ công trước khi commit:
-```bash
+```pwsh
 bun run lint
 ```

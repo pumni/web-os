@@ -4,6 +4,11 @@
 - **Date:** 2026-06-24
 - **Owner:** AI context layer (see `docs/ai/index.md`)
 - **Refines:** ADR-0009 (Context Layer — Lean 2026)
+- **Partial reversal (2026-07-01):** Decision §4's removal of `llms.txt` was
+  reversed — `llms.txt` is back as an agentic-handshake repo map and is now a
+  required context file (`scripts/ai-context.manifest.json` `requiredFiles`,
+  referenced from `docs/ai/index.md`). Decisions §1–§3 and §5 stand. `CODEX.md`
+  normalization (§4, second half) stands.
 
 ## Context
 

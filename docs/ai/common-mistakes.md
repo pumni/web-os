@@ -5,7 +5,7 @@ description: Common AI mistakes in this codebase as ❌/✅ pairs, cross-referen
 # Common Mistakes
 
 `bun run ai:eval` _catches_ these; this doc helps you _avoid_ them. Rule ids
-map to `scripts/check-review-gate-rules.mjs`.
+are defined in `scripts/review-gate-rules.mjs`.
 
 ## 1. State ownership (`query-result-in-zustand`)
 

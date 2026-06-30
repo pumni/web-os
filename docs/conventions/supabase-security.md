@@ -42,6 +42,6 @@ For every table in an exposed schema:
 
 Regenerate `packages/supabase/src/types.ts` after schema changes and run:
 
-```bash
+```pwsh
 bun run typecheck
 ```

@@ -22,6 +22,9 @@
  *   server-only-in-client           server module in client      B1
  *   cache-life-too-short            cacheLife('seconds')         B2
  *   cache-tag-unparameterized       cacheTag('literal')          B1
+ *   legacy-middleware               middleware.ts is deprecated  B1
+ *   image-priority-deprecated       priority on Next.js <Image>  B2
+ *   single-arg-revalidate-tag       revalidateTag() w/ single arg B1
  *   test-weakening                  .only/.skip/empty catch test B1
  *
  * Note: a direct-env-access rule was considered but dropped — the project's

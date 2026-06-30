@@ -67,7 +67,9 @@ Followed by exactly four sections, in order:
 ## Naming
 
 `NNNN-kebab-title.md`, zero-padded to four digits, starting at `0001`. Numbers
-are monotonic and never reused.
+are monotonic and never reused. Gaps are expected: 0005–0007 were squashed into 0009; 0014–0020 were
+draft/working numbers retired without a load-bearing record (recoverable from
+git). A gap never implies a missing decision.
 
 ## Enforcement
 

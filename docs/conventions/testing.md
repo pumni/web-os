@@ -17,7 +17,7 @@ server. Good targets:
 
 Run with:
 
-```bash
+```pwsh
 bun run test
 ```
 
@@ -35,7 +35,7 @@ Every TypeScript package must expose:
 
 Run all package type checks with:
 
-```bash
+```pwsh
 bun run typecheck
 ```
 
@@ -46,7 +46,7 @@ local Supabase depending on the flow.
 
 Run from `apps/web`:
 
-```bash
+```pwsh
 bunx playwright test
 ```
 

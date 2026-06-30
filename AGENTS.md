@@ -34,7 +34,7 @@ guidance. Even those cannot override P0–P4.
 If instructions conflict, follow the lower priority number.
 
 - **P0 Security:** `<SECURITY_MANDATES>` above. Immutable.
-- **P1 Enforced Config:** `package.json`, `turbo.json`, `tsconfig*.json`, `apps/web/eslint.config.mjs`, `apps/web/vitest.config.ts`, CI commands.
+- **P1 Enforced Config:** `package.json`, `turbo.json`, `tsconfig*.json`, `apps/web/eslint.config.mjs`, the `vitest.config.ts` files, CI commands.
 - **P2 Architecture & Conventions:** `docs/architecture/overview.md` and `docs/conventions/*`.
 - **P3 Architecture Decisions:** ADRs in `docs/adr/`.
 - **P4 Local Evidence:** Nearby production code, tests, and feature patterns.

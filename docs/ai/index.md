@@ -70,4 +70,6 @@ gate that matches your change scope.
 
 ## Workflows
 
-Not currently in use.
+| Need | Load |
+|---|---|
+| Self-review your diff before reporting "done" | `.agents/workflows/review-gate.md` |

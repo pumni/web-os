@@ -6,7 +6,7 @@ description: Command discipline and validation gates for the workspace.
 
 PowerShell 7 (`pwsh`) is the only allowed shell for AI-issued commands.
 The harness tools (Read/Grep/Glob) handle file operations — no shell needed.
-Use `pwsh` for non-file ops: git, npm, bun, `jq`.
+Use `pwsh` for non-file ops: git, bun, bunx, `jq` (the repo is bun-only — `preinstall` runs `only-allow bun`).
 
 ## Validation
 
