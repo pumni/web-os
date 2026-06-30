@@ -62,7 +62,6 @@ export function RoomCard({ room }: RoomCardProps) {
     >
       <Link
         href={roomUrl}
-        prefetch={false}
         aria-label={`Resume watch room ${room.code}, ${statusLabel(room.is_playing).toLowerCase()}`}
       >
         <CardHeader className="gap-3">

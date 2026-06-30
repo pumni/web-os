@@ -4,15 +4,7 @@ import * as React from 'react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import {
-  ArrowUpRight,
-  Pause,
-  Play,
-  Plus,
-  Tv,
-  Users,
-  Wifi,
-} from 'lucide-react';
+import { ArrowUpRight, Pause, Play, Plus, Tv, Users, Wifi } from 'lucide-react';
 
 import { Badge } from '@pumni/ui/feedback';
 import { BentoGrid, BentoGridItem } from '@pumni/ui/os';
@@ -26,9 +18,7 @@ interface DashboardBentoProps {
 }
 
 type NextIntent =
-  | { kind: 'start' }
-  | { kind: 'open'; room: Room }
-  | { kind: 'resume-live'; room: Room };
+  { kind: 'start' } | { kind: 'open'; room: Room } | { kind: 'resume-live'; room: Room };
 
 function deriveIntent(mostRecent: Room | undefined): NextIntent {
   if (!mostRecent) return { kind: 'start' };
@@ -58,9 +48,7 @@ function DashboardHero({ recentRooms }: { recentRooms: ReadonlyArray<Room> }) {
         : 'Host a synchronized party or join one with a code.';
 
   const primaryHref: Route =
-    intent.kind === 'start'
-      ? ('/watch' as Route)
-      : (`/watch?roomId=${intent.room.id}` as Route);
+    intent.kind === 'start' ? ('/watch' as Route) : (`/watch?roomId=${intent.room.id}` as Route);
 
   const primaryLabel =
     intent.kind === 'resume-live'
@@ -69,7 +57,8 @@ function DashboardHero({ recentRooms }: { recentRooms: ReadonlyArray<Room> }) {
         ? 'Open room'
         : 'Start a new room';
 
-  const PrimaryIcon = intent.kind === 'resume-live' ? Play : intent.kind === 'open' ? ArrowUpRight : Plus;
+  const PrimaryIcon =
+    intent.kind === 'resume-live' ? Play : intent.kind === 'open' ? ArrowUpRight : Plus;
 
   if (intent.kind === 'start') {
     return (
@@ -87,11 +76,11 @@ function DashboardHero({ recentRooms }: { recentRooms: ReadonlyArray<Room> }) {
             size="lg"
             className="w-full justify-center gap-2 bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) text-primary-foreground shadow-card hover:shadow-interactive-hover"
           >
-            <Link href={primaryHref} prefetch={false}>
+            <Link href={primaryHref}>
               <PrimaryIcon className="size-4" />
               {primaryLabel}
-           </Link>
-         </Button>
+            </Link>
+          </Button>
 
           <form
             className="flex flex-col gap-2 sm:flex-row sm:items-center"
@@ -116,10 +105,10 @@ function DashboardHero({ recentRooms }: { recentRooms: ReadonlyArray<Room> }) {
             />
             <Button type="submit" variant="outline" className="shrink-0 sm:w-auto">
               Join
-           </Button>
-         </form>
-       </CardWell>
-     </BentoGridItem>
+            </Button>
+          </form>
+        </CardWell>
+      </BentoGridItem>
     );
   }
 
@@ -139,46 +128,46 @@ function DashboardHero({ recentRooms }: { recentRooms: ReadonlyArray<Room> }) {
           <span className="inline-flex items-center gap-2 rounded-md border bg-card px-2.5 py-1 font-mono text-sm font-semibold text-foreground">
             <Tv className="size-3.5 text-primary" />
             {room.code}
-         </span>
+          </span>
           {intent.kind === 'resume-live' ? (
             <Badge tone="success" pulse>
               Live now
-           </Badge>
+            </Badge>
           ) : (
             <Badge tone="neutral">
               <Pause className="size-3" />
               Idle
-           </Badge>
+            </Badge>
           )}
-       </div>
+        </div>
 
         <div className="space-y-1">
           <p className="truncate text-sm font-semibold text-foreground">
             {room.source_type
               ? room.source_type.charAt(0).toUpperCase() + room.source_type.slice(1)
               : 'No media queued yet'}
-         </p>
+          </p>
           <p className="truncate font-mono text-xs text-muted-foreground">
             {room.source_ref ?? 'Queue something to start playback'}
-         </p>
-       </div>
+          </p>
+        </div>
 
         <div className="mt-auto flex flex-col gap-2 sm:flex-row">
           <Button asChild className="w-full justify-center gap-2 sm:flex-1">
-            <Link href={primaryHref} prefetch={false}>
+            <Link href={primaryHref}>
               <PrimaryIcon className="size-4" />
               {primaryLabel}
-           </Link>
-         </Button>
+            </Link>
+          </Button>
           <Button asChild variant="outline" size="default" className="w-full sm:w-auto">
-            <Link href={'/watch' as Route} prefetch={false}>
+            <Link href={'/watch' as Route}>
               Browse watch tools
               <ArrowUpRight className="size-3.5" />
-           </Link>
-         </Button>
-       </div>
-     </CardWell>
-   </BentoGridItem>
+            </Link>
+          </Button>
+        </div>
+      </CardWell>
+    </BentoGridItem>
   );
 }
 
@@ -196,9 +185,9 @@ function ActiveRoomsMetric({ recentRooms }: { recentRooms: ReadonlyArray<Room> }
       <div className="mt-auto flex items-center gap-2">
         <Badge tone={count > 0 ? 'success' : 'neutral'} pulse={count > 0}>
           {count > 0 ? 'Sync engaged' : 'Quiet'}
-       </Badge>
-     </div>
-   </BentoGridItem>
+        </Badge>
+      </div>
+    </BentoGridItem>
   );
 }
 
@@ -213,11 +202,9 @@ function PendingInvitesMetric({ count }: { count: number }) {
       ariaLabel={`${count} pending invites`}
     >
       <div className="mt-auto flex items-center gap-2">
-        <Badge tone={count > 0 ? 'primary' : 'neutral'}>
-          {count > 0 ? 'Open inbox' : 'Clear'}
-       </Badge>
-     </div>
-   </BentoGridItem>
+        <Badge tone={count > 0 ? 'primary' : 'neutral'}>{count > 0 ? 'Open inbox' : 'Clear'}</Badge>
+      </div>
+    </BentoGridItem>
   );
 }
 
@@ -233,8 +220,8 @@ function SyncDriftMetric() {
     >
       <div className="mt-auto flex items-center gap-2">
         <Badge tone="success">No drift</Badge>
-     </div>
-   </BentoGridItem>
+      </div>
+    </BentoGridItem>
   );
 }
 
@@ -245,7 +232,7 @@ export function DashboardBento({ recentRooms }: DashboardBentoProps) {
       <ActiveRoomsMetric recentRooms={recentRooms} />
       <PendingInvitesMetric count={0} />
       <SyncDriftMetric />
-   </BentoGrid>
+    </BentoGrid>
   );
 }
 
@@ -256,6 +243,6 @@ export function DashboardBentoSkeleton() {
       <BentoGridItem key="a" tier="metric" loading interactive={false} />
       <BentoGridItem key="b" tier="metric" loading interactive={false} />
       <BentoGridItem key="c" tier="metric" loading interactive={false} />
-   </BentoGrid>
+    </BentoGrid>
   );
 }

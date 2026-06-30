@@ -15,8 +15,8 @@ describe('DTCG token export', () => {
   it('committed tokens.dtcg.json matches a fresh generation from the CSS', () => {
     const committed = readFileSync(OUTPUT_PATH, 'utf8');
     expect(
-      committed,
+      committed.replace(/\r\n/g, '\n'),
       'tokens.dtcg.json is stale — regenerate with `bun run --filter @pumni/ui export-dtcg`',
-    ).toBe(buildDtcgJson());
+    ).toBe(buildDtcgJson().replace(/\r\n/g, '\n'));
   });
 });

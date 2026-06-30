@@ -93,14 +93,13 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
             <Link
               key={item.href}
               href={item.href}
-              prefetch={false}
               aria-label={item.label}
               className={cn(
                 'flex items-center gap-3 rounded-md py-2 text-sm font-medium transition-colors',
                 collapsed ? 'justify-center px-2' : 'px-3',
                 isActive
                   ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground state-hover state-pressed',
+                  : 'state-hover state-pressed text-muted-foreground',
               )}
             >
               <Icon className="size-4 shrink-0" />
