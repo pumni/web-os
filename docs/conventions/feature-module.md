@@ -30,7 +30,7 @@ features/my-feature/
 
 *   **Tầng dữ liệu (Data Access Layer - `queries.ts` & `actions.ts`)**:
     *   **Trách nhiệm**: Kết nối trực tiếp với database/API bằng Supabase clients (`@pumni/supabase`).
-    *   **Quy chuẩn**: Định nghĩa DTOs (Data Transfer Objects). Nên sử dụng một lớp Adapter nếu cấu trúc cơ sở dữ liệu thay đổi thường xuyên để ánh xạ thành Domain Model sạch, bảo vệ UI khỏi breaking changes.
+    *   **Quy chuẩn**: Mặc định domain type **suy ra trực tiếp** từ schema Supabase (`Database['public']['Tables'][...]['Row']`) — đơn giản, một nguồn sự thật, không tạo lớp Adapter đầu cơ. Chỉ tách một DTO/Adapter ánh xạ sang Domain Model sạch **khi có trigger thật**: (a) một domain type bị dùng bởi ≥2 feature (ứng viên đẩy lên `packages/*` thay vì lặp lại), hoặc (b) shape DB của bảng đó bắt đầu đổi thường xuyên và rò breaking change ra UI. Trước khi trigger kích hoạt, dùng thẳng Row type.
 *   **Tầng Nghiệp vụ & Trạng thái (Application Layer - `hooks/`, State Stores)**:
     *   **Trách nhiệm**: Custom hooks điều phối dữ liệu (Zustand stores, TanStack Query hooks). Xử lý validation, tính toán nghiệp vụ, và đóng gói trạng thái client-side cache.
     *   **Quy chuẩn**: Không render trực tiếp UI hoặc markup ở đây. Chỉ expose dữ liệu sạch và các hàm tương tác.
@@ -91,10 +91,31 @@ export default async function DashboardPage() {
 
 ## 4. Tự động hóa việc thực thi kiến trúc (Architecture Enforcement)
 
-Quy tắc kiến trúc được tự động kiểm tra tại CI/CD qua ESLint:
+Quy tắc kiến trúc được tự động kiểm tra tại CI/CD qua ESLint. Danh sách feature
+được **suy ra trực tiếp từ filesystem** (`readFeatureNames` trong
+`packages/config/eslint.mjs`): một thư mục `features/<name>/` mới được firewall
+ngay khi nó tồn tại, không có mảng thủ công nào để quên cập nhật.
 
-1.  **Cô lập Feature (`pumni/feature-boundary-<name>`)**: Ngăn chặn tất cả các tệp tin bên ngoài (kể cả các feature khác) import trực tiếp từ thư mục con của một feature (ngoại trừ các file kiểm thử `.test.ts`).
-2.  **Độc lập tầng Route (`pumni/feature-no-app-imports`)**: Cấm tuyệt đối code trong `src/features/**` import từ tầng định tuyến `src/app/**`. Điều này đảm bảo tính di động (Portability) và loại bỏ vòng lặp phụ thuộc (Circular Dependencies).
+Vì ESLint flat config **không merge** hai `no-restricted-imports` cùng khớp một
+tệp (cái khai báo sau ghi đè cái trước), toàn bộ ràng buộc import của một phạm vi
+tệp được gộp vào **một** rule duy nhất, chia theo 3 phạm vi rời nhau:
+
+1.  **`pumni/feature-boundary-internal`** (`src/features/**/*.ts`): chặn import
+    tầng định tuyến (`@/app`) để giữ tính di động (Portability), và chặn import
+    internals của **mọi** feature khác. Self-import dùng đường dẫn tương đối
+    (`./`, `../`) nên không bị chặn.
+2.  **`pumni/feature-boundary-internal-tsx`** (`src/features/**/*.tsx`): như trên,
+    cộng thêm ràng buộc **Presentation purity** — component UI không được import
+    trực tiếp `@pumni/supabase` / `@pumni/auth`; phải uỷ thác cho hooks, queries,
+    hoặc Server Actions.
+3.  **`pumni/feature-boundary-external`** (`src/**`, bỏ qua `src/features/**`):
+    code ngoài feature (routes, shared components, lib) chỉ được dùng feature qua
+    Public API gốc `@/features/<name>`, không bao giờ chạm internals.
+
+> [!NOTE]
+> Phát ra một config-object cho mỗi feature sẽ rơi vào bẫy override nói trên (chỉ
+> feature khai báo cuối được enforce). `check-feature-boundary.mjs` (chạy trong
+> `bun run ai:eval`) tự kiểm chứng rằng mọi feature được enforce ở cả 3 phạm vi.
 
 Chạy lệnh kiểm tra thủ công trước khi commit:
 ```bash
