@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { toast } from 'sonner';
@@ -74,14 +74,7 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
     };
   }, []);
 
-  const events: RoomRealtimeEvents = useMemo(
-    () => ({
-      onAnchor,
-      onChat,
-      onReaction,
-    }),
-    [onAnchor, onChat, onReaction],
-  );
+  const events: RoomRealtimeEvents = { onAnchor, onChat, onReaction };
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();

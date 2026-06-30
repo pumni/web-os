@@ -51,7 +51,7 @@ function CommandPalette({
   // Bucket results by `group` (first-seen order) so grouped items render under
   // a heading. Ungrouped items fall into a synthetic "Other" bucket only when
   // any other item is grouped — otherwise the list stays flat for back-compat.
-  const grouped = React.useMemo(() => {
+  const grouped = (() => {
     const hasGroups = filtered.some((item) => item.group);
     if (!hasGroups) return null;
     const buckets: { name: string; items: CommandItem[] }[] = [];
@@ -65,16 +65,13 @@ function CommandPalette({
       bucket.items.push(item);
     }
     return buckets;
-  }, [filtered]);
+  })();
 
   // Flat index lookup per item, pre-computed once per filter pass. Replaces the
   // previous `filtered.indexOf(item)` inside the grouped render loop, which was
   // O(n²) — every grouped item rescanned the whole list to find its position.
-  const indexByItem = React.useMemo(() => {
-    const map = new Map<CommandItem, number>();
-    filtered.forEach((item, index) => map.set(item, index));
-    return map;
-  }, [filtered]);
+  const indexByItem = new Map<CommandItem, number>();
+  filtered.forEach((item, index) => indexByItem.set(item, index));
 
   function handleOpenChange(next: boolean) {
     if (!next) {

@@ -120,10 +120,14 @@ function PersonalizationProvider({
     if (typeof window !== 'undefined') window.localStorage.setItem(DENSITY_KEY, next);
   }, []);
 
-  const value = React.useMemo<PersonalizationContextValue>(
-    () => ({ accent, glass, density, setAccent, setGlass, setDensity }),
-    [accent, glass, density, setAccent, setGlass, setDensity],
-  );
+  const value: PersonalizationContextValue = {
+    accent,
+    glass,
+    density,
+    setAccent,
+    setGlass,
+    setDensity,
+  };
 
   return (
     <PersonalizationContext.Provider value={value}>{children}</PersonalizationContext.Provider>

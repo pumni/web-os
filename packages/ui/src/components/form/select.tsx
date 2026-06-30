@@ -100,12 +100,8 @@ function SelectContent({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content> &
   VariantProps<typeof selectContentVariants>) {
-  // Merge consumer style but enforce the owned z-index. Memoise so the object
-  // identity is stable across re-renders for the same consumer style.
-  const mergedStyle = React.useMemo<React.CSSProperties>(
-    () => ({ ...style, zIndex: style?.zIndex ?? SELECT_Z_INDEX }),
-    [style],
-  );
+  // Merge consumer style but enforce the owned z-index.
+  const mergedStyle: React.CSSProperties = { ...style, zIndex: style?.zIndex ?? SELECT_Z_INDEX };
 
   return (
     <SelectPrimitive.Portal>

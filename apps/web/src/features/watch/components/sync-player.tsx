@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import {
   MediaPlayer,
   MediaProvider,
@@ -98,10 +98,7 @@ export function SyncPlayer({
     }
   };
 
-  // Memoize the source object so an unrelated re-render (presence sync, queue
-  // update, control visibility) does not hand Vidstack a fresh object identity
-  // and tear down + reload the provider mid-flight.
-  const source = useMemo(() => {
+  const source = (() => {
     if (sourceType === 'youtube') {
       return {
         src: `https://www.youtube.com/watch?v=${sourceRef}`,
@@ -112,7 +109,7 @@ export function SyncPlayer({
       return { src: sourceRef, type: 'application/x-mpegurl' } as const;
     }
     return { src: sourceRef, type: 'video/mp4' } as const;
-  }, [sourceType, sourceRef]);
+  })();
 
   return (
     <div

@@ -214,24 +214,18 @@ export function MotionSection() {
 }}`;
 
   // Plot spring curve for SVG
-  const springPoints = React.useMemo(() => {
-    return getSpringCurvePoints(stiffness, damping, mass);
-  }, [stiffness, damping, mass]);
+  const springPoints = getSpringCurvePoints(stiffness, damping, mass);
 
-  const svgPathD = React.useMemo(() => {
-    return springPoints
-      .map((p, idx) => {
-        const x = (p.t / 1.0) * 280 + 10;
-        const y = 90 - p.val * 50;
-        return `${idx === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
-      })
-      .join(' ');
-  }, [springPoints]);
+  const svgPathD = springPoints
+    .map((p, idx) => {
+      const x = (p.t / 1.0) * 280 + 10;
+      const y = 90 - p.val * 50;
+      return `${idx === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+    })
+    .join(' ');
 
-  // Gated recipes based on reduced motion state
-  const recipesGated = React.useMemo(() => {
-    if (isReduced) {
-      return {
+  const recipesGated = isReduced
+    ? {
         hoverLift: {},
         pressScale: {},
         staggerContainer: {},
@@ -239,10 +233,8 @@ export function MotionSection() {
         fadeRise: { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } },
         collapse: { initial: { height: 0, opacity: 0 }, animate: { height: 'auto', opacity: 1 }, exit: { height: 0, opacity: 0 } },
         window: { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } },
-      };
-    }
-    return recipes;
-  }, [isReduced]);
+      }
+    : recipes;
 
   const dragProps = isReduced
     ? {}

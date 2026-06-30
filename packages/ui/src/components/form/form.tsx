@@ -33,12 +33,7 @@ const FormField = <
 >({
   ...props
 }: ControllerProps<TFieldValues, TName>) => {
-  // `name` is referentially stable across renders, so memoise the context value
-  // to keep every `useFormField` consumer from re-rendering on each parent render.
-  const value = React.useMemo<FormFieldContextValue<TFieldValues, TName>>(
-    () => ({ name: props.name }),
-    [props.name],
-  );
+  const value: FormFieldContextValue<TFieldValues, TName> = { name: props.name };
 
   return (
     <FormFieldContext.Provider value={value}>
@@ -81,9 +76,7 @@ const FormItemContext = React.createContext<FormItemContextValue>({} as FormItem
 
 function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
   const id = React.useId();
-  // `id` is stable from useId, so memoise to avoid cascading re-renders of
-  // FormLabel/FormControl/FormDescription/FormMessage on every parent render.
-  const value = React.useMemo<FormItemContextValue>(() => ({ id }), [id]);
+  const value: FormItemContextValue = { id };
 
   return (
     <FormItemContext.Provider value={value}>

@@ -38,38 +38,37 @@ export function Highlight({
   className,
   ...props
 }: HighlightProps) {
-  // Deduplicate and sort by length descending to match longest tokens first
-  const tokens = React.useMemo(() => {
-    const q = query.trim();
-    if (!q) return [] as readonly string[];
-    const rawTokens = q.split(/\s+/).map(escapeRegExp).filter(Boolean);
-    return Array.from(new Set(rawTokens)).sort((a, b) => b.length - a.length);
-  }, [query]);
+  const trimmed = query.trim();
+  const tokens: readonly string[] = !trimmed
+    ? []
+    : Array.from(new Set(trimmed.split(/\s+/).map(escapeRegExp).filter(Boolean))).sort(
+        (a, b) => b.length - a.length,
+      );
 
   // Capture group preserves separators in String.split, so non-matched text is
   // rendered verbatim. Global flag is required for split to find all matches.
   // A fresh non-global pattern tests each split part without stateful lastIndex.
-  const { splitPattern, testPattern } = React.useMemo(() => {
+  const { splitPattern, testPattern } = (() => {
     if (tokens.length === 0) return { splitPattern: null, testPattern: null };
     const joined = tokens.join('|');
     return {
       splitPattern: new RegExp(`(${joined})`, 'gi'),
       testPattern: new RegExp(`^(?:${joined})$`, 'i'),
     };
-  }, [tokens]);
+  })();
 
-  const highlightedParts = React.useMemo(() => {
-    if (!splitPattern || !testPattern) return null;
-    return text.split(splitPattern).map((part, i) =>
-      part && testPattern.test(part) ? (
-        <mark key={i} className={cn(DEFAULT_MATCH_CLASS, matchClassName)}>
-          {part}
-        </mark>
-      ) : (
-        <React.Fragment key={i}>{part}</React.Fragment>
-      ),
-    );
-  }, [text, splitPattern, testPattern, matchClassName]);
+  const highlightedParts =
+    !splitPattern || !testPattern
+      ? null
+      : text.split(splitPattern).map((part, i) =>
+          part && testPattern.test(part) ? (
+            <mark key={i} className={cn(DEFAULT_MATCH_CLASS, matchClassName)}>
+              {part}
+            </mark>
+          ) : (
+            <React.Fragment key={i}>{part}</React.Fragment>
+          ),
+        );
 
   const hasRestProps = className !== undefined || Object.keys(props).length > 0 || ref !== undefined;
 

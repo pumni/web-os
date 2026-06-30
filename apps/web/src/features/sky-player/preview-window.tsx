@@ -599,18 +599,14 @@ export function PreviewWindow({ className, showLearnMore = false }: PreviewWindo
   }, [isMuted]);
 
   // Pre-process song timeline: map key → column index, sorted by time
-  const timeline = React.useMemo<TimelineEntry[]>(() => {
-    return [...DEMO_SONG.songNotes]
-      .map((note) => ({ time: note.time, column: parseNoteColumn(note.key) }))
-      .filter((entry) => entry.column >= 0 && entry.column < 15)
-      .sort((a, b) => a.time - b.time);
-  }, []);
+  const timeline: TimelineEntry[] = [...DEMO_SONG.songNotes]
+    .map((note) => ({ time: note.time, column: parseNoteColumn(note.key) }))
+    .filter((entry) => entry.column >= 0 && entry.column < 15)
+    .sort((a, b) => a.time - b.time);
 
   // Total song duration (last note + highlight buffer)
-  const totalDuration = React.useMemo(() => {
-    const last = timeline[timeline.length - 1];
-    return last ? last.time + NOTE_HIGHLIGHT_MS + 500 : 0;
-  }, [timeline]);
+  const last = timeline[timeline.length - 1];
+  const totalDuration = last ? last.time + NOTE_HIGHLIGHT_MS + 500 : 0;
 
   // ── AudioContext cleanup on unmount ────────────────────────────────────────
   React.useEffect(() => {
@@ -759,7 +755,7 @@ export function PreviewWindow({ className, showLearnMore = false }: PreviewWindo
   // Active notes: columns currently within their highlight window.
   // Computed as a Set for efficient lookup — but we spread it into
   // primitive booleans when passing to NoteKey props.
-  const activeNotes = React.useMemo(() => {
+  const activeNotes = (() => {
     if (timeline.length === 0 || elapsedMs === 0) return new Set<number>();
     const active = new Set<number>();
     const windowStart = elapsedMs - NOTE_HIGHLIGHT_MS;
@@ -779,7 +775,7 @@ export function PreviewWindow({ className, showLearnMore = false }: PreviewWindo
       }
     }
     return active;
-  }, [timeline, elapsedMs]);
+  })();
 
   const progressPercent = totalDuration > 0 ? Math.min((elapsedMs / totalDuration) * 100, 100) : 0;
 

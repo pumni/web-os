@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import {
@@ -168,16 +168,13 @@ export function useQueueActions(
     [isMemberReady, playMutation, broadcastQueueEvent, broadcastRoomEvent],
   );
 
-  return useMemo(
-    () => ({
-      add,
-      remove,
-      advance,
-      reorder,
-      play,
-      isPending,
-      isActionDisabled: isPending || !isMemberReady,
-    }),
-    [add, remove, advance, reorder, play, isPending, isMemberReady],
-  );
+  return {
+    add,
+    remove,
+    advance,
+    reorder,
+    play,
+    isPending,
+    isActionDisabled: isPending || !isMemberReady,
+  };
 }

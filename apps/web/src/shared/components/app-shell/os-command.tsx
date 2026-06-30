@@ -37,22 +37,18 @@ export function OsCommand() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const items = React.useMemo<CommandItem[]>(
-    () =>
-      commandNavItems.map((item) => {
-        const Icon = item.icon;
-        return {
-          id: toCommandId(item.href),
-          label: item.label,
-          keywords: item.keywords,
-          group: item.group,
-          icon: <Icon />,
-          onSelect: () =>
-            withViewTransition(() => router.push(item.href), { type: 'slide-forward' }),
-        };
-      }),
-    [router],
-  );
+  const items: CommandItem[] = commandNavItems.map((item) => {
+    const Icon = item.icon;
+    return {
+      id: toCommandId(item.href),
+      label: item.label,
+      keywords: item.keywords,
+      group: item.group,
+      icon: <Icon />,
+      onSelect: () =>
+        withViewTransition(() => router.push(item.href), { type: 'slide-forward' }),
+    };
+  });
 
   return (
     <>

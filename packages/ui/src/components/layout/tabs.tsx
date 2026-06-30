@@ -94,10 +94,7 @@ function TabsRoot({
     [handleValueChange],
   );
 
-  const contextValue = React.useMemo<TabsLayoutContextValue>(
-    () => ({ layoutId, activeValue }),
-    [layoutId, activeValue],
-  );
+  const contextValue: TabsLayoutContextValue = { layoutId, activeValue };
 
   return (
     <TabsLayoutContext.Provider value={contextValue}>

@@ -255,7 +255,7 @@ export function ApcaSection() {
   const [deriveTargetLc, setDeriveTargetLc] = React.useState(60);
   const anchor = OKLCH_ANCHORS.find((a) => a.label === anchorLabel) ?? OKLCH_ANCHORS[6];
 
-  const derivedFg = React.useMemo(() => {
+  const derivedFg = (() => {
     try {
       const result = foregroundFor(
         { l: anchor.l, c: anchor.c, h: anchor.h },
@@ -271,7 +271,7 @@ export function ApcaSection() {
     } catch {
       return null;
     }
-  }, [anchor, deriveTargetLc]);
+  })();
 
   return (
     <ShowcaseSection

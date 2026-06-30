@@ -50,7 +50,7 @@ export function SectionNav({
   linkClassName,
   labelClassName,
 }: SectionNavProps) {
-  const sectionIds = React.useMemo(() => sections.map((s) => s.id), [sections]);
+  const sectionIds = sections.map((s) => s.id);
   const activeSection = useActiveSection(sectionIds);
 
   const handleNav = React.useCallback(
