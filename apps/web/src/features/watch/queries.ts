@@ -97,7 +97,9 @@ async function getCachedQueue(roomId: string): Promise<QueueItem[]> {
 export async function getRecentRooms(userId: string, limit = 5): Promise<Room[]> {
   'use cache';
   cacheTag(`recent_rooms:${userId}`);
-  cacheLife('minutes');
+  // Fallback TTL only — every room create/join/leave/host-change action
+  // updateTag()s this key, so a longer profile just trims idle refetches.
+  cacheLife('hours');
 
   const supabase = createSupabaseServiceRoleClient();
 
