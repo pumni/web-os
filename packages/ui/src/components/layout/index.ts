@@ -24,3 +24,5 @@ export {
 } from './avatar';
 export { Highlight } from './highlight';
 export { SectionHeading, type SectionHeadingProps } from './section-heading';
+export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
+

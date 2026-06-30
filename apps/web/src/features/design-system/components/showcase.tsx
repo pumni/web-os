@@ -37,6 +37,14 @@ import {
   SheetHeader,
   SheetTitle,
   SheetClose,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogAction,
+  AlertDialogCancel,
 } from '@pumni/ui/overlay';
 import type { CommandItem } from '@pumni/ui/overlay';
 import { Skeleton } from '@pumni/ui/feedback';
@@ -86,6 +94,7 @@ export function DesignSystemShowcase() {
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [commandOpen, setCommandOpen] = React.useState(false);
+  const [alertDialogOpen, setAlertDialogOpen] = React.useState(false);
 
   const activeSection = useActiveSection(SHOWCASE_SECTION_IDS);
 
@@ -107,6 +116,7 @@ export function DesignSystemShowcase() {
         <OverlaysSection
           onOpenDialog={() => setDialogOpen(true)}
           onOpenSheet={() => setSheetOpen(true)}
+          onOpenAlertDialog={() => setAlertDialogOpen(true)}
         />
 
         <FeedbackSection />
@@ -222,6 +232,30 @@ export function DesignSystemShowcase() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      {/* ALERT DIALOG PORTAL */}
+      <AlertDialog open={alertDialogOpen} onOpenChange={setAlertDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your workspace cache
+              and clear all transient local session indices.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                toast.error('Workspace cache cleared successfully.');
+                setAlertDialogOpen(false);
+              }}
+            >
+              Clear Cache
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* COMMAND PALETTE PORTAL */}
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} items={commandItems} />

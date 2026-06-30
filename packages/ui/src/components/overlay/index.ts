@@ -57,3 +57,17 @@ export {
 } from './context-menu';
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tooltip';
 export { CommandPalette, type CommandItem } from './command-palette';
+export {
+  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from './alert-dialog';
+

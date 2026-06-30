@@ -6,3 +6,5 @@ export { PingDot, pingDotVariants } from './ping-dot';
 export { Skeleton, skeletonVariants } from './skeleton';
 export { Spinner, spinnerVariants } from './spinner';
 export { Toaster } from './sonner';
+export { Progress } from './progress';
+

@@ -29,3 +29,6 @@ export {
 } from './form';
 export { AuthField } from './auth-field';
 export { SegmentedPicker } from './segmented-picker';
+export { Textarea, textareaVariants } from './textarea';
+export { RadioGroup, RadioGroupItem } from './radio-group';
+

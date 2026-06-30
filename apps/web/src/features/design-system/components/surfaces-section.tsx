@@ -12,6 +12,10 @@ import {
   ScrollArea,
   ScrollBar,
   SectionHeading,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
 } from '@pumni/ui/layout';
 import { Dock, DockItem, Window } from '@pumni/ui/os';
 import { GlassSurface } from '@pumni/ui/identity';
@@ -229,6 +233,38 @@ export function SurfacesSection() {
           </CardHeader>
           <CardContent className="flex justify-center py-8">
             <DockDemo />
+          </CardContent>
+        </Card>
+
+        {/* Accordions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Accordion Panel</CardTitle>
+            <CardDescription>
+              Collapsible content panels with snappy spring transition animations.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Is it optimized for Web OS?</AccordionTrigger>
+                <AccordionContent>
+                  Yes. Every component in @pumni/ui is built using native React 19 architecture, optimized for server-side rendering (SSR), and styled with hardware-accelerated transitions.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2">
+                <AccordionTrigger>What is APCA Contrast standard?</AccordionTrigger>
+                <AccordionContent>
+                  The Advanced Perceptual Contrast Algorithm (APCA) is a modern contrast standard optimized for digital screens. We use it to ensure all text elements remain highly readable across customizable translucency levels.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3">
+                <AccordionTrigger>Are reduced motion options supported?</AccordionTrigger>
+                <AccordionContent>
+                  Yes. All transition effects (from window dragging to accordion heights) hook directly into the user preferences and prefers-reduced-motion media queries to automatically scale down if desired.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
       </div>

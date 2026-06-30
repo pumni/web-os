@@ -29,6 +29,9 @@ import {
   Slider,
   SubmitButton,
   Switch,
+  Textarea,
+  RadioGroup,
+  RadioGroupItem,
 } from '@pumni/ui/form';
 import {
   Card,
@@ -208,6 +211,24 @@ export function ControlsSection() {
                     )}
                 </div>
 
+                <div className="space-y-1.5 pt-2">
+                  <Label
+                    htmlFor="textarea-playground"
+                    className={demoInputInvalid ? 'text-destructive' : ''}
+                  >
+                    Dynamic Textarea Field
+                  </Label>
+                  <Textarea
+                    id="textarea-playground"
+                    variant={demoInputVariant}
+                    disabled={demoInputDisabled}
+                    aria-invalid={demoInputInvalid ? true : undefined}
+                    placeholder={demoInputDisabled ? 'Locked state' : 'Type multiline content...'}
+                    defaultValue={demoInputDisabled ? 'Locked' : 'Editable multiline text'}
+                    rows={3}
+                  />
+                </div>
+
                 <div className="space-y-2.5 pt-2">
                   <span className="text-xs font-bold tracking-wide text-muted-foreground uppercase">
                     Configure States & Styles
@@ -268,6 +289,26 @@ export function ControlsSection() {
             <div className="flex items-center gap-2">
               <Checkbox id="checkbox-showcase" defaultChecked />
               <Label htmlFor="checkbox-showcase">I agree to terms & conditions</Label>
+            </div>
+
+            <div className="space-y-2 pt-1">
+              <span className="text-xs font-semibold text-muted-foreground block">
+                Theme Choice (Radio Group)
+              </span>
+              <RadioGroup defaultValue="dark" className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="light" id="r-light" />
+                  <Label htmlFor="r-light" className="text-xs font-normal cursor-pointer">Light Mode</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="dark" id="r-dark" />
+                  <Label htmlFor="r-dark" className="text-xs font-normal cursor-pointer">Dark Mode</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="system" id="r-system" />
+                  <Label htmlFor="r-system" className="text-xs font-normal cursor-pointer">System Default</Label>
+                </div>
+              </RadioGroup>
             </div>
 
             <div className="space-y-1.5">

@@ -32,6 +32,9 @@ import {
   FormMessage,
   AuthField,
   SegmentedPicker,
+  Textarea,
+  RadioGroup,
+  RadioGroupItem,
 } from '@pumni/ui/form';
 
 import {
@@ -59,6 +62,10 @@ import {
   AvatarImage,
   Highlight,
   SectionHeading,
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
 } from '@pumni/ui/layout';
 
 import {
@@ -120,6 +127,15 @@ import {
   TooltipTrigger,
   CommandPalette,
   type CommandItem,
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
 } from '@pumni/ui/overlay';
 
 import {
@@ -131,6 +147,7 @@ import {
   Skeleton,
   Spinner,
   Toaster,
+  Progress,
 } from '@pumni/ui/feedback';
 
 import { GlassSurface, PersonalizationProvider } from '@pumni/ui/identity';
@@ -235,6 +252,21 @@ describe('SSR Safety: Form Components', () => {
       )
     ).not.toThrow();
   });
+
+  it('renders Textarea', () => {
+    expect(() => renderToString(<Textarea placeholder="Type multiline..." />)).not.toThrow();
+  });
+
+  it('renders RadioGroup and RadioGroupItem', () => {
+    expect(() =>
+      renderToString(
+        <RadioGroup defaultValue="option-1">
+          <RadioGroupItem value="option-1" id="r1" />
+          <RadioGroupItem value="option-2" id="r2" />
+        </RadioGroup>
+      )
+    ).not.toThrow();
+  });
 });
 
 describe('SSR Safety: Layout Components', () => {
@@ -303,6 +335,19 @@ describe('SSR Safety: Layout Components', () => {
   it('renders Highlight, SectionHeading', () => {
     expect(() => renderToString(<Highlight query="test" text="This is a test highlight" />)).not.toThrow();
     expect(() => renderToString(<SectionHeading eyebrow="Category" title="Title" description="Desc" />)).not.toThrow();
+  });
+
+  it('renders Accordion and AccordionItem', () => {
+    expect(() =>
+      renderToString(
+        <Accordion type="single" collapsible>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>Trigger</AccordionTrigger>
+            <AccordionContent>Content</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      )
+    ).not.toThrow();
   });
 });
 
@@ -381,6 +426,26 @@ describe('SSR Safety: Overlay Components', () => {
       )
     ).not.toThrow();
   });
+
+  it('renders AlertDialog', () => {
+    expect(() =>
+      renderToString(
+        <AlertDialog>
+          <AlertDialogTrigger>Delete</AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction>Delete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )
+    ).not.toThrow();
+  });
 });
 
 describe('SSR Safety: Feedback Components', () => {
@@ -393,6 +458,7 @@ describe('SSR Safety: Feedback Components', () => {
     expect(() => renderToString(<Skeleton />)).not.toThrow();
     expect(() => renderToString(<Spinner />)).not.toThrow();
     expect(() => renderToString(<Toaster />)).not.toThrow();
+    expect(() => renderToString(<Progress value={45} />)).not.toThrow();
   });
 });
 

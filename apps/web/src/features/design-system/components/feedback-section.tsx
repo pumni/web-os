@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { toast } from 'sonner';
 import { AlertCircleIcon, AlertTriangleIcon, CheckCircle2Icon, InfoIcon } from 'lucide-react';
-import { Badge, Banner, ChatBubble, KbdChip, PingDot, Skeleton, Spinner } from '@pumni/ui/feedback';
+import { Badge, Banner, ChatBubble, KbdChip, PingDot, Skeleton, Spinner, Progress } from '@pumni/ui/feedback';
 import { Button } from '@pumni/ui/form';
 import {
   Avatar,
@@ -241,6 +241,39 @@ export function FeedbackSection() {
                 <KbdChip tone="primary">⌘</KbdChip>
                 <KbdChip tone="primary">S</KbdChip>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Progress Bars */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Progress Indicators</CardTitle>
+            <CardDescription>
+              Status indicators showing the progress of long-running operations.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Downloading Asset Pack</span>
+                <span>45%</span>
+              </div>
+              <Progress value={45} />
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Database Migration</span>
+                <span>80%</span>
+              </div>
+              <Progress value={80} />
+            </div>
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Process Complete</span>
+                <span>100%</span>
+              </div>
+              <Progress value={100} />
             </div>
           </CardContent>
         </Card>

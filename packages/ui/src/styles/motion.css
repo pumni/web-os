@@ -64,3 +64,31 @@
     animation: shake var(--duration-base) var(--ease-spring) 1;
   }
 }
+
+/* ---- Accordion state transitions ---- */
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@utility animate-accordion-down {
+  animation: accordion-down var(--duration-base) var(--ease-snappy);
+}
+
+@utility animate-accordion-up {
+  animation: accordion-up var(--duration-base) var(--ease-snappy);
+}
+

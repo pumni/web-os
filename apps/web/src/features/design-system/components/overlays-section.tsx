@@ -49,9 +49,14 @@ import { ShowcaseSection } from './showcase-section';
 interface OverlaysSectionProps {
   onOpenDialog: () => void;
   onOpenSheet: () => void;
+  onOpenAlertDialog: () => void;
 }
 
-export function OverlaysSection({ onOpenDialog, onOpenSheet }: OverlaysSectionProps) {
+export function OverlaysSection({
+  onOpenDialog,
+  onOpenSheet,
+  onOpenAlertDialog,
+}: OverlaysSectionProps) {
   const [dropdownCheckState, setDropdownCheckState] = React.useState({
     notifications: true,
     compact: false,
@@ -80,6 +85,10 @@ export function OverlaysSection({ onOpenDialog, onOpenSheet }: OverlaysSectionPr
             <Button variant="secondary" onClick={onOpenSheet}>
               <PanelRightIcon className="size-4" />
               Trigger Sheet
+            </Button>
+            <Button variant="destructive" onClick={onOpenAlertDialog}>
+              <TrashIcon className="size-4" />
+              Trigger Alert
             </Button>
           </CardContent>
         </Card>
