@@ -26,7 +26,6 @@
         "@pumni/supabase": "workspace:*",
         "@pumni/ui": "workspace:*",
         "@pumni/validators": "workspace:*",
-        "@pumni/workflows": "workspace:*",
         "@supabase/ssr": "catalog:",
         "@supabase/supabase-js": "catalog:",
         "@tanstack/react-query": "catalog:",
@@ -154,13 +153,6 @@
         "zod": "catalog:",
       },
       "devDependencies": {
-        "typescript": "catalog:",
-      },
-    },
-    "packages/workflows": {
-      "name": "@pumni/workflows",
-      "devDependencies": {
-        "@types/node": "catalog:",
         "typescript": "catalog:",
       },
     },
@@ -443,8 +435,6 @@
     "@pumni/ui": ["@pumni/ui@workspace:packages/ui"],
 
     "@pumni/validators": ["@pumni/validators@workspace:packages/validators"],
-
-    "@pumni/workflows": ["@pumni/workflows@workspace:packages/workflows"],
 
     "@radix-ui/number": ["@radix-ui/number@1.1.2", "", {}, "sha512-ceTwaxc4I5IOi97DgCotl3pqiyRGvffcc0oOsE2dQYaJOFIDsDt4VWG6xEbg1QePv9QWausCEIppud/tJ1wNig=="],
 

@@ -22,7 +22,6 @@
     "@pumni/supabase": "workspace:*",
     "@pumni/ui": "workspace:*",
     "@pumni/validators": "workspace:*",
-    "@pumni/workflows": "workspace:*",
     "@supabase/ssr": "catalog:",
     "@supabase/supabase-js": "catalog:",
     "@tanstack/react-query": "catalog:",
