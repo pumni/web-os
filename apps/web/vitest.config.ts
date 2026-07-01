@@ -9,6 +9,8 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // globals: true is required for React Testing Library's automatic cleanup.
+    // We do not add "vitest/globals" to tsconfig to keep imports explicit in test files.
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/test/**/*.test.ts', 'src/test/**/*.test.tsx'],

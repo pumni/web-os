@@ -9,6 +9,9 @@ This app is the Storybook component catalog established by ADR-0021, used to dev
 - **Linting:** `bun run catalog:lint`
 - **Typechecking:** `bun run catalog:typecheck`
 
+> [!NOTE]
+> The Storybook catalog scripts are prefixed with `catalog:` and intentionally kept outside the main Turborepo pipeline in `turbo.json`. This ensures that developing or building the main application does not unnecessarily spin up or build Storybook, keeping the local workflow focused and isolated.
+
 ## Relationship to `@pumni/ui`
 
 - The catalog acts as an isolated sandbox for testing design system tokens and component layout.

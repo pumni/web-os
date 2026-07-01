@@ -8,7 +8,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "dist/**"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "env": [
         "NEXT_PUBLIC_APP_URL",
         "NEXT_PUBLIC_SUPABASE_URL",
@@ -18,11 +18,27 @@
     },
     "lint": {
       "dependsOn": ["^lint"],
-      "inputs": ["src/**/*.{ts,tsx,js,mjs}", "eslint.config.mjs", "tsconfig.json"]
+      "inputs": [
+        "src/**/*.{ts,tsx,js,mjs}",
+        "eslint.config.mjs",
+        "tsconfig.json",
+        "next.config.ts",
+        "playwright.config.ts",
+        "e2e/**",
+        "scripts/**",
+        "$TURBO_ROOT$/packages/config/eslint.mjs",
+        "$TURBO_ROOT$/packages/config/src/**"
+      ]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"],
-      "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json", "tsconfig.base.json"]
+      "inputs": [
+        "src/**/*.{ts,tsx}",
+        "tsconfig.json",
+        "$TURBO_ROOT$/tsconfig.base.json",
+        "next.config.ts",
+        "next-env.d.ts"
+      ]
     },
     "test": {
       "dependsOn": ["^test"],
