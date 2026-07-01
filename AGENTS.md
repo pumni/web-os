@@ -1,11 +1,9 @@
 # Pumni Web OS — AI Agent Instructions
 
 Tool-agnostic entry point. After this file, load `docs/ai/index.md` (the single
-router) and pull in only the task-relevant rows it points to.
-
-Next.js v16 rules auto-load from `.claude/rules/*` when you open App Router files
-— **this is not the Next.js in your training data**. Read them before writing
-Next.js code.
+router) and pull only the task-relevant rows. Next.js 16 rules auto-load from
+`.claude/rules/*` when you open App Router files — **this is not the Next.js in
+your training data**; read them before writing Next.js code.
 
 <SECURITY_MANDATES>
 
@@ -55,38 +53,44 @@ UI state only), Zod validators.
 - `supabase/migrations` — schema + RLS + grants together.
 
 State ownership: server state stays in Server Components or TanStack Query cache;
-never mirror server data into Zustand. See `docs/conventions/data-fetching.md`.
+never mirror server data into Zustand (`docs/conventions/data-fetching.md`).
 
-React Compiler: The React Compiler is active monorepo-wide. Avoid manual `useMemo` or `useCallback` for ordinary variables, callback stability, or context values to prevent redundant boilerplate. Only optimize manually when targeting scheduler priority (`useTransition`), DOM refs cleanup, or dynamic third-party JSX properties (e.g., conditional layout projection for reduced-motion).
+React Compiler is active monorepo-wide: **do not** hand-write `useMemo` /
+`useCallback` for ordinary values, callback stability, or context. Optimize
+manually only for scheduler priority (`useTransition`), ref cleanup, or dynamic
+third-party JSX props (e.g. reduced-motion layout projection).
 
-## Working Principles
+## How to work
 
-- **Think first.** State assumptions and tradeoffs before coding; when a
-  request has multiple readings, surface them — do not choose silently.
-- **Simplicity.** Minimum code that solves the stated problem. No speculative
-  abstraction for single-use code. Before new code, walk the reuse-first ladder
-  in `.agents/skills/codebase-design/SKILL.md` (reuse repo / platform / installed
-  deps before writing). Applies to docs too: do not mint an ADR for a
-  reversible/cosmetic decision (see `docs/adr/README.md`).
-- **Surgical.** Touch only what the task needs; clean up only the mess your
-  change made. Do not refactor unrelated, working code.
-- **Goal-driven verification.** Turn the request into a checkable outcome, then
-  run the *narrowest* gate that proves it (a bug fix starts with a failing test
-  that goes green). See `docs/ai/agent-command-policy.md#validation` for gate selection.
+- **Simplicity & reuse.** Minimum code for the stated task; no speculative
+  abstraction for single-use code. Walk the reuse-first ladder
+  (`.agents/skills/codebase-design/SKILL.md`) before writing new code. No ADR for
+  reversible/cosmetic decisions (`docs/adr/README.md`).
+- **Surgical.** Touch only what the task needs; don't refactor unrelated working
+  code. When a request has multiple readings, surface them — don't choose silently.
 
-## Command Discipline
+## Boundaries
 
-PowerShell 7 (`pwsh`) is the only allowed shell. See
-`docs/ai/agent-command-policy.md` for the full policy.
+- **Never:** the P0 mandates above (bypass RLS, expose the secret key, import
+  server-only code into client components, disable validation).
+- **Ask first:** database schema changes, deleting files, changing a core
+  dependency.
 
-## Validation
+## Validation & Definition of Done
 
-Run the narrowest gate for your change scope — see
-`docs/ai/agent-command-policy.md#validation` (altitude table).
+PowerShell 7 (`pwsh`) is the only allowed shell; the full policy and the
+gate-altitude table live in `docs/ai/agent-command-policy.md`.
+
+**Done** =
+1. the *narrowest* gate for your change scope is green (a bug fix starts with a
+   failing test that goes green);
+2. no unrelated code was changed;
+3. the owning spec/skill is updated if you changed documented behavior.
+
 Never bypass security or skip validation. If a command cannot be run, say why.
 
 ## Read Routing
 
-`docs/ai/index.md` is the need → canonical-doc router; pull a row only when the
-task needs it, never preload broad docs. Before writing Next.js app code, read
+`docs/ai/index.md` maps need → canonical doc; pull a row only when the task needs
+it, never preload broad docs. Before writing Next.js app code, read
 `apps/web/AGENTS.md` and the relevant `.claude/rules/*`.
