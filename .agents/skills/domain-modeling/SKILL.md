@@ -1,6 +1,6 @@
 ---
 name: domain-modeling
-description: Maintain Pumni domain language during planning, triage, PRDs, architecture review, or implementation naming. Use when terminology is ambiguous, a durable concept is being named, code and product language disagree, or another workflow needs glossary or ADR updates.
+description: Maintain Pumni domain language during planning, triage, architecture review, or implementation naming. Use when terminology is ambiguous, a durable concept is being named, code and product language disagree, or another workflow needs glossary or ADR updates.
 ---
 
 # Domain Modeling
@@ -22,7 +22,7 @@ skill changes the glossary; merely reading the glossary does not require it.
 
 ## Rules
 
-- `docs/ai/domain-language.md` is a glossary, not a feature spec, PRD,
+- `docs/ai/domain-language.md` is a glossary, not a feature spec,
   scratchpad, or implementation log.
 - Use concise definitions that help naming in plans, files, tests, and
   summaries.
