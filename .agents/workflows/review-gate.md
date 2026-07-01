@@ -31,6 +31,8 @@ If any **P0** item fails, stop and fix before doing anything else.
       `docs/ai/agent-command-policy.md`), not full suite by reflex.
 - [ ] Context edits → `bun run ai:check` + `bun run ai:eval`.
       Code → `typecheck` / `lint` / `test` (+ `build` if bundle can change).
+- [ ] For diffs under `apps/web/src/features/watch`, optionally dispatch the
+      `watch-sync-reviewer` subagent for an isolated domain pass.
 
 ## Feedback loop (turn a miss into a guardrail)
 

@@ -46,6 +46,16 @@ follower lifecycle is unit-testable without React, a player, or the network.
   3-value public contract. XState and direct vendor SDKs were declined as
   premature (ADR-0011) — do not introduce them.
 
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Followers snap backward on a stale update | A delayed persisted (`postgres_changes`) snapshot clobbered a fresher live `broadcast` anchor | Route all anchors through `shouldAcceptPlaybackAnchor`; persisted snapshot wins only if strictly newer by `anchorServerTs` |
+| Duplicate/echoed anchors re-trigger reconcile | Versioned live anchors not deduped by `originSessionId` + `sequence` | Dedupe in the anchor path, not the controller; never accept an unversioned snapshot over a versioned broadcast |
+| Sync drifts under variable latency | Clock samples averaged instead of min-RTT selected | Use `selectBestClockSample` (keep min-RTT); `clockReady` gates the sync phase — do not average |
+| New lifecycle behavior is untestable / regresses | A branch was added to the React controller instead of the reducer | Add a `SyncEvent`/`SyncEffect` variant + a transition test in `watch-sync-machine.test.ts`; keep `syncReducer` pure |
+| Telemetry disagrees with actual transitions | Ad-hoc `track()` calls in the controller | Emit only via `syncTelemetryEvents(prev, event, next)` (derived, not hand-placed) |
+
 ## Checklist
 
 - [ ] Lifecycle/branching change lives in `syncReducer`, not in the React controller.

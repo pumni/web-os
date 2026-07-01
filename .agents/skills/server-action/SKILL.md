@@ -28,6 +28,14 @@ that calls it is `react-hook-form`; the read it invalidates is
   must match the read's `cacheTag` exactly. Both are Server Action/Component
   only — they throw in a Route Handler.
 
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Database updates but the user still sees stale data after reload | Missing cache tag invalidation or mismatched tag names | Call `updateTag(tag)` or `revalidateTag(tag, 'max')` with the exact parameterized tag matching the read's `cacheTag` |
+| The application throws a runtime error during API request | Cache invalidation helpers called inside a Route Handler | Do not call `updateTag` or `revalidateTag` in `route.ts` handlers (they are only allowed in Server Actions/Components) |
+| Cross-user privilege escalation on writes | Trusting client-supplied arguments (e.g. `userId`) for authorization | Derive user ID on the server using `requireUser()` and verify write authorization before updating/inserting |
+
 ## Checklist
 
 - [ ] Action lives in `apps/web/src/features/<feature>/actions.ts`.

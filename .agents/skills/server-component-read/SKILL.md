@@ -34,6 +34,14 @@ invalidated by tag, not refetched on every render.
 - Wrap dynamic server components in `<Suspense>` with a non-sensitive fallback;
   never render protected content in the fallback shell.
 
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| A user sees another user's personal details or cached content | A generic cache tag was used, colliding across user sessions | Parameterize cache tags with user/resource context, e.g. `cacheTag("profile:" + userId)` rather than `cacheTag("profile")` |
+| The page loses its static Shell (PPR) or renders slowly | The `'seconds'` profile was used in `cacheLife`, breaking PPR | Avoid `'seconds'` cache profile; use `'minutes'` as the absolute minimum safe profile |
+| The cache is missed on every request, reloading database data | `'use cache'` was placed in a wrapper/HOF instead of the fetching body | Move the `'use cache'` directive directly into the body of the function executing the fetch |
+
 ## Checklist
 
 - [ ] Read lives in `queries.ts` and is called from a Server Component.

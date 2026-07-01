@@ -1,0 +1,19 @@
+{
+  "subsystems": [
+    {
+      "name": "watch-sync",
+      "code": ["apps/web/src/features/watch/**"],
+      "owners": [".agents/skills/watch-sync/SKILL.md", "docs/adr/0011-watch-sync-state-machine-and-observability-seam.md"]
+    },
+    {
+      "name": "supabase-rls",
+      "code": ["supabase/migrations/**"],
+      "owners": [".agents/skills/supabase-migration/SKILL.md", "docs/conventions/supabase-security.md"]
+    },
+    {
+      "name": "design-system",
+      "code": ["packages/ui/src/**"],
+      "owners": ["docs/conventions/design-system.md", ".agents/skills/ui-styling/SKILL.md"]
+    }
+  ]
+}

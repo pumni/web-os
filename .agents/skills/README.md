@@ -61,6 +61,10 @@ updateTag/revalidateTag.
 Progressive disclosure is the cure for **sprawl**: when `SKILL.md` grows tables
 or recipes, move them out and link, as `ui-styling/REFERENCE.md` does.
 
+## Known Failure Modes (Recommended)
+
+Error-prone domains SHOULD add a `## Known Failure Modes` section (placed after `## Rules` and before `## Checklist`) carrying a compact table of `Symptom | Cause | Fix`, distilled from real debugging sessions or ADRs. Never author LLM-generated filler; keep the table high-signal and limited to 3-6 critical rows. Single-use or trivial skills may omit it.
+
 ## The `## Checklist` is the completion contract
 
 It is the agent's exit criteria — sharp, exhaustive, verifiable. End it with the
@@ -84,6 +88,13 @@ split a long step sequence only if the criteria stay irreducibly fuzzy.
 Ship executable helpers in `<skill>/scripts/` and point to them from `SKILL.md`
 (e.g. `diagnosing-bugs/scripts/repro-loop.template.sh`). Templates carry a
 `.template` segment so they are copied, not run in place.
+
+## Subagent Extension Pattern
+
+For high-risk or error-prone subsystems, you can add a specialized domain reviewer subagent:
+1. Ensure the corresponding domain skill under `.agents/skills` has a populated `## Known Failure Modes` section.
+2. Create a read-only subagent under `.claude/agents/<domain>-reviewer.md` that *references* the skill and relevant ADRs rather than duplicating them.
+3. Add an optional, path-scoped checklist line recommending the reviewer under `## Verification` in `.agents/workflows/review-gate.md`.
 
 ## P0–P4 still win
 

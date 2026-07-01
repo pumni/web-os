@@ -14,9 +14,12 @@
     "scripts/sync-project-graph.mjs",
     "scripts/sync-skills.mjs",
     "scripts/sync-adr-register.mjs",
+    "scripts/check-context-drift.mjs",
+    "scripts/context-map.json",
     ".claude/rules/nextjs-async-apis.md",
     ".claude/rules/nextjs-cache-components.md",
     "apps/web/AGENTS.md",
+    "apps/catalog/AGENTS.md",
     "packages/ui/AGENTS.md",
     "packages/supabase/AGENTS.md",
     "packages/auth/AGENTS.md",
@@ -90,7 +93,8 @@
   ],
   "skillValidation": {
     "yamlRequiredFields": ["name", "description"],
-    "markdownRequiredSections": ["Rules", "Checklist"]
+    "markdownRequiredSections": ["Rules", "Checklist"],
+    "recommendedSections": ["Known Failure Modes"]
   },
   "sizeBudgets": [
     { "path": "AGENTS.md", "maxBytes": 5500 },

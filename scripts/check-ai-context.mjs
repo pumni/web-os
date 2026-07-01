@@ -615,6 +615,14 @@ function checkStructuredMarkdown({ dir, kind, validation, isFileEntry }) {
         reportError(`${relativePath} is missing required section '## ${section}'`);
       }
     }
+    for (const section of validation.recommendedSections ?? []) {
+      const heading = new RegExp(`^#{1,6}\\s+${section}\\b`, 'm');
+      if (!heading.test(content)) {
+        reportWarn(
+          `${relativePath}: consider a '## ${section}' section (distilled symptom → cause → fix) — recommended for error-prone domains, not required.`,
+        );
+      }
+    }
   }
 }
 
