@@ -64,7 +64,20 @@ const nextConfig: NextConfig = {
       .filter(Boolean)
       .join(' ');
 
-    const connectSrc = ["'self'", supabaseConnect, isDev && 'ws: http://localhost:54321']
+    // YouTube origins for watch-together (Vidstack's YouTubeProviderLoader).
+    // - i.ytimg.com: poster probe (findYouTubePoster) and <img> poster
+    // - *.youtube.com / youtube-nocookie.com: embed iframe (frame-src) + api
+    // - googlevideo.com: actual stream media
+    // Wildcards scoped to subdomains only — never `*`.
+    const youtubeOrigins =
+      'https://*.ytimg.com https://*.youtube.com https://*.youtube-nocookie.com https://*.googlevideo.com';
+
+    const connectSrc = [
+      "'self'",
+      supabaseConnect,
+      youtubeOrigins,
+      isDev && 'ws: http://localhost:54321',
+    ]
       .filter(Boolean)
       .join(' ');
 
@@ -72,12 +85,12 @@ const nextConfig: NextConfig = {
       "default-src 'self'",
       `script-src ${scriptSrc}`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' blob: data: https://*.supabase.co",
+      "img-src 'self' blob: data: https://*.supabase.co https://*.ytimg.com",
       "font-src 'self' data:",
       `connect-src ${connectSrc}`,
-      "media-src 'self' blob: data:",
+      "media-src 'self' blob: data: https://*.youtube.com https://*.googlevideo.com",
       "object-src 'none'",
-      "frame-src 'self'",
+      "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",

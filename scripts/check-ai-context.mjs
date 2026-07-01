@@ -85,7 +85,6 @@ function getMarkdownLinkFiles() {
   return [
     'AGENTS.md',
     'CLAUDE.md',
-    'GEMINI.md',
     'llms.txt',
     ...collectMarkdownFiles('docs'),
     ...collectMarkdownFiles('.agents'),
