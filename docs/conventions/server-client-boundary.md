@@ -13,8 +13,7 @@ description: Rules for server-only isolation, "use client" usage, service-role s
   `dynamic`, `revalidate`, `fetchCache`) and the `'use cache'` directive in
   Server Components. Never place them in `"use client"` pages or components.
 - **Security Enforcements**: RLS (Row Level Security) on Supabase schema tables acts as the actual data security boundary. Never rely purely on UI hides.
-- **Zustand Limits**: Zustand handles local UI state (sidebar open states, modals). It must not cache server database state.
-- **TanStack Query Limits**: Use TanStack Query exclusively for client-driven asynchronous polling, optimistic updates, or paginated lists.
+- **State Placement**: owned by `docs/conventions/data-fetching.md` (Server Components vs TanStack Query vs Zustand).
 
 ## Next.js Route Props
 

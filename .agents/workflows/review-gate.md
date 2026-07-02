@@ -33,6 +33,8 @@ If any **P0** item fails, stop and fix before doing anything else.
       Code → `typecheck` / `lint` / `test` (+ `build` if bundle can change).
 - [ ] For diffs under `apps/web/src/features/watch`, optionally dispatch the
       `watch-sync-reviewer` subagent for an isolated domain pass.
+- [ ] For diffs under `supabase/migrations`, optionally dispatch the
+      `supabase-rls-reviewer` subagent for an isolated RLS/grants pass.
 
 ## Feedback loop (turn a miss into a guardrail)
 

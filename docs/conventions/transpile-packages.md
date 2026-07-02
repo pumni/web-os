@@ -12,7 +12,7 @@ Workspace packages are symlinked into `node_modules`, so whether they need
 
 This repo does **not** set `transpilePackages` in `apps/web/next.config.ts`
 today. The workspace packages export raw TypeScript source (e.g.
-`@pumni/ui` -> `./src/index.ts`) and the production build still succeeds because
+`@pumni/ui/form` -> `./src/components/form/index.ts`) and the production build still succeeds because
 Turbopack detects the workspace symlinks and applies its transform pipeline.
 
 Do not add `transpilePackages` "just in case". Add it only when a build, type,

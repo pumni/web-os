@@ -24,6 +24,7 @@ that source code and conventions cannot carry on their own.
 | 0021 | Revisit ADR-0010 Rejections — Component Catalog + DTCG Token Export | Accepted | 2026-06-30 |
 | 0022 | Keep llms.txt as the Agentic Handshake Map | Accepted | 2026-07-01 |
 | 0023 | Context Layer — Team-Scale Maturity | Accepted | 2026-07-01 |
+| 0024 | Context Layer — 2026-07 Standards Refresh | Accepted | 2026-07-02 |
 
 > Number gaps are intentional: 0005–0007 squashed into 0009; 0014–0020 are
 > retired draft numbers. A gap never implies a missing decision.

@@ -47,6 +47,7 @@ Policy enforcement logic is centralized in repository scripts, not individual ag
 | Tool Hooks | `.claude/settings.json` integrations | Fast local feedback loops. |
 
 ### Claude Code Hooks (Advisory)
+- **SessionStart:** Emits the context-drift notice (`check-context-drift.mjs`); on `compact`/`resume` it also emits a re-anchor pointer to `AGENTS.md` (ADR-0024). Fail-open.
 - **PostToolUse:** Runs Prettier on edited code/config files (excluding markdown files to prevent layout formatting churn).
 - **Stop:** Runs `check-ai-context.mjs` only if context-sensitive files were touched.
 

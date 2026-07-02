@@ -17,7 +17,7 @@ query/action files, these load automatically — read them:
 
 - Routes in `apps/web/src/app`; reusable UI in `components`; domain logic in
   `features/<feature>` (Server Actions in `actions.ts`, Query hooks, schemas).
-- State ownership: server data stays in Server Components or TanStack Query cache; never mirror it to Zustand (see [data-fetching.md](file:///v:/web-os/docs/conventions/data-fetching.md)).
+- State ownership: server data stays in Server Components or TanStack Query cache; never mirror it to Zustand (see [data-fetching.md](../../docs/conventions/data-fetching.md)).
 - Server-only modules carry `"server-only"`; the service-role key never reaches
   client bundles (`docs/conventions/supabase-security.md`).
 

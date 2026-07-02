@@ -8,7 +8,11 @@ The repo declares two MCP servers in `.mcp.json` as local development aids (neve
 1. **next-devtools** (`next-devtools-mcp`) — a bridge between the MCP client and a running Next.js dev server.
 2. **postgres** (`@modelcontextprotocol/server-postgres`) — a read-only schema-introspection aid.
 
-MCP availability is optional; if the servers are not running, fall back to `bun run typecheck`, `bun run build`, and direct code reads. P0–P4 in `AGENTS.md` always win. Never edit `.mcp.json` to bypass a gate or disable validation.
+Both servers are **opt-in and disabled by default locally**
+(`disabledMcpjsonServers` in `.claude/settings.local.json`); enable them there
+when a task needs the runtime bridge or live schema. If the servers are not
+enabled or not running, fall back to `bun run typecheck`, `bun run build`, and
+direct code reads. P0–P4 in `AGENTS.md` always win. Never edit `.mcp.json` to bypass a gate or disable validation.
 
 ---
 
