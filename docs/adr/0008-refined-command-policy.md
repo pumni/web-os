@@ -33,6 +33,25 @@ Refine the command execution guidelines to align with actual harness behavior:
 - Removal of the detailed PowerShell syntax tutorial (which was largely a source of errors rather than utility for the agent).
 - Requires maintaining the script runner files (`scripts/check.ps1`, `scripts/search.ps1`) in the repository.
 
+## Implementation
+
+- **2026-07-02 (round 1):** All four decisions implemented in
+  `docs/ai/agent-command-policy.md`. File stripped of harness-specific noise
+  (Claude Code hooks, Codex sandbox, CI layer docs).
+
+- **2026-07-02 (round 2):** Further refinement after independent best-practice
+  review:
+  - Softened "pwsh only" → "repo default shell" acknowledging cross-platform
+    agent reality; emphasized `bun run <script>` as the shell-agnostic path.
+  - Clarified `$env` hazard with root cause (host shell pre-evaluation chain) so
+    agents understand *when* inline `-Command` is risky vs safe.
+  - Narrowed `.ps1` rule scope to repo-owned scripts under `scripts/`, not
+    agent-written ad-hoc scripts.
+  - Validation table restructured: each row names a **narrowest gate** with an
+    optional escalation column; E2E added as explicit scope; gate order is
+    sequential (`lint && typecheck && test`). Added "narrowest first, fix before
+    moving" preamble matching `AGENTS.md` and `review-gate.md` intent.
+
 ## References
 
 - `docs/ai/agent-command-policy.md` - Command Policy.
