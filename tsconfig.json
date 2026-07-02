@@ -1,33 +1,4 @@
 {
   "extends": "./tsconfig.base.json",
-  "files": [],
-  "references": [
-    {
-      "path": "./apps/web"
-    },
-    {
-      "path": "./packages/auth"
-    },
-    {
-      "path": "./packages/config"
-    },
-    {
-      "path": "./packages/env"
-    },
-    {
-      "path": "./packages/features"
-    },
-    {
-      "path": "./packages/supabase"
-    },
-    {
-      "path": "./packages/test-utils"
-    },
-    {
-      "path": "./packages/ui"
-    },
-    {
-      "path": "./packages/validators"
-    }
-  ]
+  "files": []
 }

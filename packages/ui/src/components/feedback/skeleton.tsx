@@ -39,6 +39,7 @@ const skeletonVariants = cva('rounded-md bg-muted', {
 });
 
 function Skeleton({
+  ref,
   className,
   variant = 'pulse',
   role = 'presentation',
@@ -55,6 +56,7 @@ function Skeleton({
   }) {
   return (
     <div
+      ref={ref}
       data-slot="skeleton"
       data-variant={variant}
       role={role}

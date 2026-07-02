@@ -6,9 +6,10 @@ import { cn } from '../../lib/cn';
  * OS dock — a floating glass bar of launcher items. Renders a real nav with
  * focusable buttons so it remains keyboard-navigable.
  */
-function Dock({ className, ...props }: React.ComponentProps<'nav'>) {
+function Dock({ ref, className, ...props }: React.ComponentProps<'nav'>) {
   return (
     <nav
+      ref={ref}
       data-slot="dock"
       aria-label="Application dock"
       style={{ zIndex: 'var(--z-dock)' }}
@@ -26,9 +27,10 @@ type DockItemProps = React.ComponentProps<'button'> & {
   active?: boolean;
 };
 
-function DockItem({ className, label, active = false, children, ...props }: DockItemProps) {
+function DockItem({ ref, className, label, active = false, children, ...props }: DockItemProps) {
   return (
     <button
+      ref={ref}
       type="button"
       data-slot="dock-item"
       data-active={active}

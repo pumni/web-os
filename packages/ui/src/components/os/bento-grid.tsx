@@ -93,7 +93,16 @@ interface BentoGridProps extends React.ComponentProps<'div'> {
   dense?: boolean;
 }
 
-export function BentoGrid({ className, children, columns = 12, rowHeight, dense, style, ...props }: BentoGridProps) {
+export function BentoGrid({
+  ref,
+  className,
+  children,
+  columns = 12,
+  rowHeight,
+  dense,
+  style,
+  ...props
+}: BentoGridProps) {
   // px is a sizing value, not a color/radius — inline-style override is allowed
   // here (consistent with how `BentoGridItem.minHeight` is already handled).
   const gridStyle: React.CSSProperties = {
@@ -111,7 +120,7 @@ export function BentoGrid({ className, children, columns = 12, rowHeight, dense,
     // sidebar/dialog/OS-Window narrower than the viewport collapses on its own
     // width. Thresholds match the legacy viewport breakpoints (sm=40rem,
     // lg=64rem), so full-width consumers render identically to before.
-    <div className="@container/bento">
+    <div ref={ref} className="@container/bento">
       <div
         className={cn(
           // Columns query the named `bento` wrapper (the parent), and so do the
@@ -259,6 +268,7 @@ function BentoGridItemContent({
 }
 
 export function BentoGridItem({
+  ref,
   className,
   children,
   header,
@@ -304,6 +314,7 @@ export function BentoGridItem({
   if (variant === 'spotlight') {
     return (
       <CardSpotlight
+        ref={ref}
         interactive={interactive}
         state={resolvedState}
         className={cardClass}
@@ -324,6 +335,7 @@ export function BentoGridItem({
 
   return (
     <Card
+      ref={ref}
       interactive={interactive}
       variant={variant}
       state={resolvedState}

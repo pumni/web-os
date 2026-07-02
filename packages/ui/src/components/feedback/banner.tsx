@@ -44,6 +44,7 @@ const toneShellClass: Record<BannerTone, string> = {
 };
 
 function Banner({
+  ref,
   className,
   tone = 'warning',
   size = 'compact',
@@ -71,6 +72,7 @@ function Banner({
 
   return (
     <div
+      ref={ref}
       data-slot="banner"
       data-tone={tone}
       data-size={size}

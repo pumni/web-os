@@ -85,10 +85,11 @@ function AvatarFallback({
   );
 }
 
-function AvatarBadge({ className, ...props }: React.ComponentProps<'span'>) {
+function AvatarBadge({ ref, className, ...props }: React.ComponentProps<'span'>) {
   const size = useAvatarSize();
   return (
     <span
+      ref={ref}
       data-slot="avatar-badge"
       className={cn(
         'absolute right-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground ring-2 ring-background select-none',
@@ -121,10 +122,11 @@ function AvatarGroup({
   );
 }
 
-function AvatarGroupCount({ className, ...props }: React.ComponentProps<'div'>) {
+function AvatarGroupCount({ ref, className, ...props }: React.ComponentProps<'div'>) {
   const size = useAvatarSize();
   return (
     <div
+      ref={ref}
       data-slot="avatar-group-count"
       className={cn(
         'relative flex shrink-0 items-center justify-center rounded-full bg-muted text-sm text-muted-foreground ring-2 ring-background [&>svg]:size-4',

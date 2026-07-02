@@ -80,6 +80,7 @@ type WindowProps = Omit<HTMLMotionProps<'section'>, 'title' | 'children'> & {
 };
 
 function Window({
+  ref,
   className,
   title,
   active = true,
@@ -101,6 +102,7 @@ function Window({
 
   return (
     <motion.section
+      ref={ref}
       data-slot="window"
       data-active={active}
       aria-labelledby={titleId}
