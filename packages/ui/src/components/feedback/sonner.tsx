@@ -1,12 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  CircleCheckIcon,
-  InfoIcon,
-  OctagonXIcon,
-  TriangleAlertIcon,
-} from 'lucide-react';
+import { CircleCheckIcon, InfoIcon, OctagonXIcon, TriangleAlertIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Toaster as Sonner, type ToasterProps } from 'sonner';
 
@@ -91,10 +86,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
           '--normal-text': 'var(--popover-foreground)',
           '--normal-border': 'var(--border)',
           /**
-           * Radius: toasts are small floating elements → `rounded-md` (8 px).
-           * Dialogs/sheets use `rounded-lg/xl`; toasts are narrower chrome.
+           * Radius: toasts share the floating-panel step with popovers/menus →
+           * `--radius-lg` (10 px). Dialogs/sheets use `rounded-xl`.
            */
-          '--border-radius': 'var(--radius-md)',
+          '--border-radius': 'var(--radius-lg)',
           /**
            * Motion duration: align to brand cadence (`--duration-base` = 200 ms).
            * The global reduced-motion safety net in glass.css will override

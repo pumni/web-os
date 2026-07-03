@@ -61,7 +61,7 @@ function DialogContent({
         data-slot="dialog-content"
         style={mergedStyle}
         className={cn(
-          'glass-panel fixed top-[50%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg p-6 duration-(--duration-base) outline-none',
+          'fixed top-[50%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] glass-panel gap-4 rounded-xl p-6 duration-(--duration-base) outline-none',
           OVERLAY_ANIMATION,
           'sm:max-w-lg',
           className,

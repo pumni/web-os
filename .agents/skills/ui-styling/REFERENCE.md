@@ -40,9 +40,9 @@ scales, and raw `oklch(...)`) are restricted to token/theme files.
 | --- | --- | --- |
 | `rounded-xs` | 4px | Checkboxes, tiny indicators, tooltip arrow |
 | `rounded-sm` | 6px | Menu items, inline chips |
-| `rounded-md` | 8px | Buttons, inputs, dropdown/menu content |
-| `rounded-lg` | 10px | Dialogs |
-| `rounded-xl` | 14px | Cards, windows, sheets, command palette |
+| `rounded-md` | 8px | Buttons, inputs, tooltips |
+| `rounded-lg` | 10px | Popover/menu/select content, toasts (concentric: `p-1` panel + `rounded-sm` items) |
+| `rounded-xl` | 14px | Cards, windows, dialogs, sheets (inner edge), command palette |
 | `rounded-2xl` / `rounded-3xl` | 18px / 26px | Large hero surfaces |
 
 ## z-index scale

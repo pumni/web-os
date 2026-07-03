@@ -34,7 +34,7 @@ function PopoverContent({
         sideOffset={sideOffset}
         style={mergedStyle}
         className={cn(
-          'glass-panel max-h-(--radix-popover-content-available-height) w-72 origin-(--radix-popover-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md p-4 text-popover-foreground outline-none motion-safe:will-change-[opacity,transform]',
+          'max-h-(--radix-popover-content-available-height) w-72 origin-(--radix-popover-content-transform-origin) glass-panel overflow-x-hidden overflow-y-auto rounded-lg p-4 text-popover-foreground outline-none motion-safe:will-change-[opacity,transform]',
           OVERLAY_PANEL_MOTION,
           className,
         )}

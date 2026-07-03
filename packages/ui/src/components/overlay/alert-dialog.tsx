@@ -36,7 +36,9 @@ function AlertDialog({ ...props }: React.ComponentProps<typeof AlertDialogPrimit
 /**
  * AlertDialogTrigger Component - Nút kích hoạt mở AlertDialog.
  */
-function AlertDialogTrigger({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) {
+function AlertDialogTrigger({
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Trigger>) {
   return <AlertDialogPrimitive.Trigger data-slot="alert-dialog-trigger" {...props} />;
 }
 
@@ -86,7 +88,7 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         style={mergedStyle}
         className={cn(
-          'glass-panel fixed top-[50%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg p-6 duration-(--duration-base) outline-none',
+          'fixed top-[50%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] glass-panel gap-4 rounded-xl p-6 duration-(--duration-base) outline-none',
           OVERLAY_ANIMATION,
           'sm:max-w-lg',
           className,
@@ -128,7 +130,10 @@ function AlertDialogFooter({ className, ...props }: React.ComponentProps<'div'>)
 /**
  * AlertDialogTitle Component - Nhãn tiêu đề chính của cảnh báo.
  */
-function AlertDialogTitle({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
+function AlertDialogTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
@@ -163,10 +168,7 @@ function AlertDialogAction({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Action>) {
   return (
-    <AlertDialogPrimitive.Action
-      asChild
-      {...props}
-    >
+    <AlertDialogPrimitive.Action asChild {...props}>
       <Button className={className} />
     </AlertDialogPrimitive.Action>
   );
@@ -181,10 +183,7 @@ function AlertDialogCancel({
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
   return (
-    <AlertDialogPrimitive.Cancel
-      asChild
-      {...props}
-    >
+    <AlertDialogPrimitive.Cancel asChild {...props}>
       <Button variant="outline" className={cn('mt-2 sm:mt-0', className)} />
     </AlertDialogPrimitive.Cancel>
   );

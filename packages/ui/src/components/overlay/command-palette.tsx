@@ -6,6 +6,7 @@ import { Dialog as DialogPrimitive } from 'radix-ui';
 import { matchSorter } from 'match-sorter';
 
 import { cn } from '../../lib/cn';
+import { KbdChip } from '../feedback/kbd-chip';
 import { Highlight } from '../layout/highlight';
 import { OVERLAY_ANIMATION } from './_overlay-variants';
 
@@ -47,9 +48,7 @@ function CommandPalette({
   const isPending = query !== deferredQuery;
 
   const q = deferredQuery.trim();
-  const filtered = q
-    ? matchSorter(items, q, { keys: ['label', 'keywords'] }).slice(0, 25)
-    : items;
+  const filtered = q ? matchSorter(items, q, { keys: ['label', 'keywords'] }).slice(0, 25) : items;
 
   // Bucket results by `group` (first-seen order) so grouped items render under
   // a heading. Ungrouped items fall into a synthetic "Other" bucket only when
@@ -136,15 +135,13 @@ function CommandPalette({
         // (or re-entering the already-active row) doesn't fire a redundant
         // setState per pixel and re-render the whole list.
         onMouseMove={() => setActiveIndex((current) => (current === index ? current : index))}
-        className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-foreground outline-none transition-colors state-hover state-pressed [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground"
+        className="flex w-full items-center gap-3 rounded-md state-hover state-pressed px-3 py-2 text-left text-sm text-foreground transition-colors outline-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground"
       >
         {item.icon}
         <span className="flex-1 truncate">
           <Highlight text={item.label} query={query} />
         </span>
-        {item.shortcut && (
-          <kbd className="ml-auto text-xs tracking-widest text-muted-foreground">{item.shortcut}</kbd>
-        )}
+        {item.shortcut && <KbdChip className="ml-auto">{item.shortcut}</KbdChip>}
       </button>
     );
   }
@@ -162,7 +159,7 @@ function CommandPalette({
           onKeyDown={onKeyDown}
           style={{ zIndex: 'var(--z-command)' }}
           className={cn(
-            'glass-panel fixed top-[20%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] gap-0 overflow-hidden rounded-xl p-0 outline-none sm:max-w-xl',
+            'fixed top-[20%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] glass-panel gap-0 overflow-hidden rounded-xl p-0 outline-none sm:max-w-xl',
             OVERLAY_ANIMATION,
           )}
         >
@@ -207,7 +204,7 @@ function CommandPalette({
                   <div
                     role="presentation"
                     data-slot="command-group-label"
-                    className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                    className="px-3 py-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
                   >
                     {bucket.name}
                   </div>

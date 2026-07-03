@@ -74,7 +74,7 @@ function SelectTrigger({
 const selectContentVariants = cva(
   // Base: glass floating surface with the open/close motion vocabulary.
   cn(
-    'glass-panel relative max-h-(--radix-select-content-available-height) min-w-32 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md text-popover-foreground motion-safe:will-change-[opacity,transform]',
+    'glass-panel relative max-h-(--radix-select-content-available-height) min-w-32 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-lg text-popover-foreground motion-safe:will-change-[opacity,transform]',
     OVERLAY_PANEL_MOTION,
   ),
   {
@@ -130,7 +130,11 @@ function SelectContent({
   );
 }
 
-function SelectLabel({ ref, className, ...props }: React.ComponentProps<typeof SelectPrimitive.Label>) {
+function SelectLabel({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<typeof SelectPrimitive.Label>) {
   return (
     <SelectPrimitive.Label
       ref={ref}
@@ -153,7 +157,7 @@ function SelectItem({
       data-slot="select-item"
       className={cn(
         // Layout + icon sizing; `pr-8` reserves space for the absolute checkmark.
-        'relative flex w-full cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none state-hover state-pressed data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=size-])]:size-4 [&_svg:not([class*=text-])]:text-muted-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2',
+        'relative flex w-full cursor-default items-center gap-2 rounded-sm state-hover state-pressed py-1.5 pr-8 pl-2 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=size-])]:size-4 [&_svg:not([class*=text-])]:text-muted-foreground *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2',
         className,
       )}
       {...props}

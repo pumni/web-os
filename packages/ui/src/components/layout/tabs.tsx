@@ -48,10 +48,14 @@ const tabsListVariants =
 /**
  * TabsTrigger — a flat section-nav trigger. `relative` + bottom padding host
  * the absolutely-positioned underline indicator (rendered by `TabsTrigger`
- * itself on the active trigger only).
+ * itself on the active trigger only). The underline + `text-foreground` ARE
+ * the active affordance — no persistent `state-selected` fill (a full-height
+ * square block doubled the signal and read as a sharp rectangle against the
+ * rail). Hover/press feedback stays on inactive triggers as a `rounded-md`
+ * soft pill.
  */
 const tabsTriggerVariants =
-  "relative inline-flex h-full flex-1 items-center justify-center gap-1.5 border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color] outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 not-data-[state=active]:state-hover not-data-[state=active]:state-pressed data-[state=active]:state-selected data-[state=active]:text-foreground";
+  "relative inline-flex h-full flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color] outline-none focus-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 not-data-[state=active]:state-hover not-data-[state=active]:state-pressed data-[state=active]:text-foreground";
 
 function TabsRoot({
   ref,
@@ -111,11 +115,7 @@ function TabsRoot({
   );
 }
 
-function TabsList({
-  ref,
-  className,
-  ...props
-}: React.ComponentProps<typeof TabsPrimitive.List>) {
+function TabsList({ ref, className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
       ref={ref}
@@ -187,11 +187,4 @@ const Tabs = Object.assign(TabsRoot, {
   Content: TabsContent,
 });
 
-export {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  tabsListVariants,
-  tabsTriggerVariants,
-};
+export { Tabs, TabsList, TabsTrigger, TabsContent, tabsListVariants, tabsTriggerVariants };

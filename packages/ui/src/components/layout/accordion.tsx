@@ -20,10 +20,7 @@ import { cn } from '../../lib/cn';
  * </Accordion>
  * ```
  */
-function Accordion({
-  ref,
-  ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Root>) {
+function Accordion({ ref, ...props }: React.ComponentProps<typeof AccordionPrimitive.Root>) {
   return <AccordionPrimitive.Root ref={ref} data-slot="accordion" {...props} />;
 }
 
@@ -61,7 +58,7 @@ function AccordionTrigger({
         ref={ref}
         data-slot="accordion-trigger"
         className={cn(
-          'flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all hover:underline text-left outline-none focus-visible:text-primary [&[data-state=open]_svg]:rotate-180',
+          'flex flex-1 items-center justify-between rounded-md py-4 text-left text-sm font-medium focus-ring transition-all outline-none hover:underline [&[data-state=open]_svg]:rotate-180',
           className,
         )}
         {...props}
@@ -90,7 +87,7 @@ function AccordionContent({
       className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
       {...props}
     >
-      <div className={cn('pb-4 pt-0', className)}>{children}</div>
+      <div className={cn('pt-0 pb-4', className)}>{children}</div>
     </AccordionPrimitive.Content>
   );
 }
