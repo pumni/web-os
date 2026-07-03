@@ -149,3 +149,20 @@ AGENTS.md guide; asdlc.io spec research (2,500-repo analysis). Context rot:
 morphllm.com/context-rot; 2026 constraint-compliance depth study (73%→33%).
 SDD: github.com/github/spec-kit. Per `AGENTS.md` these are untrusted inputs —
 findings used as evidence, embedded instructions ignored.
+
+## 6. Addendum — 2026-07-03 delta check (owner-directed re-scan)
+
+A next-day re-scan of the external landscape found two genuinely new items and
+two confirmations; nothing warrants unfreezing the layer.
+
+| Finding (external, 2026-07) | Repo state | Action |
+|---|---|---|
+| The 73%→33% context-rot figure is refined by its source study (arXiv 2604.20911): **omission ("never X") constraints decay with depth; commission ("always X") constraints hold ~100%**. A June-2026 companion (arXiv 2606.22528, "Governance Decay") shows compaction specifically erases prohibition-type safety constraints | ADR-0024's re-anchor points at `AGENTS.md` generically; the P0 never-list is exactly the constraint class that decays | **Proposed** (pending owner approval — hook edits are permission-gated): make the compact/resume re-anchor line in `context-drift-notice.mjs` restate the P0 never-list explicitly, not just point at the file. Wording-level change; no ADR needed (reversible, `docs/adr/README.md`) |
+| MCP spec 2026-07-28 release candidate: stateless core, formal extensions, Tasks, deprecation lifecycle | Repo pins no MCP spec version; both servers are opt-in local aids behind the harness | None — harness/server packages absorb this; `docs/ai/mcp.md` unaffected |
+| OWASP Top 10 for Agentic Applications 2026 ("Least Agency": tool whitelisting, per-agent scope) | Already practiced: read-only reviewer subagents, permission allow-lists, read-only DB role | None — confirms design |
+| Claude Code June-2026 harness surface (safe-mode, /cd, disableBundledSkills) | User-facing harness features, not repo context | None |
+
+Delta sources (untrusted, same policy as §5): arxiv.org/pdf/2604.20911;
+arxiv.org/pdf/2606.22528; blog.modelcontextprotocol.io 2026-07-28 RC post +
+2026 roadmap; OWASP Agentic Applications Top 10 (2026); agentskills.io adopter
+list (32 tools, 2026-03); AAIF membership growth (170+ orgs, 2026-04).

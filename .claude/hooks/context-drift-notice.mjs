@@ -8,7 +8,7 @@ try {
   const input = JSON.parse(readFileSync(0, 'utf8'));
   if (input.source === 'compact' || input.source === 'resume') {
     parts.push(
-      'Re-anchor after compaction/resume: re-read AGENTS.md (P0 <SECURITY_MANDATES>, Priority Stack, Definition of Done) before continuing.',
+      'Re-anchor after compaction/resume: re-read AGENTS.md (P0 <SECURITY_MANDATES>, Priority Stack, Definition of Done) before continuing. Prohibition-style rules decay fastest in long sessions — restate the P0 never-list (never bypass RLS, never expose the service-role key client-side, never import server-only code into client components, never disable validation) before acting.',
     );
   }
 } catch {

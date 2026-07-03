@@ -78,8 +78,9 @@ third-party JSX props (e.g. reduced-motion layout projection).
 
 ## Validation & Definition of Done
 
-PowerShell 7 (`pwsh`) is the only allowed shell; the full policy and the
-gate-altitude table live in `docs/ai/agent-command-policy.md`.
+The canonical shell is PowerShell 7 (`pwsh`); repo logic stays shell-agnostic
+via `bun run`. Full policy + gate-altitude table:
+`docs/ai/agent-command-policy.md`.
 
 **Done** =
 1. the *narrowest* gate for your change scope is green (a bug fix starts with a
