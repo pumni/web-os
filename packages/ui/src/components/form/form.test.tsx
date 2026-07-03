@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { tokenCss } from '../../test/token-test-utils';
+import { tokenCss, componentCss } from '../../test/token-test-utils';
 
 beforeAll(() => {
   // Radix Slider uses ResizeObserver internally.
@@ -149,9 +149,9 @@ describe('Switch', () => {
     // both light and dark — removing them would silently regress affordance.
     // Note: --switch-thumb-checked was removed (dead token — thumb colour
     // does not change between checked/unchecked states in the current design).
-    expect(tokenCss).toContain('--switch-track');
-    expect(tokenCss).toContain('--switch-track-checked');
-    expect(tokenCss).toContain('--switch-thumb');
+    expect(componentCss).toContain('--switch-track');
+    expect(componentCss).toContain('--switch-track-checked');
+    expect(componentCss).toContain('--switch-thumb');
   });
 
   it('renders the thumb slot for descendant CSS targeting', () => {
@@ -321,8 +321,8 @@ describe('SegmentedPicker', () => {
     // collapsed against --background in light and inverted the well in dark).
     // Confirms tokens.css owns the track/active pair that drives the "selected
     // value rises out of the well" affordance in both themes.
-    expect(tokenCss).toContain('--segmented-track');
-    expect(tokenCss).toContain('--segmented-active');
+    expect(componentCss).toContain('--segmented-track');
+    expect(componentCss).toContain('--segmented-active');
   });
 
   it('renders the active pill on the checked option using the active token', () => {

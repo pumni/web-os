@@ -11,6 +11,7 @@
 @import '@pumni/ui/styles/tokens.css';
 @import '@pumni/ui/styles/brand.css';
 @import '@pumni/ui/styles/theme.css';
+@import '@pumni/ui/styles/component-tokens.css';
 @import '@pumni/ui/styles/personalization.css';
 @import '@pumni/ui/styles/glass.css';
 @import '@pumni/ui/styles/motion.css';

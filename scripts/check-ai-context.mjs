@@ -674,6 +674,7 @@ function checkDesignTokenBoundaries() {
     'packages/ui/src/styles/tokens.css',
     'packages/ui/src/styles/brand.css',
     'packages/ui/src/styles/theme.css',
+    'packages/ui/src/styles/component-tokens.css',
     'packages/ui/src/styles/personalization.css',
   ]);
   // The colour-math library is the one place allowed to parse/construct oklch()

@@ -617,18 +617,6 @@
       "$value": 0.3
     }
   },
-  "segmented": {
-    "active": {
-      "$type": "color",
-      "$value": "oklch(1 0 0)"
-    }
-  },
-  "slider": {
-    "thumb": {
-      "$type": "color",
-      "$value": "oklch(1 0 0)"
-    }
-  },
   "stagger": {
     "base": {
       "$type": "duration",
@@ -649,41 +637,6 @@
       "$value": {
         "value": 80,
         "unit": "ms"
-      }
-    }
-  },
-  "switch": {
-    "height": {
-      "$type": "dimension",
-      "$value": {
-        "value": 1.15,
-        "unit": "rem"
-      }
-    },
-    "thumb": {
-      "$type": "color",
-      "$value": "oklch(1 0 0)"
-    },
-    "thumb-size": {
-      "$type": "dimension",
-      "$value": {
-        "value": 0.875,
-        "unit": "rem"
-      }
-    },
-    "track": {
-      "$type": "color",
-      "$value": "oklch(0.884 0.006 72)"
-    },
-    "track-checked": {
-      "$type": "color",
-      "$value": "oklch(0.545 0.14 38)"
-    },
-    "width": {
-      "$type": "dimension",
-      "$value": {
-        "value": 2,
-        "unit": "rem"
       }
     }
   },
@@ -743,12 +696,6 @@
     "semibold": {
       "$type": "number",
       "$value": 600
-    }
-  },
-  "window": {
-    "control-icon": {
-      "$type": "color",
-      "$value": "oklch(0 0 0 / 0.65)"
     }
   },
   "z": {

@@ -14,13 +14,13 @@ describe('Badge', () => {
     expect(badge).toHaveAttribute('data-tone', 'neutral');
   });
 
-  it('applies the requested tone', () => {
+  it.each(['success', 'info'] as const)('applies the %s tone', (tone) => {
     render(
-      <Badge tone="success" data-testid="badge">
+      <Badge tone={tone} data-testid="badge">
         Live
       </Badge>,
     );
-    expect(screen.getByTestId('badge')).toHaveAttribute('data-tone', 'success');
+    expect(screen.getByTestId('badge')).toHaveAttribute('data-tone', tone);
   });
 
   it('renders a pulse dot when pulse is set', () => {

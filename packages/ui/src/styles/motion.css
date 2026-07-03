@@ -1,12 +1,12 @@
 /*
- * Pumni OS — Component motion keyframes
- * ----------------------------------------
+ * Pumni OS — Component motion keyframes & safety net
+ * -----------------------------------------------------
  * Keyframes for state-driven card animations (breathe, shake).
  * All durations and easings reference CSS tokens from `tokens.css`.
  *
- * These are automatically neutralised by the global reduced-motion safety
- * net in `glass.css` (animation-duration: 0.01ms !important), but each
- * usage site also gates with `motion-safe:` for clarity of intent.
+ * The global reduced-motion safety net lives HERE (not in glass.css):
+ * it neutralises animations/transitions for users who ask for less motion.
+ * Purposeful motion is the default; calm is the fallback.
  */
 
 /* ---- Card loading state: gentle opacity pulse ---- */
@@ -92,3 +92,25 @@
   animation: accordion-up var(--duration-base) var(--ease-snappy);
 }
 
+/* ========================================================================
+   REDUCED-MOTION SAFETY NET
+   ======================================================================== */
+
+/* Component animation suppression ( Skeleton shimmer ) */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+/* Global safety net: neutralise all animations/transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

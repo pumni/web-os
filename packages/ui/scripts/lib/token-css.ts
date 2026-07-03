@@ -26,6 +26,7 @@ export const css = {
   tokens: readStyle('tokens'),
   brand: readStyle('brand'),
   theme: readStyle('theme'),
+  component: readStyle('component-tokens'),
   personalization: readStyle('personalization'),
 } as const;
 
@@ -57,7 +58,7 @@ export function buildTokenMap(mode: Mode): Map<string, string> {
     for (const [name, value] of readVariables(layer, ':root')) map.set(name, value);
   }
   if (mode === 'dark') {
-    for (const layer of [css.tokens, css.brand, css.theme]) {
+  for (const layer of [css.tokens, css.brand, css.theme, css.component]) {
       for (const [name, value] of readVariables(layer, '.dark')) map.set(name, value);
     }
   }

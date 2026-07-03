@@ -360,13 +360,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .skeleton {
-    animation: none;
-  }
-}
-
-
 /* --- Scrim Overlays --- */
 @utility overlay-scrim {
   background-color: var(--overlay);
@@ -491,23 +484,3 @@
 }
 
 /* Forced-colors: gradient is naturally ignored — no extra handling needed. */
-
-/* ========================================================================
-   SECTION 5: GLOBAL MOTION SAFETY NET
-   ======================================================================== */
-
-/*
- * Accessibility — reduced motion.
- * Global safety net: neutralise animations/transitions for users who ask
- * for less motion (purposeful motion is the default, calm is the fallback).
- */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
