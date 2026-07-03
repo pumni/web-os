@@ -35,3 +35,23 @@
   /* --- Window Controls --- */
   --window-control-icon: oklch(0 0 0 / 0.65);
 }
+
+.dark {
+  /* --- Switch Component Tokens (Dark) --- */
+  --switch-track: var(--neutral-600);
+  --switch-track-checked: var(--primary);
+  --switch-thumb: var(--neutral-50);
+
+  /* --- SegmentedPicker Component Tokens (Dark) --- */
+  --segmented-track: color-mix(in oklch, var(--neutral-1000) 40%, transparent);
+  --segmented-active: var(--card);
+  --segmented-active-border: color-mix(in oklch, var(--neutral-50) 8%, transparent);
+  --shadow-segmented-active: 0 4px 8px 0 oklch(0 0 0 / 0.25), 0 1px 2px 0 oklch(0 0 0 / 0.15);
+
+  /* --- Slider Component Tokens (Dark) --- */
+  --slider-thumb: var(--neutral-50);
+  --shadow-slider-thumb: 0 2px 4px 0 oklch(0 0 0 / 0.25), 0 0 1px 0 oklch(0 0 0 / 0.4);
+
+  /* --- Window Controls (Dark) --- */
+  --window-control-icon: oklch(0.8853 0 0 / 0.7);
+}
