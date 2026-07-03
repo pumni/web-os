@@ -31,8 +31,10 @@ import { repoRoot } from './token-test-utils';
  */
 
 const GLASS_CSS = 'packages/ui/src/styles/glass.css';
+const DESKTOP_CSS = 'packages/ui/src/styles/desktop.css';
 
 const glassCss = readFileSync(path.join(repoRoot, GLASS_CSS), 'utf8');
+const desktopCss = readFileSync(path.join(repoRoot, DESKTOP_CSS), 'utf8');
 
 function stripComments(css: string): string {
   return css.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -110,7 +112,7 @@ describe('glass surfaces never animate backdrop-filter', () => {
 });
 
 describe('will-change is scoped to animating overlays, not static glass', () => {
-  const rules = parseRules(glassCss);
+  const rules = [...parseRules(glassCss), ...parseRules(desktopCss)];
 
   it('base glass-panel / glass-window do NOT hold will-change', () => {
     // The static `@utility` blocks must rely on `translateZ(0)` for layer
@@ -136,7 +138,8 @@ describe('will-change is scoped to animating overlays, not static glass', () => 
     const allowed = (selector: string, body: string) =>
       /\[data-state/i.test(selector) ||
       (/@media\s*\(prefers-reduced-transparency/i.test(selector) &&
-        /will-change:\s*auto/.test(body));
+        /will-change:\s*auto/.test(body)) ||
+      /:hover/.test(selector);
 
     const offenders = rules
       .filter((r) => /will-change\s*:/.test(r.body))

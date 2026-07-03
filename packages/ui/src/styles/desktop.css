@@ -25,8 +25,13 @@
  */
 [data-slot='dock-item'] {
   transition: transform var(--duration-base) var(--ease-out);
-  will-change: transform;
   transform-origin: bottom center;
+}
+
+[data-slot='dock-item']:hover,
+[data-slot='dock-item']:hover + [data-slot='dock-item'],
+[data-slot='dock-item']:has(+ [data-slot='dock-item']:hover) {
+  will-change: transform;
 }
 
 [data-slot='dock-item']:hover {

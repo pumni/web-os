@@ -95,8 +95,7 @@ layers (it earns its `backdrop-filter` cost there). Solid surfaces are
 **structural-only** (ADR-0012): `--border` hairline + elevation shadow, no
 specular rim — the luminous top rim (`--surface-rim-top`) is **glass-only**, so a solid card reads crisp and structural
 while glass reads luminous and floating. The OS
-`Window`/Dock are presentational chrome (neutral window controls, no macOS
-traffic lights).
+`Window`/Dock are presentational chrome: window controls rest neutral (`bg-border`) and take semantic status colours (`destructive`/`warning`/`success`) only on the active window — no literal macOS palette.
 
 **Backdrop requirement (ADR-0012).** A glass surface only reads as
 glassmorphism when it has a colourful backdrop to refract — desktop blobs, media,
@@ -117,11 +116,12 @@ sub-surface primitives keep consumers from hand-rolling surfaces: `CardWell`
 status-tint pill, `tone` + optional `pulse` dot), and `IconBadge` (the rounded
 icon chip, `tone` `primary-soft`/`raised`/`muted`). `BentoGridItem` owns layout
 only and renders through these same primitives, so a bento tile and a feature
-card share one surface vocabulary. APCA contrast is gated at Lc 60 text / Lc 25
-UI in
-`packages/ui/src/test/glass-contrast.test.ts`; do not add a WCAG 2.x
-ratio gate. The rim tokens are specular (inset shadows) and are NOT subject to
-the APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
+card share one surface vocabulary. APCA contrast is gated per surface pair in
+`glass-contrast.test.ts` — Lc 60 body-text target, with documented pinned floors
+below it for glass-over-blob (50 light), dark muted (55), accent surfaces (45),
+and status tints (per-token table in the test). Do not add a WCAG 2.x ratio
+gate. The rim tokens are specular (inset shadows) and are NOT subject to the
+APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
 
 **Hard rules:**
 

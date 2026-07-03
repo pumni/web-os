@@ -70,7 +70,7 @@ const RAW_COLOR_PATTERNS = [
   // Inline raw OKLCH.
   'oklch\\(',
   // Tier-1 primitive scale CSS vars (must stay inside token/theme files).
-  '--(?:indigo|violet|neutral|red|emerald|amber)-',
+  '--(?:indigo|violet|neutral|red|emerald|amber|coral|cyan|rose)-',
   // Tailwind built-in colour palette utilities (e.g. bg-neutral-900, text-blue-500).
   '\\b(?:bg|text|border|ring|from|via|to|fill|stroke|outline|divide|decoration|shadow|caret|accent)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\\d{2,3}\\b',
   // Raw black/white utilities (use bg-overlay / semantic tokens instead).

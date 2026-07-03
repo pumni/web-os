@@ -23,7 +23,7 @@ reference detail.
   chip) are the sub-surface primitives. Never hand-roll `border bg-muted` wells,
   inline status pills, or icon chips — `pumniNoAdHocSurface` blocks the well.
   `BentoGridItem` is layout-only and renders through these primitives.
-- Contrast is APCA-gated: Lc 60 text / Lc 25 UI via
+- Contrast is APCA-gated per surface pair in `glass-contrast.test.ts` — Lc 60 body-text target, with documented pinned floors below it for glass-over-blob (50 light), dark muted (55), accent surfaces (45), and status tints (per-token table in the test) via
   `packages/ui/src/test/glass-contrast.test.ts`. Do not reintroduce a
   WCAG 2.x ratio gate.
 - Glass performance: never animate `backdrop-filter`; cap stacked glass at 2

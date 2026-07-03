@@ -401,7 +401,7 @@ function compositeAlpha(
   ];
 }
 
-const STATUS_TOKENS = ['--destructive', '--success', '--warning', '--primary'] as const;
+const STATUS_TOKENS = ['--destructive', '--success', '--warning', '--primary', '--info'] as const;
 
 const STATUS_TINT_THRESHOLDS: Record<
   (typeof STATUS_TOKENS)[number],
@@ -424,7 +424,11 @@ const STATUS_TINT_THRESHOLDS: Record<
   },
   '--primary': {
     light: 60,
-    dark: 0,
+    dark: 13,
+  },
+  '--info': {
+    light: 76,
+    dark: 15,
   },
 };
 

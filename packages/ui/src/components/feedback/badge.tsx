@@ -2,6 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 import { cn } from '../../lib/cn';
+import { PingDot } from './ping-dot';
 
 /**
  * Badge — the canonical status pill. Replaces the hand-rolled
@@ -33,7 +34,7 @@ const badgeVariants = cva(
         destructive: 'border-destructive/20 bg-destructive/10 text-destructive',
       },
       size: {
-        sm: 'px-2 py-0.5 text-[11px]',
+        sm: 'px-2 py-0.5 text-xs',
         md: 'px-2.5 py-0.5 text-xs',
       },
     },
@@ -43,16 +44,6 @@ const badgeVariants = cva(
     },
   },
 );
-
-/** Leading ping dot — inherits the badge text colour via `bg-current`. */
-function BadgeDot() {
-  return (
-    <span aria-hidden className="relative flex size-1.5">
-      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-75" />
-      <span className="relative inline-flex size-1.5 rounded-full bg-current" />
-    </span>
-  );
-}
 
 function Badge({
   ref,
@@ -75,7 +66,7 @@ function Badge({
       className={cn(badgeVariants({ tone, size, className }))}
       {...props}
     >
-      {pulse ? <BadgeDot /> : null}
+      {pulse ? <PingDot size="sm" className="size-1.5" /> : null}
       {children}
     </span>
   );

@@ -29,14 +29,14 @@ describe('Badge', () => {
         Live
       </Badge>,
     );
-    // The dot is decorative (aria-hidden); assert the animated child exists.
+    // The dot is decorative (aria-hidden); assert the PingDot child exists.
     const badge = screen.getByTestId('badge');
-    expect(badge.querySelector('.animate-ping')).not.toBeNull();
+    expect(badge.querySelector('[data-slot="ping-dot"]')).not.toBeNull();
   });
 
   it('does not render a dot without pulse', () => {
     render(<Badge data-testid="badge">Idle</Badge>);
-    expect(screen.getByTestId('badge').querySelector('.animate-ping')).toBeNull();
+    expect(screen.getByTestId('badge').querySelector('[data-slot="ping-dot"]')).toBeNull();
   });
 });
 

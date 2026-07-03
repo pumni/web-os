@@ -692,7 +692,7 @@ function checkDesignTokenBoundaries() {
     ...collectFiles('packages/ui/src', ['.css', '.ts', '.tsx']),
   ];
   const rawColorPattern = /oklch\(/g;
-  const primitiveVarPattern = /var\(--(?:indigo|violet|neutral|red|emerald|amber)-/g;
+  const primitiveVarPattern = /var\(--(?:indigo|violet|neutral|red|emerald|amber|coral|cyan|rose)-/g;
 
   for (const relativePath of files) {
     if (allowedTokenFiles.has(relativePath)) continue;

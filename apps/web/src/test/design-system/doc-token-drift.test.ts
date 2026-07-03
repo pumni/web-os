@@ -107,4 +107,12 @@ describe('doc ↔ tokens.css numeric drift', () => {
       new RegExp(`base ${px}px`),
     );
   });
+
+  // --- REFERENCE.md documents the single `--chart` token (not the legacy
+  //     chart-1...chart-5 expansion). -----------------------------------
+  it('REFERENCE.md contains the chart token row', () => {
+    expect(reference, 'ui-styling/REFERENCE.md missing chart token row').toMatch(
+      tick('chart'),
+    );
+  });
 });
