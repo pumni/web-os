@@ -179,3 +179,41 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
     );
   });
 });
+
+describe('CardSpotlight @property registration', () => {
+  // The radial-gradient that consumes --spot-x / --spot-y lives on the
+  // element's ::before pseudo-element — a separate box in the CSS box tree.
+  // With `inherits: false` the ::before only ever sees the registration's
+  // initial-value (50%/50%), so the spotlight is stuck at the card center
+  // regardless of `pointermove`. `inherits: true` is therefore required for
+  // the cursor-tracking effect to work at all. Verified by a Playwright repro
+  // in apps/web/e2e/spotlight-inherits.spec.ts.
+
+  function readPropertyBlock(name: string): string {
+    const body = readRuleBody(glassCss, `@property ${name}`);
+    if (!body) throw new Error(`@property ${name} not found in glass.css`);
+    return body;
+  }
+
+  it.each(['--spot-x', '--spot-y'])('%s has syntax <length-percentage>', (name) => {
+    expect(readPropertyBlock(name)).toMatch(/syntax:\s*['"]<length-percentage>['"]/);
+  });
+
+  it.each(['--spot-x', '--spot-y'])('%s has initial-value 50%', (name) => {
+    expect(readPropertyBlock(name)).toMatch(/initial-value:\s*50%/);
+  });
+
+  it.each(['--spot-x', '--spot-y'])(
+    '%s inherits (required so ::before can read the live cursor coords)',
+    (name) => {
+      // Regression guard: an earlier version of this rule shipped `inherits:
+      // false`, which caused the spotlight to sit frozen at the card center
+      // even though the JS kept updating the vars. The fix is `inherits: true`.
+      expect(
+        readPropertyBlock(name),
+        `${name} must inherit so the ::before consumer sees pointermove updates`,
+      ).toMatch(/\binherits:\s*true\b/);
+      expect(readPropertyBlock(name)).not.toMatch(/\binherits:\s*false\b/);
+    },
+  );
+});

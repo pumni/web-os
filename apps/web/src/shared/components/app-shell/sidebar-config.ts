@@ -11,5 +11,5 @@ export const SIDEBAR_COOKIE = 'pumni-sidebar';
  */
 export const SIDEBAR_WIDTH = {
   expanded: { rail: 'w-64', pad: 'lg:pl-64' },
-  collapsed: { rail: 'w-[4.5rem]', pad: 'lg:pl-[4.5rem]' },
+  collapsed: { rail: 'w-12', pad: 'lg:pl-12' },
 } as const;

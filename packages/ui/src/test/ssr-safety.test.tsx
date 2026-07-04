@@ -141,7 +141,8 @@ import {
 import {
   Badge,
   Banner,
-  ChatBubble,
+  Bubble,
+  BubbleContent,
   KbdChip,
   PingDot,
   Skeleton,
@@ -449,10 +450,10 @@ describe('SSR Safety: Overlay Components', () => {
 });
 
 describe('SSR Safety: Feedback Components', () => {
-  it('renders Badge, Banner, ChatBubble, KbdChip, PingDot, Skeleton, Spinner, Toaster', () => {
+  it('renders Badge, Banner, Bubble, KbdChip, PingDot, Skeleton, Spinner, Toaster', () => {
     expect(() => renderToString(<Badge>Status</Badge>)).not.toThrow();
     expect(() => renderToString(<Banner title="Announcement" />)).not.toThrow();
-    expect(() => renderToString(<ChatBubble>Hello</ChatBubble>)).not.toThrow();
+    expect(() => renderToString(<Bubble><BubbleContent>Hello</BubbleContent></Bubble>)).not.toThrow();
     expect(() => renderToString(<KbdChip>⌘K</KbdChip>)).not.toThrow();
     expect(() => renderToString(<PingDot />)).not.toThrow();
     expect(() => renderToString(<Skeleton />)).not.toThrow();

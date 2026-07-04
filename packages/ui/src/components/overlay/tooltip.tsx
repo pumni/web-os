@@ -34,7 +34,7 @@ function TooltipTrigger({ ...props }: React.ComponentProps<typeof TooltipPrimiti
 
 function TooltipContent({
   className,
-  sideOffset = 4,
+  sideOffset = 2,
   style,
   children,
   ...props

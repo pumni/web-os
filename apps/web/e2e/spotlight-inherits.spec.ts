@@ -11,7 +11,7 @@ import path from 'node:path';
 
 const reproPath = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  'spotlight-inherits-repro.html',
+  'fixtures/spotlight-inherits-repro.html',
 );
 
 test.describe('CardSpotlight @property inherits regression', () => {

@@ -3,152 +3,191 @@ import * as React from 'react';
 
 import { cn } from '../../lib/cn';
 
-/**
- * ChatBubble — the owned chat message bubble primitive.
- *
- * Replaces the hand-rolled `<div>` + radius map + timestamp overlay that
- * was inlined twice across `chat-panel.tsx` (BubbleContent +
- * getBubbleRadiusClass), and is intended to be reused by future chat
- * surfaces (DMs, group chats). One vocabulary, one tone contract, one
- * grouped-radius decision tree.
- *
- * ### Tone
- * - `me` — outgoing: `bg-primary text-primary-foreground`, right column.
- * - `them` — incoming: `bg-muted text-foreground`, left column.
- *
- * ### Shape (grouping)
- * Conversations cluster consecutive messages from the same sender. The
- * bubble only rounds the inner corners shared with neighbouring bubbles,
- * so the visual silhouette reads as a single speech run rather than
- * four disconnected pills. The shared base (`rounded-xl`) is set on the
- * cva root; compound variants tuck one floor-side corner toward `rounded-*-xs`
- * based on `tone` × `shape`:
- * - `single` — fully rounded.
- * - `first` — body side that touches the previous (different sender)
- *   message tucks in.
- * - `middle` — both side corners opposite to the column tuck in.
- * - `last` — only the floor-side corner tucks in.
- *
- * ### Timestamp
- * Optional `timeLabel` (pre-formatted string, e.g. "14:30") renders an
- * opacity-0 hover-reveal label next to the bubble. The consumer owns
- * timezone formatting so hydration never mismatches. The parent container
- * must carry `className="group"` for the hover to fire (the radius map
- * lives inside the bubble, so this works for any layout the consumer picks).
- *
- * ### Children
- * `children` is rendered inside a `<div>` (not a `<p>`) so callers may
- * pass structured ReactNode — links, inline code, etc. — without HTML
- * nesting violations. String content keeps its pre-wrap semantics.
- */
 const chatBubbleVariants = cva(
-  'rounded-xl px-3 py-2 text-xs wrap-break-word shadow-control select-text',
+  'rounded-xl px-3 py-2 wrap-break-word shadow-control select-text',
   {
     variants: {
-      tone: {
-        me: 'bg-primary text-primary-foreground',
-        them: 'bg-muted text-foreground',
+      variant: {
+        primary: 'bg-primary text-primary-foreground',
+        muted: 'bg-muted text-foreground',
       },
-      /**
-       * Shape is *only* a base for the compound variants above. Single
-       * already inherits `rounded-xl` from the cva root, so listing it
-       * again here would be a dead class.
-       */
+      size: {
+        xs: 'text-xs',
+        sm: 'text-sm',
+      },
       shape: {
         single: '',
-        /**
-         * Group start — the compound variant for `them` / `me` adds
-         * `rounded-bl-xs` / `rounded-br-xs` to tuck the floor-side
-         * corner away from the next same-sender bubble.
-         */
         first: '',
-        /** Middle — both side corners opposite to the column tuck in. */
         middle: '',
-        /**
-         * Run end — the top-side corner tucks in to read as the tail
-         * of the speech run.
-         */
         last: '',
       },
     },
     compoundVariants: [
-      // `them` (left column): the floor-side corner is the bottom-left.
+      // `muted` (left column): the floor-side corner is the bottom-left.
       {
-        tone: 'them',
+        variant: 'muted',
         shape: 'first',
         class: 'rounded-bl-xs',
       },
       {
-        tone: 'them',
+        variant: 'muted',
         shape: 'middle',
         class: 'rounded-tl-xs rounded-bl-xs',
       },
       {
-        tone: 'them',
+        variant: 'muted',
         shape: 'last',
         class: 'rounded-tl-xs',
       },
-      // `me` (right column): the floor-side corner is the bottom-right.
+      // `primary` (right column): the floor-side corner is the bottom-right.
       {
-        tone: 'me',
+        variant: 'primary',
         shape: 'first',
         class: 'rounded-br-xs',
       },
       {
-        tone: 'me',
+        variant: 'primary',
         shape: 'middle',
         class: 'rounded-tr-xs rounded-br-xs',
       },
       {
-        tone: 'me',
+        variant: 'primary',
         shape: 'last',
         class: 'rounded-tr-xs',
       },
     ],
     defaultVariants: {
-      tone: 'them',
+      variant: 'muted',
       shape: 'single',
+      size: 'xs',
     },
   },
 );
 
-function ChatBubble({
-  className,
-  tone = 'them',
-  shape = 'single',
-  timeLabel,
-  align,
-  children,
-  ...props
-}: React.ComponentProps<'div'> &
-  VariantProps<typeof chatBubbleVariants> & {
-    /** Pre-formatted time string (e.g. "14:30"). The consumer owns timezone
-     *  formatting so hydration never mismatches across server/client TZ. */
-    timeLabel?: string;
-    /** Override the bubble column alignment (defaults follow the tone). */
-    align?: 'start' | 'end';
-  }) {
-  const resolvedAlign = align ?? (tone === 'me' ? 'end' : 'start');
-  const timePosition = tone === 'me' ? 'right-full mr-1.5' : 'left-full ml-1.5';
+const BubbleContext = React.createContext<{
+  showTime: boolean;
+  setShowTime: React.Dispatch<React.SetStateAction<boolean>>;
+  variant: 'primary' | 'muted';
+  shape: 'single' | 'first' | 'middle' | 'last';
+} | null>(null);
 
-  return (
-    <div
-      data-slot="chat-bubble"
-      data-tone={tone}
-      data-shape={shape}
-      className={cn(
-        'flex min-w-0 flex-col gap-0.5',
-        resolvedAlign === 'end' ? 'items-end' : 'items-start',
-      )}
-    >
-      <div className="relative flex max-w-[70%] items-end">
-        <div className={cn(chatBubbleVariants({ tone, shape }), className)} {...props}>
-          <div className="leading-snug whitespace-pre-wrap">{children}</div>
+export function useBubble() {
+  const context = React.useContext(BubbleContext);
+  if (!context) {
+    return {
+      showTime: false,
+      setShowTime: () => {},
+      variant: 'muted' as const,
+      shape: 'single' as const,
+    };
+  }
+  return context;
+}
+
+// 1. Bubble (Row container)
+export interface BubbleProps extends React.ComponentPropsWithoutRef<'div'> {
+  align?: 'start' | 'end' | undefined;
+  variant?: 'primary' | 'muted' | null | undefined;
+  shape?: 'single' | 'first' | 'middle' | 'last' | null | undefined;
+}
+
+const Bubble = React.forwardRef<HTMLDivElement, BubbleProps>(
+  (
+    {
+      className,
+      align,
+      variant,
+      shape = 'single',
+      children,
+      ...props
+    },
+    ref,
+  ) => {
+    const [showTime, setShowTime] = React.useState(false);
+    const resolvedVariant = variant ?? 'muted';
+    const resolvedShape = shape ?? 'single';
+    const resolvedAlign = align ?? (resolvedVariant === 'primary' ? 'end' : 'start');
+
+    return (
+      <BubbleContext.Provider value={{ showTime, setShowTime, variant: resolvedVariant, shape: resolvedShape }}>
+        <div
+          ref={ref}
+          data-slot="chat-bubble"
+          data-tone={resolvedVariant === 'primary' ? 'me' : 'them'}
+          data-shape={resolvedShape}
+          className={cn(
+            'relative flex w-fit max-w-[70%] flex-col gap-0.5',
+            resolvedAlign === 'end' ? 'self-end items-end' : 'self-start items-start',
+            className,
+          )}
+          {...props}
+        >
+          {children}
+        </div>
+      </BubbleContext.Provider>
+    );
+  },
+);
+Bubble.displayName = 'Bubble';
+
+// 2. BubbleContent (The message bubble itself)
+export interface BubbleContentProps
+  extends React.ComponentPropsWithoutRef<'div'>,
+    VariantProps<typeof chatBubbleVariants> {
+  raw?: boolean | undefined;
+  timeLabel?: string | undefined;
+}
+
+const BubbleContent = React.forwardRef<HTMLDivElement, BubbleContentProps>(
+  (
+    {
+      className,
+      variant,
+      shape,
+      size = 'xs',
+      raw = false,
+      timeLabel,
+      children,
+      onClick,
+      ...props
+    },
+    ref,
+  ) => {
+    const context = useBubble();
+    const resolvedVariant = variant ?? context.variant;
+    const resolvedShape = shape ?? context.shape;
+    const timePosition = resolvedVariant === 'primary' ? 'right-full mr-1.5' : 'left-full ml-1.5';
+
+    const handleBubbleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('a') || target.closest('button')) return;
+      context.setShowTime((prev) => !prev);
+      onClick?.(e);
+    };
+
+    return (
+      <div className="relative flex items-end w-full">
+        <div
+          ref={ref}
+          className={cn(
+            chatBubbleVariants({ variant: resolvedVariant, shape: resolvedShape, size }),
+            raw && 'p-0',
+            className,
+          )}
+          onClick={handleBubbleClick}
+          {...props}
+        >
+          {raw ? (
+            children
+          ) : (
+            <div className="leading-snug whitespace-pre-wrap">{children}</div>
+          )}
         </div>
         {timeLabel ? (
           <span
             className={cn(
-              'pointer-events-none absolute top-1/2 hidden -translate-y-1/2 type-caption whitespace-nowrap text-muted-foreground opacity-0 transition-opacity duration-(--duration-fast) group-hover:opacity-100 sm:block',
+              'pointer-events-none absolute top-1/2 -translate-y-1/2 type-caption whitespace-nowrap text-muted-foreground opacity-0 transition-opacity duration-(--duration-fast) sm:group-hover:opacity-100',
+              context.showTime && 'opacity-100',
               timePosition,
             )}
           >
@@ -156,8 +195,54 @@ function ChatBubble({
           </span>
         ) : null}
       </div>
-    </div>
-  );
-}
+    );
+  },
+);
+BubbleContent.displayName = 'BubbleContent';
 
-export { ChatBubble, chatBubbleVariants };
+// 3. BubbleGroup (Consecutive messages container)
+export interface BubbleGroupProps extends React.ComponentPropsWithoutRef<'div'> {}
+
+const BubbleGroup = React.forwardRef<HTMLDivElement, BubbleGroupProps>(
+  ({ className, children, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn('flex flex-col gap-0.5 w-full', className)}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+BubbleGroup.displayName = 'BubbleGroup';
+
+// 4. BubbleReactions (Reaction container)
+export interface BubbleReactionsProps extends React.ComponentPropsWithoutRef<'div'> {}
+
+const BubbleReactions = React.forwardRef<HTMLDivElement, BubbleReactionsProps>(
+  ({ className, children, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'absolute -bottom-2.5 right-2 flex items-center gap-0.5 rounded-full border border-border bg-card px-1.5 py-0.5 text-[9px] shadow-sm select-none z-10 transition-transform hover:scale-105 active:scale-95',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+BubbleReactions.displayName = 'BubbleReactions';
+
+export {
+  Bubble,
+  BubbleContent,
+  BubbleGroup,
+  BubbleReactions,
+  chatBubbleVariants,
+};

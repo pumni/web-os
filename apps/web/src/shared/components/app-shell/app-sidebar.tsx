@@ -1,14 +1,14 @@
 'use client';
 
+import { cn } from '@/shared/lib/utils';
+import { useAppUiStore, useSidebarCollapsed } from '@/shared/stores/app-ui-store';
+import { KbdChip } from '@pumni/ui/feedback';
+import { Button } from '@pumni/ui/form';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui/overlay';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { Button } from '@pumni/ui/form';
-import { KbdChip } from '@pumni/ui/feedback';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui/overlay';
-import { cn } from '@/shared/lib/utils';
-import { useAppUiStore, useSidebarCollapsed } from '@/shared/stores/app-ui-store';
 
 import { sidebarNavItems } from './nav-items';
 import { SIDEBAR_WIDTH } from './sidebar-config';
@@ -48,7 +48,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
       <div
         className={cn(
           'flex h-16 items-center',
-          collapsed ? 'justify-center px-2' : 'justify-between px-4',
+          collapsed ? 'justify-center px-1' : 'justify-between px-4',
         )}
       >
         {!collapsed && (
@@ -83,7 +83,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
         className="mx-auto h-px bg-linear-to-r from-transparent via-glass-border/20 to-transparent"
       />
 
-      <nav className={cn('space-y-1 p-3', !collapsed && 'px-4')}>
+      <nav className={cn('space-y-1', collapsed ? 'p-1.5' : 'p-2')}>
         {sidebarNavItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -96,7 +96,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
               aria-label={item.label}
               className={cn(
                 'flex items-center gap-3 rounded-md py-2 text-sm font-medium transition-colors',
-                collapsed ? 'justify-center px-2' : 'px-3',
+                collapsed ? 'justify-center' : 'px-3',
                 isActive
                   ? 'bg-primary text-primary-foreground'
                   : 'state-hover state-pressed text-muted-foreground',

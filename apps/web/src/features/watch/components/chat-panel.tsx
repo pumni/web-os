@@ -1,6 +1,6 @@
 'use client';
 
-import { ChatBubble } from '@pumni/ui/feedback';
+import { Bubble, BubbleContent } from '@pumni/ui/feedback';
 import { Button, Input } from '@pumni/ui/form';
 import { Avatar, AvatarFallback, AvatarImage } from '@pumni/ui/layout';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui/overlay';
@@ -91,9 +91,11 @@ function ChatBubbleRow({ msg, isMe, profile, groupPosition }: ChatBubbleRowProps
           avatarUrl={profile?.avatar_url ?? null}
         />
       )}
-      <ChatBubble tone={isMe ? 'me' : 'them'} shape={groupPosition} timeLabel={formatChatTime(msg.sentAt)}>
-        {msg.text}
-      </ChatBubble>
+      <Bubble align={isMe ? 'end' : 'start'} variant={isMe ? 'primary' : 'muted'} shape={groupPosition}>
+        <BubbleContent timeLabel={formatChatTime(msg.sentAt)}>
+          {msg.text}
+        </BubbleContent>
+      </Bubble>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { ChatBubble, PingDot } from './index';
+import { Bubble, BubbleContent, PingDot } from './index';
 import { Button } from '../form/index';
 
 function getBubbleRoot(testid: string): HTMLElement {
@@ -48,9 +48,13 @@ describe('PingDot', () => {
   });
 });
 
-describe('ChatBubble', () => {
-  it('renders the design-system root with default tone and shape', () => {
-    render(<ChatBubble data-testid="skin">Hello</ChatBubble>);
+describe('Bubble', () => {
+  it('renders the design-system root with default variant and shape', () => {
+    render(
+      <Bubble>
+        <BubbleContent data-testid="skin">Hello</BubbleContent>
+      </Bubble>,
+    );
     const root = getBubbleRoot('skin');
     expect(root).toHaveAttribute('data-slot', 'chat-bubble');
     expect(root).toHaveAttribute('data-tone', 'them');
@@ -58,11 +62,11 @@ describe('ChatBubble', () => {
     expect(screen.getByTestId('skin')).toHaveTextContent('Hello');
   });
 
-  it('applies tone variants', () => {
+  it('applies variant styles', () => {
     render(
-      <ChatBubble tone="me" data-testid="skin">
-        Hi
-      </ChatBubble>,
+      <Bubble variant="primary">
+        <BubbleContent data-testid="skin">Hi</BubbleContent>
+      </Bubble>,
     );
     expect(getBubbleRoot('skin')).toHaveAttribute('data-tone', 'me');
   });
@@ -71,39 +75,39 @@ describe('ChatBubble', () => {
     'renders the requested shape "%s"',
     (shape) => {
       render(
-        <ChatBubble shape={shape} data-testid="skin">
-          Body
-        </ChatBubble>,
+        <Bubble shape={shape}>
+          <BubbleContent data-testid="skin">Body</BubbleContent>
+        </Bubble>,
       );
       expect(getBubbleRoot('skin')).toHaveAttribute('data-shape', shape);
     },
   );
 
-  it('applies compound radius classes for grouped them messages', () => {
+  it('applies compound radius classes for grouped muted messages', () => {
     render(
-      <ChatBubble tone="them" shape="middle" data-testid="skin">
-        Body
-      </ChatBubble>,
+      <Bubble variant="muted" shape="middle">
+        <BubbleContent data-testid="skin">Body</BubbleContent>
+      </Bubble>,
     );
     const skin = screen.getByTestId('skin');
     expect(skin.className).toContain('rounded-tl-xs');
     expect(skin.className).toContain('rounded-bl-xs');
   });
 
-  it('applies compound radius classes for grouped me messages', () => {
+  it('applies compound radius classes for grouped primary messages', () => {
     render(
-      <ChatBubble tone="me" shape="last" data-testid="skin">
-        Body
-      </ChatBubble>,
+      <Bubble variant="primary" shape="last">
+        <BubbleContent data-testid="skin">Body</BubbleContent>
+      </Bubble>,
     );
     expect(screen.getByTestId('skin').className).toContain('rounded-tr-xs');
   });
 
   it('keeps the body rounded-xl when shape is single', () => {
     render(
-      <ChatBubble tone="them" shape="single" data-testid="skin">
-        Body
-      </ChatBubble>,
+      <Bubble variant="muted" shape="single">
+        <BubbleContent data-testid="skin">Body</BubbleContent>
+      </Bubble>,
     );
     const skin = screen.getByTestId('skin');
     expect(skin.className).toContain('rounded-xl');
@@ -113,9 +117,11 @@ describe('ChatBubble', () => {
   it('renders a hover-reveal timestamp when timeLabel is given', () => {
     render(
       <div className="group">
-        <ChatBubble timeLabel="03:04" data-testid="skin">
-          Body
-        </ChatBubble>
+        <Bubble>
+          <BubbleContent timeLabel="03:04" data-testid="skin">
+            Body
+          </BubbleContent>
+        </Bubble>
       </div>,
     );
     const skin = screen.getByTestId('skin');
@@ -124,17 +130,21 @@ describe('ChatBubble', () => {
   });
 
   it('does not render a hidden timestamp span when omitted', () => {
-    render(<ChatBubble data-testid="skin">Body</ChatBubble>);
+    render(
+      <Bubble>
+        <BubbleContent data-testid="skin">Body</BubbleContent>
+      </Bubble>,
+    );
     const row = screen.getByTestId('skin').parentElement;
     const hidden = row?.querySelectorAll('[class*="opacity-0"]');
     expect((hidden?.length ?? 0) === 0).toBe(true);
   });
 
-  it('respects the parent text tone for tone="me"', () => {
+  it('respects the parent text tone for primary', () => {
     render(
-      <ChatBubble tone="me" data-testid="skin">
-        Hi
-      </ChatBubble>,
+      <Bubble variant="primary">
+        <BubbleContent data-testid="skin">Hi</BubbleContent>
+      </Bubble>,
     );
     const skin = screen.getByTestId('skin');
     expect(skin.className).toContain('bg-primary');

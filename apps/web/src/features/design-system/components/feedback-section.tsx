@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { toast } from 'sonner';
 import { AlertCircleIcon, AlertTriangleIcon, CheckCircle2Icon, InfoIcon } from 'lucide-react';
-import { Badge, Banner, ChatBubble, KbdChip, PingDot, Skeleton, Spinner, Progress } from '@pumni/ui/feedback';
+import { Badge, Banner, KbdChip, PingDot, Skeleton, Spinner, Progress, Bubble, BubbleContent, BubbleGroup, BubbleReactions } from '@pumni/ui/feedback';
 import { Button } from '@pumni/ui/form';
 import {
   Avatar,
@@ -348,60 +348,45 @@ export function FeedbackSection() {
               Conversation clusters with shape-grouping (first/middle/last/single) and hover-reveal timestamps.
             </CardDescription>
           </CardHeader>
-          <CardContent className="group space-y-4 pt-0">
-            {/* Incoming message cluster */}
-            <div className="space-y-1">
-              <div className="flex items-end gap-2.5">
-                <div className="size-8 shrink-0" />
-                <ChatBubble tone="them" shape="first" timeLabel="10:11">
-                  Hey team, did we approve the new Next.js 16 layouts?
-                </ChatBubble>
-              </div>
+          <CardContent className="group flex flex-col gap-4 pt-0">
+            <Bubble align="end" variant="primary">
+              <BubbleContent timeLabel="10:00">Hey there! what&apos;s up?</BubbleContent>
+            </Bubble>
+            <BubbleGroup>
+              <Bubble variant="muted" shape="first">
+                <BubbleContent timeLabel="10:01">Hey! Want to see chat bubbles?</BubbleContent>
+              </Bubble>
+              <Bubble variant="muted" shape="last">
+                <BubbleContent timeLabel="10:02">
+                  I can group messages, switch sides, and keep the whole thread easy
+                  to scan.
+                </BubbleContent>
+                <BubbleReactions role="img" aria-label="Reaction: thumbs up">
+                  <span>👍</span>
+                </BubbleReactions>
+              </Bubble>
+            </BubbleGroup>
+            <Bubble align="end" variant="primary">
+              <BubbleContent timeLabel="10:03">Sure. Hit me with your best demo.</BubbleContent>
+            </Bubble>
+            <Bubble variant="muted" shape="single">
+              <BubbleContent timeLabel="10:04">
+                Yes. You are reading a demo that is demoing itself. Very meta. Very
+                on-brand.
+              </BubbleContent>
+              <BubbleReactions
+                role="img"
+                aria-label="Reactions: thumbs up, fire, eyes, and 2 more"
+              >
+                <span>👍</span>
+                <span>🔥</span>
+                <span>👀</span>
+                <span>+2</span>
+              </BubbleReactions>
+            </Bubble>
 
-              <div className="flex items-end gap-2.5">
-                <div className="size-8 shrink-0" />
-                <ChatBubble tone="them" shape="middle" timeLabel="10:13">
-                  I want to make sure the view transition is applied correctly.
-                </ChatBubble>
-              </div>
-
-              <div className="flex items-end gap-2.5">
-                <Avatar className="size-8 shrink-0">
-                  <AvatarImage
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80"
-                    alt="Jane"
-                  />
-                  <AvatarFallback>JN</AvatarFallback>
-                </Avatar>
-                <ChatBubble tone="them" shape="last" timeLabel="10:15">
-                  Let me know if there&apos;s any feedback.
-                </ChatBubble>
-              </div>
-            </div>
-
-            {/* Outgoing message */}
-            <div className="flex justify-end">
-              <ChatBubble tone="me" shape="single" timeLabel="10:25">
-                Yes Jane! The layout transition is approved and looks stunning.
-              </ChatBubble>
-            </div>
-
-            {/* Single incoming message */}
-            <div className="flex items-end gap-2.5">
-              <Avatar className="size-8 shrink-0">
-                <AvatarImage
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80"
-                  alt="Jane"
-                />
-                <AvatarFallback>JN</AvatarFallback>
-              </Avatar>
-              <ChatBubble tone="them" shape="single" timeLabel="10:28">
-                Awesome! Testing with Playwright is now passing.
-              </ChatBubble>
-            </div>
-
-            <p className="text-xs text-muted-foreground pt-2 text-center">
-              Hover over bubbles to reveal timestamps (group-reveal).
+            <p className="text-xs text-muted-foreground pt-4 text-center">
+              Hover over bubbles to reveal timestamps (group-reveal) or click to toggle on mobile.
             </p>
           </CardContent>
         </Card>
