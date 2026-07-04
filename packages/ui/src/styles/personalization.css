@@ -28,26 +28,23 @@
   --ring: light-dark(var(--coral-500), var(--coral-400));
   --desktop-blob-primary: var(--coral-500);
   --desktop-blob-secondary: var(--amber-500);
-  --brand-gradient-from: light-dark(var(--coral-500), var(--coral-400));
+  --brand-gradient-from: var(--ring);
   --brand-gradient-via: light-dark(var(--amber-500), var(--amber-400));
   --brand-gradient-to: light-dark(var(--rose-500), var(--rose-400));
-  --chart: light-dark(
-    color-mix(in oklch, var(--coral-500) 65%, var(--amber-500)),
-    color-mix(in oklch, var(--coral-400) 65%, var(--amber-400))
-  );
+  --chart: color-mix(in oklch, var(--ring) 65%, light-dark(var(--amber-500), var(--amber-400)));
 }
 
 [data-accent='cyan'] {
   --primary: var(--cyan-500);
-  --ring: var(--cyan-400);
+  --ring: oklch(from var(--primary) 0.7 c calc(h - 1));
   --desktop-blob-primary: var(--cyan-500);
   --desktop-blob-secondary: var(--indigo-500);
-  --brand-gradient-from: light-dark(var(--cyan-500), var(--cyan-400));
+  --brand-gradient-from: light-dark(var(--primary), var(--ring));
   --brand-gradient-via: light-dark(var(--indigo-500), var(--indigo-400));
   --brand-gradient-to: light-dark(var(--violet-500), var(--violet-400));
   --chart: light-dark(
-    color-mix(in oklch, var(--cyan-500) 65%, var(--indigo-500)),
-    color-mix(in oklch, var(--cyan-400) 65%, var(--indigo-400))
+    color-mix(in oklch, var(--primary) 65%, var(--indigo-500)),
+    color-mix(in oklch, var(--ring) 65%, var(--indigo-400))
   );
 }
 
@@ -56,13 +53,10 @@
   --ring: light-dark(var(--indigo-500), var(--indigo-400));
   --desktop-blob-primary: var(--indigo-500);
   --desktop-blob-secondary: var(--cyan-500);
-  --brand-gradient-from: light-dark(var(--indigo-500), var(--indigo-400));
+  --brand-gradient-from: var(--ring);
   --brand-gradient-via: light-dark(var(--violet-500), var(--violet-400));
   --brand-gradient-to: light-dark(var(--cyan-500), var(--cyan-400));
-  --chart: light-dark(
-    color-mix(in oklch, var(--indigo-500) 65%, var(--violet-500)),
-    color-mix(in oklch, var(--indigo-400) 65%, var(--violet-400))
-  );
+  --chart: color-mix(in oklch, var(--ring) 65%, light-dark(var(--violet-500), var(--violet-400)));
 }
 
 [data-accent='violet'] {
@@ -70,13 +64,10 @@
   --ring: light-dark(var(--violet-500), var(--violet-400));
   --desktop-blob-primary: var(--violet-500);
   --desktop-blob-secondary: var(--indigo-500);
-  --brand-gradient-from: light-dark(var(--violet-500), var(--violet-400));
+  --brand-gradient-from: var(--ring);
   --brand-gradient-via: light-dark(var(--rose-500), var(--rose-400));
   --brand-gradient-to: light-dark(var(--red-500), var(--red-400));
-  --chart: light-dark(
-    color-mix(in oklch, var(--violet-500) 65%, var(--rose-500)),
-    color-mix(in oklch, var(--violet-400) 65%, var(--rose-400))
-  );
+  --chart: color-mix(in oklch, var(--ring) 65%, light-dark(var(--rose-500), var(--rose-400)));
 }
 
 [data-accent='rose'] {
