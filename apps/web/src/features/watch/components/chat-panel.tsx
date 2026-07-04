@@ -1,12 +1,29 @@
 'use client';
 
-import { Bubble, BubbleContent } from '@pumni/ui/feedback';
+import {
+  Bubble,
+  BubbleContent,
+  BubbleGroup,
+  BubbleReactions,
+  Message,
+  MessageAvatar,
+  MessageContent,
+} from '@pumni/ui/feedback';
 import { Button, Input } from '@pumni/ui/form';
 import { Avatar, AvatarFallback, AvatarImage } from '@pumni/ui/layout';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@pumni/ui/overlay';
-import { MessageSquare, Send } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@pumni/ui/overlay';
+import { cn } from '@pumni/ui/lib/cn';
+import { MessageSquare, Send, SmilePlus } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import type { ChatMessage } from '../types';
+import { REACTION_EMOJIS } from '../reaction-emojis';
 import { ReactionBar } from './reaction-bar';
 import { ReactionOverlay, type ReactionOverlayRef } from './reaction-overlay';
 
@@ -16,53 +33,98 @@ interface ChatPanelProps {
   profiles: Record<string, { username: string | null; avatar_url: string | null }>;
   userId: string;
   onReact?: (emoji: string) => void;
+  /** messageId -> (userId -> emoji), synced across participants. */
+  messageReactions?: Record<string, Record<string, string>>;
+  onReactMessage?: (messageId: string, emoji: string) => void;
   reactionOverlayRef?: React.Ref<ReactionOverlayRef>;
 }
 
 type ChatProfile = { username: string | null; avatar_url: string | null };
-type BubbleGroupPosition = 'single' | 'first' | 'middle' | 'last';
 
-interface ChatBubbleRowProps {
-  msg: ChatMessage;
-  isMe: boolean;
-  profile?: ChatProfile;
-  groupPosition: BubbleGroupPosition;
+/** Collapse a message's per-user reactions into `[emoji, count]` pairs for display. */
+function summarizeReactions(byUser: Record<string, string> | undefined): [string, number][] {
+  if (!byUser) return [];
+  const counts = new Map<string, number>();
+  for (const emoji of Object.values(byUser)) {
+    counts.set(emoji, (counts.get(emoji) ?? 0) + 1);
+  }
+  return [...counts.entries()];
 }
 
-function MessageAvatar({
-  isGrouped,
-  displayName,
-  initials,
-  avatarUrl,
+/** Emoji picker popover; its trigger is the hover-revealed react button on a bubble. */
+function MessageReactionPicker({
+  activeEmoji,
+  onPick,
 }: {
-  isGrouped: boolean;
-  displayName: string;
-  initials: string;
-  avatarUrl: string | null;
+  activeEmoji: string | undefined;
+  onPick: (emoji: string) => void;
 }) {
+  const [open, setOpen] = useState(false);
   return (
-    <div className="mb-px shrink-0">
-      {!isGrouped ? (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Avatar className="size-6 cursor-pointer">
-              {avatarUrl && (
-                <AvatarImage src={avatarUrl} alt={displayName} className="object-cover" />
-              )}
-              <AvatarFallback className="bg-primary/10 text-[10px] font-bold text-primary">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </TooltipTrigger>
-          <TooltipContent side="left" align="center">
-            {displayName}
-          </TooltipContent>
-        </Tooltip>
-      ) : (
-        <div className="size-6" />
-      )}
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          aria-label="Thêm cảm xúc"
+          className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground focus-visible:outline-none data-[state=open]:bg-muted data-[state=open]:text-foreground"
+        >
+          <SmilePlus className="size-3.5" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent side="top" align="center" className="flex w-auto gap-0.5 rounded-full p-1">
+        {REACTION_EMOJIS.map((emoji) => (
+          <button
+            key={emoji}
+            type="button"
+            aria-label={`Thả cảm xúc ${emoji}`}
+            aria-pressed={activeEmoji === emoji}
+            onClick={() => {
+              onPick(emoji);
+              setOpen(false);
+            }}
+            className={cn(
+              'flex size-8 items-center justify-center rounded-full text-lg transition-transform hover:-translate-y-0.5 hover:bg-muted motion-reduce:hover:translate-y-0',
+              activeEmoji === emoji && 'bg-primary/10',
+            )}
+          >
+            {emoji}
+          </button>
+        ))}
+      </PopoverContent>
+    </Popover>
   );
+}
+
+/** Consecutive messages from the same sender, rendered as one Messenger-style cluster. */
+interface MessageCluster {
+  key: string;
+  userId: string;
+  isMe: boolean;
+  profile?: ChatProfile;
+  messages: ChatMessage[];
+}
+
+function groupIntoClusters(
+  messages: ChatMessage[],
+  userId: string,
+  profiles: Record<string, ChatProfile>,
+): MessageCluster[] {
+  const clusters: MessageCluster[] = [];
+  for (const msg of messages) {
+    const last = clusters.at(-1);
+    if (last && last.userId === msg.userId) {
+      last.messages.push(msg);
+    } else {
+      clusters.push({
+        key: msg.id,
+        userId: msg.userId,
+        isMe: msg.userId === userId,
+        profile: profiles[msg.userId],
+        messages: [msg],
+      });
+    }
+  }
+  return clusters;
 }
 
 function formatChatTime(ms: number): string {
@@ -70,33 +132,96 @@ function formatChatTime(ms: number): string {
   return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
 }
 
-// fallow-ignore-next-line complexity
-function ChatBubbleRow({ msg, isMe, profile, groupPosition }: ChatBubbleRowProps) {
-  const displayName = profile?.username ?? (isMe ? 'B?n' : `User #${msg.userId.slice(0, 6)}`);
+function ChatCluster({
+  cluster,
+  viewerId,
+  messageReactions,
+  onReactMessage,
+}: {
+  cluster: MessageCluster;
+  viewerId: string;
+  messageReactions: Record<string, Record<string, string>>;
+  onReactMessage?: (messageId: string, emoji: string) => void;
+}) {
+  const { isMe, profile, messages } = cluster;
+  const displayName = profile?.username ?? (isMe ? 'Bạn' : `User #${cluster.userId.slice(0, 6)}`);
   const initials = profile?.username
     ? profile.username.slice(0, 2).toUpperCase()
-    : msg.userId.slice(0, 2).toUpperCase();
+    : cluster.userId.slice(0, 2).toUpperCase();
 
   return (
-    <div
-      className={`group flex gap-1.5 text-xs outline-none ${
-        isMe ? 'flex-row-reverse items-end self-end' : 'items-end self-start'
-      } max-w-[98%] ${groupPosition === 'single' || groupPosition === 'first' ? 'mt-2' : 'mt-0.5'}`}
-    >
+    <Message align={isMe ? 'end' : 'start'} className="gap-1.5">
+      {/* Messenger: your own (right-side) avatar is never shown. */}
       {!isMe && (
-        <MessageAvatar
-          isGrouped={groupPosition !== 'single' && groupPosition !== 'last'}
-          displayName={displayName}
-          initials={initials}
-          avatarUrl={profile?.avatar_url ?? null}
-        />
+        <MessageAvatar className="size-6">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Avatar className="size-6 cursor-pointer">
+                {profile?.avatar_url && (
+                  <AvatarImage
+                    src={profile.avatar_url}
+                    alt={displayName}
+                    className="object-cover"
+                  />
+                )}
+                <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent side="left" align="center">
+              {displayName}
+            </TooltipContent>
+          </Tooltip>
+        </MessageAvatar>
       )}
-      <Bubble align={isMe ? 'end' : 'start'} variant={isMe ? 'primary' : 'muted'} shape={groupPosition}>
-        <BubbleContent timeLabel={formatChatTime(msg.sentAt)}>
-          {msg.text}
-        </BubbleContent>
-      </Bubble>
-    </div>
+      <MessageContent>
+        <BubbleGroup>
+          {messages.map((msg) => {
+            const byUser = messageReactions[msg.id];
+            const summary = summarizeReactions(byUser);
+            const myEmoji = byUser?.[viewerId];
+            return (
+              // Reacted bubbles need bottom room so the badge doesn't collide with the next bubble.
+              <Bubble
+                key={msg.id}
+                variant={isMe ? 'primary' : 'muted'}
+                className={summary.length > 0 ? 'mb-2' : undefined}
+              >
+                <BubbleContent
+                  timeLabel={formatChatTime(msg.sentAt)}
+                  reactAction={
+                    onReactMessage ? (
+                      <MessageReactionPicker
+                        activeEmoji={myEmoji}
+                        onPick={(emoji) => onReactMessage(msg.id, emoji)}
+                      />
+                    ) : undefined
+                  }
+                >
+                  {msg.text}
+                </BubbleContent>
+                {summary.length > 0 && (
+                  <BubbleReactions
+                    align={isMe ? 'start' : 'end'}
+                    aria-label={`Cảm xúc: ${summary
+                      .map(([emoji, count]) => (count > 1 ? `${emoji} ${count}` : emoji))
+                      .join(', ')}`}
+                  >
+                    {summary.map(([emoji, count]) => (
+                      <span key={emoji}>
+                        {emoji}
+                        {count > 1 ? ` ${count}` : ''}
+                      </span>
+                    ))}
+                  </BubbleReactions>
+                )}
+              </Bubble>
+            );
+          })}
+        </BubbleGroup>
+      </MessageContent>
+    </Message>
   );
 }
 
@@ -106,6 +231,8 @@ export function ChatPanel({
   profiles,
   userId,
   onReact,
+  messageReactions = {},
+  onReactMessage,
   reactionOverlayRef,
 }: ChatPanelProps) {
   const [inputText, setInputText] = useState('');
@@ -129,7 +256,7 @@ export function ChatPanel({
     }
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!inputText.trim()) return;
     const ok = sendChat(inputText.trim());
@@ -145,7 +272,7 @@ export function ChatPanel({
           ref={logRef}
           role="log"
           aria-live="polite"
-          className="relative flex h-full min-h-0 scrollbar-gutter-stable flex-col gap-0 overflow-x-hidden overflow-y-auto px-2 py-1"
+          className="relative flex h-full min-h-0 scrollbar-gutter-stable flex-col gap-3 overflow-x-hidden overflow-y-auto px-2 py-1"
         >
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center py-10 text-center text-muted-foreground">
@@ -154,32 +281,15 @@ export function ChatPanel({
               <span className="mt-0.5 type-caption text-muted-foreground">Bắt đầu trò chuyện!</span>
             </div>
           ) : (
-            messages.map((msg, idx) => {
-              const isMe = msg.userId === userId;
-              const profile = profiles[msg.userId];
-              const prevMsg = idx > 0 ? messages[idx - 1] : null;
-              const nextMsg = idx < messages.length - 1 ? messages[idx + 1] : null;
-              const prevSameSender = prevMsg != null && prevMsg.userId === msg.userId;
-              const nextSameSender = nextMsg != null && nextMsg.userId === msg.userId;
-              const groupPosition: BubbleGroupPosition =
-                prevSameSender && nextSameSender
-                  ? 'middle'
-                  : prevSameSender
-                    ? 'last'
-                    : nextSameSender
-                      ? 'first'
-                      : 'single';
-
-              return (
-                <ChatBubbleRow
-                  key={msg.id}
-                  msg={msg}
-                  isMe={isMe}
-                  profile={profile}
-                  groupPosition={groupPosition}
-                />
-              );
-            })
+            groupIntoClusters(messages, userId, profiles).map((cluster) => (
+              <ChatCluster
+                key={cluster.key}
+                cluster={cluster}
+                viewerId={userId}
+                messageReactions={messageReactions}
+                onReactMessage={onReactMessage}
+              />
+            ))
           )}
         </div>
         <ReactionOverlay ref={reactionOverlayRef} className="z-popover" />
@@ -193,7 +303,7 @@ export function ChatPanel({
             aria-label="Nhập tin nhắn"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            className="h-9 flex-1 rounded-full border border-border surface-raised pe-10 text-xs"
+            className="h-9 flex-1 rounded-full border border-border pe-10 text-xs surface-raised"
             maxLength={500}
           />
           <Button

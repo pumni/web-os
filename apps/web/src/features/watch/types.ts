@@ -37,6 +37,7 @@ export interface RoomRealtimeEvents {
   onAnchor: (handler: (anchor: PlaybackAnchor) => void) => () => void;
   onChat: (handler: (message: ChatMessage) => void) => () => void;
   onReaction: (handler: (reaction: ReactionEvent) => void) => () => void;
+  onMessageReaction: (handler: (reaction: MessageReaction) => void) => () => void;
 }
 
 export interface ChatMessage {
@@ -51,4 +52,15 @@ export interface ReactionEvent {
   userId: string;
   emoji: string; // 1 trong tập cho phép
   sentAt: number;
+}
+
+/**
+ * A reaction attached to a specific chat message (Messenger-style badge),
+ * broadcast so both sides stay in sync. `emoji: null` clears the sender's
+ * reaction on that message. Ephemeral like chat — not persisted.
+ */
+export interface MessageReaction {
+  messageId: string;
+  userId: string;
+  emoji: string | null;
 }

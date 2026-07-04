@@ -236,6 +236,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
     broadcastAnchor,
     broadcastChat,
     broadcastReaction,
+    broadcastMessageReaction,
   } = useRoomChannel(currentRoom, userId, isHost);
 
   // 4.5 Queue action handlers (shared with PlaylistPanel — see `useQueueActions`).
@@ -265,10 +266,11 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
   };
 
   // 4.6 Chat & Reactions & Host Auto-promote
-  const { messages, sendChat, sendReaction } = useRoomChat(
+  const { messages, sendChat, sendReaction, messageReactions, toggleMessageReaction } = useRoomChat(
     userId,
     broadcastChat,
     broadcastReaction,
+    broadcastMessageReaction,
     roomEvents,
     (r) => reactionOverlayRef.current?.pushReaction(r),
   );
@@ -372,7 +374,7 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
             size="sm"
             onClick={handleCopyCode}
             aria-label="Sao chép mã phòng"
-            className="hidden h-7 items-center gap-1 rounded-md border border-border bg-card surface-raised px-2.5 font-mono text-xs font-bold tracking-widest text-foreground transition-colors duration-(--duration-fast) state-hover sm:inline-flex"
+            className="hidden h-7 items-center gap-1 rounded-md border border-border bg-card state-hover px-2.5 font-mono text-xs font-bold tracking-widest text-foreground surface-raised transition-colors duration-(--duration-fast) sm:inline-flex"
           >
             <Hash className="size-3 text-muted-foreground" />
             <span>{currentRoom.code}</span>
@@ -478,6 +480,8 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               messages={messages}
               sendChat={sendChat}
               onReact={sendReaction}
+              messageReactions={messageReactions}
+              onReactMessage={toggleMessageReaction}
               onPlayItem={handlePlayItem}
               reactionOverlayRef={reactionOverlayRef}
             />
@@ -509,6 +513,8 @@ export function WatchRoom({ room, userId, initialQueueItems }: WatchRoomProps) {
               messages={messages}
               sendChat={sendChat}
               onReact={sendReaction}
+              messageReactions={messageReactions}
+              onReactMessage={toggleMessageReaction}
               onPlayItem={handlePlayItem}
               reactionOverlayRef={reactionOverlayRef}
             />

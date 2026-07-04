@@ -1,7 +1,25 @@
 import * as React from 'react';
 import { toast } from 'sonner';
 import { AlertCircleIcon, AlertTriangleIcon, CheckCircle2Icon, InfoIcon } from 'lucide-react';
-import { Badge, Banner, KbdChip, PingDot, Skeleton, Spinner, Progress, Bubble, BubbleContent, BubbleGroup, BubbleReactions, Message, MessageGroup, MessageAvatar, MessageContent, MessageFooter, MessageHeader, Marker, MarkerContent } from '@pumni/ui/feedback';
+import {
+  Badge,
+  Banner,
+  KbdChip,
+  PingDot,
+  Skeleton,
+  Spinner,
+  Progress,
+  Bubble,
+  BubbleContent,
+  BubbleGroup,
+  BubbleReactions,
+  Message,
+  MessageAvatar,
+  MessageContent,
+  MessageFooter,
+  Marker,
+  MarkerContent,
+} from '@pumni/ui/feedback';
 import { Button } from '@pumni/ui/form';
 import {
   Avatar,
@@ -18,8 +36,6 @@ import {
   Separator,
 } from '@pumni/ui/layout';
 import { ShowcaseSection } from './showcase-section';
-
-
 
 export function FeedbackSection() {
   return (
@@ -291,7 +307,9 @@ export function FeedbackSection() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <span className="text-xs font-semibold text-muted-foreground">Compact size (horizontal row)</span>
+              <span className="text-xs font-semibold text-muted-foreground">
+                Compact size (horizontal row)
+              </span>
               <div className="space-y-2">
                 <Banner
                   tone="warning"
@@ -299,7 +317,11 @@ export function FeedbackSection() {
                   icon={AlertTriangleIcon}
                   title="No host available. Playback is paused."
                   action={
-                    <Button size="xs" variant="outline" className="bg-background text-warning border-warning/20 hover:bg-warning/20">
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      className="border-warning/20 bg-background text-warning hover:bg-warning/20"
+                    >
                       Claim Host
                     </Button>
                   }
@@ -314,7 +336,9 @@ export function FeedbackSection() {
             </div>
             <Separator />
             <div className="space-y-2">
-              <span className="text-xs font-semibold text-muted-foreground">Block size (vertical layout)</span>
+              <span className="text-xs font-semibold text-muted-foreground">
+                Block size (vertical layout)
+              </span>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Banner
                   tone="error"
@@ -323,7 +347,11 @@ export function FeedbackSection() {
                   title="Connection Failure"
                   description="Failed to re-authenticate with the database. Please check your credentials."
                   action={
-                    <Button size="sm" variant="destructive" onClick={() => toast.error('Retrying database connection...')}>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => toast.error('Retrying database connection...')}
+                    >
                       Retry
                     </Button>
                   }
@@ -341,98 +369,183 @@ export function FeedbackSection() {
         </Card>
 
         {/* Chat message bubbles */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Chat Message Bubbles</CardTitle>
-            <CardDescription>
-              Conversation clusters with shape-grouping (first/middle/last/single) and hover-reveal timestamps.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="group flex flex-col gap-6 pt-0">
-            {/* Message 1: Me */}
-            <Message align="end">
-              <MessageAvatar>
-                <Avatar className="size-8">
-                  <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="@me" />
-                  <AvatarFallback>ME</AvatarFallback>
-                </Avatar>
-              </MessageAvatar>
-              <MessageContent>
-                <Bubble variant="primary">
-                  <BubbleContent>Deploying to prod real quick.</BubbleContent>
-                </Bubble>
-              </MessageContent>
-            </Message>
-
-            {/* Message 2: Oliver */}
-            <Message>
-              <MessageAvatar>
-                <Avatar className="size-8">
-                  <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80" alt="@rabbit" />
-                  <AvatarFallback>R</AvatarFallback>
-                </Avatar>
-              </MessageAvatar>
-              <MessageContent>
-                <Bubble variant="muted">
-                  <BubbleContent>It&apos;s 4:55 PM. On a Friday.</BubbleContent>
-                </Bubble>
-              </MessageContent>
-            </Message>
-
-            {/* Message 3: Me */}
-            <Message align="end">
-              <MessageAvatar>
-                <Avatar className="size-8">
-                  <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="@me" />
-                  <AvatarFallback>ME</AvatarFallback>
-                </Avatar>
-              </MessageAvatar>
-              <MessageContent>
-                <Bubble variant="primary">
-                  <BubbleContent>It&apos;s a one-line change.</BubbleContent>
-                </Bubble>
-                <MessageFooter className="text-[10px] text-muted-foreground mt-1">Delivered</MessageFooter>
-              </MessageContent>
-            </Message>
-
-            {/* Message 4: Oliver Grouped */}
-            <Message>
-              <MessageAvatar>
-                <Avatar className="size-8">
-                  <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80" alt="@rabbit" />
-                  <AvatarFallback>R</AvatarFallback>
-                </Avatar>
-              </MessageAvatar>
-              <MessageContent>
-                <BubbleGroup>
-                  <Bubble variant="muted">
-                    <BubbleContent>
-                      It&apos;s always a one-line change 😭.
-                    </BubbleContent>
-                  </Bubble>
-                  <Bubble variant="muted">
-                    <BubbleContent>Alright, let me take a look.</BubbleContent>
-                    <BubbleReactions aria-label="Reaction: thumbs up" align="end">
-                      <span>👍</span>
-                    </BubbleReactions>
-                  </Bubble>
-                </BubbleGroup>
-              </MessageContent>
-            </Message>
-
-            {/* Typing Marker */}
-            <Marker role="status" className="pl-10">
-              <MarkerContent className="shimmer">
-                <span className="font-semibold text-neutral-400">Oliver</span> is typing...
-              </MarkerContent>
-            </Marker>
-
-            <p className="text-xs text-muted-foreground pt-4 text-center">
-              Hover over bubbles to reveal timestamps (group-reveal) or click to toggle on mobile.
-            </p>
-          </CardContent>
-        </Card>
+        <ChatBubblesCard />
       </div>
     </ShowcaseSection>
+  );
+}
+
+/**
+ * A Bubble whose hover react button toggles an attached BubbleReactions badge
+ * (Messenger-style), spreading any BubbleGroup-injected `shape` through to Bubble.
+ */
+function DemoBubble({
+  id,
+  time,
+  reacted,
+  onToggleReaction,
+  variant,
+  className,
+  children,
+  ...rest
+}: React.ComponentProps<typeof Bubble> & {
+  id: string;
+  time: string;
+  reacted: Record<string, string>;
+  onToggleReaction: (id: string) => void;
+}) {
+  const emoji = reacted[id];
+  return (
+    <Bubble
+      variant={variant}
+      className={[emoji && 'mb-2', className].filter(Boolean).join(' ') || undefined}
+      {...rest}
+    >
+      <BubbleContent timeLabel={time} onReact={() => onToggleReaction(id)}>
+        {children}
+      </BubbleContent>
+      {emoji ? (
+        <BubbleReactions
+          align={variant === 'primary' ? 'start' : 'end'}
+          aria-label={`Cảm xúc ${emoji}`}
+        >
+          <span>{emoji}</span>
+        </BubbleReactions>
+      ) : null}
+    </Bubble>
+  );
+}
+
+function ChatBubblesCard() {
+  // Reaction badges attached per bubble; one starts reacted to show the resting state.
+  const [reacted, setReacted] = React.useState<Record<string, string>>({ 'them-3': '👍' });
+  const toggle = (id: string) =>
+    setReacted((prev) => {
+      if (prev[id]) {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      }
+      return { ...prev, [id]: '❤️' };
+    });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Chat Message Bubbles</CardTitle>
+        <CardDescription>
+          Conversation clusters with shape-grouping (first/middle/last/single). Hover a single
+          bubble to reveal its timestamp; its react button toggles an attached reaction badge.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-5 pt-0">
+        {/* Me: consecutive cluster — BubbleGroup auto-tightens the inner corners */}
+        <Message align="end">
+          <MessageAvatar>
+            <Avatar className="size-8">
+              <AvatarImage
+                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80"
+                alt="@me"
+              />
+              <AvatarFallback>ME</AvatarFallback>
+            </Avatar>
+          </MessageAvatar>
+          <MessageContent>
+            <BubbleGroup>
+              <DemoBubble
+                id="me-1"
+                variant="primary"
+                time="4:54 PM"
+                reacted={reacted}
+                onToggleReaction={toggle}
+              >
+                Deploying to prod real quick.
+              </DemoBubble>
+              <DemoBubble
+                id="me-2"
+                variant="primary"
+                time="4:55 PM"
+                reacted={reacted}
+                onToggleReaction={toggle}
+              >
+                It&apos;s a one-line change.
+              </DemoBubble>
+            </BubbleGroup>
+            <MessageFooter className="mt-1 text-xs text-muted-foreground">Delivered</MessageFooter>
+          </MessageContent>
+        </Message>
+
+        {/* Oliver: standalone bubble stays fully rounded (shape single) */}
+        <Message>
+          <MessageAvatar>
+            <Avatar className="size-8">
+              <AvatarImage
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80"
+                alt="@rabbit"
+              />
+              <AvatarFallback>R</AvatarFallback>
+            </Avatar>
+          </MessageAvatar>
+          <MessageContent>
+            <DemoBubble
+              id="them-1"
+              variant="muted"
+              time="4:55 PM"
+              reacted={reacted}
+              onToggleReaction={toggle}
+            >
+              It&apos;s 4:55 PM. On a Friday.
+            </DemoBubble>
+          </MessageContent>
+        </Message>
+
+        {/* Oliver: consecutive cluster; the last bubble starts with a reaction */}
+        <Message>
+          <MessageAvatar>
+            <Avatar className="size-8">
+              <AvatarImage
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80"
+                alt="@rabbit"
+              />
+              <AvatarFallback>R</AvatarFallback>
+            </Avatar>
+          </MessageAvatar>
+          <MessageContent>
+            <BubbleGroup>
+              <DemoBubble
+                id="them-2"
+                variant="muted"
+                time="4:56 PM"
+                reacted={reacted}
+                onToggleReaction={toggle}
+              >
+                It&apos;s always a one-line change 😭.
+              </DemoBubble>
+              <DemoBubble
+                id="them-3"
+                variant="muted"
+                time="4:56 PM"
+                reacted={reacted}
+                onToggleReaction={toggle}
+              >
+                Alright, let me take a look.
+              </DemoBubble>
+            </BubbleGroup>
+          </MessageContent>
+        </Message>
+
+        {/* Typing Marker */}
+        <Marker role="status" className="pl-10">
+          <MarkerContent className="shimmer">
+            <span className="font-semibold text-muted-foreground">Oliver</span> is typing...
+          </MarkerContent>
+        </Marker>
+
+        <p className="pt-2 text-center text-xs text-muted-foreground">
+          Consecutive bubbles cluster with tightened inner corners. Hover a bubble to reveal its
+          timestamp and react button, or tap to toggle on mobile.
+        </p>
+      </CardContent>
+    </Card>
   );
 }

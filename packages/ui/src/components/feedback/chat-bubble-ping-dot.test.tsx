@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
-import { Bubble, BubbleContent, PingDot } from './index';
+import { Bubble, BubbleContent, BubbleGroup, PingDot } from './index';
 import { Button } from '../form/index';
 
 function getBubbleRoot(testid: string): HTMLElement {
@@ -129,6 +129,30 @@ describe('Bubble', () => {
     expect(row?.textContent ?? '').toMatch(/03:04/);
   });
 
+  it('reveals an add-reaction button that fires onReact when given', () => {
+    const onReact = vi.fn();
+    render(
+      <Bubble>
+        <BubbleContent onReact={onReact} data-testid="skin">
+          Body
+        </BubbleContent>
+      </Bubble>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: /cảm xúc/i }));
+    expect(onReact).toHaveBeenCalledTimes(1);
+  });
+
+  it('omits the add-reaction button when onReact is not given', () => {
+    render(
+      <Bubble>
+        <BubbleContent timeLabel="03:04" data-testid="skin">
+          Body
+        </BubbleContent>
+      </Bubble>,
+    );
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+
   it('does not render a hidden timestamp span when omitted', () => {
     render(
       <Bubble>
@@ -149,6 +173,60 @@ describe('Bubble', () => {
     const skin = screen.getByTestId('skin');
     expect(skin.className).toContain('bg-primary');
     expect(skin.className).toContain('text-primary-foreground');
+  });
+});
+
+describe('BubbleGroup', () => {
+  function shapeOf(testid: string): string | null {
+    return (
+      screen.getByTestId(testid).closest('[data-slot="chat-bubble"]')?.getAttribute('data-shape') ??
+      null
+    );
+  }
+
+  it('leaves a lone child fully rounded (shape single)', () => {
+    render(
+      <BubbleGroup>
+        <Bubble variant="muted">
+          <BubbleContent data-testid="only">Solo</BubbleContent>
+        </Bubble>
+      </BubbleGroup>,
+    );
+    expect(shapeOf('only')).toBe('single');
+  });
+
+  it('assigns first/middle/last across consecutive children', () => {
+    render(
+      <BubbleGroup>
+        <Bubble variant="muted">
+          <BubbleContent data-testid="a">One</BubbleContent>
+        </Bubble>
+        <Bubble variant="muted">
+          <BubbleContent data-testid="b">Two</BubbleContent>
+        </Bubble>
+        <Bubble variant="muted">
+          <BubbleContent data-testid="c">Three</BubbleContent>
+        </Bubble>
+      </BubbleGroup>,
+    );
+    expect(shapeOf('a')).toBe('first');
+    expect(shapeOf('b')).toBe('middle');
+    expect(shapeOf('c')).toBe('last');
+  });
+
+  it('respects an explicit shape on a child', () => {
+    render(
+      <BubbleGroup>
+        <Bubble variant="muted" shape="single">
+          <BubbleContent data-testid="a">One</BubbleContent>
+        </Bubble>
+        <Bubble variant="muted">
+          <BubbleContent data-testid="b">Two</BubbleContent>
+        </Bubble>
+      </BubbleGroup>,
+    );
+    expect(shapeOf('a')).toBe('single');
+    expect(shapeOf('b')).toBe('last');
   });
 });
 

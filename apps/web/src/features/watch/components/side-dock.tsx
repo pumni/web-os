@@ -31,6 +31,8 @@ interface SideDockProps {
   messages: ChatMessage[];
   sendChat: (text: string) => boolean;
   onReact?: (emoji: string) => void;
+  messageReactions?: Record<string, Record<string, string>>;
+  onReactMessage?: (messageId: string, emoji: string) => void;
   onPlayItem?: (item: QueueItem) => void;
   reactionOverlayRef?: React.Ref<ReactionOverlayRef>;
 }
@@ -49,6 +51,8 @@ export function SideDock({
   messages,
   sendChat,
   onReact,
+  messageReactions,
+  onReactMessage,
   onPlayItem,
   reactionOverlayRef,
 }: SideDockProps) {
@@ -115,6 +119,8 @@ export function SideDock({
               profiles={profiles}
               userId={userId}
               onReact={onReact}
+              messageReactions={messageReactions}
+              onReactMessage={onReactMessage}
               reactionOverlayRef={reactionOverlayRef}
             />
           </Tabs.Content>

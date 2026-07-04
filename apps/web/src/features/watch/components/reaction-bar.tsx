@@ -3,12 +3,11 @@
 import React from 'react';
 import { Button } from '@pumni/ui/form';
 import { SmilePlus } from 'lucide-react';
+import { REACTION_EMOJIS } from '../reaction-emojis';
 
 interface ReactionBarProps {
   onReact: (emoji: string) => void;
 }
-
-const EMOJIS = ['❤️', '😂', '😮', '👍', '🎉'];
 
 export function ReactionBar({ onReact }: ReactionBarProps) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -32,7 +31,7 @@ export function ReactionBar({ onReact }: ReactionBarProps) {
       }}
     >
       <div className="pointer-events-none absolute right-0 bottom-full z-popover mb-2 flex origin-bottom translate-y-2 scale-95 flex-col-reverse items-center gap-1 rounded-full border border-border bg-popover p-1 text-popover-foreground opacity-0 shadow-raised transition-[opacity,transform] duration-(--duration-fast) ease-snappy group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:scale-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100 group-data-[open=true]:pointer-events-auto group-data-[open=true]:translate-y-0 group-data-[open=true]:scale-100 group-data-[open=true]:opacity-100 motion-safe:will-change-[opacity,transform]">
-        {EMOJIS.map((emoji) => (
+        {REACTION_EMOJIS.map((emoji) => (
           <Button
             key={emoji}
             type="button"

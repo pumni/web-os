@@ -14,6 +14,7 @@ import type {
   RoomRealtimeEvents,
   ChatMessage,
   ReactionEvent,
+  MessageReaction,
 } from '../types';
 import { watchKeys } from '../query-keys';
 import { getStructuralSignature } from '../sync-math';
@@ -35,6 +36,7 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
   const anchorHandlersRef = useRef(new Set<(anchor: PlaybackAnchor) => void>());
   const chatHandlersRef = useRef(new Set<(message: ChatMessage) => void>());
   const reactionHandlersRef = useRef(new Set<(reaction: ReactionEvent) => void>());
+  const messageReactionHandlersRef = useRef(new Set<(reaction: MessageReaction) => void>());
 
   const isHostRef = useRef(isHost);
   const joinedAtRef = useRef(0);
@@ -74,7 +76,14 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
     };
   }, []);
 
-  const events: RoomRealtimeEvents = { onAnchor, onChat, onReaction };
+  const onMessageReaction = useCallback((handler: (reaction: MessageReaction) => void) => {
+    messageReactionHandlersRef.current.add(handler);
+    return () => {
+      messageReactionHandlersRef.current.delete(handler);
+    };
+  }, []);
+
+  const events: RoomRealtimeEvents = { onAnchor, onChat, onReaction, onMessageReaction };
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
@@ -158,6 +167,14 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
     activeChannel.on('broadcast', { event: 'reaction' }, (p: { payload: ReactionEvent }) => {
       if (p.payload) reactionHandlersRef.current.forEach((handler) => handler(p.payload));
     });
+
+    activeChannel.on(
+      'broadcast',
+      { event: 'message-reaction' },
+      (p: { payload: MessageReaction }) => {
+        if (p.payload) messageReactionHandlersRef.current.forEach((handler) => handler(p.payload));
+      },
+    );
 
     // 4. Listen to presence events
     activeChannel.on('presence', { event: 'sync' }, () => {
@@ -279,6 +296,17 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
     }
   }, []);
 
+  const broadcastMessageReaction = useCallback((r: MessageReaction) => {
+    const ch = channelRef.current;
+    if (ch && ch.state === 'joined') {
+      ch.send({
+        type: 'broadcast',
+        event: 'message-reaction',
+        payload: r,
+      });
+    }
+  }, []);
+
   return {
     participants,
     events,
@@ -288,5 +316,6 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
     broadcastAnchor,
     broadcastChat,
     broadcastReaction,
+    broadcastMessageReaction,
   };
 }

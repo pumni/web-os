@@ -1,4 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
+import { SmilePlus } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '../../lib/cn';
@@ -27,33 +28,33 @@ const chatBubbleVariants = cva(
       {
         variant: 'muted',
         shape: 'first',
-        class: '!rounded-bl-xs',
+        class: 'rounded-bl-xs!',
       },
       {
         variant: 'muted',
         shape: 'middle',
-        class: '!rounded-tl-xs !rounded-bl-xs',
+        class: 'rounded-tl-xs! rounded-bl-xs!',
       },
       {
         variant: 'muted',
         shape: 'last',
-        class: '!rounded-tl-xs',
+        class: 'rounded-tl-xs!',
       },
       // `primary` (right column): the floor-side corner is the bottom-right.
       {
         variant: 'primary',
         shape: 'first',
-        class: '!rounded-br-xs',
+        class: 'rounded-br-xs!',
       },
       {
         variant: 'primary',
         shape: 'middle',
-        class: '!rounded-tr-xs !rounded-br-xs',
+        class: 'rounded-tr-xs! rounded-br-xs!',
       },
       {
         variant: 'primary',
         shape: 'last',
-        class: '!rounded-tr-xs',
+        class: 'rounded-tr-xs!',
       },
     ],
     defaultVariants: {
@@ -92,32 +93,24 @@ export interface BubbleProps extends React.ComponentPropsWithoutRef<'div'> {
 }
 
 const Bubble = React.forwardRef<HTMLDivElement, BubbleProps>(
-  (
-    {
-      className,
-      align,
-      variant,
-      shape = 'single',
-      children,
-      ...props
-    },
-    ref,
-  ) => {
+  ({ className, align, variant, shape = 'single', children, ...props }, ref) => {
     const [showTime, setShowTime] = React.useState(false);
     const resolvedVariant = variant ?? 'muted';
     const resolvedShape = shape ?? 'single';
     const resolvedAlign = align ?? (resolvedVariant === 'primary' ? 'end' : 'start');
 
     return (
-      <BubbleContext.Provider value={{ showTime, setShowTime, variant: resolvedVariant, shape: resolvedShape }}>
+      <BubbleContext.Provider
+        value={{ showTime, setShowTime, variant: resolvedVariant, shape: resolvedShape }}
+      >
         <div
           ref={ref}
           data-slot="chat-bubble"
           data-tone={resolvedVariant === 'primary' ? 'me' : 'them'}
           data-shape={resolvedShape}
           className={cn(
-            'relative flex w-fit max-w-[70%] flex-col gap-0.5',
-            resolvedAlign === 'end' ? 'self-end items-end' : 'self-start items-start',
+            'group/bubble relative flex w-fit max-w-[70%] flex-col gap-0.5',
+            resolvedAlign === 'end' ? 'items-end self-end' : 'items-start self-start',
             className,
           )}
           {...props}
@@ -132,10 +125,20 @@ Bubble.displayName = 'Bubble';
 
 // 2. BubbleContent (The message bubble itself)
 export interface BubbleContentProps
-  extends React.ComponentPropsWithoutRef<'div'>,
-    VariantProps<typeof chatBubbleVariants> {
+  extends React.ComponentPropsWithoutRef<'div'>, VariantProps<typeof chatBubbleVariants> {
   raw?: boolean | undefined;
   timeLabel?: string | undefined;
+  /**
+   * When provided, a Messenger-style "add reaction" button is revealed beside
+   * the bubble on hover. The consumer wires this to open a picker or quick-react.
+   */
+  onReact?: (() => void) | undefined;
+  reactLabel?: string | undefined;
+  /**
+   * Custom control rendered in the hover rail in place of the default react
+   * button — e.g. an emoji-picker popover trigger. Takes precedence over `onReact`.
+   */
+  reactAction?: React.ReactNode | undefined;
 }
 
 const BubbleContent = React.forwardRef<HTMLDivElement, BubbleContentProps>(
@@ -147,6 +150,9 @@ const BubbleContent = React.forwardRef<HTMLDivElement, BubbleContentProps>(
       size = 'xs',
       raw = false,
       timeLabel,
+      onReact,
+      reactLabel = 'Thêm cảm xúc',
+      reactAction,
       children,
       onClick,
       ...props
@@ -156,7 +162,10 @@ const BubbleContent = React.forwardRef<HTMLDivElement, BubbleContentProps>(
     const context = useBubble();
     const resolvedVariant = variant ?? context.variant;
     const resolvedShape = shape ?? context.shape;
-    const timePosition = resolvedVariant === 'primary' ? 'right-full mr-1.5' : 'left-full ml-1.5';
+    // The rail sits on the bubble's inner side (opposite its tail), with the
+    // react button kept adjacent to the bubble in both columns.
+    const railPosition =
+      resolvedVariant === 'primary' ? 'right-full mr-1.5 flex-row-reverse' : 'left-full ml-1.5';
 
     const handleBubbleClick = (e: React.MouseEvent<HTMLDivElement>) => {
       const target = e.target as HTMLElement;
@@ -166,7 +175,7 @@ const BubbleContent = React.forwardRef<HTMLDivElement, BubbleContentProps>(
     };
 
     return (
-      <div className="relative flex items-end w-full">
+      <div className="relative flex w-full items-end">
         <div
           ref={ref}
           className={cn(
@@ -177,22 +186,34 @@ const BubbleContent = React.forwardRef<HTMLDivElement, BubbleContentProps>(
           onClick={handleBubbleClick}
           {...props}
         >
-          {raw ? (
-            children
-          ) : (
-            <div className="leading-snug whitespace-pre-wrap">{children}</div>
-          )}
+          {raw ? children : <div className="leading-snug whitespace-pre-wrap">{children}</div>}
         </div>
-        {timeLabel ? (
-          <span
+        {timeLabel || onReact || reactAction ? (
+          <div
             className={cn(
-              'pointer-events-none absolute top-1/2 -translate-y-1/2 type-caption whitespace-nowrap text-muted-foreground opacity-0 transition-opacity duration-(--duration-fast) sm:group-hover:opacity-100',
-              context.showTime && 'opacity-100',
-              timePosition,
+              'pointer-events-none absolute top-1/2 flex -translate-y-1/2 items-center gap-1 opacity-0 transition-opacity duration-(--duration-fast) sm:group-hover/bubble:pointer-events-auto sm:group-hover/bubble:opacity-100',
+              context.showTime && 'pointer-events-auto opacity-100',
+              railPosition,
             )}
           >
-            {timeLabel}
-          </span>
+            {reactAction ? (
+              reactAction
+            ) : onReact ? (
+              <button
+                type="button"
+                aria-label={reactLabel}
+                onClick={onReact}
+                className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground focus-visible:outline-none"
+              >
+                <SmilePlus className="size-3.5" />
+              </button>
+            ) : null}
+            {timeLabel ? (
+              <span className="type-caption whitespace-nowrap text-muted-foreground select-none">
+                {timeLabel}
+              </span>
+            ) : null}
+          </div>
         ) : null}
       </div>
     );
@@ -201,17 +222,30 @@ const BubbleContent = React.forwardRef<HTMLDivElement, BubbleContentProps>(
 BubbleContent.displayName = 'BubbleContent';
 
 // 3. BubbleGroup (Consecutive messages container)
+// Auto-assigns Messenger-style shapes (first/middle/last/single) to child
+// Bubbles by position so consecutive bubbles cluster with tightened inner
+// corners. An explicit `shape` on a child always wins.
 export interface BubbleGroupProps extends React.ComponentPropsWithoutRef<'div'> {}
+
+function resolveGroupShape(index: number, count: number): 'single' | 'first' | 'middle' | 'last' {
+  if (count <= 1) return 'single';
+  if (index === 0) return 'first';
+  if (index === count - 1) return 'last';
+  return 'middle';
+}
 
 const BubbleGroup = React.forwardRef<HTMLDivElement, BubbleGroupProps>(
   ({ className, children, ...props }, ref) => {
+    const bubbles = React.Children.toArray(children).filter(React.isValidElement);
     return (
-      <div
-        ref={ref}
-        className={cn('flex flex-col gap-0.5 w-full', className)}
-        {...props}
-      >
-        {children}
+      <div ref={ref} className={cn('flex w-full flex-col gap-0.5', className)} {...props}>
+        {bubbles.map((child, index) => {
+          if (!React.isValidElement<BubbleProps>(child)) return child;
+          if (child.props.shape != null) return child;
+          return React.cloneElement(child, {
+            shape: resolveGroupShape(index, bubbles.length),
+          });
+        })}
       </div>
     );
   },
@@ -220,7 +254,7 @@ BubbleGroup.displayName = 'BubbleGroup';
 
 // 4. BubbleReactions (Reaction container)
 const bubbleReactionsVariants = cva(
-  'absolute z-10 flex w-fit shrink-0 items-center justify-center gap-1 rounded-full border border-border bg-card px-1.5 py-0.5 text-xs shadow-sm ring-3 ring-background select-none transition-transform hover:scale-105 active:scale-95',
+  'absolute z-10 flex w-fit shrink-0 items-center justify-center gap-0.5 rounded-full bg-card px-1 py-px text-xs leading-none shadow-sm ring-2 ring-background select-none transition-transform hover:scale-105 active:scale-95',
   {
     variants: {
       side: {
@@ -236,24 +270,16 @@ const bubbleReactionsVariants = cva(
       side: 'bottom',
       align: 'end',
     },
-  }
+  },
 );
 
 export interface BubbleReactionsProps
-  extends React.ComponentPropsWithoutRef<'div'>,
-    VariantProps<typeof bubbleReactionsVariants> {}
+  extends React.ComponentPropsWithoutRef<'div'>, VariantProps<typeof bubbleReactionsVariants> {}
 
 const BubbleReactions = React.forwardRef<HTMLDivElement, BubbleReactionsProps>(
   ({ className, side = 'bottom', align = 'end', children, ...props }, ref) => {
     return (
-      <div
-        ref={ref}
-        className={cn(
-          bubbleReactionsVariants({ side, align }),
-          className,
-        )}
-        {...props}
-      >
+      <div ref={ref} className={cn(bubbleReactionsVariants({ side, align }), className)} {...props}>
         {children}
       </div>
     );
@@ -261,10 +287,4 @@ const BubbleReactions = React.forwardRef<HTMLDivElement, BubbleReactionsProps>(
 );
 BubbleReactions.displayName = 'BubbleReactions';
 
-export {
-  Bubble,
-  BubbleContent,
-  BubbleGroup,
-  BubbleReactions,
-  chatBubbleVariants,
-};
+export { Bubble, BubbleContent, BubbleGroup, BubbleReactions, chatBubbleVariants };
