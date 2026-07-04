@@ -1,29 +1,17 @@
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-
 import { apcaContrast } from '../lib/apca';
-import { oklchToSrgb, parseOklch } from '../lib/oklch';
+import { oklchToSrgb, type Oklch as Color } from '../lib/oklch';
 import { describe, expect, it } from 'vitest';
-import { repoRoot, tokenCss } from './token-test-utils';
-
-type Color = {
-  l: number;
-  c: number;
-  h: number;
-  alpha: number;
-};
+import {
+  buildTokenMap,
+  buildAccentTokenMap,
+  resolveColor,
+  mixOklch,
+  type Accent,
+} from '../../scripts/lib/token-resolver';
 
 type Rgb = [number, number, number];
 
-const brandCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/brand.css'), 'utf8');
-const themeCss = readFileSync(path.join(repoRoot, 'packages/ui/src/styles/theme.css'), 'utf8');
-const personalizationCss = readFileSync(
-  path.join(repoRoot, 'packages/ui/src/styles/personalization.css'),
-  'utf8',
-);
-
 const ACCENTS = ['coral', 'cyan', 'indigo', 'violet', 'rose'] as const;
-type Accent = (typeof ACCENTS)[number];
 
 const desktopBlobTokens = [
   '--desktop-blob-primary',
@@ -31,52 +19,6 @@ const desktopBlobTokens = [
   '--desktop-blob-accent',
   '--desktop-blob-cyan',
 ];
-
-function readVariables(css: string, selector: ':root' | '.dark') {
-  const match = css.match(
-    new RegExp(`${selector.replace('.', '\\.')}\\s*\\{(?<body>[\\s\\S]*?)\\}`),
-  );
-  const body = match?.groups?.body ?? '';
-  const variables = new Map<string, string>();
-
-  for (const variable of body.matchAll(/(?<name>--[\w-]+):\s*(?<value>[^;]+);/g)) {
-    const name = variable.groups?.name;
-    const value = variable.groups?.value;
-
-    if (name && value) {
-      variables.set(name, value.trim());
-    }
-  }
-
-  return variables;
-}
-
-function buildTokenMap(mode: 'light' | 'dark') {
-  const tokenMap = readVariables(tokenCss, ':root');
-
-  // Brand contract (brand.css) is read before theme.css: the semantic layer
-  // resolves --primary/--ring/--brand-gradient-* through these inputs.
-  for (const [name, value] of readVariables(brandCss, ':root')) {
-    tokenMap.set(name, value);
-  }
-
-  const themeMap = readVariables(themeCss, ':root');
-
-  for (const [name, value] of themeMap) {
-    tokenMap.set(name, value);
-  }
-
-  if (mode === 'dark') {
-    for (const [name, value] of readVariables(brandCss, '.dark')) {
-      tokenMap.set(name, value);
-    }
-    for (const [name, value] of readVariables(themeCss, '.dark')) {
-      tokenMap.set(name, value);
-    }
-  }
-
-  return tokenMap;
-}
 
 function tokenColor(name: string, tokenMap: Map<string, string>) {
   return resolveColor(name, tokenMap);
@@ -145,149 +87,7 @@ describe('Glass contrast tokens', () => {
  * overrides + derived surface.
  * ------------------------------------------------------------------ */
 
-function stripComments(css: string) {
-  return css.replace(/\/\*[\s\S]*?\*\//g, '');
-}
 
-function readBlock(css: string, selector: string): Map<string, string> {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = stripComments(css).match(
-    new RegExp(`(?:^|\\})\\s*${escaped}\\s*\\{(?<body>[^}]*)\\}`, 'm'),
-  );
-  const vars = new Map<string, string>();
-  for (const variable of (match?.groups?.body ?? '').matchAll(
-    /(?<name>--[\w-]+):\s*(?<value>[^;]+);/g,
-  )) {
-    if (variable.groups?.name && variable.groups?.value) {
-      vars.set(variable.groups.name, variable.groups.value.trim());
-    }
-  }
-  return vars;
-}
-
-function buildAccentTokenMap(mode: 'light' | 'dark', accent: Accent) {
-  const map = buildTokenMap(mode);
-  // coral is the default brand (no attribute): the base map already carries it.
-  if (accent === 'coral') return map;
-
-  for (const [name, value] of readBlock(personalizationCss, `[data-accent="${accent}"]`)) {
-    map.set(name, value);
-  }
-  if (mode === 'dark') {
-    for (const [name, value] of readBlock(personalizationCss, `.dark[data-accent="${accent}"]`)) {
-      map.set(name, value);
-    }
-  }
-  for (const [name, value] of readBlock(personalizationCss, `[data-accent]`)) {
-    map.set(name, value);
-  }
-  if (mode === 'dark') {
-    for (const [name, value] of readBlock(personalizationCss, `.dark[data-accent]`)) {
-      map.set(name, value);
-    }
-  }
-  return map;
-}
-
-function mixOklch(a: Color, b: Color, weightA: number): Color {
-  const weightB = 1 - weightA;
-  const alpha = a.alpha * weightA + b.alpha * weightB;
-
-  const aAchromatic = a.c < 1e-4;
-  const bAchromatic = b.c < 1e-4;
-  let h: number;
-  if (aAchromatic && bAchromatic) {
-    h = 0;
-  } else if (aAchromatic) {
-    h = b.h;
-  } else if (bAchromatic) {
-    h = a.h;
-  } else {
-    let deltaHue = b.h - a.h;
-    if (deltaHue > 180) deltaHue -= 360;
-    if (deltaHue < -180) deltaHue += 360;
-    h = (a.h + weightB * deltaHue + 360) % 360;
-  }
-
-  if (alpha === 0) return { l: 0, c: 0, h, alpha: 0 };
-
-  const l = (a.l * a.alpha * weightA + b.l * b.alpha * weightB) / alpha;
-  const c = (a.c * a.alpha * weightA + b.c * b.alpha * weightB) / alpha;
-  return { l, c, h, alpha };
-}
-
-function splitTopLevelCommas(str: string): string[] {
-  const parts: string[] = [];
-  let current = '';
-  let depth = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str[i];
-    if (char === '(') depth++;
-    else if (char === ')') depth--;
-
-    if (char === ',' && depth === 0) {
-      parts.push(current);
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-  parts.push(current);
-  return parts;
-}
-
-function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: Set<string>): Color {
-  const normalized = value.replace(/\s+/g, ' ').trim();
-
-  if (normalized === 'transparent') {
-    return { l: 0, c: 0, h: 0, alpha: 0 };
-  }
-
-  const varMatch = normalized.match(/^var\((?<name>--[\w-]+)\)$/);
-  if (varMatch?.groups?.name) {
-    return resolveColor(varMatch.groups.name, tokenMap, seen);
-  }
-
-  if (normalized.startsWith('oklch' + '(')) {
-    return parseOklch(normalized);
-  }
-
-  const mixMatch = normalized.match(/^color-mix\(\s*in\s+oklch\s*,\s*(?<inner>.+)\)$/);
-  if (mixMatch?.groups?.inner) {
-    const parts = splitTopLevelCommas(mixMatch.groups.inner).map((part) => part.trim());
-    const aPart = parts[0] ?? '';
-    const bPart = parts[1] ?? '';
-    const aWeighted = aPart.match(/^(?<expr>.+?)\s+(?<pct>[\d.]+)%$/);
-    const bWeighted = bPart.match(/^(?<expr>.+?)\s+(?<pct>[\d.]+)%$/);
-    const aExpr = aWeighted?.groups?.expr ?? aPart;
-    const bExpr = bWeighted?.groups?.expr ?? bPart;
-    const weightA = aWeighted?.groups?.pct
-      ? Number(aWeighted.groups.pct) / 100
-      : bWeighted?.groups?.pct
-        ? 1 - Number(bWeighted.groups.pct) / 100
-        : 0.5;
-    const a = resolveColorValue(aExpr, tokenMap, seen);
-    const b = resolveColorValue(bExpr, tokenMap, seen);
-    return mixOklch(a, b, weightA);
-  }
-
-  throw new Error(`Unsupported color value: ${normalized}`);
-}
-
-function resolveColor(
-  name: string,
-  tokenMap: Map<string, string>,
-  seen = new Set<string>(),
-): Color {
-  if (seen.has(name)) {
-    throw new Error(`Circular token reference: ${[...seen, name].join(' -> ')}`);
-  }
-  const value = tokenMap.get(name);
-  if (!value) {
-    throw new Error(`Missing token: ${name}`);
-  }
-  return resolveColorValue(value, tokenMap, new Set([...seen, name]));
-}
 
 describe('Accent personalization contrast', () => {
   const modes = ['light', 'dark'] as const;

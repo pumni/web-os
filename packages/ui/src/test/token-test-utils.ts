@@ -75,3 +75,6 @@ export function readToken(name: string): string {
   if (!match?.[1]) throw new Error(`Missing token: ${name}`);
   return match[1].trim();
 }
+
+export * as resolver from '../../scripts/lib/token-resolver';
+
