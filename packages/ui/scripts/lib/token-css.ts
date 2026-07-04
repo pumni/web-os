@@ -11,4 +11,5 @@ export {
   buildTokenMap,
   resolveLiteral,
   resolveOklch,
+  splitTopLevelCommas,
 } from './token-resolver';
