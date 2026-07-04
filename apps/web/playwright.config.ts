@@ -22,11 +22,18 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  // Self-contained run; reuse a server a dev already has up.
-  webServer: {
-    command: 'bun run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: 'bun --filter=web dev',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+    {
+      command: 'bun --filter=catalog dev',
+      url: 'http://localhost:61000',
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    }
+  ],
 });

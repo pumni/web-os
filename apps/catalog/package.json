@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "storybook dev -p 61000",
     "catalog:dev": "storybook dev -p 61000",
     "catalog:build": "storybook build",
     "catalog:lint": "bun --bun eslint .",
