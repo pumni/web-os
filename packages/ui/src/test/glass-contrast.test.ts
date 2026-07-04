@@ -327,3 +327,29 @@ describe('Chart color CVD distinctness', () => {
     },
   );
 });
+
+describe('Chart palette contrast', () => {
+  const modes = ['light', 'dark'] as const;
+  const chartTokens = ['--chart-1', '--chart-2', '--chart-3', '--chart-4', '--chart-5'] as const;
+  const surfaceTokens = ['--background', '--card'] as const;
+
+  it.each(
+    chartTokens.flatMap((chart) =>
+      surfaceTokens.flatMap((surface) =>
+        modes.map((mode) => [chart, surface, mode] as const)
+      )
+    )
+  )(
+    '%s contrast over %s is at least APCA Lc 45 in %s mode',
+    (chart, surface, mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const chartColor = oklchToSrgb(resolveColor(chart, tokenMap));
+      const surfaceColor = oklchToSrgb(resolveColor(surface, tokenMap));
+
+      expect(
+        Math.abs(apcaContrast(chartColor, surfaceColor)),
+        `${chart} over ${surface} in ${mode} mode contrast (APCA)`,
+      ).toBeGreaterThanOrEqual(45);
+    }
+  );
+});

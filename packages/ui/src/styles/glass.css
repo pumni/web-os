@@ -26,6 +26,18 @@
  * Accessibility fallbacks below honour user system preferences.
  */
 
+@property --spot-x {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+@property --spot-y {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
 /* ========================================================================
    SECTION 1: GLASSMORPHISM SURFACES & COMPONENT CHROME
    ======================================================================== */
@@ -426,6 +438,13 @@
       transparent 70%
     );
     transition: opacity var(--duration-base) var(--ease-out);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        opacity var(--duration-base) var(--ease-out),
+        --spot-x var(--duration-fast) var(--ease-out),
+        --spot-y var(--duration-fast) var(--ease-out);
+    }
   }
 
   /* Show highlight on hover — gated via hover capability (preventing sticky touch hover). */

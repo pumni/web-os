@@ -1497,7 +1497,47 @@
         "$value": "{primitive.color.indigo-500}",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "{primitive.color.indigo-400}"
+            "dark": "oklch(from {primitive.color.indigo-300} calc(l + 0.1) c h)"
+          }
+        }
+      },
+      "chart-1": {
+        "$type": "color",
+        "$value": "{semantic.color.chart}"
+      },
+      "chart-2": {
+        "$type": "color",
+        "$value": "{primitive.color.indigo-600}",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "oklch(from {primitive.color.indigo-300} calc(l + 0.1) c h)"
+          }
+        }
+      },
+      "chart-3": {
+        "$type": "color",
+        "$value": "{primitive.color.cyan-600}",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "{primitive.color.cyan-200}"
+          }
+        }
+      },
+      "chart-4": {
+        "$type": "color",
+        "$value": "oklch(from {primitive.color.amber-500} calc(l - 0.22) c h)",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "{primitive.color.amber-400}"
+          }
+        }
+      },
+      "chart-5": {
+        "$type": "color",
+        "$value": "{primitive.color.violet-600}",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "oklch(from {primitive.color.violet-300} calc(l + 0.08) c h)"
           }
         }
       },

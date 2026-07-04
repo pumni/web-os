@@ -63,7 +63,7 @@ function CardWell({
     <Comp
       ref={ref}
       data-slot="card-well"
-      className={cn(cardWellVariants({ radius, padding, className }))}
+      className={cn('@container/card-well', cardWellVariants({ radius, padding, className }))}
       {...props}
     />
   );

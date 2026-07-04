@@ -71,7 +71,12 @@
   /* --- Data Visualization (Charts) ---
      Chart (data visualization) — warm coral lead, kept distinct in lightness
      for CVD safety (glass-contrast.test.ts). */
-  --chart: light-dark(var(--indigo-500), var(--indigo-400));
+  --chart: light-dark(var(--indigo-500), oklch(from var(--indigo-300) calc(l + 0.1) c h));
+  --chart-1: var(--chart);
+  --chart-2: light-dark(var(--indigo-600), oklch(from var(--indigo-300) calc(l + 0.1) c h));
+  --chart-3: light-dark(var(--cyan-600), var(--cyan-200));
+  --chart-4: light-dark(oklch(from var(--amber-500) calc(l - 0.22) c h), var(--amber-400));
+  --chart-5: light-dark(var(--violet-600), oklch(from var(--violet-300) calc(l + 0.08) c h));
 
   /* ========================================================================
      CATEGORY II: BORDERS, RING, AND CORNER RADII
@@ -224,6 +229,11 @@
 
   /* --- Data Visualization (Charts) --- */
   --color-chart: var(--chart);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
   /* --- Borders & Focus Rings --- */
   --color-border: var(--border);

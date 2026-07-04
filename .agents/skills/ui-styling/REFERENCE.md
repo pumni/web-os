@@ -18,7 +18,8 @@ hard rules and completion checklist stay in `SKILL.md`.
 | `overlay` | Modal / sheet / command-palette scrim (`bg-overlay`) |
 | `brand-gradient-*` | Brand gradient stops for display text only |
 | `desktop-blob-*` | Decorative OS wallpaper ambience |
-| `chart` | Single data-visualization series colour (indigo); `--primary` is the lead series. Multi-series palettes are out of scope (see plans/design-system-audit-remediation §D2). |
+| `chart` | Legacy single data-visualization series color (indigo); alias for `--chart-2`. |
+| `chart-1` ... `chart-5` | Five semantic, CVD-safe chart colors with guaranteed APCA Lc 45 contrast over background and card surfaces. `--chart-1` follows the personalization accent; 2–5 stay fixed (Indigo, Cyan, Amber, Violet). |
 
 Primitive color variables (`--indigo-*`, `--violet-*`, `--neutral-*`, status
 scales, and raw `oklch(...)`) are restricted to token/theme files.

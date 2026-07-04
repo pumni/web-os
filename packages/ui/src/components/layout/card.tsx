@@ -125,7 +125,7 @@ function Card({
       data-variant={variant ?? 'solid'}
       data-state={state ?? 'idle'}
       aria-busy={ariaBusy}
-      className={cn(cardVariants({ variant, interactive, radius, state }), className)}
+      className={cn('@container/card', cardVariants({ variant, interactive, radius, state }), className)}
       {...props}
     />
   );

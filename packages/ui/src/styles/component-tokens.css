@@ -65,3 +65,23 @@
   /* --- Fluid Display Typo (Compact) --- */
   --tracking-display: -0.01em;
 }
+
+/* --- Container Query Self-Condensation --- */
+@container (width < 24rem) {
+  [data-slot="card"] {
+    --surface-padding: 1.25rem;
+    --surface-gap: 1rem;
+  }
+  [data-slot="card-well"] {
+    --surface-padding: 1.25rem;
+    --surface-gap: 1rem;
+  }
+  [data-slot="card"] > * {
+    --surface-padding: 1.25rem;
+    --surface-gap: 1rem;
+  }
+  [data-slot="card-well"] > * {
+    --surface-padding: 1.25rem;
+    --surface-gap: 1rem;
+  }
+}
