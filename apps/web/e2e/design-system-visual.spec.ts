@@ -62,6 +62,16 @@ test.describe('design system visual regression', () => {
     await expect(root).toHaveScreenshot('showcase-glass-strong.png', { animations: 'disabled' });
   });
 
+  test('light + compact density', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'light' });
+    await page.addInitScript(() => window.localStorage.setItem('pumni-density', 'compact'));
+    await page.goto('/design-system-preview');
+
+    const root = page.getByTestId(ROOT);
+    await expect(root).toBeVisible();
+    await expect(root).toHaveScreenshot('showcase-compact.png', { animations: 'disabled' });
+  });
+
   /**
    * Z-index regression: Select inside Dialog (§1 of layering-interaction-2026-upgrade).
    *

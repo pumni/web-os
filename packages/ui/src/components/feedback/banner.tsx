@@ -81,7 +81,7 @@ function Banner({
         'flex border select-none',
         isCompact
           ? 'items-center justify-between gap-3 rounded-xl px-4 py-2.5'
-          : 'items-start gap-4 rounded-xl p-5 md:p-6',
+          : 'items-start gap-4 rounded-xl p-(--surface-padding)',
         toneShellClass[tone],
         className,
       )}

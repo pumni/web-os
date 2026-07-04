@@ -357,9 +357,6 @@
 [data-density='compact'] {
   --control-height: var(--control-height-compact);
   --control-py: var(--control-py-compact);
-  --switch-height: 1rem;
-  --switch-width: 1.75rem;
-  --switch-thumb-size: 0.75rem;
 }
 
 /* ========================================================================

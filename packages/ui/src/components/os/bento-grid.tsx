@@ -302,7 +302,7 @@ export function BentoGridItem({
   const a11yProps =
     ariaLabel !== undefined ? { role: 'group' as const, 'aria-label': ariaLabel } : undefined;
   const cardClass = cn(
-    'relative overflow-hidden flex flex-col gap-4 p-5 lg:p-6 @container',
+    'relative overflow-hidden flex flex-col gap-(--surface-gap) p-(--surface-padding) @container',
     bentoTierVariants({ tier }),
     className,
   );

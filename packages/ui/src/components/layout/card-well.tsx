@@ -34,7 +34,7 @@ const cardWellVariants = cva('border border-border bg-muted', {
       none: '',
       sm: 'p-3',
       md: 'p-4',
-      lg: 'p-6',
+      lg: 'p-(--surface-padding)',
     },
   },
   defaultVariants: {

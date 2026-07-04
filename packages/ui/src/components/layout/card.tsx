@@ -38,7 +38,7 @@ import { cn } from '../../lib/cn';
  * All motion gates behind `prefers-reduced-motion` via the global CSS safety
  * net (`glass.css`) plus the `motion-safe:` Tailwind utility on each class.
  */
-const cardVariants = cva('flex flex-col gap-6 py-6 text-card-foreground', {
+const cardVariants = cva('flex flex-col gap-(--surface-gap) py-(--surface-padding) text-card-foreground', {
   variants: {
     variant: {
       // Raised, crisp content surface — the default. Owned elevation utility +
@@ -141,7 +141,7 @@ function CardHeader({ ref, className, ...props }: React.ComponentProps<'div'>) {
       ref={ref}
       data-slot="card-header"
       className={cn(
-        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6',
+        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-(--surface-padding) has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-(--surface-padding)',
         className,
       )}
       {...props}
@@ -190,7 +190,7 @@ function CardAction({ ref, className, ...props }: React.ComponentProps<'div'>) {
  * CardContent Component - Phần thân chứa nội dung chính của thẻ Card.
  */
 function CardContent({ ref, className, ...props }: React.ComponentProps<'div'>) {
-  return <div ref={ref} data-slot="card-content" className={cn('px-6', className)} {...props} />;
+  return <div ref={ref} data-slot="card-content" className={cn('px-(--surface-padding)', className)} {...props} />;
 }
 
 /**
@@ -201,7 +201,7 @@ function CardFooter({ ref, className, ...props }: React.ComponentProps<'div'>) {
     <div
       ref={ref}
       data-slot="card-footer"
-      className={cn('flex items-center px-6 [.border-t]:pt-6', className)}
+      className={cn('flex items-center px-(--surface-padding) [.border-t]:pt-(--surface-padding)', className)}
       {...props}
     />
   );
