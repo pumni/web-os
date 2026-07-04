@@ -14,6 +14,7 @@ reference detail.
 
 - Token tiers: primitive (tokens.css) -> semantic (theme.css) -> component (component-tokens.css).
   Components consume semantic only. Never reference a primitive var or raw OKLCH.
+- Color tokens default to the `light-dark()` function defined at `:root` rather than duplicated `.dark` overrides. `.dark` overrides are reserved for non-color properties (such as shadows, blurs, and font weights).
 - Surface vocabulary is a closed set: floating glass (`GlassSurface`/`glass-*`),
   solid card (`Card variant="solid"`), inset well (`CardWell` / `Card
   variant="inset"`), control fill (`bg-muted` + hover `/80`), status tint

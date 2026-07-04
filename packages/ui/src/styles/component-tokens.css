@@ -9,9 +9,9 @@
      --input (neutral-200 → neutral-300) so it reads as a control, not a
      flat fill; thumb is pure white over the darker track for parity with
      dark (bright thumb over a darker track). */
-  --switch-track: var(--neutral-300);
+  --switch-track: light-dark(var(--neutral-300), var(--neutral-600));
   --switch-track-checked: var(--primary);
-  --switch-thumb: var(--neutral-0);
+  --switch-thumb: light-dark(var(--neutral-0), var(--neutral-50));
 
   /* --- SegmentedPicker Component Tokens ---
      SegmentedPicker visual-role tokens. The well/track must read as a RECESSED
@@ -23,35 +23,27 @@
      sits on, inverting the well. Dedicated stops give a guaranteed delta: the
      track drops one neutral stop below the host surface, the pill rises one
      above the track. See segmented-picker.tsx + form.test.tsx. */
-  --segmented-track: color-mix(in oklch, var(--neutral-950) 6%, transparent);
+  --segmented-track: light-dark(
+    color-mix(in oklch, var(--neutral-950) 6%, transparent),
+    color-mix(in oklch, var(--neutral-1000) 40%, transparent)
+  );
   --segmented-active: var(--card);
-  --segmented-active-border: color-mix(in oklch, var(--neutral-950) 4%, transparent);
+  --segmented-active-border: light-dark(
+    color-mix(in oklch, var(--neutral-950) 4%, transparent),
+    color-mix(in oklch, var(--neutral-50) 8%, transparent)
+  );
   --shadow-segmented-active: 0 1px 2px 0 oklch(0 0 0 / 0.05), 0 1px 1px 0 oklch(0 0 0 / 0.03);
 
   /* --- Slider Component Tokens --- */
-  --slider-thumb: var(--neutral-0);
+  --slider-thumb: light-dark(var(--neutral-0), var(--neutral-50));
   --shadow-slider-thumb: 0 2px 4px 0 oklch(0 0 0 / 0.08), 0 0 1px 0 oklch(0 0 0 / 0.15);
 
   /* --- Window Controls --- */
-  --window-control-icon: oklch(0 0 0 / 0.65);
+  --window-control-icon: light-dark(oklch(0 0 0 / 0.65), oklch(0.8853 0 0 / 0.7));
 }
 
 .dark {
-  /* --- Switch Component Tokens (Dark) --- */
-  --switch-track: var(--neutral-600);
-  --switch-track-checked: var(--primary);
-  --switch-thumb: var(--neutral-50);
-
-  /* --- SegmentedPicker Component Tokens (Dark) --- */
-  --segmented-track: color-mix(in oklch, var(--neutral-1000) 40%, transparent);
-  --segmented-active: var(--card);
-  --segmented-active-border: color-mix(in oklch, var(--neutral-50) 8%, transparent);
+  /* Non-color dark overrides stay in .dark */
   --shadow-segmented-active: 0 4px 8px 0 oklch(0 0 0 / 0.25), 0 1px 2px 0 oklch(0 0 0 / 0.15);
-
-  /* --- Slider Component Tokens (Dark) --- */
-  --slider-thumb: var(--neutral-50);
   --shadow-slider-thumb: 0 2px 4px 0 oklch(0 0 0 / 0.25), 0 0 1px 0 oklch(0 0 0 / 0.4);
-
-  /* --- Window Controls (Dark) --- */
-  --window-control-icon: oklch(0.8853 0 0 / 0.7);
 }

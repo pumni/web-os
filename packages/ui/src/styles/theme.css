@@ -12,17 +12,17 @@
      ======================================================================== */
 
   /* --- Base Background & Foreground --- */
-  --background: var(--neutral-50);
-  --foreground: var(--neutral-950);
+  --background: light-dark(var(--neutral-50), var(--neutral-890));
+  --foreground: light-dark(var(--neutral-950), var(--neutral-50));
 
   /* --- Neutral UI Surfaces ---
      Surfaces stay NEUTRAL (warm-neutral via the neutral scale) — no brand mix, so
      cards read as a clean cream/white, never tinted coral. Brand colour lives on
-     accent elements (primary, ring, links, charts), not on resting surfaces. */
-  --card: var(--neutral-0);
-  --card-foreground: var(--neutral-950);
-  --popover: var(--neutral-0);
-  --popover-foreground: var(--neutral-950);
+     accent elements (primary, ring, charts), not on resting surfaces. */
+  --card: light-dark(var(--neutral-0), var(--neutral-880));
+  --card-foreground: light-dark(var(--neutral-950), var(--neutral-50));
+  --popover: light-dark(var(--neutral-0), var(--neutral-860));
+  --popover-foreground: light-dark(var(--neutral-950), var(--neutral-50));
 
   /* --- Primary Accent & Brand ---
      Brand entry point — reads the brand contract (brand.css), warm coral by default. */
@@ -30,12 +30,12 @@
   --primary-foreground: var(--neutral-50);
 
   /* --- Secondary & Muted Utilities --- */
-  --secondary: var(--neutral-100);
-  --secondary-foreground: var(--neutral-900);
-  --muted: var(--neutral-100);
-  --muted-foreground: var(--neutral-500);
-  --accent: var(--coral-50);
-  --accent-foreground: var(--coral-700);
+  --secondary: light-dark(var(--neutral-100), var(--neutral-800));
+  --secondary-foreground: light-dark(var(--neutral-900), var(--neutral-50));
+  --muted: light-dark(var(--neutral-100), var(--neutral-800));
+  --muted-foreground: light-dark(var(--neutral-500), var(--neutral-300));
+  --accent: light-dark(var(--coral-50), var(--coral-950));
+  --accent-foreground: light-dark(var(--coral-700), var(--coral-100));
 
   /* --- Status Indicators ---
      red-600's 10%-tint chip sits right at the APCA pin (Lc ~58 on its own), so
@@ -43,31 +43,43 @@
      clear the status-tint gate. Carries a heavier 4% (vs 2% on the other
      statuses); the coral brand stop is itself a warm red-adjacent hue, so the
      mix nudges destructive without skewing it off-red. */
-  --destructive: color-mix(in oklch, var(--primary) 4%, var(--red-600));
+  --destructive: light-dark(
+    color-mix(in oklch, var(--primary) 4%, var(--red-600)),
+    color-mix(in oklch, var(--primary) 3%, var(--red-500))
+  );
   --destructive-foreground: var(--neutral-50);
-  --success: color-mix(in oklch, var(--primary) 2%, var(--emerald-600));
-  --success-foreground: var(--neutral-50);
-  --warning: color-mix(in oklch, var(--primary) 2%, var(--amber-500));
+  --success: light-dark(
+    color-mix(in oklch, var(--primary) 2%, var(--emerald-600)),
+    color-mix(in oklch, var(--primary) 3%, var(--emerald-500))
+  );
+  --success-foreground: light-dark(var(--neutral-50), var(--neutral-950));
+  --warning: light-dark(
+    color-mix(in oklch, var(--primary) 2%, var(--amber-500)),
+    color-mix(in oklch, var(--primary) 3%, var(--amber-400))
+  );
   --warning-foreground: var(--neutral-950);
   /* Info sits on the cool side of the palette (indigo/cyan family) so it
      stays visually distinct from the warm coral brand while clearing the
      status-tint gate over the same `--neutral-50` foreground. The 2%
      primary mix matches `success`/`warning` so the four status indicators
      share one visual cadence. */
-  --info: color-mix(in oklch, var(--primary) 2%, var(--indigo-500));
+  --info: light-dark(
+    color-mix(in oklch, var(--primary) 2%, var(--indigo-500)),
+    color-mix(in oklch, var(--primary) 3%, var(--indigo-400))
+  );
 
   /* --- Data Visualization (Charts) ---
      Chart (data visualization) — warm coral lead, kept distinct in lightness
      for CVD safety (glass-contrast.test.ts). */
-  --chart: var(--indigo-500);
+  --chart: light-dark(var(--indigo-500), var(--indigo-400));
 
   /* ========================================================================
      CATEGORY II: BORDERS, RING, AND CORNER RADII
      ======================================================================== */
 
-  --border: var(--neutral-200);
-  --input: var(--neutral-200);
-  --field: var(--background);
+  --border: light-dark(var(--neutral-200), var(--neutral-800));
+  --input: light-dark(var(--neutral-200), var(--neutral-700));
+  --field: light-dark(var(--background), var(--neutral-880));
   --ring: var(--brand-ring);
   --radius: var(--radius-base);
 
@@ -97,8 +109,11 @@
         light glow, not a contrast boundary (ADR-0014 rescopes the gate).
      5. Shadow — soft directional --shadow-glass for float separation.
      Fallback — opaque surface when transparency/blur is unavailable. */
-  --glass-tint: color-mix(in oklch, var(--neutral-0) 54%, transparent);
-  --glass-edge: oklch(1 0 0 / 0.45);
+  --glass-tint: light-dark(
+    color-mix(in oklch, var(--neutral-0) 54%, transparent),
+    color-mix(in oklch, var(--neutral-900) 34%, transparent)
+  );
+  --glass-edge: light-dark(oklch(1 0 0 / 0.45), oklch(1 0 0 / 0.14));
 
   /* The lit top rim. Glass-only since ADR-0020 (which amended ADR-0018):
      every floating glass surface reads it as the inset-top specular highlight.
@@ -109,13 +124,13 @@
      --glass-edge alpha so the edge reads as ONE uniform luminous hairline,
      not a brighter/thicker top. Standard web glassmorphism: equal-weight rim on
      all sides + soft drop shadow. */
-  --surface-rim-top: oklch(1 0 0 / 0.5);
+  --surface-rim-top: light-dark(oklch(1 0 0 / 0.5), oklch(1 0 0 / 0.2));
 
   /* Light glass carries NO dark inner edge / contour (Hype4/Malewicz glassmorphism,
      Apple Liquid Glass, Tailwind glass all rely on the light rim + drop shadow).
      Bottom shadow-edge held at zero alpha so the pinned box-shadow layer + the
      glass-rim drift guard (dark > light) still hold. Dark mode carries the rim. */
-  --glass-shadow-edge: oklch(0 0 0 / 0);
+  --glass-shadow-edge: light-dark(oklch(0 0 0 / 0), oklch(0 0 0 / 0.22));
   --glass-fallback-bg: var(--popover);
   --glass-blur: var(--blur-glass);
 
@@ -128,17 +143,17 @@
   --desktop-blob-cyan: var(--coral-400);
 
   /* --- Scrim Overlay --- */
-  --overlay: oklch(0 0 0 / 0.4);
+  --overlay: light-dark(oklch(0 0 0 / 0.4), oklch(0 0 0 / 0.6));
 
   /* --- Shell Chrome Depth ---
      Shell chrome — unified glass edge + ambient depth.
      Same design language in both themes (glass rim + soft shadow), value
      calibration adapts to background luminance so perceived separation
      stays consistent. */
-  --glass-edge-rim: inset -1px 0 0 0 oklch(1 0 0 / 0.03);
-  --glass-edge-rim-bottom: inset 0 -1px 0 0 oklch(1 0 0 / 0.03);
-  --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.06);
-  --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.06);
+  --glass-edge-rim: light-dark(inset -1px 0 0 0 oklch(1 0 0 / 0.03), inset -1px 0 0 0 oklch(1 0 0 / 0.06));
+  --glass-edge-rim-bottom: light-dark(inset 0 -1px 0 0 oklch(1 0 0 / 0.03), inset 0 -1px 0 0 oklch(1 0 0 / 0.06));
+  --shadow-shell-depth: light-dark(2px 0 14px -4px oklch(0 0 0 / 0.06), 2px 0 14px -4px oklch(0 0 0 / 0.18));
+  --shadow-shell-depth-bottom: light-dark(0 2px 14px -4px oklch(0 0 0 / 0.06), 0 2px 14px -4px oklch(0 0 0 / 0.18));
 
   /* ========================================================================
      CATEGORY V: SHADOWS & ELEVATION GLOW
@@ -157,136 +172,18 @@
 }
 
 .dark {
-  /* ========================================================================
-     CATEGORY I: CORE BRAND & INTERFACE SURFACES (Dark Override)
-     ======================================================================== */
-
-  /* --- Base Background & Foreground ---
-     Warm dark gray calibrated to Claude Code's background (neutral-890 ≈ #141413),
-     not near-black — lifts off the harsh pure-black base (dark-mode best practice
-     + the warm Claude direction). */
-  --background: var(--neutral-890);
-  --foreground: var(--neutral-50);
-
-  /* --- Neutral UI Surfaces ---
-     Card matches Claude Code's card surface (neutral-880 ≈ #1A1918), sitting one
-     legible step above the background. */
-  --card: var(--neutral-880);
-  --card-foreground: var(--neutral-50);
-  /* Popover floats one stop above card (860 L=0.245 > 880 L=0.215). */
-  --popover: var(--neutral-860);
-  --popover-foreground: var(--neutral-50);
-
-  /* --- Primary Accent & Brand ---
-     Reads the brand contract (brand.css) like :root does, so the P3 wide-gamut
-     boost flows through both themes instead of pinning dark to a literal stop. */
-  --primary: var(--brand-primary);
-  --primary-foreground: var(--neutral-50);
-
-  /* --- Secondary & Muted Utilities ---
-     Pure neutral — removes brand tint from hover/subdued surfaces. */
-  --secondary: var(--neutral-800);
-  --secondary-foreground: var(--neutral-50);
-  --muted: var(--neutral-800);
-  --muted-foreground: var(--neutral-300);
-  --accent: var(--coral-950);
-  --accent-foreground: var(--coral-100);
-
-  /* --- Status Indicators --- */
-  --destructive: color-mix(in oklch, var(--primary) 3%, var(--red-500));
-  --destructive-foreground: var(--neutral-50);
-  --success: color-mix(in oklch, var(--primary) 3%, var(--emerald-500));
-  --success-foreground: var(--neutral-950);
-  --warning: color-mix(in oklch, var(--primary) 3%, var(--amber-400));
-  --warning-foreground: var(--neutral-950);
-  /* Dark info: lighter indigo stop pairs with the same `--neutral-50`
-     foreground as success/secondary, keeping the status palette uniform
-     across themes. */
-  --info: color-mix(in oklch, var(--primary) 3%, var(--indigo-400));
-
-  /* --- Data Visualization (Charts) ---
-     Chart — warm coral lead (see :root note). */
-  --chart: var(--indigo-400);
-
-  /* ========================================================================
-     CATEGORY II: BORDERS, RING, AND CORNER RADII (Dark Override)
-     ======================================================================== */
-
-  /* Pure neutral borders + input — no brand tint on resting surfaces. Focus
-     affordance comes from the coral --ring, not a resting fill tint. */
-  --border: var(--neutral-800);
-  --input: var(--neutral-700);
-  --field: var(--neutral-880);
-  --ring: var(--brand-ring);
-
-  /* ========================================================================
-     CATEGORY III: TYPOGRAPHY (Dark Override)
-     ======================================================================== */
-
   /* Typographic compensation - counter halation */
   --font-weight-body: var(--font-weight-body-dark); /* 350 */
   --font-weight-heading: var(--font-weight-heading-dark); /* 550 */
   --tracking-body: var(--tracking-body-dark); /* 0.01em */
 
-  /* ========================================================================
-     CATEGORY IV: GLASSMORPHISM & DEPTH EFFECTS (Dark Override)
-     ======================================================================== */
-
-  /* --- Glassmorphism Properties ---
-     Dark glassmorphism — neutral-900 tint stays darker than the mid-tone blobs,
-     so white text clears Lc 60 with huge headroom (verified Lc 88.8). The white
-     edge + inset highlight read as the lit glass edge over the dark fill. */
-  --glass-tint: color-mix(in oklch, var(--neutral-900) 34%, transparent);
-  --glass-edge: oklch(1 0 0 / 0.14);
-
-  /* Near-uniform luminous rim on dark glass — top highlight kept only a touch
-     above the border so it reads as one even hairline (no thick/asymmetric top
-     band), still visible against the dark blobs. Shared with solid cards
-     (ADR-0018): dark surfaces amplify bright edges, so a visible 0.2 rim now
-     lifts solid cards too (was 0.05 when the concept was split). */
-  --surface-rim-top: oklch(1 0 0 / 0.2);
-
-  /* Dark bottom rim — stronger than light (0.06 → 0.22) because dark surfaces
-     amplify bright highlights but swallow dark shadows, so the bottom shadow-
-     edge needs a higher alpha to read as a real volumetric edge. */
-  --glass-shadow-edge: oklch(0 0 0 / 0.22);
-  --glass-fallback-bg: var(--popover);
-
-  /* Dark frost runs one step heavier (16px = --blur-glass-lg) than the 12px
-     light default: dark backdrops read muddier at low blur, so the deeper frost
-     restores the glassmorphism read iOS/visionOS dark glass is known for. Still
-     inside the ADR-0014 8–16px sweet spot, so the per-pixel backdrop blur stays
-     cheap on mobile (ADR-0016). */
+  /* Glassmorphism Properties overrides (non-color) */
   --glass-blur: var(--blur-glass-lg);
 
-  /* --- OS Desktop Ambience & Blobs --- */
-  --desktop-blob-primary: var(--coral-500);
-  --desktop-blob-secondary: var(--amber-500);
-  --desktop-blob-accent: var(--brand-gradient-to);
-  --desktop-blob-cyan: var(--coral-400);
-
-  /* --- Scrim Overlay ---
-     Deeper scrim reads better over a dark backdrop. */
-  --overlay: oklch(0 0 0 / 0.6);
-
-  /* --- Shell Chrome Depth ---
-     Shell chrome — dark-adapted calibration (same glass rim + depth language).
-     Dark surfaces swallow shadows but amplify bright edges, so the rim gets
-     a 2× boost (3→6%) while the shadow gets 3× (6→18%) to stay perceivable. */
-  --glass-edge-rim: inset -1px 0 0 0 oklch(1 0 0 / 0.06);
-  --glass-edge-rim-bottom: inset 0 -1px 0 0 oklch(1 0 0 / 0.06);
-  --shadow-shell-depth: 2px 0 14px -4px oklch(0 0 0 / 0.18);
-  --shadow-shell-depth-bottom: 0 2px 14px -4px oklch(0 0 0 / 0.18);
-
-  /* ========================================================================
-     CATEGORY V: SHADOWS & ELEVATION GLOW (Dark Override)
-     ======================================================================== */
-
-  /* --- Window Elevation Glow --- */
+  /* Shadows overrides (non-color) */
   --shadow-glass-glow:
     var(--shadow-glass-glow-base), 0 0 0 1px color-mix(in oklch, var(--primary) 10%, transparent);
 
-  /* --- Interactive Surface Hovers --- */
   --shadow-interactive-hover:
     0 4px 14px -1px color-mix(in oklch, var(--primary) 18%, oklch(0 0 0 / 0.2)),
     0 2px 5px -2px color-mix(in oklch, var(--primary) 12%, oklch(0 0 0 / 0.1));

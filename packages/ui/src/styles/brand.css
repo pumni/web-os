@@ -29,25 +29,14 @@
      coral-600 (the deeper clay stop): a literal book-cloth coral (L≈0.64) drops
      white --primary-foreground below the APCA Lc 60 gate, so light leans on the
      darker stop while still reading as a vivid warm clay. */
-  --brand-primary: var(--coral-600);
+  --brand-primary: light-dark(var(--coral-600), var(--coral-500));
   /* Focus ring — one lightness stop above --brand-primary. */
-  --brand-ring: var(--coral-500);
+  --brand-ring: light-dark(var(--coral-500), var(--coral-400));
 
   /* Brand gradient — warm hero/marketing expression (from → via → to). */
-  --brand-gradient-from: var(--coral-500);
-  --brand-gradient-via: var(--amber-500);
-  --brand-gradient-to: var(--rose-500);
-}
-
-.dark {
-  /* Dark backgrounds let the brand sit one stop lighter (coral-500) and still
-     clear the white-foreground gate with headroom. */
-  --brand-primary: var(--coral-500);
-  --brand-ring: var(--coral-400);
-
-  --brand-gradient-from: var(--coral-400);
-  --brand-gradient-via: var(--amber-400);
-  --brand-gradient-to: var(--rose-400);
+  --brand-gradient-from: light-dark(var(--coral-500), var(--coral-400));
+  --brand-gradient-via: light-dark(var(--amber-500), var(--amber-400));
+  --brand-gradient-to: light-dark(var(--rose-500), var(--rose-400));
 }
 
 /*
@@ -60,11 +49,7 @@
  */
 @media (color-gamut: p3) {
   :root {
-    --brand-primary: oklch(0.545 0.16 38);
-    --brand-ring: oklch(0.61 0.15 40);
-  }
-  .dark {
-    --brand-primary: oklch(0.61 0.15 40);
-    --brand-ring: oklch(0.71 0.14 41);
+    --brand-primary: light-dark(oklch(0.545 0.16 38), oklch(0.61 0.15 40));
+    --brand-ring: light-dark(oklch(0.61 0.15 40), oklch(0.71 0.14 41));
   }
 }

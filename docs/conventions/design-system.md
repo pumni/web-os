@@ -69,7 +69,7 @@ surface).
 3. **Component** (`component-tokens.css`) — narrow, scoped vars for real local theming. Reference
    semantics.
 
-Apps consume semantic utilities, not primitives.
+Apps consume semantic utilities, not primitives. Color tokens must default to the `light-dark()` function defined at `:root` in `theme.css` / `brand.css` / `component-tokens.css`, rather than duplicating declarations in separate `.dark` override blocks. The `.dark` block is reserved for non-color overrides (such as shadow lists, blurs, and typographic weights).
 
 ## Surface utilities and overlay roles
 

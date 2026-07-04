@@ -24,22 +24,17 @@
  * brand hues).
  */
 [data-accent='coral'] {
-  --primary: var(--coral-600);
-  --ring: var(--coral-500);
+  --primary: light-dark(var(--coral-600), var(--coral-500));
+  --ring: light-dark(var(--coral-500), var(--coral-400));
   --desktop-blob-primary: var(--coral-500);
   --desktop-blob-secondary: var(--amber-500);
-  --brand-gradient-from: var(--coral-500);
-  --brand-gradient-via: var(--amber-500);
-  --brand-gradient-to: var(--rose-500);
-  --chart: color-mix(in oklch, var(--coral-500) 65%, var(--amber-500));
-}
-.dark[data-accent='coral'] {
-  --primary: var(--coral-500);
-  --ring: var(--coral-400);
-  --brand-gradient-from: var(--coral-400);
-  --brand-gradient-via: var(--amber-400);
-  --brand-gradient-to: var(--rose-400);
-  --chart: color-mix(in oklch, var(--coral-400) 65%, var(--amber-400));
+  --brand-gradient-from: light-dark(var(--coral-500), var(--coral-400));
+  --brand-gradient-via: light-dark(var(--amber-500), var(--amber-400));
+  --brand-gradient-to: light-dark(var(--rose-500), var(--rose-400));
+  --chart: light-dark(
+    color-mix(in oklch, var(--coral-500) 65%, var(--amber-500)),
+    color-mix(in oklch, var(--coral-400) 65%, var(--amber-400))
+  );
 }
 
 [data-accent='cyan'] {
@@ -47,78 +42,56 @@
   --ring: var(--cyan-400);
   --desktop-blob-primary: var(--cyan-500);
   --desktop-blob-secondary: var(--indigo-500);
-  --brand-gradient-from: var(--cyan-500);
-  --brand-gradient-via: var(--indigo-500);
-  --brand-gradient-to: var(--violet-500);
-  --chart: color-mix(in oklch, var(--cyan-500) 65%, var(--indigo-500));
-}
-.dark[data-accent='cyan'] {
-  --primary: var(--cyan-500);
-  --ring: var(--cyan-400);
-  --brand-gradient-from: var(--cyan-400);
-  --brand-gradient-via: var(--indigo-400);
-  --brand-gradient-to: var(--violet-400);
-  --chart: color-mix(in oklch, var(--cyan-400) 65%, var(--indigo-400));
+  --brand-gradient-from: light-dark(var(--cyan-500), var(--cyan-400));
+  --brand-gradient-via: light-dark(var(--indigo-500), var(--indigo-400));
+  --brand-gradient-to: light-dark(var(--violet-500), var(--violet-400));
+  --chart: light-dark(
+    color-mix(in oklch, var(--cyan-500) 65%, var(--indigo-500)),
+    color-mix(in oklch, var(--cyan-400) 65%, var(--indigo-400))
+  );
 }
 
 [data-accent='indigo'] {
-  --primary: var(--indigo-600);
-  --ring: var(--indigo-500);
+  --primary: light-dark(var(--indigo-600), var(--indigo-500));
+  --ring: light-dark(var(--indigo-500), var(--indigo-400));
   --desktop-blob-primary: var(--indigo-500);
   --desktop-blob-secondary: var(--cyan-500);
-  --brand-gradient-from: var(--indigo-500);
-  --brand-gradient-via: var(--violet-500);
-  --brand-gradient-to: var(--cyan-500);
-  --chart: color-mix(in oklch, var(--indigo-500) 65%, var(--violet-500));
-}
-.dark[data-accent='indigo'] {
-  --primary: var(--indigo-500);
-  --ring: var(--indigo-400);
-  --brand-gradient-from: var(--indigo-400);
-  --brand-gradient-via: var(--violet-400);
-  --brand-gradient-to: var(--cyan-400);
-  --chart: color-mix(in oklch, var(--indigo-400) 65%, var(--violet-400));
+  --brand-gradient-from: light-dark(var(--indigo-500), var(--indigo-400));
+  --brand-gradient-via: light-dark(var(--violet-500), var(--violet-400));
+  --brand-gradient-to: light-dark(var(--cyan-500), var(--cyan-400));
+  --chart: light-dark(
+    color-mix(in oklch, var(--indigo-500) 65%, var(--violet-500)),
+    color-mix(in oklch, var(--indigo-400) 65%, var(--violet-400))
+  );
 }
 
 [data-accent='violet'] {
-  --primary: var(--violet-600);
-  --ring: var(--violet-500);
+  --primary: light-dark(var(--violet-600), var(--violet-500));
+  --ring: light-dark(var(--violet-500), var(--violet-400));
   --desktop-blob-primary: var(--violet-500);
   --desktop-blob-secondary: var(--indigo-500);
-  --brand-gradient-from: var(--violet-500);
-  --brand-gradient-via: var(--rose-500);
-  --brand-gradient-to: var(--red-500);
-  --chart: color-mix(in oklch, var(--violet-500) 65%, var(--rose-500));
-}
-.dark[data-accent='violet'] {
-  --primary: var(--violet-500);
-  --ring: var(--violet-400);
-  --brand-gradient-from: var(--violet-400);
-  --brand-gradient-via: var(--rose-400);
-  --brand-gradient-to: var(--red-400);
-  --chart: color-mix(in oklch, var(--violet-400) 65%, var(--rose-400));
+  --brand-gradient-from: light-dark(var(--violet-500), var(--violet-400));
+  --brand-gradient-via: light-dark(var(--rose-500), var(--rose-400));
+  --brand-gradient-to: light-dark(var(--red-500), var(--red-400));
+  --chart: light-dark(
+    color-mix(in oklch, var(--violet-500) 65%, var(--rose-500)),
+    color-mix(in oklch, var(--violet-400) 65%, var(--rose-400))
+  );
 }
 
 [data-accent='rose'] {
+  /* Red is high-chroma: light is red-600. Dark also keeps red-600 to stay readable (APCA Lc 60 text gate, gated by glass-contrast.test.ts). */
   --primary: var(--red-600);
   --ring: var(--red-500);
   --desktop-blob-primary: var(--red-500);
   --desktop-blob-secondary: var(--rose-500);
-  --brand-gradient-from: var(--red-500);
-  --brand-gradient-via: var(--rose-500);
-  --brand-gradient-to: var(--violet-500);
-  --chart: color-mix(in oklch, var(--rose-500) 65%, var(--red-500));
-}
-.dark[data-accent='rose'] {
-  /* Red is high-chroma: a lighter red-500 drops white `--primary-foreground` below
-     the APCA Lc 60 text gate, so dark rose keeps red-600 to stay readable (gated by
-     glass-contrast.test.ts). */
-  --primary: var(--red-600);
-  --ring: var(--red-500);
-  --brand-gradient-from: var(--red-400);
-  --brand-gradient-via: var(--rose-400);
-  --brand-gradient-to: var(--violet-400);
-  --chart: color-mix(in oklch, var(--rose-400) 65%, var(--red-400));
+  --brand-gradient-from: light-dark(var(--red-500), var(--red-400));
+  --brand-gradient-via: light-dark(var(--rose-500), var(--rose-400));
+  --brand-gradient-to: light-dark(var(--violet-500), var(--violet-400));
+  --chart: light-dark(
+    color-mix(in oklch, var(--rose-500) 65%, var(--red-500)),
+    color-mix(in oklch, var(--rose-400) 65%, var(--red-400))
+  );
 }
 
 /*
@@ -129,17 +102,10 @@
  */
 [data-accent] {
   --accent: color-mix(in oklch, var(--primary) 14%, var(--card));
-  --accent-foreground: color-mix(in oklch, var(--primary) 80%, var(--foreground));
-}
-
-/*
- * Dark mode: the dark accent surface is dark, so an 80%-primary on-accent text
- * dips below the APCA Lc 60 text gate. Lean the on-accent text toward the light
- * `--foreground` so accent hover/selected text stays readable (gated by
- * glass-contrast.test.ts). `.dark[data-accent]` (0,2,0) outranks `[data-accent]`.
- */
-.dark[data-accent] {
-  --accent-foreground: color-mix(in oklch, var(--primary) 35%, var(--foreground));
+  --accent-foreground: light-dark(
+    color-mix(in oklch, var(--primary) 80%, var(--foreground)),
+    color-mix(in oklch, var(--primary) 35%, var(--foreground))
+  );
 }
 
 /* Glass intensity — bias the shared blur token without touching surfaces. */

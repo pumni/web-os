@@ -173,7 +173,7 @@ export function resolveValue(value: string, map: Map<string, string>, seen: Set<
   }
 
   if (trimmed.startsWith('light-dark(')) {
-    const lightDarkMatch = trimmed.match(/^light-dark\(\s*(?<inner>.+)\s*\)$/);
+    const lightDarkMatch = trimmed.match(/^light-dark\(\s*(?<inner>[\s\S]+)\s*\)$/);
     if (lightDarkMatch?.groups?.inner) {
       const parts = splitTopLevelCommas(lightDarkMatch.groups.inner).map(p => p.trim());
       const mode = map.get('__mode') || 'light';

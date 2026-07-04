@@ -71,38 +71,28 @@ function countTokenDefinitions(body: string, token: string): number {
   return matches ? matches.length : 0;
 }
 
-describe('the structural hairline set is closed and defined once per theme', () => {
+describe('the structural hairline set is closed and defined once', () => {
   // ADR-0019: exactly three hairline tokens (--border, --input, --glass-edge),
-  // each defined exactly once in :root and once in .dark. A duplicate would be
-  // a second source of truth that can drift (the same one-concept-two-tokens
-  // failure ADR-0018 was opened to find).
-  it.each([':root', '.dark'])('%s defines each hairline token exactly once', (selector) => {
-    const body = readRuleBody(themeCss, selector);
+  // each defined exactly once, carrying both themes via light-dark().
+  it('defines each hairline token exactly once in :root using light-dark()', () => {
+    const rootBody = readRuleBody(themeCss, ':root');
+    const darkBody = readRuleBody(themeCss, '.dark');
 
-    expect(
-      countTokenDefinitions(body, '--border'),
-      `${selector} must define --border exactly once`,
-    ).toBe(1);
-    expect(
-      countTokenDefinitions(body, '--input'),
-      `${selector} must define --input exactly once`,
-    ).toBe(1);
-    expect(
-      countTokenDefinitions(body, '--glass-edge'),
-      `${selector} must define --glass-edge exactly once`,
-    ).toBe(1);
-  });
-
-  it.each([':root', '.dark'])(
-    '%s defines the glass top rim once (--surface-rim-top, glass-only since ADR-0020)',
-    (selector) => {
-      const body = readRuleBody(themeCss, selector);
+    for (const token of ['--border', '--input', '--glass-edge', '--surface-rim-top']) {
       expect(
-        countTokenDefinitions(body, '--surface-rim-top'),
-        `${selector} must define --surface-rim-top exactly once`,
+        countTokenDefinitions(rootBody, token),
+        `:root must define ${token} exactly once`,
       ).toBe(1);
-    },
-  );
+
+      expect(
+        countTokenDefinitions(darkBody, token),
+        `.dark must NOT override ${token} (it uses light-dark())`,
+      ).toBe(0);
+
+      const valMatch = rootBody.match(new RegExp(`${token}:\\s*([^;]+);`));
+      expect(valMatch?.[1], `${token} must carry both themes via light-dark()`).toContain('light-dark(');
+    }
+  });
 });
 
 describe('surface-raised (solid) stays on the solid hairline flow', () => {
