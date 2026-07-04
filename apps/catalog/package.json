@@ -16,6 +16,7 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "10.4.6",
     "@storybook/addon-docs": "catalog:",
     "@storybook/react": "catalog:",
     "@storybook/react-vite": "catalog:",

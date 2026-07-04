@@ -5,7 +5,7 @@ import type { StorybookConfig } from '@storybook/react-vite';
 // the 'storybook' core package — no separate @storybook/addon-essentials needed.
 const config: StorybookConfig = {
   stories: ['../src/stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
-  addons: ['@storybook/addon-docs'],
+  addons: ['@storybook/addon-docs', '@storybook/addon-a11y'],
   framework: {
     name: '@storybook/react-vite',
     options: {},
