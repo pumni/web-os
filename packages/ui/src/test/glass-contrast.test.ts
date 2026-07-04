@@ -6,7 +6,6 @@ import {
   buildAccentTokenMap,
   resolveColor,
   mixOklch,
-  type Accent,
 } from '../../scripts/lib/token-resolver';
 
 type Rgb = [number, number, number];
@@ -50,7 +49,7 @@ describe('Glass contrast tokens', () => {
         expect(
           Math.abs(apcaContrast(foreground, glassOverBlob)),
           `${mode} ${blobToken} text contrast (APCA)`,
-        ).toBeGreaterThanOrEqual(mode === 'light' ? 50 : 60);
+        ).toBeGreaterThanOrEqual(60);
       }
     },
   );
@@ -87,8 +86,6 @@ describe('Glass contrast tokens', () => {
  * overrides + derived surface.
  * ------------------------------------------------------------------ */
 
-
-
 describe('Accent personalization contrast', () => {
   const modes = ['light', 'dark'] as const;
 
@@ -124,8 +121,8 @@ describe('Accent personalization contrast', () => {
 /* ------------------------------------------------------------------ *
  * Semantic surface contrast (Phase 2)
  * Gates the core muted, secondary, and card surfaces so that their
- * foreground text always passes at minimum APCA Lc 60 (or 55 for dark muted)
- * for body-sized text. These are the most common reading surfaces.
+ * foreground text always passes at minimum APCA Lc 60 for body-sized
+ * text in BOTH modes. These are the most common reading surfaces.
  * ------------------------------------------------------------------ */
 
 describe('Semantic surface contrast', () => {
@@ -139,7 +136,7 @@ describe('Semantic surface contrast', () => {
       expect(
         Math.abs(apcaContrast(foreground, background)),
         `${mode} muted text contrast (APCA)`,
-      ).toBeGreaterThanOrEqual(mode === 'dark' ? 55 : 60);
+      ).toBeGreaterThanOrEqual(60);
     },
   );
 
@@ -177,7 +174,7 @@ describe('Semantic surface contrast', () => {
       expect(
         Math.abs(apcaContrast(foreground, hoverBg)),
         `${mode} muted hover text contrast (APCA)`,
-      ).toBeGreaterThanOrEqual(mode === 'dark' ? 55 : 60);
+      ).toBeGreaterThanOrEqual(60);
     },
   );
 });
@@ -203,6 +200,18 @@ function compositeAlpha(
 
 const STATUS_TOKENS = ['--destructive', '--success', '--warning', '--primary', '--info'] as const;
 
+/*
+ * Pinned floors, measured with the spec-correct APCA pipeline (gamma-encoded
+ * sRGB input — see oklch.ts). Floors below the Lc 60 body-text target are the
+ * documented cost of a single token serving BOTH solid-fill and text roles:
+ * - light warning (48): amber has a hard readability ceiling on cream — the
+ *   amber-600 stop is already the darkest value that still scans as amber.
+ * - dark destructive (36) / dark primary (32): red-500 and coral-500 are
+ *   anchored by their solid-fill role (white foreground must hold Lc >= 60 on
+ *   the fill); a lighter text-friendly stop would break the button pair.
+ *   Status-chip text is short/bold label copy, where Lc >= 30 is tolerable.
+ * Everything else clears 53+.
+ */
 const STATUS_TINT_THRESHOLDS: Record<
   (typeof STATUS_TOKENS)[number],
   {
@@ -211,24 +220,24 @@ const STATUS_TINT_THRESHOLDS: Record<
   }
 > = {
   '--destructive': {
-    light: 59,
-    dark: 33,
+    light: 55,
+    dark: 36,
   },
   '--success': {
-    light: 60,
-    dark: 26,
+    light: 53,
+    dark: 62,
   },
   '--warning': {
-    light: 40,
-    dark: 48,
+    light: 48,
+    dark: 67,
   },
   '--primary': {
-    light: 60,
-    dark: 13,
+    light: 63,
+    dark: 32,
   },
   '--info': {
-    light: 76,
-    dark: 15,
+    light: 59,
+    dark: 59,
   },
 };
 
@@ -335,21 +344,16 @@ describe('Chart palette contrast', () => {
 
   it.each(
     chartTokens.flatMap((chart) =>
-      surfaceTokens.flatMap((surface) =>
-        modes.map((mode) => [chart, surface, mode] as const)
-      )
-    )
-  )(
-    '%s contrast over %s is at least APCA Lc 45 in %s mode',
-    (chart, surface, mode) => {
-      const tokenMap = buildTokenMap(mode);
-      const chartColor = oklchToSrgb(resolveColor(chart, tokenMap));
-      const surfaceColor = oklchToSrgb(resolveColor(surface, tokenMap));
+      surfaceTokens.flatMap((surface) => modes.map((mode) => [chart, surface, mode] as const)),
+    ),
+  )('%s contrast over %s is at least APCA Lc 45 in %s mode', (chart, surface, mode) => {
+    const tokenMap = buildTokenMap(mode);
+    const chartColor = oklchToSrgb(resolveColor(chart, tokenMap));
+    const surfaceColor = oklchToSrgb(resolveColor(surface, tokenMap));
 
-      expect(
-        Math.abs(apcaContrast(chartColor, surfaceColor)),
-        `${chart} over ${surface} in ${mode} mode contrast (APCA)`,
-      ).toBeGreaterThanOrEqual(45);
-    }
-  );
+    expect(
+      Math.abs(apcaContrast(chartColor, surfaceColor)),
+      `${chart} over ${surface} in ${mode} mode contrast (APCA)`,
+    ).toBeGreaterThanOrEqual(45);
+  });
 });

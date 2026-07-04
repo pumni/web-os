@@ -45,7 +45,13 @@ export function readVariables(source: string, selector: string): Map<string, str
 
 /** Extract variable declarations in specific CSS selectors (e.g. personalization blocks). */
 export function readBlock(source: string, selector: string): Map<string, string> {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // Quote-agnostic attribute matching: the CSS may use single or double quotes
+  // around attribute values ([data-accent='cyan'] vs [data-accent="cyan"]).
+  // Without this, a quote-style mismatch silently returns an EMPTY block and a
+  // caller (e.g. the accent contrast gate) tests the default palette instead.
+  const escaped = selector
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/(\\\[[\w\\-]+=)(['"])([^'"]*)\2(\\\])/g, `$1['"]$3['"]$4`);
   const match = stripComments(source).match(
     new RegExp(`(?:^|\\})\\s*${escaped}\\s*\\{(?<body>[^}]*)\\}`, 'm'),
   );
@@ -175,7 +181,7 @@ export function resolveValue(value: string, map: Map<string, string>, seen: Set<
   if (trimmed.startsWith('light-dark(')) {
     const lightDarkMatch = trimmed.match(/^light-dark\(\s*(?<inner>[\s\S]+)\s*\)$/);
     if (lightDarkMatch?.groups?.inner) {
-      const parts = splitTopLevelCommas(lightDarkMatch.groups.inner).map(p => p.trim());
+      const parts = splitTopLevelCommas(lightDarkMatch.groups.inner).map((p) => p.trim());
       const mode = map.get('__mode') || 'light';
       const branch = mode === 'dark' ? parts[1] : parts[0];
       if (!branch) throw new Error(`Invalid light-dark value: ${value}`);
@@ -185,9 +191,7 @@ export function resolveValue(value: string, map: Map<string, string>, seen: Set<
 
   if (trimmed.startsWith('oklch(from ')) {
     const color = resolveColorValue(trimmed, map, seen);
-    return color.alpha === 1
-      ? formatOklch(color)
-      : formatOklch(color, { alpha: color.alpha });
+    return color.alpha === 1 ? formatOklch(color) : formatOklch(color, { alpha: color.alpha });
   }
 
   return trimmed;
@@ -198,11 +202,19 @@ export function resolveLiteral(name: string, map: Map<string, string>): string {
   return resolveValue(map.get(name)!, map, new Set([name]));
 }
 
-function parseRelativeColor(value: string): { baseColor: string; lExpr: string; cExpr: string; hExpr: string; aExpr?: string | undefined } | null {
+function parseRelativeColor(
+  value: string,
+): {
+  baseColor: string;
+  lExpr: string;
+  cExpr: string;
+  hExpr: string;
+  aExpr?: string | undefined;
+} | null {
   const match = value.trim().match(/^oklch\(\s*from\s+(?<rest>.+)\)$/s);
   if (!match?.groups?.rest) return null;
   const rest = match.groups.rest.trim();
-  
+
   let depth = 0;
   let colorEnd = -1;
   for (let i = 0; i < rest.length; i++) {
@@ -215,10 +227,10 @@ function parseRelativeColor(value: string): { baseColor: string; lExpr: string; 
     }
   }
   if (colorEnd === -1) return null;
-  
+
   const baseColor = rest.slice(0, colorEnd).trim();
   const remains = rest.slice(colorEnd).trim();
-  
+
   let slashIdx = -1;
   depth = 0;
   for (let i = 0; i < remains.length; i++) {
@@ -230,14 +242,14 @@ function parseRelativeColor(value: string): { baseColor: string; lExpr: string; 
       break;
     }
   }
-  
+
   let channelsPart = remains;
   let aExpr: string | undefined;
   if (slashIdx !== -1) {
     channelsPart = remains.slice(0, slashIdx).trim();
     aExpr = remains.slice(slashIdx + 1).trim();
   }
-  
+
   const channels: string[] = [];
   let current = '';
   depth = 0;
@@ -245,7 +257,7 @@ function parseRelativeColor(value: string): { baseColor: string; lExpr: string; 
     const char = channelsPart[i];
     if (char === '(') depth++;
     else if (char === ')') depth--;
-    
+
     if ((char === ' ' || char === '\t') && depth === 0) {
       if (current.trim()) {
         channels.push(current.trim());
@@ -258,11 +270,11 @@ function parseRelativeColor(value: string): { baseColor: string; lExpr: string; 
   if (current.trim()) {
     channels.push(current.trim());
   }
-  
+
   if (channels.length !== 3) {
     throw new Error(`Expected exactly 3 color channels in relative color syntax: ${value}`);
   }
-  
+
   return {
     baseColor,
     lExpr: channels[0]!,
@@ -272,7 +284,11 @@ function parseRelativeColor(value: string): { baseColor: string; lExpr: string; 
   };
 }
 
-function resolveVariablesInExpression(expr: string, tokenMap: Map<string, string>, seen: Set<string>): string {
+function resolveVariablesInExpression(
+  expr: string,
+  tokenMap: Map<string, string>,
+  seen: Set<string>,
+): string {
   return expr.replace(/var\(\s*(--[\w-]+)\s*\)/g, (match, name) => {
     const rawVal = tokenMap.get(name);
     if (!rawVal) throw new Error(`Missing token during expression resolution: ${name}`);
@@ -280,7 +296,13 @@ function resolveVariablesInExpression(expr: string, tokenMap: Map<string, string
   });
 }
 
-function evalChannel(expr: string, baseVal: number, ident: string, tokenMap: Map<string, string>, seen: Set<string>): number {
+function evalChannel(
+  expr: string,
+  baseVal: number,
+  ident: string,
+  tokenMap: Map<string, string>,
+  seen: Set<string>,
+): number {
   const resolvedExpr = resolveVariablesInExpression(expr, tokenMap, seen);
   const clean = resolvedExpr.trim().toLowerCase();
   if (clean === ident) {
@@ -293,17 +315,25 @@ function evalChannel(expr: string, baseVal: number, ident: string, tokenMap: Map
   if (calcMatch) {
     const [, calcIdent, op, numStr] = calcMatch;
     if (calcIdent !== ident) {
-      throw new Error(`Invalid identifier in calc expression: expected '${ident}', got '${calcIdent}'`);
+      throw new Error(
+        `Invalid identifier in calc expression: expected '${ident}', got '${calcIdent}'`,
+      );
     }
     const val = Number(numStr);
     if (op === '+') return baseVal + val;
     if (op === '-') return baseVal - val;
     if (op === '*') return baseVal * val;
   }
-  throw new Error(`Unsupported channel expression grammar: '${expr}' (resolved: '${resolvedExpr}')`);
+  throw new Error(
+    `Unsupported channel expression grammar: '${expr}' (resolved: '${resolvedExpr}')`,
+  );
 }
 
-export function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: Set<string>): Oklch {
+export function resolveColorValue(
+  value: string,
+  tokenMap: Map<string, string>,
+  seen: Set<string>,
+): Oklch {
   const normalized = value.replace(/\s+/g, ' ').trim();
 
   if (normalized === 'transparent') {
@@ -324,7 +354,9 @@ export function resolveColorValue(value: string, tokenMap: Map<string, string>, 
       const l = evalChannel(parsed.lExpr, base.l, 'l', tokenMap, seen);
       const c = evalChannel(parsed.cExpr, base.c, 'c', tokenMap, seen);
       const h = evalChannel(parsed.hExpr, base.h, 'h', tokenMap, seen);
-      const alpha = parsed.aExpr ? evalChannel(parsed.aExpr, base.alpha, 'alpha', tokenMap, seen) : base.alpha;
+      const alpha = parsed.aExpr
+        ? evalChannel(parsed.aExpr, base.alpha, 'alpha', tokenMap, seen)
+        : base.alpha;
       return { l, c, h, alpha };
     }
     return parseOklch(normalized);
@@ -344,7 +376,7 @@ export function resolveColorValue(value: string, tokenMap: Map<string, string>, 
       : bWeighted?.groups?.pct
         ? 1 - Number(bWeighted.groups.pct) / 100
         : 0.5;
-    
+
     const aVal = resolveValue(aExpr, tokenMap, seen);
     const bVal = resolveValue(bExpr, tokenMap, seen);
     const a = resolveColorValue(aVal, tokenMap, seen);

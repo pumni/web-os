@@ -41,8 +41,8 @@ hand-tuning), use `foregroundFor(bg, targetLc)` / `backgroundFor` from
 `@pumni/ui` (`packages/ui/src/lib/apca.ts`). It binary-searches the OKLCH
 lightness axis with the same `apcaContrast` the gate uses — Lc 60 for body text,
 Lc 25 for UI edges — and reports `reachedTarget: false` when a colour cannot
-host the target (e.g. no neutral text reaches Lc 60 over a mid-light ~0.85
-surface).
+host the target (e.g. no neutral text reaches Lc 60 over a mid-tone ~0.7
+surface — the APCA dead zone).
 
 ## Anti-slop guardrails (read first)
 
@@ -118,9 +118,12 @@ status-tint pill, `tone` + optional `pulse` dot), and `IconBadge` (the rounded
 icon chip, `tone` `primary-soft`/`raised`/`muted`). `BentoGridItem` owns layout
 only and renders through these same primitives, so a bento tile and a feature
 card share one surface vocabulary. APCA contrast is gated per surface pair in
-`glass-contrast.test.ts` — Lc 60 body-text target, with documented pinned floors
-below it for glass-over-blob (50 light), dark muted (55), accent surfaces (45),
-and status tints (per-token table in the test). Do not add a WCAG 2.x ratio
+`glass-contrast.test.ts` (spec-correct APCA: `oklchToSrgb` emits gamma-encoded
+sRGB, which `apcaContrast` decodes) — Lc 60 body-text target for reading
+surfaces, muted, and glass-over-blob in **both** modes, with documented pinned
+floors below it only for accent surfaces (45) and status tints (per-token table
+in the test; light warning and the dark destructive/primary chips sit lower
+because those tokens double as solid fills). Do not add a WCAG 2.x ratio
 gate. The rim tokens are specular (inset shadows) and are NOT subject to the
 APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
 

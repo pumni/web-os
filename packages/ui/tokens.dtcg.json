@@ -333,6 +333,10 @@
         "$type": "color",
         "$value": "oklch(0.769 0.188 70.08)"
       },
+      "amber-600": {
+        "$type": "color",
+        "$value": "oklch(0.666 0.179 58.318)"
+      },
       "coral-100": {
         "$type": "color",
         "$value": "oklch(0.936 0.027 48)"
@@ -696,7 +700,7 @@
       },
       "display": {
         "$type": "dimension",
-        "$value": "clamp({primitive.font-size.display-min}, 4vw + 0.875rem, {primitive.font-size.display-max})"
+        "$value": "clamp(\n    {primitive.font-size.display-min},\n    4vw + 0.875rem,\n    {primitive.font-size.display-max}\n  )"
       },
       "display--line-height": {
         "$type": "dimension",
@@ -1510,7 +1514,7 @@
         "$value": "{primitive.color.indigo-600}",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(from {primitive.color.indigo-300} calc(l + 0.1) c h)"
+            "dark": "{primitive.color.indigo-300}"
           }
         }
       },
@@ -1611,7 +1615,7 @@
         "$value": "color-mix(in oklch, {semantic.color.primary} 2%, {primitive.color.indigo-500})",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "color-mix(in oklch, {semantic.color.primary} 3%, {primitive.color.indigo-400})"
+            "dark": "color-mix(in oklch, {semantic.color.primary} 3%, {primitive.color.indigo-300})"
           }
         }
       },
@@ -1708,7 +1712,7 @@
         "$value": "color-mix(in oklch, {semantic.color.primary} 2%, {primitive.color.emerald-600})",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "color-mix(in oklch, {semantic.color.primary} 3%, {primitive.color.emerald-500})"
+            "dark": "color-mix(in oklch, {semantic.color.primary} 3%, {primitive.color.emerald-400})"
           }
         }
       },
@@ -1732,7 +1736,7 @@
       },
       "warning": {
         "$type": "color",
-        "$value": "color-mix(in oklch, {semantic.color.primary} 2%, {primitive.color.amber-500})",
+        "$value": "color-mix(in oklch, {semantic.color.primary} 2%, {primitive.color.amber-600})",
         "$extensions": {
           "com.pumni.modes": {
             "dark": "color-mix(in oklch, {semantic.color.primary} 3%, {primitive.color.amber-400})"
@@ -1741,7 +1745,12 @@
       },
       "warning-foreground": {
         "$type": "color",
-        "$value": "{primitive.color.neutral-950}"
+        "$value": "{primitive.color.neutral-50}",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "{primitive.color.neutral-950}"
+          }
+        }
       }
     },
     "glass": {
@@ -1883,7 +1892,7 @@
         "$value": "color-mix(in oklch, {primitive.color.neutral-0} 54%, transparent)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "color-mix(in oklch, {primitive.color.neutral-900} 34%, transparent)"
+            "dark": "color-mix(in oklch, {primitive.color.neutral-900} 40%, transparent)"
           }
         }
       }

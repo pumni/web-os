@@ -1,13 +1,15 @@
 /*
  * OKLCH ↔ sRGB conversion — the shared colour primitive for the design system.
  *
- * IMPORTANT: `oklchToSrgb` returns *linear-light* sRGB channels (the OKLab→sRGB
- * matrix output, clamped to gamut) and intentionally does NOT apply the sRGB
- * gamma transfer. The APCA pipeline in `apca.ts` consumes these values directly
- * with its own `** 2.4` curve, and the contrast thresholds in
- * `glass-contrast.test.ts` are calibrated against this exact pairing. Changing
- * the conversion (e.g. adding gamma encoding) silently shifts every gated Lc
- * value. Keep this function and `apcaContrast` as one calibrated unit.
+ * `oklchToSrgb` returns *gamma-encoded* sRGB channels (0–1) — the same encoding
+ * a browser resolves the token to. This matters for APCA: `apcaContrast`
+ * (apca.ts) implements SAPC-4g, whose `** 2.4` curve DECODES gamma-encoded
+ * input to emulate monitor light output. Feeding it linear-light RGB (as this
+ * file did before 2026-07) applied that decode twice, so every "Lc" the gate
+ * reported was a distorted, non-APCA number. The thresholds in
+ * `glass-contrast.test.ts` are pinned against the spec-correct pairing —
+ * gamma-encoded input → `apcaContrast` — so keep this function and
+ * `apcaContrast` as one calibrated unit.
  */
 
 export type Oklch = { l: number; c: number; h: number; alpha: number };
@@ -16,15 +18,24 @@ export function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
 }
 
+/** sRGB transfer function: linear-light channel → gamma-encoded channel. */
+function encodeSrgb(channel: number): number {
+  return channel <= 0.0031308 ? 12.92 * channel : 1.055 * channel ** (1 / 2.4) - 0.055;
+}
+
 /**
- * OKLCH → sRGB (linear, clamped to 0–1). Hue in degrees.
+ * OKLCH → sRGB (gamma-encoded, clamped to 0–1). Hue in degrees.
  * Pairs with `apcaContrast`; see the file header before changing.
  */
-export function oklchToSrgb({ l, c, h }: { l: number; c: number; h: number }): [
-  number,
-  number,
-  number,
-] {
+export function oklchToSrgb({
+  l,
+  c,
+  h,
+}: {
+  l: number;
+  c: number;
+  h: number;
+}): [number, number, number] {
   const hueRadians = (h * Math.PI) / 180;
   const a = c * Math.cos(hueRadians);
   const b = c * Math.sin(hueRadians);
@@ -38,9 +49,9 @@ export function oklchToSrgb({ l, c, h }: { l: number; c: number; h: number }): [
   const sCubed = sPrime ** 3;
 
   return [
-    clamp01(4.0767416621 * lCubed - 3.3077115913 * mCubed + 0.2309699292 * sCubed),
-    clamp01(-1.2684380046 * lCubed + 2.6097574011 * mCubed - 0.3413193965 * sCubed),
-    clamp01(-0.0041960863 * lCubed - 0.7034186147 * mCubed + 1.707614701 * sCubed),
+    encodeSrgb(clamp01(4.0767416621 * lCubed - 3.3077115913 * mCubed + 0.2309699292 * sCubed)),
+    encodeSrgb(clamp01(-1.2684380046 * lCubed + 2.6097574011 * mCubed - 0.3413193965 * sCubed)),
+    encodeSrgb(clamp01(-0.0041960863 * lCubed - 0.7034186147 * mCubed + 1.707614701 * sCubed)),
   ];
 }
 

@@ -61,14 +61,17 @@ const Toaster = ({ ...props }: ToasterProps) => {
            */
           toast: 'glass-panel',
           /**
-           * Status chip colours via semantic status tokens:
-           * success → `--success-foreground`, error → `--destructive`, etc.
+           * Status colours via semantic status tokens: the toast sits on a
+           * glass/popover surface, so the STATUS colour itself is the text
+           * colour (`text-success`), never the `-foreground` pair — those are
+           * on-fill colours and vanish against the panel (white-on-white in
+           * light, near-black-on-dark in dark).
            * Sonner's own data-attribute hooks keep these scoped.
            */
-          success: 'text-success-foreground',
-          error: 'text-destructive-foreground',
-          warning: 'text-warning-foreground',
-          info: 'text-primary-foreground',
+          success: 'text-success',
+          error: 'text-destructive',
+          warning: 'text-warning',
+          info: 'text-info',
           description: 'text-muted-foreground',
           actionButton: 'bg-primary text-primary-foreground',
           cancelButton: 'bg-muted text-muted-foreground',

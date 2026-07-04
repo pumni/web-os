@@ -48,24 +48,35 @@
     color-mix(in oklch, var(--primary) 3%, var(--red-500))
   );
   --destructive-foreground: var(--neutral-50);
+  /* Dark statuses follow the "bright fill, dark text / bright text on dark bg"
+     pattern (Radix step-9/step-11 practice): the -400 stop instead of -500 so
+     the token stays readable when used AS text (`text-success`, Badge/Banner
+     tints) — emerald-500 as dark text sat at Lc ~54 and its chip at ~46;
+     emerald-400 lifts those to ~66 / ~55 (glass-contrast.test.ts pins them). */
   --success: light-dark(
     color-mix(in oklch, var(--primary) 2%, var(--emerald-600)),
-    color-mix(in oklch, var(--primary) 3%, var(--emerald-500))
+    color-mix(in oklch, var(--primary) 3%, var(--emerald-400))
   );
   --success-foreground: light-dark(var(--neutral-50), var(--neutral-950));
+  /* Light warning uses amber-600: amber-500 as light-mode TEXT (`text-warning`)
+     only reached Lc ~39 on the cream background — amber-600 reads at ~54 while
+     the fill still scans as amber. Foreground flips to white in light (Lc ~59
+     on amber-600, vs ~47 for black), matching the success polarity split. */
   --warning: light-dark(
-    color-mix(in oklch, var(--primary) 2%, var(--amber-500)),
+    color-mix(in oklch, var(--primary) 2%, var(--amber-600)),
     color-mix(in oklch, var(--primary) 3%, var(--amber-400))
   );
-  --warning-foreground: var(--neutral-950);
+  --warning-foreground: light-dark(var(--neutral-50), var(--neutral-950));
   /* Info sits on the cool side of the palette (indigo/cyan family) so it
      stays visually distinct from the warm coral brand while clearing the
      status-tint gate over the same `--neutral-50` foreground. The 2%
      primary mix matches `success`/`warning` so the four status indicators
-     share one visual cadence. */
+     share one visual cadence. Dark uses indigo-300 — info is text/tint-only
+     (Badge, Banner; it has no solid fill + foreground pair), and indigo-400
+     as dark text sat at Lc ~44 vs ~63 for indigo-300. */
   --info: light-dark(
     color-mix(in oklch, var(--primary) 2%, var(--indigo-500)),
-    color-mix(in oklch, var(--primary) 3%, var(--indigo-400))
+    color-mix(in oklch, var(--primary) 3%, var(--indigo-300))
   );
 
   /* --- Data Visualization (Charts) ---
@@ -73,7 +84,10 @@
      for CVD safety (glass-contrast.test.ts). */
   --chart: light-dark(var(--indigo-500), oklch(from var(--indigo-300) calc(l + 0.1) c h));
   --chart-1: var(--chart);
-  --chart-2: light-dark(var(--indigo-600), oklch(from var(--indigo-300) calc(l + 0.1) c h));
+  /* Dark chart-2 sits one lightness step (ΔL 0.1) below chart-1 — it previously
+     duplicated chart-1's dark value exactly, making the two series
+     indistinguishable. Mirrors the light-mode 500→600 step. */
+  --chart-2: light-dark(var(--indigo-600), var(--indigo-300));
   --chart-3: light-dark(var(--cyan-600), var(--cyan-200));
   --chart-4: light-dark(oklch(from var(--amber-500) calc(l - 0.22) c h), var(--amber-400));
   --chart-5: light-dark(var(--violet-600), oklch(from var(--violet-300) calc(l + 0.08) c h));
@@ -105,7 +119,7 @@
      Glassmorphism tokens — 5-element model (ADR-0014, amended by ADR-0016):
      1. Tint — base fill, never fully transparent; tuned so --foreground holds
         APCA Lc 60 over the worst desktop blob (glass-contrast.test.ts). Verified
-        margin: text Lc 53.3.
+        margin: worst-case text Lc 79 light / 62 dark (amber blob).
      2. Blur + 3. Saturation — frosted vibrancy (tokens.css: --blur-glass 12px,
         --glass-saturate 1.4).
      4. Edge — a luminous WHITE border (light reflecting off the cut edge) + a
@@ -114,9 +128,11 @@
         light glow, not a contrast boundary (ADR-0014 rescopes the gate).
      5. Shadow — soft directional --shadow-glass for float separation.
      Fallback — opaque surface when transparency/blur is unavailable. */
+  /* Dark tint alpha 40% (was 34%): the minimum that keeps --foreground at
+     APCA Lc >= 60 over the amber blob, the worst-case backdrop. */
   --glass-tint: light-dark(
     color-mix(in oklch, var(--neutral-0) 54%, transparent),
-    color-mix(in oklch, var(--neutral-900) 34%, transparent)
+    color-mix(in oklch, var(--neutral-900) 40%, transparent)
   );
   --glass-edge: light-dark(oklch(1 0 0 / 0.45), oklch(1 0 0 / 0.14));
 
@@ -155,10 +171,22 @@
      Same design language in both themes (glass rim + soft shadow), value
      calibration adapts to background luminance so perceived separation
      stays consistent. */
-  --glass-edge-rim: light-dark(inset -1px 0 0 0 oklch(1 0 0 / 0.03), inset -1px 0 0 0 oklch(1 0 0 / 0.06));
-  --glass-edge-rim-bottom: light-dark(inset 0 -1px 0 0 oklch(1 0 0 / 0.03), inset 0 -1px 0 0 oklch(1 0 0 / 0.06));
-  --shadow-shell-depth: light-dark(2px 0 14px -4px oklch(0 0 0 / 0.06), 2px 0 14px -4px oklch(0 0 0 / 0.18));
-  --shadow-shell-depth-bottom: light-dark(0 2px 14px -4px oklch(0 0 0 / 0.06), 0 2px 14px -4px oklch(0 0 0 / 0.18));
+  --glass-edge-rim: light-dark(
+    inset -1px 0 0 0 oklch(1 0 0 / 0.03),
+    inset -1px 0 0 0 oklch(1 0 0 / 0.06)
+  );
+  --glass-edge-rim-bottom: light-dark(
+    inset 0 -1px 0 0 oklch(1 0 0 / 0.03),
+    inset 0 -1px 0 0 oklch(1 0 0 / 0.06)
+  );
+  --shadow-shell-depth: light-dark(
+    2px 0 14px -4px oklch(0 0 0 / 0.06),
+    2px 0 14px -4px oklch(0 0 0 / 0.18)
+  );
+  --shadow-shell-depth-bottom: light-dark(
+    0 2px 14px -4px oklch(0 0 0 / 0.06),
+    0 2px 14px -4px oklch(0 0 0 / 0.18)
+  );
 
   /* ========================================================================
      CATEGORY V: SHADOWS & ELEVATION GLOW

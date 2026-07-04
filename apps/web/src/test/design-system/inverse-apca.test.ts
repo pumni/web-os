@@ -10,8 +10,8 @@ import { oklchToSrgb } from '@pumni/ui/lib/oklch';
  */
 
 // Backgrounds with enough contrast capacity to host Lc 60 body text. A
-// mid-light tint (~0.85) deliberately is NOT here — no neutral text reaches
-// Lc 60 over it (see the dedicated unreachable test below).
+// mid-tone (~0.7) deliberately is NOT here — the APCA dead zone where neither
+// black nor white text reaches Lc 60 (see the dedicated unreachable test below).
 const HIGH_CAPACITY_BACKGROUNDS = [
   { name: 'near-white', l: 0.98, c: 0.003, h: 248 },
   { name: 'cyan-600 primary', l: 0.495, c: 0.105, h: 203 },
@@ -46,10 +46,10 @@ describe('foregroundFor', () => {
     expect(result.lc).toBeGreaterThanOrEqual(25);
   });
 
-  it('reports unreachable for Lc 60 over a mid-light tint (real APCA ceiling ~55)', () => {
-    const result = foregroundFor({ l: 0.85, c: 0.05, h: 200 }, 60);
+  it('reports unreachable for Lc 60 over a mid-tone (APCA dead zone ~L0.7, ceiling ~56)', () => {
+    const result = foregroundFor({ l: 0.7, c: 0.05, h: 200 }, 60);
     expect(result.reachedTarget).toBe(false);
-    // The returned colour is the maximum-capacity side, ~Lc 55, not a false pass.
+    // The returned colour is the maximum-capacity side, ~Lc 56, not a false pass.
     expect(result.lc).toBeGreaterThan(50);
     expect(result.lc).toBeLessThan(60);
   });
