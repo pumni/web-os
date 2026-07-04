@@ -6,7 +6,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseOklch, type Oklch } from '../../src/lib/oklch';
+import { parseOklch, formatOklch, type Oklch } from '../../src/lib/oklch';
 
 const scriptsDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 export const uiRoot = path.dirname(scriptsDir);
@@ -66,6 +66,7 @@ export function readBlock(source: string, selector: string): Map<string, string>
  */
 export function buildTokenMap(mode: Mode): Map<string, string> {
   const map = readVariables(css.tokens, ':root');
+  map.set('__mode', mode);
   for (const [name, value] of readVariables(css.brand, ':root')) {
     map.set(name, value);
   }
@@ -158,20 +159,148 @@ export function mixOklch(a: Oklch, b: Oklch, weightA: number): Oklch {
 const VAR = /^var\(\s*(--[\w-]+)\s*(?:,\s*([\s\S]+))?\)$/;
 
 export function resolveValue(value: string, map: Map<string, string>, seen: Set<string>): string {
-  const match = value.trim().match(VAR);
-  if (!match) return value.trim();
-  const [, ref, fallback] = match;
-  if (ref && map.has(ref) && !seen.has(ref)) {
-    seen.add(ref);
-    return resolveValue(map.get(ref)!, map, seen);
+  const trimmed = value.trim();
+  const match = trimmed.match(VAR);
+  if (match) {
+    const [, ref, fallback] = match;
+    if (ref && map.has(ref) && !seen.has(ref)) {
+      const nextSeen = new Set(seen);
+      nextSeen.add(ref);
+      return resolveValue(map.get(ref)!, map, nextSeen);
+    }
+    if (fallback) return resolveValue(fallback, map, seen);
+    throw new Error(`Cannot resolve ${value} (missing ${ref}, no fallback)`);
   }
-  if (fallback) return resolveValue(fallback, map, seen);
-  throw new Error(`Cannot resolve ${value} (missing ${ref}, no fallback)`);
+
+  if (trimmed.startsWith('light-dark(')) {
+    const lightDarkMatch = trimmed.match(/^light-dark\(\s*(?<inner>.+)\s*\)$/);
+    if (lightDarkMatch?.groups?.inner) {
+      const parts = splitTopLevelCommas(lightDarkMatch.groups.inner).map(p => p.trim());
+      const mode = map.get('__mode') || 'light';
+      const branch = mode === 'dark' ? parts[1] : parts[0];
+      if (!branch) throw new Error(`Invalid light-dark value: ${value}`);
+      return resolveValue(branch, map, seen);
+    }
+  }
+
+  if (trimmed.startsWith('oklch(from ')) {
+    const color = resolveColorValue(trimmed, map, seen);
+    return color.alpha === 1
+      ? formatOklch(color)
+      : formatOklch(color, { alpha: color.alpha });
+  }
+
+  return trimmed;
 }
 
 export function resolveLiteral(name: string, map: Map<string, string>): string {
   if (!map.has(name)) throw new Error(`Unknown token: ${name}`);
   return resolveValue(map.get(name)!, map, new Set([name]));
+}
+
+function parseRelativeColor(value: string): { baseColor: string; lExpr: string; cExpr: string; hExpr: string; aExpr?: string } | null {
+  const match = value.trim().match(/^oklch\(\s*from\s+(?<rest>.+)\)$/s);
+  if (!match?.groups?.rest) return null;
+  const rest = match.groups.rest.trim();
+  
+  let depth = 0;
+  let colorEnd = -1;
+  for (let i = 0; i < rest.length; i++) {
+    const char = rest[i];
+    if (char === '(') depth++;
+    else if (char === ')') depth--;
+    else if ((char === ' ' || char === '\t') && depth === 0) {
+      colorEnd = i;
+      break;
+    }
+  }
+  if (colorEnd === -1) return null;
+  
+  const baseColor = rest.slice(0, colorEnd).trim();
+  const remains = rest.slice(colorEnd).trim();
+  
+  let slashIdx = -1;
+  depth = 0;
+  for (let i = 0; i < remains.length; i++) {
+    const char = remains[i];
+    if (char === '(') depth++;
+    else if (char === ')') depth--;
+    else if (char === '/' && depth === 0) {
+      slashIdx = i;
+      break;
+    }
+  }
+  
+  let channelsPart = remains;
+  let aExpr: string | undefined;
+  if (slashIdx !== -1) {
+    channelsPart = remains.slice(0, slashIdx).trim();
+    aExpr = remains.slice(slashIdx + 1).trim();
+  }
+  
+  const channels: string[] = [];
+  let current = '';
+  depth = 0;
+  for (let i = 0; i < channelsPart.length; i++) {
+    const char = channelsPart[i];
+    if (char === '(') depth++;
+    else if (char === ')') depth--;
+    
+    if ((char === ' ' || char === '\t') && depth === 0) {
+      if (current.trim()) {
+        channels.push(current.trim());
+        current = '';
+      }
+    } else {
+      current += char;
+    }
+  }
+  if (current.trim()) {
+    channels.push(current.trim());
+  }
+  
+  if (channels.length !== 3) {
+    throw new Error(`Expected exactly 3 color channels in relative color syntax: ${value}`);
+  }
+  
+  return {
+    baseColor,
+    lExpr: channels[0]!,
+    cExpr: channels[1]!,
+    hExpr: channels[2]!,
+    aExpr,
+  };
+}
+
+function resolveVariablesInExpression(expr: string, tokenMap: Map<string, string>, seen: Set<string>): string {
+  return expr.replace(/var\(\s*(--[\w-]+)\s*\)/g, (match, name) => {
+    const rawVal = tokenMap.get(name);
+    if (!rawVal) throw new Error(`Missing token during expression resolution: ${name}`);
+    return resolveValue(rawVal, tokenMap, seen);
+  });
+}
+
+function evalChannel(expr: string, baseVal: number, ident: string, tokenMap: Map<string, string>, seen: Set<string>): number {
+  const resolvedExpr = resolveVariablesInExpression(expr, tokenMap, seen);
+  const clean = resolvedExpr.trim().toLowerCase();
+  if (clean === ident) {
+    return baseVal;
+  }
+  if (/^-?[\d.]+$/.test(clean)) {
+    return Number(clean);
+  }
+  const calcMatch = clean.match(/^calc\(\s*([a-z]+)\s*([+\-*])\s*(-?[\d.]+)\s*\)$/);
+  if (calcMatch) {
+    const [, calcIdent, op, numStr] = calcMatch;
+    if (calcIdent !== ident) {
+      throw new Error(`Invalid identifier in calc expression: expected '${ident}', got '${calcIdent}'`);
+    }
+    const val = Number(numStr);
+    if (op === '+') return baseVal + val;
+    if (op === '-') return baseVal - val;
+    if (op === '*') return baseVal * val;
+  }
+  throw new Error(`Unsupported channel expression grammar: '${expr}' (resolved: '${resolvedExpr}')`);
 }
 
 export function resolveColorValue(value: string, tokenMap: Map<string, string>, seen: Set<string>): Oklch {
@@ -187,6 +316,17 @@ export function resolveColorValue(value: string, tokenMap: Map<string, string>, 
   }
 
   if (normalized.startsWith('oklch(')) {
+    if (normalized.startsWith('oklch(from ')) {
+      const parsed = parseRelativeColor(normalized);
+      if (!parsed) throw new Error(`Invalid relative color syntax: ${normalized}`);
+      const baseVal = resolveValue(parsed.baseColor, tokenMap, seen);
+      const base = resolveColorValue(baseVal, tokenMap, seen);
+      const l = evalChannel(parsed.lExpr, base.l, 'l', tokenMap, seen);
+      const c = evalChannel(parsed.cExpr, base.c, 'c', tokenMap, seen);
+      const h = evalChannel(parsed.hExpr, base.h, 'h', tokenMap, seen);
+      const alpha = parsed.aExpr ? evalChannel(parsed.aExpr, base.alpha, 'alpha', tokenMap, seen) : base.alpha;
+      return { l, c, h, alpha };
+    }
     return parseOklch(normalized);
   }
 
@@ -204,8 +344,11 @@ export function resolveColorValue(value: string, tokenMap: Map<string, string>, 
       : bWeighted?.groups?.pct
         ? 1 - Number(bWeighted.groups.pct) / 100
         : 0.5;
-    const a = resolveColorValue(aExpr, tokenMap, seen);
-    const b = resolveColorValue(bExpr, tokenMap, seen);
+    
+    const aVal = resolveValue(aExpr, tokenMap, seen);
+    const bVal = resolveValue(bExpr, tokenMap, seen);
+    const a = resolveColorValue(aVal, tokenMap, seen);
+    const b = resolveColorValue(bVal, tokenMap, seen);
     return mixOklch(a, b, weightA);
   }
 
@@ -224,7 +367,10 @@ export function resolveColor(
   if (!value) {
     throw new Error(`Missing token: ${name}`);
   }
-  return resolveColorValue(value, tokenMap, new Set([...seen, name]));
+  const nextSeen = new Set(seen);
+  nextSeen.add(name);
+  const resolved = resolveValue(value, tokenMap, nextSeen);
+  return resolveColorValue(resolved, tokenMap, nextSeen);
 }
 
 export function resolveOklch(name: string, map: Map<string, string>): Oklch {
