@@ -337,4 +337,101 @@ describe('CardSpotlight', () => {
       window.requestAnimationFrame = originalRAF;
     }
   });
+
+  it('coalesces multiple pointer moves in a single frame to the latest coordinates', async () => {
+    // Real browsers batch rapid pointermove events between animation frames.
+    // The handler must use the *latest* coords, not the first — otherwise the
+    // spotlight appears to lag/stick and "not move" when the cursor sweeps fast.
+    const originalRAF = window.requestAnimationFrame;
+    const originalCAF = window.cancelAnimationFrame;
+    const pendingFrames: Array<(time: number) => void> = [];
+    window.requestAnimationFrame = (cb) => {
+      pendingFrames.push(cb);
+      return pendingFrames.length;
+    };
+    window.cancelAnimationFrame = () => {};
+
+    try {
+      render(<CardSpotlight data-testid="spot" />);
+      const el = screen.getByTestId('spot');
+      el.getBoundingClientRect = () =>
+        ({ left: 0, top: 0, width: 100, height: 100 }) as DOMRect;
+
+      // Enter first so rectRef caches the rect.
+      fireEvent.pointerEnter(el, { clientX: 0, clientY: 0 });
+
+      // First move schedules a frame (frameId !== null after this call).
+      fireEvent.pointerMove(el, { clientX: 10, clientY: 10 });
+      // While the first frame is still pending, three more moves arrive.
+      // All must be coalesced; only the last coords (90,90) should be applied
+      // when the frame fires.
+      fireEvent.pointerMove(el, { clientX: 30, clientY: 40 });
+      fireEvent.pointerMove(el, { clientX: 60, clientY: 70 });
+      fireEvent.pointerMove(el, { clientX: 90, clientY: 90 });
+
+      // Flush the scheduled frame (mimics the browser firing the rAF callback).
+      expect(pendingFrames.length).toBe(1);
+      pendingFrames[0]!(0);
+
+      expect(el.style.getPropertyValue('--spot-x')).toBe('90%');
+      expect(el.style.getPropertyValue('--spot-y')).toBe('90%');
+    } finally {
+      window.requestAnimationFrame = originalRAF;
+      window.cancelAnimationFrame = originalCAF;
+    }
+  });
+
+  it('stays accurate after the page scrolls between pointerenter and pointermove', async () => {
+    // rectRef caches the bounding rect at pointerenter. When the page scrolls
+    // afterwards, rect.left/top change by the scroll delta. The handler must
+    // account for this so the spotlight doesn't drift.
+    const originalRAF = window.requestAnimationFrame;
+    const originalCAF = window.cancelAnimationFrame;
+    const pendingFrames: Array<(time: number) => void> = [];
+    window.requestAnimationFrame = (cb) => {
+      pendingFrames.push(cb);
+      return pendingFrames.length;
+    };
+    window.cancelAnimationFrame = () => {};
+
+    const originalScrollX = window.scrollX;
+    const originalScrollY = window.scrollY;
+
+    try {
+      render(<CardSpotlight data-testid="spot" />);
+      const el = screen.getByTestId('spot');
+
+      // At enter time: element at {left: 0, top: 0}, page not scrolled.
+      el.getBoundingClientRect = () =>
+        ({ left: 0, top: 0, width: 100, height: 100 }) as DOMRect;
+      window.scrollX = 0;
+      window.scrollY = 0;
+      fireEvent.pointerEnter(el, { clientX: 5, clientY: 5 });
+
+      // User scrolls the page down/right by 50px while still hovering. The
+      // element's viewport-relative rect shifts accordingly.
+      window.scrollX = 50;
+      window.scrollY = 50;
+      el.getBoundingClientRect = () =>
+        ({ left: -50, top: -50, width: 100, height: 100 }) as DOMRect;
+
+      // Cursor sits at viewport {60, 60} → element-local {60 - (-50), 60 - (-50)} = {110, 110}
+      // → 110% (off-edge), but the math must hold regardless.
+      fireEvent.pointerMove(el, { clientX: 60, clientY: 60 });
+      pendingFrames[0]!(0);
+
+      // Without scroll correction the formula would compute against the stale
+      // cached rect (left:0) and yield 60% — wrong. With correct handling the
+      // spotlight reflects the true position relative to the visible rect.
+      const x = el.style.getPropertyValue('--spot-x');
+      const y = el.style.getPropertyValue('--spot-y');
+      expect(Math.round(Number.parseFloat(x))).toBe(110);
+      expect(Math.round(Number.parseFloat(y))).toBe(110);
+    } finally {
+      window.requestAnimationFrame = originalRAF;
+      window.cancelAnimationFrame = originalCAF;
+      window.scrollX = originalScrollX;
+      window.scrollY = originalScrollY;
+    }
+  });
 });

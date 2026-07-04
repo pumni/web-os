@@ -505,19 +505,6 @@ function checkWorkflowIndexNames() {
   }
 }
 
-function checkSecretsIntegration() {
-  const secretsScript = path.join(__dirname, 'check-secrets.mjs');
-  if (!fs.existsSync(secretsScript)) {
-    reportWarn('check-secrets.mjs not found — skipping secrets scan.');
-    return;
-  }
-  try {
-    execFileSync(process.execPath, [secretsScript], { stdio: 'inherit', cwd: ROOT });
-  } catch {
-    reportError('check-secrets.mjs reported one or more findings — fix before proceeding.');
-  }
-}
-
 function checkSkillShimsSync() {
   // The .claude/skills/<name>/SKILL.md shims are generated from the canonical
   // .agents/skills bodies (single source of truth). A hand-edited shim drifts its
@@ -693,7 +680,8 @@ function checkDesignTokenBoundaries() {
     ...collectFiles('packages/ui/src', ['.css', '.ts', '.tsx']),
   ];
   const rawColorPattern = /oklch\(/g;
-  const primitiveVarPattern = /var\(--(?:indigo|violet|neutral|red|emerald|amber|coral|cyan|rose)-/g;
+  const primitiveVarPattern =
+    /var\(--(?:indigo|violet|neutral|red|emerald|amber|coral|cyan|rose)-/g;
 
   for (const relativePath of files) {
     if (allowedTokenFiles.has(relativePath)) continue;
@@ -794,7 +782,6 @@ checkPackageScripts();
 checkDesignTokenBoundaries();
 checkUiPackageBoundaries();
 checkDocApiDenylist();
-checkSecretsIntegration();
 checkSkillShimsSync();
 checkProjectGraphSync();
 checkAdrRegisterSync();

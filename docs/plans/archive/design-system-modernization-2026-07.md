@@ -234,7 +234,7 @@ Regenerate `tokens.dtcg.json`; `dtcg-export.test.ts` keeps its byte-match contra
 
 ### 10b. `@property` registration
 
-Register `--spot-x`/`--spot-y` in `glass.css` (`syntax: '<length-percentage>'`, `inherits: false`, `initial-value: 50%`) so the spotlight position interpolates as a typed value; add a short `motion-safe` transition on the spot position. Progressive: non-supporting browsers keep today's behavior.
+Register `--spot-x`/`--spot-y` in `glass.css` (`syntax: '<length-percentage>'`, `inherits: true`, `initial-value: 50%`) so the spotlight position interpolates as a typed value; add a short `motion-safe` transition on the spot position. Progressive: non-supporting browsers keep today's behavior. Note: `inherits: true` is mandatory — the radial-gradient that consumes these vars lives on the `::before` pseudo-element (a separate box). With `inherits: false` the `::before` only ever sees the `initial-value` (50%/50%) and the spotlight is stuck at the card center regardless of `pointermove` updates on the originating element.
 
 ### 10c. Container-query density
 

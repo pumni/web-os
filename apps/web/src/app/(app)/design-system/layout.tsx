@@ -1,13 +1,14 @@
 'use client';
 
-import * as React from 'react';
+import { tabsListVariants, tabsTriggerVariants } from '@pumni/ui/layout';
+import { cn } from '@pumni/ui/lib/cn';
+import type { CommandItem } from '@pumni/ui/overlay';
+import { CommandPalette } from '@pumni/ui/overlay';
+import { CommandIcon, SettingsIcon, UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import * as React from 'react';
 import { toast } from 'sonner';
-import { CommandIcon, UserIcon, SettingsIcon } from 'lucide-react';
-import { CommandPalette } from '@pumni/ui/overlay';
-import type { CommandItem } from '@pumni/ui/overlay';
-import { cn } from '@pumni/ui/lib/cn';
 
 // Subcomponents
 import { ShowcaseHeader } from '@/features/design-system';
@@ -54,34 +55,25 @@ export default function DesignSystemLayout({ children }: { children: React.React
     <div className="space-y-8 pb-16">
       <ShowcaseHeader onOpenCommand={() => setCommandOpen(true)} />
 
-      {/* Premium Horizontal Navigation Tab Bar */}
-      <div className="border-b border-border">
-        <nav className="flex gap-1" aria-label="Design System Navigation">
-          {TABS.map((tab) => {
-            const isActive = pathname === tab.href;
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={cn(
-                  'relative border-b-2 px-4 py-2.5 text-sm font-medium outline-hidden transition-all duration-(--duration-base) ease-fluid',
-                  isActive
-                    ? 'border-primary text-foreground'
-                    : 'border-transparent state-hover text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {tab.label}
-                {isActive && (
-                  <span
-                    className="absolute inset-x-0 -bottom-0.5 h-0.5 bg-primary"
-                    style={{ viewTransitionName: 'active-ds-tab' }}
-                  />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+      {/* Horizontal Navigation Tab Bar */}
+      <nav className={cn(tabsListVariants, 'w-full justify-start')} aria-label="Design System Navigation">
+        {TABS.map((tab) => {
+          const isActive = pathname === tab.href;
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              data-state={isActive ? 'active' : 'inactive'}
+              className={cn(tabsTriggerVariants, 'flex-none px-6 py-4 text-base')}
+            >
+              {tab.label}
+              {isActive && (
+                <span className="pointer-events-none absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-primary" />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
 
       {/* Subpage content */}
       <div className="min-w-0 flex-1">{children}</div>

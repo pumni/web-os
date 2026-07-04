@@ -28,13 +28,18 @@
 
 @property --spot-x {
   syntax: '<length-percentage>';
-  inherits: false;
+  /* inherits: true is required — the radial-gradient that consumes this var
+   * lives on the element's ::before pseudo-element, which is a separate box.
+   * With `inherits: false` the ::before would only ever see the initial-value,
+   * so the spotlight would be stuck at 50% 50% and never track the cursor. */
+  inherits: true;
   initial-value: 50%;
 }
 
 @property --spot-y {
   syntax: '<length-percentage>';
-  inherits: false;
+  /* See --spot-x comment: must inherit so ::before sees the live value. */
+  inherits: true;
   initial-value: 50%;
 }
 

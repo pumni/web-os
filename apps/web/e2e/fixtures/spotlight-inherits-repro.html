@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>spotlight @property inherits repro</title>
+    <style>
+      /* Reproduce the exact registration patterns from glass.css. We test both
+       * `inherits: false` (current, suspected bug) and `inherits: true` (fix)
+       * side-by-side on two cards using the same DOM structure, the same
+       * radial-gradient consuming the vars on ::before. */
+      @property --spot-x-false {
+        syntax: '<length-percentage>';
+        inherits: false;
+        initial-value: 50%;
+      }
+      @property --spot-y-false {
+        syntax: '<length-percentage>';
+        inherits: false;
+        initial-value: 50%;
+      }
+      @property --spot-x-true {
+        syntax: '<length-percentage>';
+        inherits: true;
+        initial-value: 50%;
+      }
+      @property --spot-y-true {
+        syntax: '<length-percentage>';
+        inherits: true;
+        initial-value: 50%;
+      }
+
+      .card {
+        position: relative;
+        width: 300px;
+        height: 200px;
+        margin: 20px;
+        border: 1px solid #888;
+        overflow: hidden;
+      }
+      .card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(
+          200px circle at var(--spot-x-XXXX, 50%) var(--spot-y-XXXX, 50%),
+          rgba(99, 102, 241, 0.35),
+          transparent 70%
+        );
+      }
+      .false::before {
+        --spot-x-XXXX: var(--spot-x-false);
+        --spot-y-XXXX: var(--spot-y-false);
+      }
+      .true::before {
+        --spot-x-XXXX: var(--spot-x-true);
+        --spot-y-XXXX: var(--spot-y-true);
+      }
+      .label {
+        position: relative;
+        z-index: 2;
+        font-family: system-ui;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card false" id="card-false">
+      <div class="label">inherits: false — expected: spotlight stuck at center</div>
+    </div>
+    <div class="card true" id="card-true">
+      <div class="label">inherits: true — expected: spotlight tracks cursor</div>
+    </div>
+    <script>
+      // Drive the same var updates on both cards from pointermove so the only
+      // varying factor is the `inherits` descriptor.
+      function track(card, xName, yName) {
+        card.addEventListener('pointermove', (e) => {
+          const r = card.getBoundingClientRect();
+          const x = ((e.clientX - r.left) / r.width) * 100;
+          const y = ((e.clientY - r.top) / r.height) * 100;
+          card.style.setProperty(xName, x + '%');
+          card.style.setProperty(yName, y + '%');
+        });
+      }
+      track(document.getElementById('card-false'), '--spot-x-false', '--spot-y-false');
+      track(document.getElementById('card-true'), '--spot-x-true', '--spot-y-true');
+    </script>
+  </body>
+</html>

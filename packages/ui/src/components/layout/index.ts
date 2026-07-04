@@ -13,7 +13,7 @@ export { CardWell, cardWellVariants } from './card-well';
 export { IconBadge, iconBadgeVariants } from './icon-badge';
 export { Separator } from './separator';
 export { ScrollArea, ScrollBar } from './scroll-area';
-export { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
+export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants, tabsTriggerVariants } from './tabs';
 export {
   Avatar,
   AvatarBadge,
