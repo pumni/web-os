@@ -1,7 +1,7 @@
 'use client';
 
-import * as React from 'react';
 import { Tooltip as TooltipPrimitive } from 'radix-ui';
+import * as React from 'react';
 
 import { cn } from '../../lib/cn';
 import { OVERLAY_ANIMATION, OVERLAY_SLIDE_SIDES } from './_overlay-variants';
@@ -34,7 +34,7 @@ function TooltipTrigger({ ...props }: React.ComponentProps<typeof TooltipPrimiti
 
 function TooltipContent({
   className,
-  sideOffset = 2,
+  sideOffset = 0,
   style,
   children,
   ...props
@@ -60,4 +60,4 @@ function TooltipContent({
   );
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger };

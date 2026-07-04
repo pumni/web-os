@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { toast } from 'sonner';
 import { AlertCircleIcon, AlertTriangleIcon, CheckCircle2Icon, InfoIcon } from 'lucide-react';
-import { Badge, Banner, KbdChip, PingDot, Skeleton, Spinner, Progress, Bubble, BubbleContent, BubbleGroup, BubbleReactions } from '@pumni/ui/feedback';
+import { Badge, Banner, KbdChip, PingDot, Skeleton, Spinner, Progress, Bubble, BubbleContent, BubbleGroup, BubbleReactions, Message, MessageGroup, MessageAvatar, MessageContent, MessageFooter, MessageHeader, Marker, MarkerContent } from '@pumni/ui/feedback';
 import { Button } from '@pumni/ui/form';
 import {
   Avatar,
@@ -348,42 +348,84 @@ export function FeedbackSection() {
               Conversation clusters with shape-grouping (first/middle/last/single) and hover-reveal timestamps.
             </CardDescription>
           </CardHeader>
-          <CardContent className="group flex flex-col gap-4 pt-0">
-            <Bubble align="end" variant="primary">
-              <BubbleContent timeLabel="10:00">Hey there! what&apos;s up?</BubbleContent>
-            </Bubble>
-            <BubbleGroup>
-              <Bubble variant="muted" shape="first">
-                <BubbleContent timeLabel="10:01">Hey! Want to see chat bubbles?</BubbleContent>
-              </Bubble>
-              <Bubble variant="muted" shape="last">
-                <BubbleContent timeLabel="10:02">
-                  I can group messages, switch sides, and keep the whole thread easy
-                  to scan.
-                </BubbleContent>
-                <BubbleReactions role="img" aria-label="Reaction: thumbs up">
-                  <span>👍</span>
-                </BubbleReactions>
-              </Bubble>
-            </BubbleGroup>
-            <Bubble align="end" variant="primary">
-              <BubbleContent timeLabel="10:03">Sure. Hit me with your best demo.</BubbleContent>
-            </Bubble>
-            <Bubble variant="muted" shape="single">
-              <BubbleContent timeLabel="10:04">
-                Yes. You are reading a demo that is demoing itself. Very meta. Very
-                on-brand.
-              </BubbleContent>
-              <BubbleReactions
-                role="img"
-                aria-label="Reactions: thumbs up, fire, eyes, and 2 more"
-              >
-                <span>👍</span>
-                <span>🔥</span>
-                <span>👀</span>
-                <span>+2</span>
-              </BubbleReactions>
-            </Bubble>
+          <CardContent className="group flex flex-col gap-6 pt-0">
+            {/* Message 1: Me */}
+            <Message align="end">
+              <MessageAvatar>
+                <Avatar className="size-8">
+                  <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="@me" />
+                  <AvatarFallback>ME</AvatarFallback>
+                </Avatar>
+              </MessageAvatar>
+              <MessageContent>
+                <Bubble variant="primary">
+                  <BubbleContent>Deploying to prod real quick.</BubbleContent>
+                </Bubble>
+              </MessageContent>
+            </Message>
+
+            {/* Message 2: Oliver */}
+            <Message>
+              <MessageAvatar>
+                <Avatar className="size-8">
+                  <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80" alt="@rabbit" />
+                  <AvatarFallback>R</AvatarFallback>
+                </Avatar>
+              </MessageAvatar>
+              <MessageContent>
+                <Bubble variant="muted">
+                  <BubbleContent>It&apos;s 4:55 PM. On a Friday.</BubbleContent>
+                </Bubble>
+              </MessageContent>
+            </Message>
+
+            {/* Message 3: Me */}
+            <Message align="end">
+              <MessageAvatar>
+                <Avatar className="size-8">
+                  <AvatarImage src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="@me" />
+                  <AvatarFallback>ME</AvatarFallback>
+                </Avatar>
+              </MessageAvatar>
+              <MessageContent>
+                <Bubble variant="primary">
+                  <BubbleContent>It&apos;s a one-line change.</BubbleContent>
+                </Bubble>
+                <MessageFooter className="text-[10px] text-muted-foreground mt-1">Delivered</MessageFooter>
+              </MessageContent>
+            </Message>
+
+            {/* Message 4: Oliver Grouped */}
+            <Message>
+              <MessageAvatar>
+                <Avatar className="size-8">
+                  <AvatarImage src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80" alt="@rabbit" />
+                  <AvatarFallback>R</AvatarFallback>
+                </Avatar>
+              </MessageAvatar>
+              <MessageContent>
+                <BubbleGroup>
+                  <Bubble variant="muted">
+                    <BubbleContent>
+                      It&apos;s always a one-line change 😭.
+                    </BubbleContent>
+                  </Bubble>
+                  <Bubble variant="muted">
+                    <BubbleContent>Alright, let me take a look.</BubbleContent>
+                    <BubbleReactions aria-label="Reaction: thumbs up" align="end">
+                      <span>👍</span>
+                    </BubbleReactions>
+                  </Bubble>
+                </BubbleGroup>
+              </MessageContent>
+            </Message>
+
+            {/* Typing Marker */}
+            <Marker role="status" className="pl-10">
+              <MarkerContent className="shimmer">
+                <span className="font-semibold text-neutral-400">Oliver</span> is typing...
+              </MarkerContent>
+            </Marker>
 
             <p className="text-xs text-muted-foreground pt-4 text-center">
               Hover over bubbles to reveal timestamps (group-reveal) or click to toggle on mobile.

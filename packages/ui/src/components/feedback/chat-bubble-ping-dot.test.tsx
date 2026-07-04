@@ -103,14 +103,14 @@ describe('Bubble', () => {
     expect(screen.getByTestId('skin').className).toContain('rounded-tr-xs');
   });
 
-  it('keeps the body rounded-xl when shape is single', () => {
+  it('keeps the body rounded-2xl when shape is single', () => {
     render(
       <Bubble variant="muted" shape="single">
         <BubbleContent data-testid="skin">Body</BubbleContent>
       </Bubble>,
     );
     const skin = screen.getByTestId('skin');
-    expect(skin.className).toContain('rounded-xl');
+    expect(skin.className).toContain('rounded-2xl');
     expect(skin.className).not.toContain('rounded-tl-xs');
   });
 

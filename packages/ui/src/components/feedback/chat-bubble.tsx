@@ -4,7 +4,7 @@ import * as React from 'react';
 import { cn } from '../../lib/cn';
 
 const chatBubbleVariants = cva(
-  'rounded-xl px-3 py-2 wrap-break-word shadow-control select-text',
+  'rounded-2xl px-4 py-2.5 wrap-break-word shadow-sm select-text transition-all duration-200',
   {
     variants: {
       variant: {
@@ -27,33 +27,33 @@ const chatBubbleVariants = cva(
       {
         variant: 'muted',
         shape: 'first',
-        class: 'rounded-bl-xs',
+        class: '!rounded-bl-xs',
       },
       {
         variant: 'muted',
         shape: 'middle',
-        class: 'rounded-tl-xs rounded-bl-xs',
+        class: '!rounded-tl-xs !rounded-bl-xs',
       },
       {
         variant: 'muted',
         shape: 'last',
-        class: 'rounded-tl-xs',
+        class: '!rounded-tl-xs',
       },
       // `primary` (right column): the floor-side corner is the bottom-right.
       {
         variant: 'primary',
         shape: 'first',
-        class: 'rounded-br-xs',
+        class: '!rounded-br-xs',
       },
       {
         variant: 'primary',
         shape: 'middle',
-        class: 'rounded-tr-xs rounded-br-xs',
+        class: '!rounded-tr-xs !rounded-br-xs',
       },
       {
         variant: 'primary',
         shape: 'last',
-        class: 'rounded-tr-xs',
+        class: '!rounded-tr-xs',
       },
     ],
     defaultVariants: {
@@ -219,15 +219,37 @@ const BubbleGroup = React.forwardRef<HTMLDivElement, BubbleGroupProps>(
 BubbleGroup.displayName = 'BubbleGroup';
 
 // 4. BubbleReactions (Reaction container)
-export interface BubbleReactionsProps extends React.ComponentPropsWithoutRef<'div'> {}
+const bubbleReactionsVariants = cva(
+  'absolute z-10 flex w-fit shrink-0 items-center justify-center gap-1 rounded-full border border-border bg-card px-1.5 py-0.5 text-xs shadow-sm ring-3 ring-background select-none transition-transform hover:scale-105 active:scale-95',
+  {
+    variants: {
+      side: {
+        top: 'top-0 -translate-y-1/2',
+        bottom: 'bottom-0 translate-y-1/2',
+      },
+      align: {
+        start: 'left-3',
+        end: 'right-3',
+      },
+    },
+    defaultVariants: {
+      side: 'bottom',
+      align: 'end',
+    },
+  }
+);
+
+export interface BubbleReactionsProps
+  extends React.ComponentPropsWithoutRef<'div'>,
+    VariantProps<typeof bubbleReactionsVariants> {}
 
 const BubbleReactions = React.forwardRef<HTMLDivElement, BubbleReactionsProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, side = 'bottom', align = 'end', children, ...props }, ref) => {
     return (
       <div
         ref={ref}
         className={cn(
-          'absolute -bottom-2.5 right-2 flex items-center gap-0.5 rounded-full border border-border bg-card px-1.5 py-0.5 text-[9px] shadow-sm select-none z-10 transition-transform hover:scale-105 active:scale-95',
+          bubbleReactionsVariants({ side, align }),
           className,
         )}
         {...props}

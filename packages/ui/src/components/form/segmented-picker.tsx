@@ -3,10 +3,8 @@
 import * as React from 'react';
 import { RadioGroup as RadioGroupPrimitive } from 'radix-ui';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { motion } from 'motion/react';
 
 import { cn } from '../../lib/cn';
-import { transition } from '../../lib/motion';
 
 /**
  * SegmentedPicker — the single primitive for "choose one of N" with NO panel
@@ -22,12 +20,6 @@ import { transition } from '../../lib/motion';
  * `--background` (neutral-100 vs neutral-50) so the pill vanished; in dark,
  * `--muted` was LIGHTER than the host card, inverting the well. The
  * `--segmented-*` stops fix both.
- *
- * The sliding pill uses `motion`'s shared-`layoutId` animation: the pill
- * element lives inside whichever item is `checked`, and motion tweens its
- * position/size between mounts. Reduced-motion is neutralised at the app root
- * by `MotionConfig` (see `app/layout.tsx`), matching the same mechanism used
- * by other recipe-based motion primitives.
  *
  * Backward-compatible API: `options` / `value` / `onChange` / `labels` /
  * `aria-label` are unchanged. New: `size`, `fullWidth`, and per-option `icon`
@@ -102,10 +94,36 @@ function SegmentedPicker<T extends string>({
   'aria-label': string;
   className?: string;
 }) {
-  // Stable id scopes the shared-layout pill so multiple pickers on one page
-  // each animate their own pill (a duplicate `layoutId` would cross-animate).
-  const reactId = React.useId();
-  const layoutId = `segmented-${reactId}`;
+  const trackRef = React.useRef<HTMLDivElement>(null);
+
+  React.useLayoutEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const updateIndicator = () => {
+      const activeItem = track.querySelector('[data-state="checked"]') as HTMLElement;
+      if (!activeItem) return;
+
+      if (orientation === 'vertical') {
+        const { offsetTop, offsetHeight } = activeItem;
+        track.style.setProperty('--indicator-offset', `${offsetTop}px`);
+        track.style.setProperty('--indicator-height', `${offsetHeight}px`);
+      } else {
+        const { offsetLeft, offsetWidth } = activeItem;
+        track.style.setProperty('--indicator-offset', `${offsetLeft}px`);
+        track.style.setProperty('--indicator-width', `${offsetWidth}px`);
+      }
+    };
+
+    updateIndicator();
+
+    const resizeObserver = new ResizeObserver(updateIndicator);
+    resizeObserver.observe(track);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [value, orientation]);
 
   const items = normalizeOptions(options, labels);
   // Inline style drives the grid column count so a `fullWidth` track lays its
@@ -115,6 +133,7 @@ function SegmentedPicker<T extends string>({
 
   return (
     <RadioGroupPrimitive.Root
+      ref={trackRef}
       data-slot="segmented-picker"
       aria-label={ariaLabel}
       value={value}
@@ -127,13 +146,36 @@ function SegmentedPicker<T extends string>({
         // neutral-900 dark), so the well reads as recessed — `--muted` alone
         // collapsed against `--background` in light and inverted in dark. No
         // outer border: the track/surface luminance gap separates it.
-        'inline-grid gap-1 rounded-lg bg-(--segmented-track) p-0.75',
+        'relative inline-grid gap-1 rounded-lg bg-(--segmented-track) p-0.75',
         orientation === 'horizontal' ? 'grid-flow-col auto-cols-max' : 'grid-flow-row auto-rows-max',
         fullWidth && orientation === 'horizontal' && 'grid w-full',
         className,
       )}
       style={trackStyle}
     >
+      {/* Active pill indicator — slides using CSS Custom Properties.
+          aria-hidden + pointer-events-none keep it purely decorative. */}
+      <span
+        aria-hidden
+        data-slot="segmented-picker-indicator"
+        className={cn(
+          "pointer-events-none absolute z-0 rounded-md bg-(--segmented-active) border border-segmented-active-border shadow-segmented-active transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          orientation === 'vertical'
+            ? "left-0.75 right-0.75 top-0"
+            : "top-0.75 bottom-0.75 left-0"
+        )}
+        style={
+          orientation === 'vertical'
+            ? {
+                height: 'var(--indicator-height, 0px)',
+                transform: 'translateY(var(--indicator-offset, 0px))',
+              }
+            : {
+                width: 'var(--indicator-width, 0px)',
+                transform: 'translateX(var(--indicator-offset, 0px))',
+              }
+        }
+      />
       {items.map(({ value: optionValue, label, Icon }) => {
         const checked = optionValue === value;
         return (
@@ -147,45 +189,14 @@ function SegmentedPicker<T extends string>({
               fullWidth && 'w-full px-2',
             )}
           >
-            {/* Sliding active pill — lives inside the checked item only. The
-                shared `layoutId` makes motion tween the pill between items on
-                value change (mount on the new item, unmount on the old); under
-                reduced-motion we drop `layout` so it just appears in place
-                without a tween. `aria-hidden` + `pointer-events-none` keep it
-                purely decorative so it cannot pollute the radiogroup's role
-                contract or swallow pointer events meant for the radio. */}
-            {checked && (
-              <motion.span
-                aria-hidden
-                data-slot="segmented-picker-indicator"
-                className="pointer-events-none absolute inset-0 -z-10 rounded-md bg-(--segmented-active) border border-segmented-active-border shadow-segmented-active"
-                layoutId={layoutId}
-                layout
-                transition={transition.snappy}
-              />
-            )}
-            <span className="relative inline-flex items-center justify-center">
-              {/* Inactive layer */}
-              <span
-                aria-hidden
-                className={cn(
-                  'inline-flex items-center justify-center gap-1.5 transition-opacity duration-(--duration-fast) ease-fluid',
-                  !checked ? 'text-muted-foreground font-normal opacity-100' : 'opacity-0',
-                )}
-              >
-                {Icon && <Icon className="shrink-0" />}
-                {label}
-              </span>
-              {/* Active layer */}
-              <span
-                className={cn(
-                  'absolute inset-0 inline-flex items-center justify-center gap-1.5 transition-opacity duration-(--duration-fast) ease-fluid font-medium text-foreground',
-                  checked ? 'opacity-100' : 'opacity-0',
-                )}
-              >
-                {Icon && <Icon className="shrink-0" />}
-                {label}
-              </span>
+            <span
+              className={cn(
+                'inline-flex items-center justify-center gap-1.5 transition-colors duration-200',
+                checked ? 'text-foreground font-medium' : 'text-muted-foreground font-normal'
+              )}
+            >
+              {Icon && <Icon className="shrink-0" />}
+              {label}
             </span>
           </RadioGroupPrimitive.Item>
         );
