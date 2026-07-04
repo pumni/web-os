@@ -280,6 +280,24 @@
         "unit": "rem"
       }
     },
+    "size-display--line-height": {
+      "$type": "number",
+      "$value": 1.15
+    },
+    "size-display-max": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2.5,
+        "unit": "rem"
+      }
+    },
+    "size-display-min": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.875,
+        "unit": "rem"
+      }
+    },
     "size-lg": {
       "$type": "dimension",
       "$value": {
@@ -645,6 +663,13 @@
       "$type": "dimension",
       "$value": {
         "value": 0.01,
+        "unit": "em"
+      }
+    },
+    "display": {
+      "$type": "dimension",
+      "$value": {
+        "value": -0.03,
         "unit": "em"
       }
     }

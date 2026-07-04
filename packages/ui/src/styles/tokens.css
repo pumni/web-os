@@ -138,6 +138,13 @@
   --font-size-3xl: 1.875rem;
   --font-size-4xl: 2.25rem;
 
+  /* --- Fluid Display Typo --- */
+  --font-size-display-min: 1.875rem;
+  --font-size-display-max: 2.5rem;
+  --font-size-display: clamp(var(--font-size-display-min), 4vw + 0.875rem, var(--font-size-display-max));
+  --font-size-display--line-height: 1.15;
+  --tracking-display: -0.03em;
+
   --line-height-xs: 1rem;
   --line-height-sm: 1.25rem;
   --line-height-base: 1.5rem;

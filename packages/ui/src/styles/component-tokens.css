@@ -61,4 +61,7 @@
   --switch-height: 1rem;
   --switch-width: 1.75rem;
   --switch-thumb-size: 0.75rem;
+
+  /* --- Fluid Display Typo (Compact) --- */
+  --tracking-display: -0.01em;
 }
