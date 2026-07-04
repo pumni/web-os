@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { readZIndex, tokenCss } from './token-test-utils';
+import { readZIndex, tokenCss, componentTokensCss } from './token-test-utils';
 
 /**
  * Z-index layering guard.
@@ -105,11 +105,11 @@ describe('z-index layering scale — semantic ordering', () => {
     expect(Number(matchPressed![1])).toBeGreaterThan(Number(matchHover![1]));
   });
 
-  it('density tokens are present in tokens.css', () => {
+  it('density tokens are present in CSS', () => {
     expect(tokenCss).toContain('--control-height-comfortable');
     expect(tokenCss).toContain('--control-height-compact');
     expect(tokenCss).toMatch(/\[data-density=['"]compact['"]\]/);
-    expect(tokenCss).toContain('--switch-width');
-    expect(tokenCss).toContain('--switch-thumb-size');
+    expect(componentTokensCss).toContain('--switch-width');
+    expect(componentTokensCss).toContain('--switch-thumb-size');
   });
 });

@@ -198,7 +198,7 @@ export function resolveLiteral(name: string, map: Map<string, string>): string {
   return resolveValue(map.get(name)!, map, new Set([name]));
 }
 
-function parseRelativeColor(value: string): { baseColor: string; lExpr: string; cExpr: string; hExpr: string; aExpr?: string } | null {
+function parseRelativeColor(value: string): { baseColor: string; lExpr: string; cExpr: string; hExpr: string; aExpr?: string | undefined } | null {
   const match = value.trim().match(/^oklch\(\s*from\s+(?<rest>.+)\)$/s);
   if (!match?.groups?.rest) return null;
   const rest = match.groups.rest.trim();

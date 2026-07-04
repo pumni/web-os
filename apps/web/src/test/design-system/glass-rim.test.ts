@@ -56,31 +56,23 @@ function readRuleBody(css: string, selector: string): string {
 }
 
 describe('the glass rim pair is tokenized', () => {
-  it('exposes --glass-shadow-edge in both :root and .dark', () => {
+  it('exposes --glass-shadow-edge in :root using light-dark()', () => {
     const lightBody = readRuleBody(themeCss, ':root');
-    const darkBody = readRuleBody(themeCss, '.dark');
 
-    expect(lightBody, 'light mode must define --glass-shadow-edge').toMatch(
-      /--glass-shadow-edge:\s*oklch\(/,
-    );
-    expect(darkBody, 'dark mode must define --glass-shadow-edge').toMatch(
-      /--glass-shadow-edge:\s*oklch\(/,
+    expect(lightBody, 'must define --glass-shadow-edge with light-dark() oklch colors').toMatch(
+      /--glass-shadow-edge:\s*light-dark\(\s*oklch\([^)]+\)\s*,\s*oklch\([^)]+\)\s*\)/,
     );
   });
 
   it('keeps the shadow-edge darker on light surfaces and stronger on dark', () => {
     // Pin the direction so a future edit can't invert it (which would flatten
-    // the volumetric read in one theme). `[^)/]*` stops before the `/` so the
-    // regex correctly captures the alpha after it.
-    const lightMatch = readRuleBody(themeCss, ':root').match(
-      /--glass-shadow-edge:\s*oklch\([^)/]*\/\s*([\d.]+)\)/,
-    );
-    const darkMatch = readRuleBody(themeCss, '.dark').match(
-      /--glass-shadow-edge:\s*oklch\([^)/]*\/\s*([\d.]+)\)/,
+    // the volumetric read in one theme).
+    const match = readRuleBody(themeCss, ':root').match(
+      /--glass-shadow-edge:\s*light-dark\(\s*oklch\([^)/]*\/\s*([\d.]+)\)\s*,\s*oklch\([^)/]*\/\s*([\d.]+)\)\s*\)/,
     );
 
-    const lightAlpha = lightMatch ? Number(lightMatch[1]) : NaN;
-    const darkAlpha = darkMatch ? Number(darkMatch[1]) : NaN;
+    const lightAlpha = match ? Number(match[1]) : NaN;
+    const darkAlpha = match ? Number(match[2]) : NaN;
 
     expect(lightAlpha, 'light shadow-edge alpha must be defined').not.toBeNaN();
     expect(darkAlpha, 'dark shadow-edge alpha must be defined').not.toBeNaN();

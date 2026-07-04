@@ -85,10 +85,10 @@ function parseShadow(value: string): DtcgShadowLayer[] | null {
       offsetY: lengths[1]!,
       inset,
     };
-    if (lengths.length >= 3) {
+    if (lengths.length >= 3 && lengths[2]) {
       layer.blur = lengths[2];
     }
-    if (lengths.length >= 4) {
+    if (lengths.length >= 4 && lengths[3]) {
       layer.spread = lengths[3];
     }
     layers.push(layer);
