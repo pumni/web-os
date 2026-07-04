@@ -1,6 +1,6 @@
 # Design System Modernization — Full Execution Plan (2026-07-04)
 
-- **Status:** ready to execute
+- **Status:** done
 - **Owner:** design system (`packages/ui` + `apps/catalog` + docs/skills)
 - **Origin:** 2026-07-04 deep design-system review. Verdict: the system is architecturally sound (3-tier OKLCH tokens, APCA gate, closed surface vocabulary, ESLint guards, DTCG export, catalog + VRT). This plan closes the real gaps found — light/dark structural duplication, content density, static display type, thin catalog/VRT coverage, tier-1-only DTCG export — plus the owner-approved Tier-3 items (chart palette, `@property`, container-query density). Owner decisions on scope: **all tiers**, **full CSS modernization (`light-dark()` + relative color)**, **per-component VRT via catalog**.
 - **Scope:** token pipeline unification + modern CSS syntax migration; content-density tokens; fluid display type; catalog story coverage + per-component VRT; DTCG export v2; chart palette tokens; `@property`; container-query density. Doc/skill sync at every behavioral change.
