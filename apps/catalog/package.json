@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "storybook dev -p 61000",
-    "catalog:dev": "storybook dev -p 61000",
     "catalog:build": "storybook build",
     "catalog:lint": "bun --bun eslint .",
     "catalog:typecheck": "bun --bun tsc --noEmit"
@@ -18,7 +17,7 @@
     "sonner": "catalog:"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "10.4.6",
+    "@storybook/addon-a11y": "catalog:",
     "@storybook/addon-docs": "catalog:",
     "@storybook/react": "catalog:",
     "@storybook/react-vite": "catalog:",

@@ -46,6 +46,32 @@
     },
     "format": {
       "inputs": ["src/**/*.{ts,tsx,js,mjs,css,json,md}", ".prettierrc", ".prettierignore"]
+    },
+    "catalog:build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/ui/src/**"],
+      "outputs": ["storybook-static/**"]
+    },
+    "catalog:lint": {
+      "dependsOn": ["^lint"],
+      "inputs": [
+        "src/**/*.{ts,tsx,js,mjs}",
+        ".storybook/**",
+        "eslint.config.mjs",
+        "vite.config.ts",
+        "tsconfig.json",
+        "$TURBO_ROOT$/packages/config/eslint.mjs",
+        "$TURBO_ROOT$/packages/config/src/**"
+      ]
+    },
+    "catalog:typecheck": {
+      "dependsOn": ["^typecheck"],
+      "inputs": [
+        "src/**/*.{ts,tsx}",
+        ".storybook/**",
+        "tsconfig.json",
+        "$TURBO_ROOT$/tsconfig.base.json"
+      ]
     }
   }
 }

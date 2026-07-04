@@ -59,6 +59,7 @@ skill: `.agents/skills/README.md` (authoring standard).
 | Watch-together playback sync (reducer / anchors / clock) | `.agents/skills/watch-sync/SKILL.md` |
 | Zustand client UI store | `.agents/skills/zustand-store/SKILL.md` |
 | Deterministic unit/component testing | `.agents/skills/testing-template/SKILL.md` |
+| Dependency version updates (Bun catalog tiers) | `.agents/skills/dependency-update/SKILL.md` |
 | Disciplined bug diagnosis / repro loops | `.agents/skills/diagnosing-bugs/SKILL.md` |
 | Deep modules / testable interfaces | `.agents/skills/codebase-design/SKILL.md` |
 | Glossary & domain term discipline | `.agents/skills/domain-modeling/SKILL.md` |

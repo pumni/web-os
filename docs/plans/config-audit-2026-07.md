@@ -263,7 +263,14 @@ liên quan việc tôn trọng task `inputs` trong watch mode).
 
 ## 4. Nên cân nhắc (không phải lỗi)
 
-### C1 — `apps/catalog` (Storybook) nằm ngoài pipeline Turbo 🟡
+### C1 — `apps/catalog` (Storybook) nằm ngoài pipeline Turbo 🟡 — ✅ đã xử lý 2026-07-04
+
+> Giải pháp giữ đúng ADR-0021 (catalog không vào gate mặc định): giữ tên script
+> `catalog:*`, nhưng khai báo chúng thành task Turbo riêng trong `turbo.json`
+> (cache + graph, invalidate theo `packages/ui/src`); root scripts chạy qua
+> `turbo run catalog:*` thay vì `bun --filter`. Đồng thời bump Turbo 2.10.3,
+> chuẩn hóa `turbo run <task>`, gộp `ai:premerge` thành một graph
+> `turbo run lint typecheck test build`, đưa `@storybook/addon-a11y` vào catalog.
 
 - Scripts đặt tên `catalog:dev|build|lint|typecheck` và `turbo.json` không
   định nghĩa các task này → Storybook không được Turbo graph/cache; chạy

@@ -8,14 +8,17 @@ rejection).
 ## Run
 
 ```bash
-bun run --filter catalog catalog:dev      # dev server (http://localhost:61000)
-bun run --filter catalog catalog:build    # static production build → build/
-bun run --filter catalog catalog:typecheck
+bun run catalog:dev        # dev server (http://localhost:61000)
+bun run catalog:build      # static production build → storybook-static/
+bun run catalog:lint
+bun run catalog:typecheck
 ```
 
 The scripts are intentionally prefixed (`catalog:*`) so the catalog is **not**
-pulled into the repo's `turbo` gates (`build` / `dev` / `typecheck` / `test`) —
+pulled into the repo's default `turbo` gates (`build` / `typecheck` / `test`) —
 per ADR-0021 it must not become a second app the team is obligated to keep green.
+They run as dedicated `catalog:*` tasks in `turbo.json`, so they get Turborepo
+caching and are invalidated by `@pumni/ui` source changes.
 
 ## Conventions
 

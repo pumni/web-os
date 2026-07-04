@@ -10,7 +10,7 @@ This app is the Storybook component catalog established by ADR-0021, used to dev
 - **Typechecking:** `bun run catalog:typecheck`
 
 > [!NOTE]
-> The Storybook catalog scripts are prefixed with `catalog:` and intentionally kept outside the main Turborepo pipeline in `turbo.json`. This ensures that developing or building the main application does not unnecessarily spin up or build Storybook, keeping the local workflow focused and isolated.
+> The Storybook catalog scripts are prefixed with `catalog:` so they never join the default Turborepo gates (`build` / `lint` / `typecheck` / `test`) — per ADR-0021 the catalog must not become a second app the team is obligated to keep green. They are still registered as dedicated `catalog:*` tasks in `turbo.json`, so runs are cached and graph-aware (`@pumni/ui` changes invalidate them) without pulling Storybook into the main pipeline.
 
 ## Relationship to `@pumni/ui`
 
