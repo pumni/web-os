@@ -54,7 +54,7 @@ export function readVariables(source: string, selector: ':root' | '.dark'): Map<
  */
 export function buildTokenMap(mode: Mode): Map<string, string> {
   const map = new Map<string, string>();
-  for (const layer of [css.tokens, css.brand, css.theme]) {
+  for (const layer of [css.tokens, css.brand, css.theme, css.component]) {
     for (const [name, value] of readVariables(layer, ':root')) map.set(name, value);
   }
   if (mode === 'dark') {

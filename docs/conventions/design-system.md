@@ -13,6 +13,7 @@ Token source of truth lives in `@pumni/ui`:
 - `packages/ui/src/styles/tokens.css`
 - `packages/ui/src/styles/brand.css`
 - `packages/ui/src/styles/theme.css`
+- `packages/ui/src/styles/component-tokens.css`
 - `packages/ui/src/styles/glass.css`
 
 These are imported once in `apps/web/src/app/globals.css`.
@@ -65,7 +66,7 @@ surface).
    directly by components.
 2. **Semantic / alias** (`theme.css`) — UI roles that reference primitives and
    switch per theme. This is the only layer components read.
-3. **Component** — narrow, scoped vars for real local theming. Reference
+3. **Component** (`component-tokens.css`) — narrow, scoped vars for real local theming. Reference
    semantics.
 
 Apps consume semantic utilities, not primitives.

@@ -12,7 +12,7 @@ reference detail.
 
 ## Rules
 
-- Token tiers: primitive (`tokens.css`) -> semantic (`theme.css`) -> component.
+- Token tiers: primitive (tokens.css) -> semantic (theme.css) -> component (component-tokens.css).
   Components consume semantic only. Never reference a primitive var or raw OKLCH.
 - Surface vocabulary is a closed set: floating glass (`GlassSurface`/`glass-*`),
   solid card (`Card variant="solid"`), inset well (`CardWell` / `Card
