@@ -10,7 +10,8 @@ hard rules and completion checklist stay in `SKILL.md`.
 | --- | --- |
 | `background` / `foreground` | Page surface + default text |
 | `card` / `popover` (+ `-foreground`) | Card defaults to a solid raised surface; glass is opt-in for floating cards; inset is the recessed well. |
-| `primary` (+ `-foreground`) | Brand actions |
+| `primary` (+ `-foreground`) | Brand actions. `-foreground` = text placed ON the primary fill. |
+| `primary-text` / `destructive-text` | Step-11 TEXT role. Use `text-primary-text` / `text-destructive-text` when the brand/destructive colour is the text ON a page/card surface (link button, `FormMessage`, error/eyebrow copy) — NOT `text-primary`/`text-destructive`, which are anchored dark for their solid-fill role (Lc ~34/37 as dark text). Light = the base token; dark lifts to a readable stop via relative OKLCH. Gated at Lc 60 in `glass-contrast.test.ts`. |
 | `secondary` / `muted` / `accent` (+ `-foreground`) | Subdued + hover surfaces |
 | `destructive` / `success` / `warning` (+ `-foreground`) | Status |
 | `border` / `input` / `field` / `ring` | Hairlines, fields, input backdrops, focus ring |

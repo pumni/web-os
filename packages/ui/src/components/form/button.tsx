@@ -16,7 +16,7 @@ const buttonVariants = cva(
           'border border-input bg-field shadow-control hover:bg-accent hover:text-accent-foreground',
         secondary: 'bg-secondary text-secondary-foreground state-hover state-pressed',
         ghost: 'state-hover state-pressed',
-        link: 'text-primary underline-offset-4 hover:underline',
+        link: 'text-primary-text underline-offset-4 hover:underline',
         /** Transparent surface — no padding, no bg, no border. Keeps only the
          *  shared focus ring + disabled state. Use for inline triggers that
          *  need to spread external listeners (e.g. dnd-kit's drag handle)
@@ -72,19 +72,19 @@ function Button({
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
-    /** 
-     * Hỗ trợ cơ chế Slot của Radix UI. Khi đặt thành `true`, component sẽ không render thẻ `<button>` 
+    /**
+     * Hỗ trợ cơ chế Slot của Radix UI. Khi đặt thành `true`, component sẽ không render thẻ `<button>`
      * mà chuyển toàn bộ props và ref sang phần tử con đầu tiên của nó.
      */
     asChild?: boolean;
-    /** 
-     * Trạng thái chờ/tải dữ liệu. Khi được bật, nút sẽ tự động bị vô hiệu hóa (disabled), 
+    /**
+     * Trạng thái chờ/tải dữ liệu. Khi được bật, nút sẽ tự động bị vô hiệu hóa (disabled),
      * ẩn nội dung chữ và hiển thị cấu phần quay Spinner trung tâm.
      */
     loading?: boolean;
-    /** 
+    /**
      * Cho phép hoặc vô hiệu hóa hiệu ứng co giãn tactile khi nhấn nút (:active).
-     * Cần đặt thành `false` khi nút đóng vai trò là Trigger (neo) cho các trình đơn nổi 
+     * Cần đặt thành `false` khi nút đóng vai trò là Trigger (neo) cho các trình đơn nổi
      * (như DropdownMenu, Popover, Select) để tránh việc vị trí popup bị tính toán sai khi co giãn.
      */
     pressable?: boolean;
@@ -118,7 +118,7 @@ function Button({
             aria-hidden={loading || undefined}
             className={cn(
               'inline-flex items-center justify-center gap-2',
-              loading && 'opacity-0 pointer-events-none',
+              loading && 'pointer-events-none opacity-0',
             )}
           >
             {children}

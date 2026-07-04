@@ -263,6 +263,54 @@ describe('Status tint readability', () => {
   });
 });
 
+/* ------------------------------------------------------------------ *
+ * Step-11 text role (Radix step-9 fill / step-11 text)
+ * `--primary` / `--destructive` are anchored dark for their solid-FILL role
+ * (white foreground must clear Lc 60 on the fill), which drops them to Lc ~34 /
+ * ~37 when used AS text on --background in dark. `--primary-text` /
+ * `--destructive-text` are the readable text stops the `link` button,
+ * FormMessage, and inline brand/error text consume. Gate them at the Lc 60
+ * body-text target on both reading surfaces (background + card), both modes.
+ * ------------------------------------------------------------------ */
+describe('Step-11 text role contrast', () => {
+  const surfaces = ['--background', '--card'] as const;
+  const modes = ['light', 'dark'] as const;
+
+  // --primary-text derives from --primary, which EVERY personalization accent
+  // overrides — so it must clear the text gate under all accents, not just the
+  // default coral. rose (red-600, chroma 0.245) is the worst case: lifted to
+  // L 0.80 it sRGB-clips to Lc ~48 unless the derivation caps chroma (0.13).
+  it.each(
+    ACCENTS.flatMap((accent) =>
+      surfaces.flatMap((surface) => modes.map((mode) => [accent, surface, mode] as const)),
+    ),
+  )('primary-text (%s accent) is readable on %s in %s mode', (accent, surface, mode) => {
+    const tokenMap = buildAccentTokenMap(mode, accent);
+    const foreground = oklchToSrgb(resolveColor('--primary-text', tokenMap));
+    const background = oklchToSrgb(resolveColor(surface, tokenMap));
+
+    expect(
+      Math.abs(apcaContrast(foreground, background)),
+      `primary-text (${accent}) on ${surface} in ${mode} mode (APCA)`,
+    ).toBeGreaterThanOrEqual(60);
+  });
+
+  // --destructive-text is accent-independent (destructive is not personalized).
+  it.each(surfaces.flatMap((surface) => modes.map((mode) => [surface, mode] as const)))(
+    'destructive-text is readable on %s in %s mode',
+    (surface, mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const foreground = oklchToSrgb(resolveColor('--destructive-text', tokenMap));
+      const background = oklchToSrgb(resolveColor(surface, tokenMap));
+
+      expect(
+        Math.abs(apcaContrast(foreground, background)),
+        `destructive-text on ${surface} in ${mode} mode (APCA)`,
+      ).toBeGreaterThanOrEqual(60);
+    },
+  );
+});
+
 describe('Field contrast readable', () => {
   it.each(['light', 'dark'] as const)(
     'keeps text contrast at APCA Lc 60 over field background in %s mode',

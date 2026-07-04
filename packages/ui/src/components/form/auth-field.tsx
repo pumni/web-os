@@ -53,7 +53,12 @@ function AuthField({
         aria-describedby={error?.length ? `${id}-error` : inputProps['aria-describedby']}
       />
       {error?.[0] ? (
-        <p id={`${id}-error`} role="alert" aria-live="polite" className="text-sm text-destructive">
+        <p
+          id={`${id}-error`}
+          role="alert"
+          aria-live="polite"
+          className="text-sm text-destructive-text"
+        >
           {error[0]}
         </p>
       ) : null}

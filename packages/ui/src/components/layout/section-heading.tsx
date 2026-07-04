@@ -12,7 +12,14 @@ type SectionHeadingProps = {
   className?: string;
 };
 
-function SectionHeading({ id, eyebrow, title, description, icon: Icon, className }: SectionHeadingProps) {
+function SectionHeading({
+  id,
+  eyebrow,
+  title,
+  description,
+  icon: Icon,
+  className,
+}: SectionHeadingProps) {
   return (
     <header id={id} className={cn('space-y-3', className)}>
       <div className="flex items-center gap-2">
@@ -21,7 +28,7 @@ function SectionHeading({ id, eyebrow, title, description, icon: Icon, className
             <Icon />
           </IconBadge>
         ) : null}
-        <span className="type-caption font-bold tracking-widest text-primary uppercase">
+        <span className="type-caption font-bold tracking-widest text-primary-text uppercase">
           {eyebrow}
         </span>
       </div>

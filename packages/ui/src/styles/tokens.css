@@ -34,11 +34,14 @@
   --indigo-900: oklch(0.359 0.11 278.697);
   --indigo-950: oklch(0.257 0.075 281.288);
 
-  /* --- Brand: Cyan-teal (primary, ~200°) ---
-     The brand hue. Lightness on the primary stops (500/600) is pulled darker
-     than the indigo equivalents because cyan carries far more luminance — the
-     primary takes WHITE foreground AND is used as `text-primary`/`text-ring`, so
-     it must stay dark enough for AA (gated by glass-contrast.test.ts). */
+  /* --- Cyan-teal (selectable accent, ~200°) ---
+     A former brand hue, now one of the personalization accents (the default
+     brand is coral — see brand.css). Lightness on the primary stops (500/600)
+     is pulled darker than the indigo equivalents because cyan carries far more
+     luminance — when this accent is active it takes WHITE `--primary-foreground`
+     as a fill, so it must stay dark enough that white clears the APCA Lc 60 gate
+     (glass-contrast.test.ts). Its lifted text role is handled by
+     `--primary-text`, not this stop. */
   --cyan-50: oklch(0.971 0.02 200);
   --cyan-100: oklch(0.935 0.04 200);
   --cyan-200: oklch(0.879 0.068 200);

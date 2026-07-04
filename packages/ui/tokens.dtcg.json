@@ -1574,6 +1574,15 @@
         "$type": "color",
         "$value": "{primitive.color.neutral-50}"
       },
+      "destructive-text": {
+        "$type": "color",
+        "$value": "{semantic.color.destructive}",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "oklch(from {semantic.color.destructive} 0.8 0.13 h)"
+          }
+        }
+      },
       "field": {
         "$type": "color",
         "$value": "{semantic.color.background}",
@@ -1680,6 +1689,15 @@
       "primary-foreground": {
         "$type": "color",
         "$value": "{primitive.color.neutral-50}"
+      },
+      "primary-text": {
+        "$type": "color",
+        "$value": "{semantic.color.primary}",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "oklch(from {semantic.color.primary} 0.8 0.13 h)"
+          }
+        }
       },
       "radius": {
         "$type": "dimension",

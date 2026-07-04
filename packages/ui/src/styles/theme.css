@@ -28,6 +28,18 @@
      Brand entry point — reads the brand contract (brand.css), warm coral by default. */
   --primary: var(--brand-primary);
   --primary-foreground: var(--neutral-50);
+  /* Step-11 TEXT role (Radix step-9 fill / step-11 text). --primary is anchored
+     dark for its FILL role — white --primary-foreground must clear Lc 60 on the
+     fill (ADR-0010) — which leaves it at Lc ~34 when used AS text on
+     --background in dark (link button, section captions). Light already reads
+     fine as text (Lc 72), so light = --primary; dark lifts the brand hue to
+     L 0.80 AND caps chroma at 0.13 — a saturated accent at high lightness
+     sRGB-clips and loses APCA luminance (the rose accent, red-600 at chroma
+     0.245, stalls at Lc ~48 uncapped). The cap keeps ALL personalization
+     accents ≥ Lc 62 on background/card; glass-contrast.test.ts pins every
+     accent. Derived via relative OKLCH so a brand override follows; the fill
+     pairing is untouched (no identity change). Matches --destructive-text. */
+  --primary-text: light-dark(var(--primary), oklch(from var(--primary) 0.8 0.13 h));
 
   /* --- Secondary & Muted Utilities --- */
   --secondary: light-dark(var(--neutral-100), var(--neutral-800));
@@ -48,6 +60,15 @@
     color-mix(in oklch, var(--primary) 3%, var(--red-500))
   );
   --destructive-foreground: var(--neutral-50);
+  /* Step-11 TEXT role for destructive (FormMessage / auth-field validation
+     errors render `text-sm text-destructive`). Like --primary, --destructive is
+     anchored dark for its solid-fill button (white foreground on red), leaving
+     it at Lc ~37 as dark-mode text. Light = --destructive (Lc 67 as text); dark
+     lifts to a softer salmon — L 0.80 AND chroma dropped to 0.13, because a
+     saturated red at high lightness has low APCA luminance and sRGB-clips, so
+     it stalls at Lc ~50. The desaturated stop clears Lc ~62 (the Linear/GitHub
+     dark-error look). glass-contrast.test.ts pins it. */
+  --destructive-text: light-dark(var(--destructive), oklch(from var(--destructive) 0.8 0.13 h));
   /* Dark statuses follow the "bright fill, dark text / bright text on dark bg"
      pattern (Radix step-9/step-11 practice): the -400 stop instead of -500 so
      the token stays readable when used AS text (`text-success`, Badge/Banner
@@ -241,6 +262,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-text: var(--primary-text);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -249,6 +271,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-text: var(--destructive-text);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);

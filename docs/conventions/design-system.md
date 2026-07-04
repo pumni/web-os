@@ -123,7 +123,11 @@ sRGB, which `apcaContrast` decodes) — Lc 60 body-text target for reading
 surfaces, muted, and glass-over-blob in **both** modes, with documented pinned
 floors below it only for accent surfaces (45) and status tints (per-token table
 in the test; light warning and the dark destructive/primary chips sit lower
-because those tokens double as solid fills). Do not add a WCAG 2.x ratio
+because those tokens double as solid fills). When the brand/destructive colour
+is needed AS page text (link button, `FormMessage`, error/eyebrow copy), use the
+Step-11 text tokens `text-primary-text` / `text-destructive-text` — the base
+`primary`/`destructive` are anchored dark for the solid-fill role and read at
+only Lc ~34/37 as dark text. Do not add a WCAG 2.x ratio
 gate. The rim tokens are specular (inset shadows) and are NOT subject to the
 APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
 
