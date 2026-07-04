@@ -13,7 +13,8 @@
     "@pumni/ui": "workspace:*",
     "lucide-react": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "sonner": "catalog:"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "10.4.6",
