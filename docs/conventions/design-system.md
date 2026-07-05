@@ -163,41 +163,36 @@ APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
 | **Specular rim** | `inset 0 1px 0 0 var(--token)` box-shadow — a light effect, NOT a real border | Top/bottom lit edges of raised surfaces |
 | **Status tint** | `border-{tone}/20` — state signalling | Badge, Card `state` |
 
-**Three structural hairline tokens, no fourth** (ADR-0012):
+**Closed set of structural hairline tokens, no others allowed** (ADR-0012):
 
-- `--border` — dark, builds contrast against the fill. Card solid/inset,
-  `CardWell`. The real delineator for solid surfaces.
-- `--input` — dark, one shade deeper than `--border`. Form controls only. Flat,
-  no specular rim.
-- `--glass-edge` — **mode-inverted** (2026-07-04 alignment): light
-  `oklch(0.3 0.02 260 / 0.40)` dark neutral-blue rim (a pure-white edge
-  composites with the white `--glass-tint` and loses all APCA contrast
-  on a bright blob); dark `oklch(0.9 0.03 270 / 0.50)` light neutral-
-  violet rim (softer than pure white so it doesn't glow harsh against
-  dark). Both clear APCA Lc 25 over the worst-case amber/coral blob.
-  Glass surfaces only. On glass the *structural* hairline is specular;
-  the **drop shadow** (`--shadow-glass`) is the real delineator.
+- **Solid-flow**:
+  - `--border` — dark, builds contrast against the fill. Card solid/inset, `CardWell`. The real delineator for solid surfaces.
+  - `--input` — dark, one shade deeper than `--border`. Form controls only. Flat, no specular rim.
+- **Glass-flow**:
+  - `--glass-edge` — mode-inverted uniform edge, used by `glass-bar-bordered` and `glass-titlebar`.
+  - `--glass-edge-top` / `--glass-edge-bottom` — mode-inverted asymmetric edge pair, used by `glass-panel` and `glass-window`. Light mode carries top: `oklch(0.3 0.02 260 / 0.40)` and bottom: `oklch(0.3 0.02 260 / 0.50)` for top-lit bevel shadow contrast; dark mode carries top: `oklch(0.95 0.03 270 / 0.55)` and bottom: `oklch(0.90 0.03 270 / 0.55)` — the bevel lives in lightness because a dimmer bottom cannot clear the Lc 25 gate over the bright blobs. Both are APCA Lc 25 gated in both modes.
 
-**`--surface-rim-top` is glass-only (ADR-0012).** Solid cards carry
-**no rim at all** — `--border` (hairline) + `--shadow-card-raised` (elevation)
-only. The bottom rim (`--glass-shadow-edge`) stays glass-only by design.
+**`--surface-rim-top` is strictly for uniform chrome bars/titlebars.** Glass panels and windows consume `--glass-inset-bezel-top` as their top rim highlight instead. Solid cards carry **no rim at all** — `--border` (hairline) + `--shadow-card-raised` (elevation) only. The bottom rim (`--glass-shadow-edge`) stays glass-only by design.
 
 | | Solid card (`surface-raised`) | Glass card (`glass-panel`) |
 | --- | --- | --- |
-| Structural hairline | `--border` (dark) | `--glass-edge` (mode-inverted: light=dark neutral-blue, dark=light neutral-violet) |
-| Top rim | none (deliberate, ADR-0012) | `--surface-rim-top` |
+| Structural hairline | `--border` (dark) | Asymmetric pair `--glass-edge-top` / `--glass-edge-bottom` (mode-inverted, gated Lc 25) |
+| Top rim | none (deliberate, ADR-0012) | `--glass-inset-bezel-top` |
 | Bottom rim | none (deliberate) | `--glass-shadow-edge` |
 | Real delineator | the hairline itself | `--shadow-glass` (drop shadow) |
-| APCA Lc 25 gate | enforced | enforced (2026-07-04 alignment; was exempt before) |
-| Hero specular | n/a | opt-in via `glass-panel[data-variant="specular"]` |
+| APCA Lc 25 gate | enforced | enforced (both asymmetric edge tokens checked) |
+| Hero specular | n/a | opt-in via `glass-panel[data-variant="specular"]` (conic gradient ring overlay via `::before`, structural hairline borders remain intact underneath) |
 
 **Decision tree** — pick the path that matches the element, never write a border
 or inset rim in TSX:
 
 ```
-GLASS surface (floats over a blob/media backdrop)?
-  → Use a glass-* utility. hairline = --glass-edge, rim pair = --surface-rim-top
+GLASS panel/window (floats over a blob/media backdrop)?
+  → Use glass-panel/window. hairline = --glass-edge-top/bottom, rim pair = --glass-inset-bezel-top
     + --glass-shadow-edge, delineator = --shadow-glass. [glass.css owns this]
+GLASS bar/titlebar (dock, topbar, title)?
+  → Use glass-bar / glass-bar-bordered. hairline = --glass-edge, rim = --surface-rim-top
+    [glass.css owns this]
 SOLID surface (content card, well)?
   → Card variant="solid" / CardWell. hairline = --border, no top rim
     (structural-only, ADR-0012 — surface-raised has no specular rim),

@@ -74,25 +74,28 @@ describe('Glass contrast tokens', () => {
     'keeps glass border at APCA Lc 25 over desktop blobs in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const edge = tokenColor('--glass-edge', tokenMap);
 
-      for (const blobToken of desktopBlobTokens) {
-        const blobColor = tokenColor(blobToken, tokenMap);
-        const glass = tokenColor('--glass-tint', tokenMap);
-        const glassOverBlob: Rgb = composite(glass, blobColor);
-        // Compose the edge alpha onto the (glass-tint over blob) layer to
-        // get the rendered border colour, then measure APCA against the
-        // underlying glass surface.
-        const edgeOverGlass: Rgb = [
-          oklchToSrgb(edge)[0] * edge.alpha + glassOverBlob[0] * (1 - edge.alpha),
-          oklchToSrgb(edge)[1] * edge.alpha + glassOverBlob[1] * (1 - edge.alpha),
-          oklchToSrgb(edge)[2] * edge.alpha + glassOverBlob[2] * (1 - edge.alpha),
-        ];
+      for (const edgeToken of ['--glass-edge', '--glass-edge-top', '--glass-edge-bottom'] as const) {
+        const edge = tokenColor(edgeToken, tokenMap);
 
-        expect(
-          Math.abs(apcaContrast(edgeOverGlass, glassOverBlob)),
-          `${mode} ${blobToken} border contrast (APCA Lc 25)`,
-        ).toBeGreaterThanOrEqual(25);
+        for (const blobToken of desktopBlobTokens) {
+          const blobColor = tokenColor(blobToken, tokenMap);
+          const glass = tokenColor('--glass-tint', tokenMap);
+          const glassOverBlob: Rgb = composite(glass, blobColor);
+          // Compose the edge alpha onto the (glass-tint over blob) layer to
+          // get the rendered border colour, then measure APCA against the
+          // underlying glass surface.
+          const edgeOverGlass: Rgb = [
+            oklchToSrgb(edge)[0] * edge.alpha + glassOverBlob[0] * (1 - edge.alpha),
+            oklchToSrgb(edge)[1] * edge.alpha + glassOverBlob[1] * (1 - edge.alpha),
+            oklchToSrgb(edge)[2] * edge.alpha + glassOverBlob[2] * (1 - edge.alpha),
+          ];
+
+          expect(
+            Math.abs(apcaContrast(edgeOverGlass, glassOverBlob)),
+            `${mode} ${blobToken} ${edgeToken} contrast (APCA Lc 25)`,
+          ).toBeGreaterThanOrEqual(25);
+        }
       }
     },
   );

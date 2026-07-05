@@ -9,7 +9,7 @@ import { repoRoot } from './token-test-utils';
  * Drift guard for the glassmorphism luminous edge pair (ADR-0014).
  *
  * ADR-0014 added a bottom shadow-edge (`--glass-shadow-edge`) to pair with the
- * top highlight (`--surface-rim-top`, unified across glass + solid by ADR-0018)
+ * top highlight (`--glass-inset-bezel-top`)
  * so a glass panel reads as a real
  * volumetric cut surface — light catches the top, shadow settles on the bottom.
  * The pair is delivered as two `inset` box-shadows layered behind the drop
@@ -91,7 +91,7 @@ describe('glass-panel / glass-window carry the full rim pair', () => {
     const body = readRuleBody(glassCss, selector);
 
     expect(body, `${_label} must inset the top highlight`).toMatch(
-      /inset\s+0\s+1px\s+0\s+0\s+var\(--surface-rim-top\)/,
+      /inset\s+0\s+1px\s+0\s+0\s+var\(--glass-inset-bezel-top\)/,
     );
   });
 

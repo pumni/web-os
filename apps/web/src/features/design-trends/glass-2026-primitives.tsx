@@ -1,8 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { GlassSurface } from '@pumni/ui/identity';
-import { Card } from '@pumni/ui/layout';
 import { cn } from '@/shared/lib/utils';
 
 /**
@@ -15,11 +13,23 @@ import { cn } from '@/shared/lib/utils';
  */
 export type BackdropPreset = 'mesh' | 'shapes' | 'grid' | 'off';
 
-const PRESETS: { value: BackdropPreset; label: string }[] = [
-  { value: 'mesh', label: 'Cosmic Mesh' },
-  { value: 'shapes', label: 'Sharp Shapes' },
-  { value: 'grid', label: 'Modern Grid' },
-  { value: 'off', label: 'Tắt (Flat)' },
+export interface DominantColor {
+  l: number;
+  c: number;
+  h: number;
+}
+
+export interface PresetInfo {
+  value: BackdropPreset;
+  label: string;
+  dominant: DominantColor | null;
+}
+
+const PRESETS: PresetInfo[] = [
+  { value: 'mesh', label: 'Cosmic Mesh', dominant: { l: 0.55, c: 0.22, h: 300 } },
+  { value: 'shapes', label: 'Sharp Shapes', dominant: { l: 0.60, c: 0.20, h: 330 } },
+  { value: 'grid', label: 'Modern Grid', dominant: { l: 0.50, c: 0.18, h: 265 } },
+  { value: 'off', label: 'Tắt (Flat)', dominant: null },
 ];
 
 export { PRESETS as BACKDROP_PRESETS };

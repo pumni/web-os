@@ -124,12 +124,10 @@ ADR edit only captures the *why*.
   If a future tint/edge change would re-fail the gate, fix the token, do
   not re-exempt the gate.
 - **(Amended 2026-07-04)** Hero/showcase cards may carry `variant="specular"`.
-  The drift guard for the 3-token hairline rule (no fourth structural
-  hairline token) is unchanged — `variant="specular"` reuses `--glass-edge`
-  via `border-image`, not a new token.
+  The structural hairline border is preserved; `variant="specular"` uses a `::before` conic-gradient ring overlay mask-composited over the border, rather than replacing the border-image.
 - **(Amended 2026-07-05)** Specular corner highlights are mode-adaptive and soft-glowing violet in dark mode to prevent visual fatigue.
 - **(Amended 2026-07-05)** `--glass-tint` natively supports CSS gradient declarations via the background shorthand.
-- **(Amended 2026-07-05)** Asymmetric borders, double-bezel highlights, and chroma-shifted shadows are standard, while dynamic refraction/chromatic aberration is banned.
+- **(Amended 2026-07-05)** Asymmetric borders (`--glass-edge-top/bottom`) are standard and gated Lc 25 in both light and dark modes (light mode top 0.40/bottom 0.50 alpha; dark mode equal 0.55 alpha with lightness bevel 0.95/0.90 — probe-verified as the gentlest gate-passing pair). The double-bezel outline layer (`--glass-inset-bezel-outline`) is removed, leaving only the top highlight (`--glass-inset-bezel-top`) to ensure rendering stability. Dynamic refraction/chromatic aberration is banned.
 
 ## Alternatives considered
 

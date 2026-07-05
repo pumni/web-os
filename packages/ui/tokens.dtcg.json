@@ -643,30 +643,15 @@
     "ease": {
       "in-out": {
         "$type": "cubicBezier",
-        "$value": [
-          0.65,
-          0,
-          0.35,
-          1
-        ]
+        "$value": [0.65, 0, 0.35, 1]
       },
       "out": {
         "$type": "cubicBezier",
-        "$value": [
-          0.16,
-          1,
-          0.3,
-          1
-        ]
+        "$value": [0.16, 1, 0.3, 1]
       },
       "spring": {
         "$type": "color",
-        "$value": [
-          0.175,
-          0.885,
-          0.32,
-          1.275
-        ]
+        "$value": [0.175, 0.885, 0.32, 1.275]
       }
     },
     "font-size": {
@@ -1814,10 +1799,10 @@
       },
       "edge-bottom": {
         "$type": "color",
-        "$value": "oklch(0.3 0.02 260 / 0.35)",
+        "$value": "oklch(0.3 0.02 260 / 0.50)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.80 0.03 270 / 0.25)"
+            "dark": "oklch(0.90 0.03 270 / 0.55)"
           }
         }
       },
@@ -1925,7 +1910,7 @@
       },
       "edge-top": {
         "$type": "color",
-        "$value": "oklch(0.3 0.02 260 / 0.45)",
+        "$value": "oklch(0.3 0.02 260 / 0.40)",
         "$extensions": {
           "com.pumni.modes": {
             "dark": "oklch(0.95 0.03 270 / 0.55)"
@@ -1935,57 +1920,6 @@
       "fallback-bg": {
         "$type": "other",
         "$value": "{semantic.color.popover}"
-      },
-      "inset-bezel-outline": {
-        "$type": "shadow",
-        "$value": [
-          {
-            "color": "oklch(1 0 0 / 0.10)",
-            "offsetX": {
-              "value": 0,
-              "unit": "px"
-            },
-            "offsetY": {
-              "value": 0,
-              "unit": "px"
-            },
-            "inset": true,
-            "blur": {
-              "value": 0,
-              "unit": "px"
-            },
-            "spread": {
-              "value": 1,
-              "unit": "px"
-            }
-          }
-        ],
-        "$extensions": {
-          "com.pumni.modes": {
-            "dark": [
-              {
-                "color": "oklch(1 0 0 / 0.05)",
-                "offsetX": {
-                  "value": 0,
-                  "unit": "px"
-                },
-                "offsetY": {
-                  "value": 0,
-                  "unit": "px"
-                },
-                "inset": true,
-                "blur": {
-                  "value": 0,
-                  "unit": "px"
-                },
-                "spread": {
-                  "value": 0.5,
-                  "unit": "px"
-                }
-              }
-            ]
-          }
-        }
       },
       "inset-bezel-top": {
         "$type": "color",

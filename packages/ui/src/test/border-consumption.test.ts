@@ -26,10 +26,10 @@ import { repoRoot } from './token-test-utils';
  *    elevation shadow, NO specular rim. It does NOT read `--surface-rim-top`
  *    (solid dropped the rim by ADR-0020), `--glass-shadow-edge`, or
  *    `--glass-edge` (all glass-only). `--surface-rim-top` is still defined for
- *    the glass utilities that consume it.
- * 3. `glass-panel` / `glass-window` use `--glass-edge` as their structural
- *    hairline (never `--border`) and carry the full rim pair
- *    (`--surface-rim-top` + `--glass-shadow-edge`).
+ *    the glass utilities that consume it (`glass-bar`, `glass-titlebar`).
+ * 3. `glass-panel` / `glass-window` use asymmetric borders (`--glass-edge-top/bottom`)
+ *    as their structural hairline (never `--border`) and carry the full rim pair
+ *    (`--glass-inset-bezel-top` + `--glass-shadow-edge`).
  */
 
 const GLASS_CSS = 'packages/ui/src/styles/glass.css';
@@ -179,6 +179,13 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
 
     expect(body, `${_label} must inset the glass bottom rim`).toMatch(
       /inset\s+0\s+-1px\s+0\s+0\s+var\(--glass-shadow-edge\)/,
+    );
+  });
+
+  it('specular glass-panel retains structural hairline borders', () => {
+    const body = readRuleBody(glassCss, '.glass-panel[data-variant="specular"]');
+    expect(body, 'specular variant must not hide borders with transparent').not.toMatch(
+      /border-color:\s*transparent/,
     );
   });
 });

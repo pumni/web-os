@@ -73,7 +73,6 @@
   box-shadow:
     var(--shadow-glass),
     inset 0 1px 0 0 var(--glass-inset-bezel-top),
-    var(--glass-inset-bezel-outline),
     inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
 }
@@ -82,33 +81,28 @@
  * Specular variant — 2026 directional rim / corner-shine for hero/showcase
  * cards only (ADR-0012 2026-07-04 alignment).
  *
- * `border-image` carries a directional gradient that highlights one corner
- * (top-left by default), simulating the rim light along the side facing the
- * light source — Apple Liquid Glass / UX Pilot 2026 reference. The 1px
- * `--glass-edge` border stays as the structural hairline; `border-image` only
- * overrides the *fill*, the width is preserved.
+ * Conic gradient ring overlay via a nested pseudo-element (`::before`) highlights
+ * one corner (top-left by default), simulating the rim light along the side facing
+ * the light source — Apple Liquid Glass / UX Pilot 2026 reference. The asymmetric
+ * structural hairline borders (`--glass-edge-top`/`--glass-edge-bottom`) stay intact
+ * underneath; the specular highlight overlay is composited over the boundary.
  *
  * Cap: one specular card per visible surface. Bulk list cards MUST use plain
  * `glass-panel` (ADR-0016 sheen removal still applies to lists). The variant
  * is opt-in only; no default-on path exists.
- *
- * `--specular-corner` may be overridden inline by the consumer (one of
- * tl/tr/bl/br); defaults to `tl` matching Apple's top-left key-light.
  */
-.glass-panel[data-variant="specular"] {
-  --specular-corner: tl;
-  border-color: transparent;
+.glass-panel[data-variant='specular'] {
   position: relative;
 }
 
-.glass-panel[data-variant="specular"]::before {
-  content: "";
+.glass-panel[data-variant='specular']::before {
+  content: '';
   position: absolute;
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
   background: conic-gradient(
-    from calc(var(--specular-angle, 0deg) - 45deg),
+    from calc(var(--specular-angle, 315deg) - 45deg),
     transparent 0deg,
     var(--specular-rim-start) 45deg,
     var(--specular-rim-mid) 70deg,
@@ -128,8 +122,8 @@
 
 /*
  * Corner → angle map so consumers can flip the highlight corner without
- * hand-writing a new gradient. Set inline via `style="--specular-angle: 180deg"`.
- * tl = 0deg (default) · tr = 90deg · br = 180deg · bl = 270deg.
+ * hand-writing a new gradient. Set inline via `style="--specular-angle: 135deg"`.
+ * tl = 315deg (default) · tr = 45deg · br = 135deg · bl = 225deg.
  */
 
 @utility glass-window {
@@ -146,7 +140,6 @@
   box-shadow:
     var(--shadow-glass-glow),
     inset 0 1px 0 0 var(--glass-inset-bezel-top),
-    var(--glass-inset-bezel-outline),
     inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
 }
@@ -200,9 +193,9 @@
    Carries the full hairline glass border on all four sides so the element
    reads as a distinct floating surface against the background. Uses
    --shadow-glass as the real delineator (same directional drop shadow as
-   glass-panel / glass-window) — the white border alone collapses on light
-   backgrounds where --glass-edge (0.45 alpha white) vanishes against the
-   near-white page surface. */
+   glass-panel / glass-window) — the border is mode-inverted (dark oklch/0.40
+   in light mode, light oklch/0.50 in dark mode) so it remains visible against
+   both page backgrounds. This is a deliberate uniform edge design. */
 @utility glass-bar-bordered {
   background: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -274,6 +267,11 @@
     backdrop-filter: none;
     will-change: auto;
   }
+
+  .glass-panel[data-variant='specular']::before,
+  .glass-grain::before {
+    display: none;
+  }
 }
 
 /* --- Browser Fallback ---
@@ -290,6 +288,10 @@
     background: var(--glass-fallback-bg);
     border-color: var(--border);
     box-shadow: var(--shadow-2);
+  }
+
+  .glass-panel[data-variant='specular']::before {
+    display: none;
   }
 }
 
@@ -329,6 +331,10 @@
     box-shadow: none;
   }
 
+  .glass-panel[data-variant='specular']::before {
+    display: none;
+  }
+
   [data-slot='button']:focus-visible,
   [data-slot='input']:focus-visible {
     outline: 2px solid CanvasText;
@@ -350,6 +356,10 @@
   box-shadow: var(--shadow-2);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+}
+
+.glass-a11y-preview[data-transparency='reduced'] .glass-panel[data-variant='specular']::before {
+  display: none;
 }
 
 .glass-a11y-preview[data-contrast='more'] .glass-panel,
@@ -575,7 +585,7 @@
   position: relative;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;

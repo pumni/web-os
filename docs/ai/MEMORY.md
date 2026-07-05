@@ -23,3 +23,4 @@ harness-managed primary; this file is the durable log for decisions.
 - 2026-07 refresh → [ADR-0024](../adr/0024-context-layer-2026-07-standards-refresh.md).
 - llms.txt is required (ADR-0022) — keep in sync with docs/ai/index.md.
 - 2026-07-05 — Glassmorphism 2026: ADR-0012 alignment completed. Enforced Lc 25 APCA on mode-inverted --glass-edge tokens. Implemented Card variant="specular". Aligned simulator defaults & primitives (GlassSurface).
+- 2026-07-05 — Glass 2.0 remediation: Specular variant preserves structural hairline, bevel light-mode alphas inverted (top 0.40/bottom 0.50) and dark mode alphas raised (top 0.95/bottom 0.75) to pass APCA Lc 25, double-bezel outline removed, and playground synced with production behavior.

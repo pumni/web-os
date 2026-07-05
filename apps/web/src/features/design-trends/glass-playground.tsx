@@ -31,11 +31,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import {
-  BACKDROP_PRESETS,
-  GlassBackdrop,
-  type BackdropPreset,
-} from './glass-2026-primitives';
+import { BACKDROP_PRESETS, GlassBackdrop, type BackdropPreset } from './glass-2026-primitives';
 import { parseOklchLiteral, useBlobPrimary } from './use-blob-primary';
 import { useFps, useGlassLayerCount } from './use-glass-perf';
 
@@ -80,6 +76,78 @@ type ShineCorner = 'tl' | 'tr' | 'bl' | 'br';
 
 const SHINE_CORNERS: ShineCorner[] = ['tl', 'tr', 'bl', 'br'];
 
+interface EdgeToken {
+  l: number;
+  c: number;
+  h: number;
+  alpha: number;
+}
+
+/**
+ * Mirrors the production `--glass-edge-top` / `--glass-edge-bottom` tokens in
+ * `theme.css` (L/alpha fixed per mode); only chroma/hue follow the playground's
+ * absorption state so the reactive-tint demo can tint the rim. Uniform mode
+ * mirrors the production `--glass-edge` token.
+ */
+function getEdgeTokens(
+  isDark: boolean,
+  asymmetricBorder: boolean,
+  reactiveChroma: number,
+  reactiveHue: number,
+): { top: EdgeToken; bottom: EdgeToken } {
+  if (isDark) {
+    if (asymmetricBorder) {
+      return {
+        top: {
+          l: 0.95,
+          c: reactiveChroma,
+          h: reactiveHue,
+          alpha: 0.55,
+        },
+        bottom: {
+          l: 0.9,
+          c: reactiveChroma,
+          h: reactiveHue,
+          alpha: 0.55,
+        },
+      };
+    } else {
+      const uniform = {
+        l: 0.9,
+        c: reactiveChroma,
+        h: reactiveHue,
+        alpha: 0.5,
+      };
+      return { top: uniform, bottom: uniform };
+    }
+  } else {
+    // Light mode
+    if (asymmetricBorder) {
+      return {
+        top: {
+          l: 0.3,
+          c: reactiveChroma,
+          h: reactiveHue,
+          alpha: 0.4,
+        },
+        bottom: {
+          l: 0.3,
+          c: reactiveChroma,
+          h: reactiveHue,
+          alpha: 0.5,
+        },
+      };
+    } else {
+      const uniform = {
+        l: 0.3,
+        c: reactiveChroma,
+        h: reactiveHue,
+        alpha: 0.4,
+      };
+      return { top: uniform, bottom: uniform };
+    }
+  }
+}
 
 export function GlassPlayground() {
   // ── Spec-clamped backdrop-filter controls (production ADR-0014 sweet spot)
@@ -89,9 +157,9 @@ export function GlassPlayground() {
   // ── Showcase toggles — these are 2026 techniques, ON by default to match
   // the modern glass surface trend (gradient tint + specular corner shine + reactive color absorption).
   const [gradientTint, setGradientTint] = React.useState<boolean>(true);
-  const [cornerShine, setCornerShine] = React.useState<boolean>(true);
+  const [cornerShine, setCornerShine] = React.useState<boolean>(false);
   const [shineCorner, setShineCorner] = React.useState<ShineCorner>('tl');
-  const [reactiveTint, setReactiveTint] = React.useState<boolean>(true);
+  const [reactiveTint, setReactiveTint] = React.useState<boolean>(false);
   const [showNested, setShowNested] = React.useState<boolean>(false);
   const [showBackdrop, setShowBackdrop] = React.useState<boolean>(true);
   const [backdropPreset, setBackdropPreset] = React.useState<BackdropPreset>('mesh');
@@ -121,7 +189,7 @@ export function GlassPlayground() {
   const [tintL, setTintL] = React.useState<number>(0.13);
   const [tintC, setTintC] = React.useState<number>(0.0035);
   const [tintH, setTintH] = React.useState<number>(70);
-  const [tintAlpha, setTintAlpha] = React.useState<number>(0.40);
+  const [tintAlpha, setTintAlpha] = React.useState<number>(0.4);
 
   React.useEffect(() => {
     requestAnimationFrame(() => {
@@ -129,7 +197,7 @@ export function GlassPlayground() {
         setTintL(0.13);
         setTintC(0.0035);
         setTintH(70);
-        setTintAlpha(0.40);
+        setTintAlpha(0.4);
       } else {
         setTintL(1.0);
         setTintC(0.0);
@@ -143,20 +211,25 @@ export function GlassPlayground() {
   // cascade and rotate play tint hue toward it. This is the Glassmorphism 2.0
   // "color absorption" technique — the glass picks up the dominant hue of
   // whatever it floats over. Off = the static production tint.
+  const currentPreset = BACKDROP_PRESETS.find((p) => p.value === backdropPreset);
+  const dominant = currentPreset?.dominant ?? null;
+
   const blobToken = useBlobPrimary([backdropPreset, showBackdrop]);
   const blobOklch = parseOklchLiteral(blobToken);
 
+  const absorptionColor = dominant || blobOklch;
+
   const reactiveHue = React.useMemo(() => {
-    if (!reactiveTint || !blobOklch) return tintH;
-    return blobOklch.h;
-  }, [reactiveTint, blobOklch, tintH]);
+    if (!reactiveTint || !absorptionColor) return tintH;
+    return absorptionColor.h;
+  }, [reactiveTint, absorptionColor, tintH]);
 
   const reactiveChroma = React.useMemo(() => {
-    if (!reactiveTint || !blobOklch) return tintC;
+    if (!reactiveTint || !absorptionColor) return tintC;
     // Subtle absorption: 30% of the backdrop chroma, capped at 0.04 to keep
     // the APCA gate untouched (tint stays near-neutral for text scrim).
-    return Math.min(0.04, blobOklch.c * 0.3);
-  }, [reactiveTint, blobOklch, tintC]);
+    return Math.min(0.04, absorptionColor.c * 0.3);
+  }, [reactiveTint, absorptionColor, tintC]);
 
   // ── Build the inline CSS variable injection. The preview only overrides the
   // glass tokens locally — production code goes through `glass.css` utilities.
@@ -193,31 +266,29 @@ export function GlassPlayground() {
   // 2026 alignment: specular light corner-shine uses core --specular-angle variable
   // instead of ad-hoc inline border-image to support rounded border-radius.
   if (cornerShine) {
-    const specularAngle = shineCorner === 'tl' ? '315deg' : shineCorner === 'tr' ? '45deg' : shineCorner === 'br' ? '135deg' : '225deg';
+    const specularAngle =
+      shineCorner === 'tl'
+        ? '315deg'
+        : shineCorner === 'tr'
+          ? '45deg'
+          : shineCorner === 'br'
+            ? '135deg'
+            : '225deg';
     (previewCssVars as Record<string, string>)['--specular-angle'] = specularAngle;
   }
 
-  // ── 2026 rim colour override injection — when the toggle is on, inject
   // ── Glassmorphism 2.0 dynamic property injection
-  const borderOpacityVal = isDark ? 0.25 : 0.40;
-  if (asymmetricBorder) {
-    (previewCssVars as Record<string, string>)['--glass-edge-top'] = `oklch(${Math.min(100, tintL * 100 + 12).toFixed(1)}% ${reactiveChroma.toFixed(4)} ${reactiveHue.toFixed(0)} / ${borderOpacityVal.toFixed(2)})`;
-    (previewCssVars as Record<string, string>)['--glass-edge-bottom'] = `oklch(${Math.max(0, tintL * 100 - 10).toFixed(1)}% ${reactiveChroma.toFixed(4)} ${reactiveHue.toFixed(0)} / ${(borderOpacityVal * 0.6).toFixed(2)})`;
-  } else {
-    (previewCssVars as Record<string, string>)['--glass-edge-top'] = `oklch(${(tintL * 100).toFixed(1)}% ${reactiveChroma.toFixed(4)} ${reactiveHue.toFixed(0)} / ${borderOpacityVal.toFixed(2)})`;
-    (previewCssVars as Record<string, string>)['--glass-edge-bottom'] = `oklch(${(tintL * 100).toFixed(1)}% ${reactiveChroma.toFixed(4)} ${reactiveHue.toFixed(0)} / ${borderOpacityVal.toFixed(2)})`;
-  }
+  const edgeTokens = getEdgeTokens(isDark, asymmetricBorder, reactiveChroma, reactiveHue);
+  (previewCssVars as Record<string, string>)['--glass-edge-top'] =
+    `oklch(${(edgeTokens.top.l * 100).toFixed(1)}% ${edgeTokens.top.c.toFixed(4)} ${edgeTokens.top.h.toFixed(0)} / ${edgeTokens.top.alpha.toFixed(2)})`;
+  (previewCssVars as Record<string, string>)['--glass-edge-bottom'] =
+    `oklch(${(edgeTokens.bottom.l * 100).toFixed(1)}% ${edgeTokens.bottom.c.toFixed(4)} ${edgeTokens.bottom.h.toFixed(0)} / ${edgeTokens.bottom.alpha.toFixed(2)})`;
 
   if (doubleBezel) {
-    const bezelTopAlpha = tintL > 0.5 ? borderOpacityVal * 0.5 : borderOpacityVal * 0.4;
-    const bezelOutlineAlpha = tintL > 0.5 ? borderOpacityVal * 0.25 : borderOpacityVal * 0.15;
-    const bezelOutlineWidth = tintL > 0.5 ? '1px' : '0.5px';
-
-    (previewCssVars as Record<string, string>)['--glass-inset-bezel-top'] = `oklch(1 0 0 / ${bezelTopAlpha.toFixed(3)})`;
-    (previewCssVars as Record<string, string>)['--glass-inset-bezel-outline'] = `inset 0 0 0 ${bezelOutlineWidth} oklch(1 0 0 / ${bezelOutlineAlpha.toFixed(3)})`;
+    (previewCssVars as Record<string, string>)['--glass-inset-bezel-top'] =
+      `oklch(1 0 0 / ${isDark ? '0.15' : '0.20'})`;
   } else {
     (previewCssVars as Record<string, string>)['--glass-inset-bezel-top'] = 'oklch(1 0 0 / 0)';
-    (previewCssVars as Record<string, string>)['--glass-inset-bezel-outline'] = 'inset 0 0 0 0 transparent';
   }
 
   // Chroma-shifted shadow calculation
@@ -232,9 +303,7 @@ export function GlassPlayground() {
   // ── APCA readout. The composite is text-against-tint-against-backdrop. We
   // sample at the centre; when gradient tint is on we also sample two corners
   // so the user can see contrast differs across the panel.
-  const fgOklch = isDark
-    ? { l: 0.985, c: 0.005, h: 75 }
-    : { l: 0.19, c: 0.0035, h: 70 };
+  const fgOklch = isDark ? { l: 0.985, c: 0.005, h: 75 } : { l: 0.19, c: 0.0035, h: 70 };
   const blobSampleOklch = blobOklch ?? { l: 0.555, c: 0.115, h: 202 };
   const bgOklch = isDark ? { l: 0.13, c: 0.0035, h: 70 } : { l: 0.985, c: 0.005, h: 75 };
 
@@ -254,12 +323,7 @@ export function GlassPlayground() {
 
   // Border APCA contrast calculation (matching glass-contrast.test.ts)
   // Top/left edge is used for border APCA verification.
-  const edgeOklch = {
-    l: asymmetricBorder ? Math.min(1, tintL + 0.12) : tintL,
-    c: reactiveChroma,
-    h: reactiveHue,
-    alpha: borderOpacityVal,
-  };
+  const edgeOklch = edgeTokens.top;
 
   const edgeSrgb = oklchToSrgb({ l: edgeOklch.l, c: edgeOklch.c, h: edgeOklch.h });
   const glassOverBlob = composite(tintSrgb, tintAlpha);
@@ -284,8 +348,14 @@ export function GlassPlayground() {
       h: reactiveHue,
     });
     cornerSamples = [
-      { label: 'TL (sáng)', lc: Math.abs(apcaContrast(fgSrgb, composite(lightSrgb, tintAlpha + 0.08))) },
-      { label: 'BR (tối)', lc: Math.abs(apcaContrast(fgSrgb, composite(darkSrgb, Math.max(0, tintAlpha - 0.08)))) },
+      {
+        label: 'TL (sáng)',
+        lc: Math.abs(apcaContrast(fgSrgb, composite(lightSrgb, tintAlpha + 0.08))),
+      },
+      {
+        label: 'BR (tối)',
+        lc: Math.abs(apcaContrast(fgSrgb, composite(darkSrgb, Math.max(0, tintAlpha - 0.08)))),
+      },
     ];
   }
 
@@ -301,48 +371,72 @@ export function GlassPlayground() {
 
   // ── Generated CSS — reflects the current toggle state so the snippet is a
   // contract: what you see is what you copy.
-  const specularAngle = shineCorner === 'tl' ? '315deg' : shineCorner === 'tr' ? '45deg' : shineCorner === 'br' ? '135deg' : '225deg';
-  
+  const specularAngle =
+    shineCorner === 'tl'
+      ? '315deg'
+      : shineCorner === 'tr'
+        ? '45deg'
+        : shineCorner === 'br'
+          ? '135deg'
+          : '225deg';
+
   const bgL = (tintL * 100).toFixed(0);
   const bgC = reactiveChroma.toFixed(3);
   const bgH = reactiveHue.toFixed(0);
   const op = tintAlpha.toFixed(2);
-  const borderOp = isDark ? 25 : 40;
-  
-  const topL = Math.min(100, tintL * 100 + 12).toFixed(0);
-  const topAlpha = (borderOp / 100).toFixed(2);
-  
-  const bottomL = Math.max(0, tintL * 100 - 10).toFixed(0);
-  const bottomAlpha = ((borderOp * 0.6) / 100).toFixed(3);
+
+  const topL = (edgeTokens.top.l * 100).toFixed(0);
+  const topC = edgeTokens.top.c.toFixed(3);
+  const topH = edgeTokens.top.h.toFixed(0);
+  const topAlpha = edgeTokens.top.alpha.toFixed(2);
+
+  const bottomL = (edgeTokens.bottom.l * 100).toFixed(0);
+  const bottomC = edgeTokens.bottom.c.toFixed(3);
+  const bottomH = edgeTokens.bottom.h.toFixed(0);
+  const bottomAlpha = edgeTokens.bottom.alpha.toFixed(2);
 
   const shadowL = (tintL * 30).toFixed(0);
   const shadowC = Math.min(0.2, reactiveChroma * 1.5).toFixed(3);
   const shadowAlpha = (0.15 + 20 / 250).toFixed(2); // matches shadowDepth = 20
+  const shadowColorStr = `oklch(${shadowL}% ${shadowC} ${bgH} / ${shadowAlpha})`;
 
-  const bezelTopFactor = tintL > 0.5 ? 0.5 : 0.4;
-  const bezelOutlineFactor = tintL > 0.5 ? 0.25 : 0.15;
-  const bezelOutlineW = tintL > 0.5 ? '1px' : '0.5px';
-  const bezelTopOp = ((borderOp * bezelTopFactor) / 100).toFixed(3);
-  const bezelOutlineOp = ((borderOp * bezelOutlineFactor) / 100).toFixed(3);
+  const bezelTopOp = isDark ? '0.15' : '0.20';
+
+  const backgroundLine =
+    gradientTint && gradientTintBackground
+      ? `background: ${gradientTintBackground}; /* Kính có gradient dày/mỏng */`
+      : `background-color: oklch(${bgL}% ${bgC} ${bgH} / ${op}); /* Màu kính trong suốt phẳng */`;
+
+  const shadowGlassCode = chromaShadow
+    ? `0 16px 32px -3px ${shadowColorStr}, /* Bóng đổ mang sắc kính */
+    0 8px 16px -5px rgba(0, 0, 0, 0.25)`
+    : `0 16px 32px -3px rgba(0, 0, 0, 0.15), /* Bóng đổ xám thường */
+    0 8px 16px -5px rgba(0, 0, 0, 0.20)`;
+
+  const bezelTopLine = doubleBezel
+    ? `,
+    inset 0 1px 0 0 oklch(100% 0 0 / ${bezelTopOp}) /* Highlight bắt sáng viền trên */`
+    : '';
+
+  const boxCssCode = `box-shadow: 
+    ${shadowGlassCode}${bezelTopLine};`;
 
   const glassCSSCode = `.glass-card {
-  background-color: oklch(${bgL}% ${bgC} ${bgH} / ${op}); /* Màu kính trong suốt */
-  backdrop-filter: blur(${blurPx}px);
-  -webkit-backdrop-filter: blur(${blurPx}px); /* Làm mờ hậu cảnh */
+  ${backgroundLine}
+  backdrop-filter: blur(${blurPx}px) saturate(${saturateBoost.toFixed(1)});
+  -webkit-backdrop-filter: blur(${blurPx}px) saturate(${saturateBoost.toFixed(1)}); /* Làm mờ & tăng bão hòa hậu cảnh */
   
   /* 1. Viền bất đối xứng 3D */
-  border-top: 1px solid oklch(${topL}% ${bgC} ${bgH} / ${topAlpha});
-  border-left: 1px solid oklch(${topL}% ${bgC} ${bgH} / ${topAlpha});
-  border-bottom: 1px solid oklch(${bottomL}% ${bgC} ${bgH} / ${bottomAlpha});
-  border-right: 1px solid oklch(${bottomL}% ${bgC} ${bgH} / ${bottomAlpha});
+  border-top: 1px solid oklch(${topL}% ${topC} ${topH} / ${topAlpha});
+  border-left: 1px solid oklch(${topL}% ${topC} ${topH} / ${topAlpha});
+  border-bottom: 1px solid oklch(${bottomL}% ${bottomC} ${bottomH} / ${bottomAlpha});
+  border-right: 1px solid oklch(${bottomL}% ${bottomC} ${bottomH} / ${bottomAlpha});
   
-  /* 2. Bắt sáng vát cạnh trong & 3. Bóng đổ nhiễm sắc */
-  box-shadow: 
-    0 16px 32px -3px oklch(${shadowL}% ${shadowC} ${bgH} / ${shadowAlpha}), /* Bóng đổ mang sắc kính */
-    0 8px 16px -5px rgba(0, 0, 0, 0.25),         /* Bóng đổ tối tạo độ sâu tiếp xúc */
-    inset 0 1px 0 0 oklch(100% 0 0 / ${bezelTopOp}),      /* Highlight bắt sáng viền trên */
-    inset 0 0 0 ${bezelOutlineW} oklch(100% 0 0 / ${bezelOutlineOp});     /* Highlight vát cạnh xung quanh */
-}${cornerShine ? `
+  /* 2. Bắt sáng viền trong & 3. Bóng đổ nhiễm sắc */
+  ${boxCssCode}
+}${
+    cornerShine
+      ? `
 
 /* Specular cornershine (directional rim): tl = 315deg, tr = 45deg, br = 135deg, bl = 225deg */
 .glass-card[data-variant="specular"]::before {
@@ -368,7 +462,11 @@ export function GlassPlayground() {
   mask-composite: exclude;
   pointer-events: none;
   z-index: 1;
-}` : ''}${glassGrain ? `
+}`
+      : ''
+  }${
+    glassGrain
+      ? `
 
 /* 4. Physical Glass Grain/Noise overlay */
 .glass-grain {
@@ -386,10 +484,12 @@ export function GlassPlayground() {
   pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   border-radius: inherit;
-}` : ''}`;
+}`
+      : ''
+  }`;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-12 items-start">
+    <div className="grid items-start gap-6 lg:grid-cols-12">
       {/* ═══════════ LEFT — VISUAL SIMULATION STAGE & STATS (col-span-8) ═══════════ */}
       <div className="space-y-6 lg:col-span-8">
         <Card className="overflow-hidden">
@@ -408,7 +508,7 @@ export function GlassPlayground() {
           </CardHeader>
           <CardContent className="space-y-6 p-6">
             {/* Live preview stage: Now height h-115 for massive visibility */}
-            <div className="relative flex h-115 w-full items-center justify-center overflow-hidden rounded-2xl border border-border shadow-inner p-8">
+            <div className="relative flex h-115 w-full items-center justify-center overflow-hidden rounded-2xl border border-border p-8 shadow-inner">
               {showBackdrop ? (
                 <GlassBackdrop preset={backdropPreset} />
               ) : (
@@ -422,46 +522,47 @@ export function GlassPlayground() {
                   variant={cornerShine ? 'specular' : 'glass'}
                 >
                   <CardHeader>
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex w-full items-center justify-between">
                       <Badge tone="primary" size="sm">
                         Glassmorphism 2.0
                       </Badge>
                       <div className="flex items-center gap-1.5">
                         <Badge
-                           tone={
-                             centreLc >= 60 ? 'success' : centreLc >= 45 ? 'warning' : 'destructive'
-                           }
-                           size="sm"
-                           className="font-mono text-[10px] px-1.5 py-0.5"
-                           title="Tương phản chữ APCA"
+                          tone={
+                            centreLc >= 60 ? 'success' : centreLc >= 45 ? 'warning' : 'destructive'
+                          }
+                          size="sm"
+                          className="px-1.5 py-0.5 font-mono text-[10px]"
+                          title="Tương phản chữ APCA"
                         >
                           Chữ Lc {centreLc.toFixed(1)}
                         </Badge>
                         <Badge
-                           tone={borderLc >= 25 ? 'success' : 'destructive'}
-                           size="sm"
-                           className="font-mono text-[10px] px-1.5 py-0.5"
-                           title="Tương phản viền APCA"
+                          tone={borderLc >= 25 ? 'success' : 'destructive'}
+                          size="sm"
+                          className="px-1.5 py-0.5 font-mono text-[10px]"
+                          title="Tương phản viền APCA"
                         >
                           Viền Lc {borderLc.toFixed(1)}
                         </Badge>
                         <span
                           className={cn(
                             'flex size-2 animate-pulse rounded-full',
-                            centreLc >= 60 && borderLc >= 25
-                               ? 'bg-success'
-                               : 'bg-destructive',
+                            centreLc >= 60 && borderLc >= 25 ? 'bg-success' : 'bg-destructive',
                           )}
                         />
                       </div>
                     </div>
-                    <CardTitle className="text-lg font-bold text-foreground mt-2">Bản mô phỏng Kính 2.0</CardTitle>
+                    <CardTitle className="mt-2 text-lg font-bold text-foreground">
+                      Bản mô phỏng Kính 2.0
+                    </CardTitle>
                     <CardDescription className="text-xs leading-relaxed text-muted-foreground">
-                      Kéo các thanh điều khiển bên trái để tinh chỉnh kính. Thay đổi canvas bên trên để kiểm tra tương phản APCA trực quan.
+                      Kéo các thanh điều khiển bên trái để tinh chỉnh kính. Thay đổi canvas bên trên
+                      để kiểm tra tương phản APCA trực quan.
                     </CardDescription>
                   </CardHeader>
 
-                  <CardContent className="flex flex-col gap-(--surface-gap) flex-1 min-w-0 pb-6">
+                  <CardContent className="flex min-w-0 flex-1 flex-col gap-(--surface-gap) pb-6">
                     {showNested && (
                       <div className="relative">
                         <Card
@@ -470,8 +571,8 @@ export function GlassPlayground() {
                           style={{ ['--glass-tint' as string]: previewTint }}
                         >
                           <CardContent className="p-3 text-[10px] text-muted-foreground">
-                            Lớp kính lồng nhau (max 2). Mỗi lớp <code>backdrop-filter</code> ép một render
-                            pass — lớp thứ 3 sẽ vượt spec (xem dashboard).
+                            Lớp kính lồng nhau (max 2). Mỗi lớp <code>backdrop-filter</code> ép một
+                            render pass — lớp thứ 3 sẽ vượt spec (xem dashboard).
                           </CardContent>
                         </Card>
                       </div>
@@ -519,12 +620,14 @@ export function GlassPlayground() {
                   <Activity className="size-3.5" /> Backdrop pass
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-lg font-bold text-foreground">{backdropPass}</span>
+                  <span className="font-mono text-lg font-bold text-foreground">
+                    {backdropPass}
+                  </span>
                   <Badge tone="info" size="sm">
                     render pass
                   </Badge>
                 </div>
-                 <p className="text-[10px] leading-snug text-muted-foreground">
+                <p className="text-[10px] leading-snug text-muted-foreground">
                   ≈ {backdropPass} × per-pixel blur. Càng nhiều lớp kính lồng nhau càng tăng pass.
                 </p>
               </div>
@@ -544,9 +647,7 @@ export function GlassPlayground() {
                       Lc {centreLc.toFixed(1)}
                     </span>
                     <Badge
-                      tone={
-                        centreLc >= 60 ? 'success' : centreLc >= 45 ? 'warning' : 'destructive'
-                      }
+                      tone={centreLc >= 60 ? 'success' : centreLc >= 45 ? 'warning' : 'destructive'}
                       size="sm"
                     >
                       {centreLc >= 60 ? 'Pass (Body)' : centreLc >= 45 ? 'Pass (Large)' : 'Fail'}
@@ -562,10 +663,7 @@ export function GlassPlayground() {
                     <span className="font-mono text-xl font-bold text-foreground">
                       Lc {borderLc.toFixed(1)}
                     </span>
-                    <Badge
-                      tone={borderLc >= 25 ? 'success' : 'destructive'}
-                      size="sm"
-                    >
+                    <Badge tone={borderLc >= 25 ? 'success' : 'destructive'} size="sm">
                       {borderLc >= 25 ? 'Pass (Border)' : 'Fail'}
                     </Badge>
                   </div>
@@ -611,7 +709,11 @@ export function GlassPlayground() {
                 <div className="rounded-lg border bg-card p-2">
                   <div className="font-semibold text-muted-foreground">Composite BG</div>
                   <div className="font-mono text-[10px] text-foreground select-all">
-                    rgb({composite(tintSrgb, tintAlpha).map((v) => v.toFixed(3)).join(' ')})
+                    rgb(
+                    {composite(tintSrgb, tintAlpha)
+                      .map((v) => v.toFixed(3))
+                      .join(' ')}
+                    )
                   </div>
                 </div>
                 <div className="rounded-lg border bg-card p-2">
@@ -644,7 +746,6 @@ export function GlassPlayground() {
             </div>
           </CardContent>
         </Card>
-
       </div>
 
       {/* ═══════════ RIGHT — INTERACTIVE CONTROLS side panel (col-span-4) ═══════════ */}
@@ -652,9 +753,7 @@ export function GlassPlayground() {
         <Card className="overflow-hidden">
           <CardHeader className="border-b bg-muted/20 pb-4">
             <CardTitle className="text-lg">Bộ Điều Khiển Kính</CardTitle>
-            <CardDescription>
-              Tùy chỉnh các thông số và tính năng của kính.
-            </CardDescription>
+            <CardDescription>Tùy chỉnh các thông số và tính năng của kính.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             {/* Backdrop preset switcher inside the side control deck */}
@@ -703,7 +802,9 @@ export function GlassPlayground() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="font-semibold">Saturation</span>
-                  <span className="font-mono text-muted-foreground">{saturateBoost.toFixed(1)}x</span>
+                  <span className="font-mono text-muted-foreground">
+                    {saturateBoost.toFixed(1)}x
+                  </span>
                 </div>
                 <Slider
                   min={SPECS.saturate.min}
@@ -831,8 +932,8 @@ export function GlassPlayground() {
                 />
                 <ToggleRow
                   icon={<Sliders className="size-3.5" />}
-                  label="Bắt sáng kép (Double-Bezel)"
-                  desc="Thêm lớp viền trong đón sáng 1px/0.5px sub-pixel."
+                  label="Bắt sáng viền trên (Bezel-top)"
+                  desc="Thêm lớp viền trong đón sáng phía trên."
                   checked={doubleBezel}
                   onCheckedChange={setDoubleBezel}
                 />
@@ -871,7 +972,7 @@ export function GlassPlayground() {
       </div>
 
       {/* ═══════════ BOTTOM — THEORY AND BEST PRACTICES (full width, col-span-12) ═══════════ */}
-      <div className="lg:col-span-12 grid gap-6 md:grid-cols-2 border-t pt-6 mt-6">
+      <div className="mt-6 grid gap-6 border-t pt-6 md:grid-cols-2 lg:col-span-12">
         {/* Theory Card */}
         <Card>
           <CardHeader>
@@ -903,8 +1004,8 @@ export function GlassPlayground() {
                   Blur + Saturation (lensing 8–16px)
                 </h4>
                 <p className="pl-6 text-muted-foreground">
-                  <code>--blur-glass</code> 12px light / 16px dark; <code>--glass-saturate</code> 1.4
-                  đẩy màu nền rực (vibrancy).
+                  <code>--blur-glass</code> 12px light / 16px dark; <code>--glass-saturate</code>{' '}
+                  1.4 đẩy màu nền rực (vibrancy).
                 </p>
               </li>
               <li className="space-y-1">
@@ -915,8 +1016,9 @@ export function GlassPlayground() {
                   Edge Highlight (structural + specular)
                 </h4>
                 <p className="pl-6 text-muted-foreground">
-                  Viền 1px <code>--glass-edge</code> (mode-adaptive) + inset top <code>--surface-rim-top</code>{' '}
-                  + bottom <code>--glass-shadow-edge</code> (contour đáy dark mode).
+                  Viền 1px <code>--glass-edge</code> (mode-adaptive) + inset top{' '}
+                  <code>--surface-rim-top</code> + bottom <code>--glass-shadow-edge</code> (contour
+                  đáy dark mode).
                 </p>
               </li>
               <li className="space-y-1">
@@ -927,7 +1029,8 @@ export function GlassPlayground() {
                   Drop Shadow (định vị độ nổi)
                 </h4>
                 <p className="pl-6 text-muted-foreground">
-                  <code>--shadow-glass</code> 3-layer có key-light từ trên — không phải bóng đối xứng.
+                  <code>--shadow-glass</code> 3-layer có key-light từ trên — không phải bóng đối
+                  xứng.
                 </p>
               </li>
               <li className="space-y-1">
@@ -951,22 +1054,23 @@ export function GlassPlayground() {
               </h4>
               <ul className="list-disc space-y-1 pl-8 text-muted-foreground">
                 <li>
-                  <strong>Alpha-channel gradient tint:</strong> tint sáng góc trên-trái, tối dưới-phải —
-                  cảm giác độ dày vật lý.
+                  <strong>Alpha-channel gradient tint:</strong> tint sáng góc trên-trái, tối
+                  dưới-phải — cảm giác độ dày vật lý.
                 </li>
                 <li>
-                  <strong>Light-catcher border-image:</strong> viền chỉ bắt sáng 1 góc (Pumni production
-                  dùng uniform hairline — xem demo để hiểu khác biệt).
+                  <strong>Light-catcher border-image:</strong> viền chỉ bắt sáng 1 góc (Pumni
+                  production dùng uniform hairline — xem demo để hiểu khác biệt).
                 </li>
                 <li>
-                  <strong>Background-reactive tint (color absorption):</strong> tint tự đổi hue theo blob
-                  phía sau — kính &ldquo;hấp&rdquo; màu nền.
+                  <strong>Background-reactive tint (color absorption):</strong> tint tự đổi hue theo
+                  blob phía sau — kính &ldquo;hấp&rdquo; màu nền.
                 </li>
                 <li>
                   <strong>Double-Bezel sub-pixel:</strong> bắt sáng kép tinh tế dọc viền kính.
                 </li>
                 <li>
-                  <strong>Physical Glass Grain:</strong> phủ hạt mịn SVG nhiễu tự nhiên (.glass-grain) tăng nhận diện vật lý của kính.
+                  <strong>Physical Glass Grain:</strong> phủ hạt mịn SVG nhiễu tự nhiên
+                  (.glass-grain) tăng nhận diện vật lý của kính.
                 </li>
               </ul>
             </div>
@@ -977,9 +1081,9 @@ export function GlassPlayground() {
                 Kỷ luật hiệu năng (ADR-0014/0016)
               </h4>
               <p className="pl-4 leading-relaxed text-muted-foreground">
-                Tối đa <strong>2 lớp kính lồng nhau</strong> — mỗi lớp ép 1 backdrop render pass riêng.
-                Không bao giờ animate <code>backdrop-filter</code>. <code>will-change</code> chỉ khi
-                overlay đang chuyển state.
+                Tối đa <strong>2 lớp kính lồng nhau</strong> — mỗi lớp ép 1 backdrop render pass
+                riêng. Không bao giờ animate <code>backdrop-filter</code>. <code>will-change</code>{' '}
+                chỉ khi overlay đang chuyển state.
               </p>
             </div>
           </CardContent>
