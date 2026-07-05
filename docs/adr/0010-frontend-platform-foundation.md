@@ -21,7 +21,7 @@ We evaluated the project against an external reference, the *Enterprise UI
 Platform Architecture Blueprint (mid-2026)*. The audit found Pumni already meets
 or exceeds most of it:
 
-- Bun + Turborepo monorepo; Next.js 16.2.9; React 19.2; Tailwind v4; `radix-ui`
+- Bun + Turborepo monorepo; Next.js 16.2.10; React 19.2; Tailwind v4; `radix-ui`
   unified primitives — matching the blueprint's stack exactly.
 - A three-tier OKLCH token system (`packages/ui/src/styles/tokens.css` →
   `theme.css` → component vars), documented in `docs/conventions/design-system.md`.

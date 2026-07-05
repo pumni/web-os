@@ -66,7 +66,7 @@ reducer state.
 **2. Add a vendor-neutral observability seam, no-op by default.**
 Define a `Telemetry` interface (`event(name, attrs)` / `error(err, ctx)`)
 provided via React context, defaulting to a no-op implementation. It lives in
-`apps/web` (e.g. `src/lib/observability`) — **not** a package yet, mirroring
+`apps/web` (e.g. `src/shared/lib/observability`) — **not** a package yet, mirroring
 ADR-0010's "no premature split": promote to `@pumni/observability` only when a
 second consumer needs it. Watch emits sync-health events **from the machine's
 transition log**, plus `error()` replacing the scattered `console.error` sites

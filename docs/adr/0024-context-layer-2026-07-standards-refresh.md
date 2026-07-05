@@ -32,7 +32,7 @@ Three additive capabilities; every existing gate and budget is kept:
    APCA test, CSS drift guards, `checkDesignTokenBoundaries`); add it later
    only on a measured miss.
 2. **Post-compaction re-anchor**: the SessionStart hook
-   (`context-drift-notice.mjs`) now also emits, on `compact`/`resume` sources,
+   (`.claude/hooks/context-drift-notice.mjs`) now also emits, on `compact`/`resume` sources,
    a one-line pointer to re-read `AGENTS.md` (P0, Priority Stack, Definition of
    Done). Fail-open, non-blocking, no new always-loaded prose.
 3. **Agent Skills spec compliance** is a standing requirement for

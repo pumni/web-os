@@ -19,7 +19,7 @@ Refine the command execution guidelines to align with actual harness behavior:
 1. **Resolve `&&` Contradiction:** Update `AGENTS.md` and `docs/ai/agent-command-policy.md` to clarify that `&&` works in pwsh 7 and Git Bash but fails in Windows PowerShell 5.1, recommending sequential execution or `;` for safety when the shell is uncertain.
 2. **Document Host Shell Risks:** Explicitly warn agents about variable pre-evaluation/stripping issues with `$` in the host shell, instructing them to avoid inline environment variables or `$null` redirections where possible.
 3. **Prefer Harness Tools and Node/Bun Scripts:** Replace the Unix-to-PowerShell cmdlets translation table with guidelines that prioritize harness tools (`view_file`, `grep_search`, etc.) for query/search, and cross-shell scripts (Node/Bun) or Git Bash native utilities for terminal operations.
-4. **Introduce PowerShell 7 Workflow via Scripts:** Establish a practice where complex or multi-step PowerShell operations are executed by calling `.ps1` script files (e.g. `scripts/check.ps1` for local validation and `scripts/search.ps1` for search wrappers) via `pwsh -File` rather than using long inline `pwsh -Command` strings, bypassing host shell parsing limitations entirely.
+4. **Introduce Bun-based Workflow via Scripts:** Establish a practice where complex or multi-step operations are executed via Bun scripts (`scripts/*.mjs`) wired into `package.json`, bypassing shell parsing limitations and ensuring cross-platform portability. Native PowerShell 7 (`.ps1`) scripts are avoided to keep the repository logic shell-agnostic.
 
 ## Consequences
 
@@ -27,11 +27,11 @@ Refine the command execution guidelines to align with actual harness behavior:
 - AI agent commands are safer, more robust, and more portable across different harness environments.
 - Eliminated internal rule contradictions that could confuse agents during execution or evaluations.
 - Reduced shell-code complexity by encouraging the use of harness-provided tools rather than raw shell commands.
-- Leverages full PowerShell 7 performance and safety features natively for multi-step tasks by executing structured `.ps1` files.
+- Leverages Bun's cross-platform performance and safety features natively for multi-step tasks by executing structured `.mjs` files.
 
 **Negative / costs:**
 - Removal of the detailed PowerShell syntax tutorial (which was largely a source of errors rather than utility for the agent).
-- Requires maintaining the script runner files (`scripts/check.ps1`, `scripts/search.ps1`) in the repository.
+- Requires maintaining the script runner files in the repository.
 
 ## Implementation
 
@@ -45,8 +45,8 @@ Refine the command execution guidelines to align with actual harness behavior:
     agent reality; emphasized `bun run <script>` as the shell-agnostic path.
   - Clarified `$env` hazard with root cause (host shell pre-evaluation chain) so
     agents understand *when* inline `-Command` is risky vs safe.
-  - Narrowed `.ps1` rule scope to repo-owned scripts under `scripts/`, not
-    agent-written ad-hoc scripts.
+  - Emphasized `bun run <script>` as the shell-agnostic path and explicitly
+    deprecated the use of `.ps1` repository scripts.
   - Validation table restructured: each row names a **narrowest gate** with an
     optional escalation column; E2E added as explicit scope; gate order is
     sequential (`lint && typecheck && test`). Added "narrowest first, fix before
@@ -56,5 +56,5 @@ Refine the command execution guidelines to align with actual harness behavior:
 
 - `docs/ai/agent-command-policy.md` - Command Policy.
 - `AGENTS.md` - AI Instructions.
-- `scripts/check.ps1` - PowerShell 7 validator.
-- `scripts/search.ps1` - PowerShell 7 search wrapper.
+- `scripts/check-ai-context.mjs` - Context validator.
+- `scripts/sync-project-graph.mjs` - Project graph synchronizer.

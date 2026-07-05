@@ -37,9 +37,9 @@ reopens only the Storybook and DTCG rejections.
 **1. Add a component catalog (reopens ADR-0010's Storybook rejection).**
 Ship a catalog app under `apps/` that renders `@pumni/ui` components in isolation
 with the real token cascade, theme toggle, and `PersonalizationProvider`
-(accent / glass / density). Tooling is chosen by a short spike — **Ladle**
-(Vite-native, low-maintenance, fits Tailwind v4 + Bun) is preferred over
-Storybook 9 unless the spike surfaces a blocker. Stories are **representative,
+(accent / glass / density). Tooling is chosen by a short spike — **Storybook 10**
+(Vite-native, integrated with Tailwind v4) was chosen after the implementation
+spike for its robust ecosystem and mature React 19 support. Stories are **representative,
 not exhaustive** (a seed set covering each surface family), and the catalog adds
 **no CI gate** — it must not become a second app the team is obligated to keep
 green.
@@ -80,9 +80,8 @@ only the additive, downstream export it enables.
 - **Author tokens in DTCG JSON and generate CSS (full Style Dictionary).**
   Rejected: inverts the SSOT and imports the pipeline's build/maintenance cost
   ADR-0010 declined; the CSS-authored OKLCH values stay the human-edited source.
-- **Storybook 9 over Ladle.** Deferred to the implementation spike; Storybook's
-  cross-team/docs value is marginal for a solo/small team, so the lighter tool is
-  preferred unless blocked.
+- **Storybook 10 over Ladle.** Following the implementation spike, Storybook
+  was selected for its mature ecosystem and better integration with React 19.
 - **Re-add WCAG 2.x alongside APCA.** Rejected: APCA is the standing single
   contrast standard (ADR-0010 + `design-system.md`); this ADR does not change it.
 

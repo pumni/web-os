@@ -6,7 +6,7 @@
 
 ## Context
 
-Next.js 16.2's Cache Components API has five documented "silent bugs that
+Next.js 16.2.10's Cache Components API has five documented "silent bugs that
 compile fine" (see `apps/web/AGENTS.md` → Cache Components, and
 `docs/ai/common-mistakes.md` §10, §13–16):
 

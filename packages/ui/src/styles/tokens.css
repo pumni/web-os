@@ -28,20 +28,11 @@
   --indigo-500: oklch(0.585 0.15 277.117);
   --indigo-600: oklch(0.511 0.16 276.966);
   --indigo-700: oklch(0.457 0.15 277.023);
-  /* Dark-end chroma tapers monotonically after the 600 peak (was a 0.195 spike
-     at 800 from hand-tuning over multiple style rounds — see plan). */
   --indigo-800: oklch(0.398 0.135 277.366);
   --indigo-900: oklch(0.359 0.11 278.697);
   --indigo-950: oklch(0.257 0.075 281.288);
 
-  /* --- Cyan-teal (selectable accent, ~200°) ---
-     A former brand hue, now one of the personalization accents (the default
-     brand is coral — see brand.css). Lightness on the primary stops (500/600)
-     is pulled darker than the indigo equivalents because cyan carries far more
-     luminance — when this accent is active it takes WHITE `--primary-foreground`
-     as a fill, so it must stay dark enough that white clears the APCA Lc 60 gate
-     (glass-contrast.test.ts). Its lifted text role is handled by
-     `--primary-text`, not this stop. */
+  /* --- Cyan-teal --- */
   --cyan-50: oklch(0.971 0.02 200);
   --cyan-100: oklch(0.935 0.04 200);
   --cyan-200: oklch(0.879 0.068 200);
@@ -54,19 +45,13 @@
   --cyan-900: oklch(0.335 0.063 206);
   --cyan-950: oklch(0.24 0.044 207);
 
-  /* --- Brand accent: Violet (kept as a selectable accent) --- */
+  /* --- Brand accent: Violet --- */
   --violet-300: oklch(0.811 0.111 293.571);
   --violet-400: oklch(0.702 0.12 293.541);
   --violet-500: oklch(0.606 0.15 292.717);
   --violet-600: oklch(0.541 0.15 293.009);
 
-  /* --- Brand: Coral / clay (primary, ~40°) ---
-     The default brand hue — a warm terracotta in the Claude "book cloth" family.
-     Like cyan, the primary stops (500/600) are pulled dark enough that the WHITE
-     `--primary-foreground` clears the APCA Lc 60 gate (glass-contrast.test.ts);
-     a literal book-cloth #cc785c (L≈0.64) would fail it, so the brand stop runs
-     a touch deeper while still reading as a vivid warm clay. Lighter stops
-     (50–300) drive the warm accent surfaces and tints. */
+  /* --- Brand: Coral  --- */
   --coral-50: oklch(0.971 0.013 50);
   --coral-100: oklch(0.936 0.027 48);
   --coral-200: oklch(0.881 0.05 46);
@@ -79,14 +64,7 @@
   --coral-900: oklch(0.37 0.083 34);
   --coral-950: oklch(0.27 0.056 34);
 
-  /* --- Neutrals: Warm Sand (ấm rất nhẹ, hue ~70 — paper-warm, NOT coral) ---
-     Claude #1A1918-style near-neutrals: a whisper of warmth (low chroma ~0.003–
-     0.007) at a yellow-warm hue ~70 deliberately kept AWAY from the coral accent
-     hue (~40) so dark surfaces never read as "accent tinted". Light stops are a
-     soft cream; dark stops a warm near-black. Lightness ladder is unchanged from
-     the old Obsidian Slate scale, so every APCA pair and the dark elevation gaps
-     (background→card→popover) stay exactly as tuned — only the warmth is dialed
-     in at a near-neutral chroma. */
+  /* --- Neutrals: Warm Sand ---*/
   --neutral-0: oklch(1 0 0);
   --neutral-50: oklch(0.985 0.005 75);
   --neutral-100: oklch(0.968 0.006 74);
@@ -95,15 +73,6 @@
   --neutral-400: oklch(0.704 0.007 71);
   --neutral-500: oklch(0.554 0.008 70);
   --neutral-600: oklch(0.446 0.007 70);
-  /* Dark elevation ladder, calibrated to Claude Code's dark surfaces
-     (background #141413 ≈ L0.19, card #1A1918 ≈ L0.214). NOTE OKLCH L is
-     ~perceptual: L0.085 renders ≈ #020202 (near-black), so a readable dark
-     surface needs L ≈ 0.19+. background uses --neutral-890 (≈ #141413, warm dark
-     gray — NOT near-black) so white text loses its harsh halation and surfaces
-     elevate above it; card (880 ≈ #1A1918), popover/secondary (860/800) and
-     input (700) step up in tandem to keep the bg→card→popover→fill gaps legible.
-     These 700–890 stops are dark-only (no light-mode role), so light contrast and
-     the APCA gate are untouched (dark muted-fg/muted holds Lc ~80). */
   --neutral-700: oklch(0.33 0.006 70);
   --neutral-800: oklch(0.275 0.005 70);
   --neutral-860: oklch(0.245 0.0045 70);
@@ -124,19 +93,13 @@
   --emerald-600: oklch(0.596 0.145 163.225);
   --amber-400: oklch(0.828 0.189 84.429);
   --amber-500: oklch(0.769 0.188 70.08);
-  /* Deep amber for light-mode warning text/fill — amber-500 as text on the
-     cream background reads at only APCA Lc ~39; this stop reaches ~54 while
-     keeping the amber identity (hue slides toward orange as the scale darkens,
-     matching the Tailwind amber ramp). */
   --amber-600: oklch(0.666 0.179 58.318);
 
   /* ========================================================================
      CATEGORY II: TYPOGRAPHY SYSTEM
      ======================================================================== */
 
-  /* --- Typography: raw size + paired line-height scale ---
-     Distinct names from the Tailwind `--text-*` namespace they bridge into
-     (see theme.css) to avoid self-referential `var()` cycles. */
+  /* --- Typography: raw size + paired line-height scale --- */
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -202,11 +165,7 @@
   --radius-nest-gap: 0.75rem;
   /* 12px - typical card padding */
 
-  /* --- Z-index: single owned OS layering scale (see design-system.md).
-     EVERY cross-component layer — shell chrome AND floating primitives —
-     reads these tokens. Never hand-pick a raw Tailwind `z-40`: a chrome layer
-     on the 0–50 scale will be leap-frogged by a token-based floating layer
-     (a `Window` at 110 painting over a `z-40` topbar is exactly that bug). --- */
+  /* --- Z-index: single owned OS layering scale (see design-system.md) --- */
   --z-desktop: -1;
   /* fixed OS wallpaper, painted behind app content */
   --z-base: 0;
@@ -251,17 +210,10 @@
     0 2px 4px -1px oklch(0 0 0 / 0.06), 0 12px 28px -8px oklch(0 0 0 / 0.18),
     0 28px 56px -18px oklch(0 0 0 / 0.22);
 
-  /* Solid content elevation — soft multi-layer, modern depth (NOT the flat
-     --shadow-1 hairline). Lets solid cards carry real lift so glass is reserved
-     for true floating layers. Applied standalone in `surface-raised` (theme.css)
-     — the inset top rim is no longer applied there (ADR-0020); solid surfaces
-     are structural-only (`border-border` + this elevation, no specular rim). */
+  /* Solid content elevation */
   --shadow-card-raised: 0 1px 2px -1px oklch(0 0 0 / 0.05), 0 4px 10px -3px oklch(0 0 0 / 0.07);
 
-  /* --- Glass blur (glassmorphism: frosted, content shows through softly) ---
-     The production-2026 sweet spot is 8–16px: enough frost to read as glass,
-     low enough that the per-pixel backdrop blur stays cheap on mobile (glass is
-     only ever applied to floating layers, never large backgrounds). */
+  /* --- Glass blur */
   --blur-glass-sm: 8px;
   --blur-glass: 12px;
   --blur-glass-lg: 16px;
@@ -342,10 +294,6 @@
   /* parallax displacement factor     */
 
   /* ---- State-layer intensity tokens (Material-3 pattern) ---- */
-  /* Tokenise hover/press dimming — applied as a color-mix overlay on
-     currentColor/fill, NOT surface opacity (which is banned on surfaces).
-     This is a "state overlay", not bg-card/NN — the distinction is
-     documented in design-system.md §State-layer tokens.          */
   --state-hover: 8%;
   /* lớp phủ hover */
   --state-pressed: 12%;

@@ -29,7 +29,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .worktrees/
 *.tsbuildinfo
 
-# AI session scratchpad (ephemeral, see docs/ai/agent-behavior.md)
+# AI session scratchpad (deprecated, see ADR-0004)
 .agents/scratchpad/
 
 # Supabase local state
