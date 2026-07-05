@@ -105,10 +105,11 @@ function getEdgeTokens(
           alpha: 0.55,
         },
         bottom: {
-          l: 0.9,
+          // Matches oklch(0.2 0.03 270 / 0.35) in theme.css (cross-file contract)
+          l: 0.2,
           c: reactiveChroma,
           h: reactiveHue,
-          alpha: 0.55,
+          alpha: 0.35,
         },
       };
     } else {
@@ -421,37 +422,30 @@ export function GlassPlayground() {
   const boxCssCode = `box-shadow: 
     ${shadowGlassCode}${bezelTopLine};`;
 
+  const bevelGradient = `linear-gradient(135deg, oklch(${topL}% ${topC} ${topH} / ${topAlpha}), oklch(${bottomL}% ${bottomC} ${bottomH} / ${bottomAlpha}))`;
+
   const glassCSSCode = `.glass-card {
   ${backgroundLine}
   backdrop-filter: blur(${blurPx}px) saturate(${saturateBoost.toFixed(1)});
   -webkit-backdrop-filter: blur(${blurPx}px) saturate(${saturateBoost.toFixed(1)}); /* Làm mờ & tăng bão hòa hậu cảnh */
-  
-  /* 1. Viền bất đối xứng 3D */
-  border-top: 1px solid oklch(${topL}% ${topC} ${topH} / ${topAlpha});
-  border-left: 1px solid oklch(${topL}% ${topC} ${topH} / ${topAlpha});
-  border-bottom: 1px solid oklch(${bottomL}% ${bottomC} ${bottomH} / ${bottomAlpha});
-  border-right: 1px solid oklch(${bottomL}% ${bottomC} ${bottomH} / ${bottomAlpha});
-  
+
+  /* 1. Viền: metric border trong suốt — cạnh nhìn thấy là gradient ring ::before */
+  position: relative;
+  border: 1px solid transparent;
+
   /* 2. Bắt sáng viền trong & 3. Bóng đổ nhiễm sắc */
   ${boxCssCode}
-}${
-    cornerShine
-      ? `
+}
 
-/* Specular cornershine (directional rim): tl = 315deg, tr = 45deg, br = 135deg, bl = 225deg */
-.glass-card[data-variant="specular"]::before {
+/* 1b. Bevel ring liên tục: sáng TL (biên chủ đạo, APCA-gated) → tối BR (bevel
+   shading) — bám border-radius, không seam chéo ở góc như border 4 cạnh khác màu */
+.glass-card::before {
   content: "";
   position: absolute;
   inset: -1px;
-  border-radius: inherit; /* Preserves parent border-radius */
+  border-radius: inherit;
   padding: 1px;
-  background: conic-gradient(
-    from calc(var(--specular-angle, ${specularAngle}) - 45deg),
-    transparent 0deg,
-    var(--specular-rim-start) 45deg,
-    var(--specular-rim-mid) 70deg,
-    transparent 90deg
-  );
+  background: ${bevelGradient};
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -462,6 +456,22 @@ export function GlassPlayground() {
   mask-composite: exclude;
   pointer-events: none;
   z-index: 1;
+}${
+    cornerShine
+      ? `
+
+/* Specular cornershine: lớp conic chồng LÊN bevel ring, cùng ::before
+   (tl = 315deg, tr = 45deg, br = 135deg, bl = 225deg) */
+.glass-card[data-variant="specular"]::before {
+  background:
+    conic-gradient(
+      from calc(var(--specular-angle, ${specularAngle}) - 45deg),
+      transparent 0deg,
+      var(--specular-rim-start) 45deg,
+      var(--specular-rim-mid) 70deg,
+      transparent 90deg
+    ),
+    ${bevelGradient};
 }`
       : ''
   }${
@@ -471,18 +481,19 @@ export function GlassPlayground() {
 /* 4. Physical Glass Grain/Noise overlay */
 .glass-grain {
   position: relative;
+  isolation: isolate;
 }
 
-.glass-grain::before {
+.glass-grain::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.05;
+  inset: 0;
+  opacity: ${isDark ? '0.07' : '0.05'}; /* Opacity theo mode */
+  mix-blend-mode: overlay;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  background-repeat: repeat;
   border-radius: inherit;
 }`
       : ''
@@ -541,9 +552,9 @@ export function GlassPlayground() {
                           tone={borderLc >= 25 ? 'success' : 'destructive'}
                           size="sm"
                           className="px-1.5 py-0.5 font-mono text-[10px]"
-                          title="Tương phản viền APCA"
+                          title="Tương phản viền chủ đạo APCA"
                         >
-                          Viền Lc {borderLc.toFixed(1)}
+                          Viền chủ đạo Lc {borderLc.toFixed(1)}
                         </Badge>
                         <span
                           className={cn(
@@ -658,7 +669,9 @@ export function GlassPlayground() {
                   </p>
                 </div>
                 <div className="space-y-1 rounded-lg border bg-card p-3">
-                  <div className="font-semibold text-muted-foreground">APCA viền (Border)</div>
+                  <div className="font-semibold text-muted-foreground">
+                    APCA viền chủ đạo (Border)
+                  </div>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xl font-bold text-foreground">
                       Lc {borderLc.toFixed(1)}
@@ -668,7 +681,7 @@ export function GlassPlayground() {
                     </Badge>
                   </div>
                   <p className="text-[10px] leading-snug text-muted-foreground">
-                    Viền kính ≥ Lc 25 (cả 2 mode).
+                    Cạnh biên chủ đạo ≥ Lc 25 · cạnh đáy = bevel shading (miễn gate).
                   </p>
                 </div>
                 <div className="space-y-1 rounded-lg border bg-card p-3">
@@ -925,8 +938,8 @@ export function GlassPlayground() {
                 />
                 <ToggleRow
                   icon={<Palette className="size-3.5" />}
-                  label="Viền 3D bất đối xứng (Asymmetric)"
-                  desc="Cạnh trên/trái sáng hơn, cạnh dưới/phải khuất tối."
+                  label="Bevel ring gradient (Asymmetric)"
+                  desc="Ring 1px sáng TL → tối BR, liên tục quanh bo góc (không seam)."
                   checked={asymmetricBorder}
                   onCheckedChange={setAsymmetricBorder}
                 />
@@ -947,7 +960,7 @@ export function GlassPlayground() {
                 <ToggleRow
                   icon={<Sparkles className="size-3.5" />}
                   label="Kết cấu hạt mịn (Glass Grain)"
-                  desc="Phủ hạt SVG nhiễu tự nhiên tăng nhận diện vật lý."
+                  desc="Phủ hạt SVG nhiễu tự nhiên (overlay blend, luminance-only) tăng nhận diện vật lý."
                   checked={glassGrain}
                   onCheckedChange={setGlassGrain}
                 />
@@ -1016,9 +1029,9 @@ export function GlassPlayground() {
                   Edge Highlight (structural + specular)
                 </h4>
                 <p className="pl-6 text-muted-foreground">
-                  Viền 1px <code>--glass-edge</code> (mode-adaptive) + inset top{' '}
-                  <code>--surface-rim-top</code> + bottom <code>--glass-shadow-edge</code> (contour
-                  đáy dark mode).
+                  Viền 1px asymmetric <code>--glass-edge-top/bottom</code> (top: gated Lc 25;
+                  bottom: exempt shadow) + inset top <code>--glass-inset-bezel-top</code> + bottom{' '}
+                  <code>--glass-shadow-edge</code> (contour đáy dark mode).
                 </p>
               </li>
               <li className="space-y-1">
@@ -1113,7 +1126,7 @@ export function GlassPlayground() {
                   dont: 'Kính cho toàn bộ nền app hoặc card text dài',
                 },
                 {
-                  do: 'Tuân thủ APCA Lc 60 chữ / Lc 25 viền',
+                  do: 'Tuân thủ APCA Lc 60 chữ / Lc 25 cạnh biên chủ đạo',
                   dont: 'Chữ mờ/nhạt đè kính không đủ tương phản',
                 },
                 {

@@ -54,7 +54,7 @@ surface — the APCA dead zone).
 | `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-(--duration-base)` | Brand curves + owned timing (`pumniNoRawTiming` blocks it) |
 | Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
 | Glass on hero / page backgrounds, or glass cards on flat surfaces | Glass only on floating layers with a colourful backdrop (ADR-0012); opaque shell + raised solid cards. Dense content (forms/tables) always uses solid | `backdrop-filter` is GPU-heavy; glassmorphism reads only over a backdrop |
-| Eyeballing contrast on glass/accents | Trust gated tokens; verify APCA Lc 60 / Lc 25 | `glass-contrast` test owns the cascade |
+| Eyeballing contrast on glass/accents | Trust gated tokens; verify APCA Lc 60 (text on fill) | `glass-contrast` test owns the cascade |
 | `backdrop-blur-md` | Glass utility / `GlassSurface` | Reduced-transparency and performance fallbacks |
 | `bg-card/40`, `border-border/20` | Solid surface tokens: opaque, `border-border` | Surfaces are opaque in the unified system |
 | `shadow-md`, `shadow-lg` on content | `shadow-card` / `shadow-raised` | One elevation ladder |
@@ -86,15 +86,16 @@ knob (≈1.4; the `glass-saturate.test.ts` guard locks the tokenization, not the
 value). Blur is frosted (`--blur-glass` 8–16px; dark uses 16px) — a deliberate
 "frosted" choice over the 2026 subtle baseline of 4–6px (UX Pilot 2026),
 recorded as such by the ADR-0012 2026-07-04 amendment. Float depth is
-the directional `--shadow-glass`. The border read comes from
-`--surface-rim-top` (specular light inset) + the **mode-inverted
-`--glass-edge`** (2026-07-04 alignment): light mode carries a dark
-neutral-blue rim and dark mode a light neutral-violet rim. A
-pure-white edge would composite with the white `--glass-tint` in light
-mode and lose all APCA contrast on a bright backdrop, so the edge is
-dark-on-light / light-on-dark — the opposite of the prior uniform
-white hairline. The glass border is now APCA-gated at Lc 25 in both
-modes.
+the directional `--shadow-glass` — the **real delineator**. The border read
+comes from `--surface-rim-top` (specular light inset) + the **specular light
+`--glass-edge`**: a thin translucent light stroke that catches light along the
+panel rim — white in light mode, softened to a light neutral-violet in dark
+mode so it doesn't glow harsh. It is deliberately low-contrast and carries **no
+APCA gate**: the glass edge is a light effect, not a readability boundary (WCAG
+1.4.11 scopes contrast to interactive controls). Earlier revisions inverted the
+light-mode rim to a dark navy stroke to satisfy an "Lc 25 delineation" gate —
+that made glass read like a solid-card outline, so the gate was removed and the
+rim is light in both modes again.
 **Perf discipline:** `will-change` is scoped to overlay transitions only
 (`[data-state=open|closed]`); stacked glass is capped at 2 layers (each layer
 forces a separate backdrop render pass — a doc/skill rule).
@@ -136,8 +137,10 @@ is needed AS page text (link button, `FormMessage`, error/eyebrow copy), use the
 Step-11 text tokens `text-primary-text` / `text-destructive-text` — the base
 `primary`/`destructive` are anchored dark for the solid-fill role and read at
 only Lc ~34/37 as dark text. Do not add a WCAG 2.x ratio
-gate. The rim tokens are specular (inset shadows) and are NOT subject to the
-APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
+gate. The rim tokens **and the glass edge** are specular light effects, NOT
+subject to any APCA gate — the only APCA gate on glass is text over
+`--glass-tint` (Lc 60). Tune `--glass-tint` / `--glass-edge`, never a
+border-contrast threshold.
 
 **Hard rules:**
 
@@ -168,27 +171,49 @@ APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
 - **Solid-flow**:
   - `--border` — dark, builds contrast against the fill. Card solid/inset, `CardWell`. The real delineator for solid surfaces.
   - `--input` — dark, one shade deeper than `--border`. Form controls only. Flat, no specular rim.
-- **Glass-flow**:
-  - `--glass-edge` — mode-inverted uniform edge, used by `glass-bar-bordered` and `glass-titlebar`.
-  - `--glass-edge-top` / `--glass-edge-bottom` — mode-inverted asymmetric edge pair, used by `glass-panel` and `glass-window`. Light mode carries top: `oklch(0.3 0.02 260 / 0.40)` and bottom: `oklch(0.3 0.02 260 / 0.50)` for top-lit bevel shadow contrast; dark mode carries top: `oklch(0.95 0.03 270 / 0.55)` and bottom: `oklch(0.90 0.03 270 / 0.55)` — the bevel lives in lightness because a dimmer bottom cannot clear the Lc 25 gate over the bright blobs. Both are APCA Lc 25 gated in both modes.
+- **Glass-flow** — a specular **light rim**, not a contrast boundary (see the delineation doctrine below):
+  - `--glass-edge` — uniform light rim (white in light mode, soft light-violet in dark), used by `glass-bar-bordered` and `glass-titlebar`.
+  - `--glass-edge-top` / `--glass-edge-bottom` — bevel pair, painted by the masked 1px **gradient bevel ring** (`&::before`, 135° light-catch top-left → contact-shadow bottom-right) on `glass-panel` / `glass-window`. Per-side border colours were retired: CSS miters differently-coloured borders with a hard diagonal seam, which breaks the rim on rounded corners; the ring follows `border-radius` smoothly. The element keeps a transparent 1px metric border that a11y fallbacks re-colour. Light mode top: `oklch(1 0 0 / 0.65)` (white light-catch) and bottom: `oklch(0.4 0.02 260 / 0.14)` (faint cool shadow); dark mode top: `oklch(0.95 0.03 270 / 0.55)` (soft violet rim) and bottom: `oklch(0.2 0.03 270 / 0.35)` (violet contact shadow). Neither stop is APCA-gated — the edge is a light effect, and the drop shadow is what delineates the panel.
+
+### Delineation doctrine — the drop shadow separates, the edge catches light
+
+A glass surface is separated from its backdrop by the **drop shadow**
+(`--shadow-glass`), never by border contrast. The edge (`--glass-edge`, and
+`--glass-edge-top` → `--glass-edge-bottom` on panels) is a **specular light
+rim** — a thin translucent light stroke that catches light along the panel edge,
+"visible enough to define the shape but light enough not to draw attention"
+(2026 glassmorphism / Apple Liquid Glass consensus). It is deliberately
+low-contrast, light in both modes (white in light, soft light-violet in dark).
+
+**The glass edge is NOT APCA-gated.** No accessibility standard asks a container
+border to hit a contrast ratio — WCAG 1.4.11 scopes contrast to *interactive
+controls*, which is why `--input` (not the glass rim) carries that duty. The
+only APCA gate on glass is **text over `--glass-tint`** (Lc 60). An earlier
+revision imposed an "Lc 25 delineation" floor on the dominant edge and inverted
+the light-mode rim to a dark navy stroke to pass it; that made glass read like a
+solid-card outline — the opposite of the material — so the floor was removed.
+The real accessibility path for transparency is the system media-query fallbacks
+(`prefers-contrast: more` / `prefers-reduced-transparency`), which recolour the
+edge to a solid `--border`.
 
 **`--surface-rim-top` is strictly for uniform chrome bars/titlebars.** Glass panels and windows consume `--glass-inset-bezel-top` as their top rim highlight instead. Solid cards carry **no rim at all** — `--border` (hairline) + `--shadow-card-raised` (elevation) only. The bottom rim (`--glass-shadow-edge`) stays glass-only by design.
 
 | | Solid card (`surface-raised`) | Glass card (`glass-panel`) |
 | --- | --- | --- |
-| Structural hairline | `--border` (dark) | Asymmetric pair `--glass-edge-top` / `--glass-edge-bottom` (mode-inverted, gated Lc 25) |
+| Structural hairline | `--border` (dark) | Gradient bevel ring (masked `::before`): `--glass-edge-top` (light-catch) → `--glass-edge-bottom` (contact shadow); metric border transparent |
 | Top rim | none (deliberate, ADR-0012) | `--glass-inset-bezel-top` |
 | Bottom rim | none (deliberate) | `--glass-shadow-edge` |
 | Real delineator | the hairline itself | `--shadow-glass` (drop shadow) |
-| APCA Lc 25 gate | enforced | enforced (both asymmetric edge tokens checked) |
-| Hero specular | n/a | opt-in via `glass-panel[data-variant="specular"]` (conic gradient ring overlay via `::before`, structural hairline borders remain intact underneath) |
+| Edge/border APCA gate | none — `--border` is a structural hairline | none — the edge is a light effect; only text-on-`--glass-tint` is gated (Lc 60) |
+| Hero specular | n/a | opt-in via `glass-panel[data-variant="specular"]` (conic shine layered on the SAME `::before` bevel ring — the boundary gradient stays visible underneath) |
 
 **Decision tree** — pick the path that matches the element, never write a border
 or inset rim in TSX:
 
 ```
 GLASS panel/window (floats over a blob/media backdrop)?
-  → Use glass-panel/window. hairline = --glass-edge-top/bottom, rim pair = --glass-inset-bezel-top
+  → Use glass-panel/window. edge = gradient bevel ring (--glass-edge-top →
+    --glass-edge-bottom), rim pair = --glass-inset-bezel-top
     + --glass-shadow-edge, delineator = --shadow-glass. [glass.css owns this]
 GLASS bar/titlebar (dock, topbar, title)?
   → Use glass-bar / glass-bar-bordered. hairline = --glass-edge, rim = --surface-rim-top

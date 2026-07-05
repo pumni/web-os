@@ -1,5 +1,8 @@
 # Kế hoạch: Remediation Glassmorphism 2.0 (hậu-review 2026-07-05)
 
+> [!WARNING]
+> **Superseded (2026-07-05)**: Giá trị dark bottom trong plan này đã bị thay bởi doctrine mới (bottom = shadow bevel, miễn gate) trong [glass-border-doctrine-and-grain-2026.md](file:///V:/web-os/docs/plans/glass-border-doctrine-and-grain-2026.md).
+
 - **Status:** Proposed
 - **Date:** 2026-07-05
 - **Trigger:** Master-review toàn diện hệ glassmorphism (lõi `packages/ui` +

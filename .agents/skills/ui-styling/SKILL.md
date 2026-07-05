@@ -24,9 +24,7 @@ reference detail.
   chip) are the sub-surface primitives. Never hand-roll `border bg-muted` wells,
   inline status pills, or icon chips — `pumniNoAdHocSurface` blocks the well.
   `BentoGridItem` is layout-only and renders through these primitives.
-- Contrast is APCA-gated per surface pair in `glass-contrast.test.ts` (spec-correct APCA: gamma-encoded sRGB into `apcaContrast`) — Lc 60 body-text target for surfaces, muted, and glass-over-blob in both modes, with documented pinned floors below it only for accent surfaces (45) and status tints (per-token table in
-  `packages/ui/src/test/glass-contrast.test.ts`; light warning and dark destructive/primary sit lower because those tokens double as solid fills). Do not reintroduce a
-  WCAG 2.x ratio gate.
+- Contrast is APCA-gated per surface pair in `glass-contrast.test.ts` (spec-correct APCA: gamma-encoded sRGB into `apcaContrast`) — Lc 60 body-text target for surfaces, muted, and glass-over-blob in both modes, with documented pinned floors below it only for accent surfaces (45) and status tints (per-token table in `packages/ui/src/test/glass-contrast.test.ts`). The **glass edge is NOT contrast-gated** — it is a specular light rim (a light effect), delineation comes from the drop shadow (`--shadow-glass`), and the a11y path is the `prefers-contrast` / `prefers-reduced-transparency` fallbacks. Do not reintroduce a WCAG 2.x ratio gate, and never gate the glass border on a contrast ratio.
 - Glass performance: never animate `backdrop-filter`; cap stacked glass at 2
   layers (each layer forces a separate backdrop render pass; doc/skill rule);
   `will-change` is reserved for overlay transitions, not static glass.

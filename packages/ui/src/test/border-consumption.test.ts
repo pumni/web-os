@@ -90,7 +90,9 @@ describe('the structural hairline set is closed and defined once', () => {
       ).toBe(0);
 
       const valMatch = rootBody.match(new RegExp(`${token}:\\s*([^;]+);`));
-      expect(valMatch?.[1], `${token} must carry both themes via light-dark()`).toContain('light-dark(');
+      expect(valMatch?.[1], `${token} must carry both themes via light-dark()`).toContain(
+        'light-dark(',
+      );
     }
   });
 });
@@ -129,21 +131,28 @@ describe('surface-raised (solid) stays on the solid hairline flow', () => {
 });
 
 describe('glass-panel / glass-window stay on the glass hairline flow', () => {
-  // The floating-glass utilities. Their structural hairline is the white
-  // --glass-edge (specular); they must NOT fall back to the dark --border,
-  // which would invert the colour semantics and silently make glass read like a
-  // solid card. They also carry the full rim pair (ADR-0018 seam + bottom).
+  // The floating-glass utilities. Their visible edge is the masked 1px gradient
+  // bevel ring (&::before) running --glass-edge-top (a light specular light-catch)
+  // → --glass-edge-bottom (a faint contact shadow). The rim is a light effect,
+  // not an APCA-gated contrast boundary. Per-side border colours are retired:
+  // they paint hard diagonal colour seams on rounded corners. The element keeps
+  // a TRANSPARENT metric border so box metrics are stable and a11y fallbacks can
+  // re-colour it; it must NOT fall back to the dark --border, which would make
+  // glass read like a solid card.
   it.each([
     ['glass-panel', '@utility glass-panel'],
     ['glass-window', '@utility glass-window'],
-  ])('%s uses asymmetric borders as its structural hairline', (_label, selector) => {
+  ])('%s paints its edge as the masked gradient bevel ring', (_label, selector) => {
     const body = readRuleBody(glassCss, selector);
 
-    expect(body, `${_label} must use asymmetric borders`).toMatch(
-      /border-top:\s*1px\s+solid\s+var\(--glass-edge-top\)/,
+    expect(body, `${_label} must keep the transparent metric border`).toMatch(
+      /border:\s*1px\s+solid\s+transparent/,
     );
-    expect(body, `${_label} must use asymmetric borders`).toMatch(
-      /border-bottom:\s*1px\s+solid\s+var\(--glass-edge-bottom\)/,
+    expect(body, `${_label} ring must run edge-top → edge-bottom`).toMatch(
+      /linear-gradient\(\s*135deg,\s*var\(--glass-edge-top\),\s*var\(--glass-edge-bottom\)\s*\)/,
+    );
+    expect(body, `${_label} ring must be masked to a 1px hairline`).toMatch(
+      /mask-composite:\s*exclude/,
     );
   });
 
@@ -182,10 +191,14 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
     );
   });
 
-  it('specular glass-panel retains structural hairline borders', () => {
-    const body = readRuleBody(glassCss, '.glass-panel[data-variant="specular"]');
-    expect(body, 'specular variant must not hide borders with transparent').not.toMatch(
-      /border-color:\s*transparent/,
+  it('specular layers the conic shine OVER the base bevel gradient (boundary preserved)', () => {
+    const body = readRuleBody(glassCss, ".glass-panel[data-variant='specular']::before");
+    expect(body, 'specular ::before rule must exist').not.toBe('');
+    // The conic highlight and the structural bevel gradient must live in the
+    // SAME background list — replacing the bevel outright would erase the
+    // APCA-gated boundary on 3/4 of the perimeter (the original specular bug).
+    expect(body, 'specular must keep the bevel gradient as a background layer').toMatch(
+      /conic-gradient\([\s\S]*linear-gradient\(\s*135deg,\s*var\(--glass-edge-top\),\s*var\(--glass-edge-bottom\)\s*\)/,
     );
   });
 });

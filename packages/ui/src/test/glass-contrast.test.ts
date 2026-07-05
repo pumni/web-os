@@ -54,49 +54,55 @@ describe('Glass contrast tokens', () => {
     },
   );
 
-  // ADR-0012 (2026-07-04 alignment): glass border is now APCA-gated at
-  // Lc 25 in BOTH modes. The prior exempt (ADR-0014 "rescopes the gate")
-  // was a workaround for the低-alpha white edge that could not clear Lc 25
-  // over a near-white light backdrop — fixed by the mode-adaptive
-  // `--glass-edge` token (light: 0.70 alpha white; dark: light neutral-
-  // violet rim). The drop shadow (`--shadow-glass`) still separates the
-  // panel from its backdrop, but the border itself now carries a contrast
-  // floor. Reference: UX Pilot 2026, Orizon rule #7 "Add subtle edge
-  // highlights".
-  //
-  // Method: the `border` sits on the glass surface, so it composites with
-  // (glass-tint over blob) — APCA is measured between that composited
-  // `border` colour and the underlying (glass-tint over blob) colour, not
-  // between the raw edge sRGB and the surface. This mirrors how a real
-  // browser renders a semi-transparent 1px `border` on a semi-transparent
-  // panel over a coloured backdrop.
+  // Glass edge doctrine (2026 border rescope — completes
+  // glass-border-doctrine-and-grain-2026):
+  // The glass edge is a SPECULAR LIGHT RIM, not a contrast boundary. It is a
+  // thin translucent light stroke that catches light along the top-left and
+  // fades to a faint shadow at the bottom-right (Apple Liquid Glass / 2026
+  // glassmorphism consensus). It is deliberately low-contrast and is NOT
+  // APCA-gated: no accessibility standard asks a container border to hit a
+  // contrast ratio (WCAG 1.4.11 scopes contrast to interactive controls — that
+  // duty lives on --input). The real delineator is the drop shadow
+  // (--shadow-glass); the real a11y path is the prefers-contrast /
+  // prefers-reduced-transparency fallbacks that recolour the edge to solid
+  // --border. An earlier revision gated the "dominant" edge at APCA Lc 25,
+  // which forced the light-mode rim to a dark navy stroke that read like a
+  // solid-card outline — the opposite of glass. These guards pin the corrected
+  // aesthetic so the edge can't drift back to that high-contrast stroke.
   it.each(['light', 'dark'] as const)(
-    'keeps glass border at APCA Lc 25 over desktop blobs in %s mode',
+    'keeps the glass top rim a light specular stroke (not a contrast outline) in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
 
-      for (const edgeToken of ['--glass-edge', '--glass-edge-top', '--glass-edge-bottom'] as const) {
+      for (const edgeToken of ['--glass-edge', '--glass-edge-top'] as const) {
         const edge = tokenColor(edgeToken, tokenMap);
 
-        for (const blobToken of desktopBlobTokens) {
-          const blobColor = tokenColor(blobToken, tokenMap);
-          const glass = tokenColor('--glass-tint', tokenMap);
-          const glassOverBlob: Rgb = composite(glass, blobColor);
-          // Compose the edge alpha onto the (glass-tint over blob) layer to
-          // get the rendered border colour, then measure APCA against the
-          // underlying glass surface.
-          const edgeOverGlass: Rgb = [
-            oklchToSrgb(edge)[0] * edge.alpha + glassOverBlob[0] * (1 - edge.alpha),
-            oklchToSrgb(edge)[1] * edge.alpha + glassOverBlob[1] * (1 - edge.alpha),
-            oklchToSrgb(edge)[2] * edge.alpha + glassOverBlob[2] * (1 - edge.alpha),
-          ];
+        // A light-catching rim: high lightness (white in light mode, softened
+        // light neutral-violet in dark). Never a dark high-contrast stroke.
+        expect(edge.l, `${mode} ${edgeToken} must be a LIGHT rim`).toBeGreaterThanOrEqual(0.85);
 
-          expect(
-            Math.abs(apcaContrast(edgeOverGlass, glassOverBlob)),
-            `${mode} ${blobToken} ${edgeToken} contrast (APCA Lc 25)`,
-          ).toBeGreaterThanOrEqual(25);
-        }
+        // Visible enough to define the shape...
+        expect(edge.alpha, `${mode} ${edgeToken} stays visible`).toBeGreaterThan(0.1);
+        // ...but restrained — never an opaque hard outline.
+        expect(edge.alpha, `${mode} ${edgeToken} stays restrained`).toBeLessThanOrEqual(0.7);
       }
+    },
+  );
+
+  it.each(['light', 'dark'] as const)(
+    'keeps --glass-edge-bottom a shadow bevel subordinate to the top rim in %s mode',
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const bottomEdge = tokenColor('--glass-edge-bottom', tokenMap);
+      const topEdge = tokenColor('--glass-edge-top', tokenMap);
+
+      // Visible enough to contribute to the bevel...
+      expect(bottomEdge.alpha, `${mode} bottom edge stays visible`).toBeGreaterThan(0.1);
+      // ...but darker than the light-catching top rim: it is contact shading,
+      // not a second rim. Guards against the "two bright rims" regression.
+      expect(bottomEdge.l, `${mode} bottom edge is a shadow, darker than the top rim`).toBeLessThan(
+        topEdge.l,
+      );
     },
   );
 

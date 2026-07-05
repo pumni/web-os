@@ -58,16 +58,18 @@
      backdrop blur does not bottleneck the CPU on scroll. `will-change` is
      intentionally omitted here and reserved for the animated overlay state
      below (perf discipline: reserve layers only when needed).
-     Edge = ONE uniform luminous hairline (the 1px --glass-edge border, equal on
-     all four sides) + a subtle 1px inset top highlight + the soft directional
-     drop shadow that does the real separation — the standard web glassmorphism
-     edge, with no thick or asymmetric top band. The bottom shadow-edge inset is
-     held at zero in light mode (dark mode carries it). */
+     Edge = ONE continuous 1px gradient bevel ring (the &::before below) running
+     a light specular light-catch top-left (--glass-edge-top) to a faint contact
+     shadow bottom-right (--glass-edge-bottom) + a subtle 1px inset top highlight
+     + the soft directional drop shadow that does the real separation. The edge
+     is a light effect, not an APCA-gated contrast boundary. The bottom
+     shadow-edge inset is held at zero in light mode (dark mode carries it). */
+  position: relative;
   background: var(--glass-tint);
-  border-top: 1px solid var(--glass-edge-top);
-  border-left: 1px solid var(--glass-edge-top);
-  border-bottom: 1px solid var(--glass-edge-bottom);
-  border-right: 1px solid var(--glass-edge-bottom);
+  /* Transparent metric border keeps box metrics identical to the previous
+     per-side hairline; the visible edge is the &::before gradient ring. The
+     a11y fallbacks below re-colour this border via `border-color`. */
+  border: 1px solid transparent;
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
@@ -75,49 +77,57 @@
     inset 0 1px 0 0 var(--glass-inset-bezel-top),
     inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
+
+  /* Continuous bevel ring. Per-side border colours were retired: CSS paints a
+     hard diagonal colour seam where differently-coloured borders meet, and on
+     rounded corners (radius-xl/2xl) the bright-top/dark-bottom junction reads
+     as a broken rim. A masked 1px gradient ring follows the border-radius with
+     a smooth light→shadow transition (Apple Liquid Glass idiom). */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom));
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
 }
 
 /*
  * Specular variant — 2026 directional rim / corner-shine for hero/showcase
  * cards only (ADR-0012 2026-07-04 alignment).
  *
- * Conic gradient ring overlay via a nested pseudo-element (`::before`) highlights
- * one corner (top-left by default), simulating the rim light along the side facing
- * the light source — Apple Liquid Glass / UX Pilot 2026 reference. The asymmetric
- * structural hairline borders (`--glass-edge-top`/`--glass-edge-bottom`) stay intact
- * underneath; the specular highlight overlay is composited over the boundary.
+ * The specular corner-shine is an extra conic-gradient LAYER stacked on the
+ * same &::before bevel ring that every glass-panel already carries — it
+ * highlights one corner (top-left by default), simulating the rim light along
+ * the side facing the light source (Apple Liquid Glass / UX Pilot 2026),
+ * while the base light→shadow bevel gradient stays visible underneath.
+ * Geometry (mask, padding, inset) is inherited from the base ring rule.
  *
  * Cap: one specular card per visible surface. Bulk list cards MUST use plain
  * `glass-panel` (ADR-0016 sheen removal still applies to lists). The variant
  * is opt-in only; no default-on path exists.
  */
-.glass-panel[data-variant='specular'] {
-  position: relative;
-}
-
 .glass-panel[data-variant='specular']::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: conic-gradient(
-    from calc(var(--specular-angle, 315deg) - 45deg),
-    transparent 0deg,
-    var(--specular-rim-start) 45deg,
-    var(--specular-rim-mid) 70deg,
-    transparent 90deg
-  );
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 1;
+  background:
+    conic-gradient(
+      from calc(var(--specular-angle, 315deg) - 45deg),
+      transparent 0deg,
+      var(--specular-rim-start) 45deg,
+      var(--specular-rim-mid) 70deg,
+      transparent 90deg
+    ),
+    linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom));
 }
 
 /*
@@ -127,14 +137,13 @@
  */
 
 @utility glass-window {
-  /* Same glassmorphism treatment as glass-panel (Fresnel rim + specular bevel);
+  /* Same glassmorphism treatment as glass-panel (gradient bevel ring + bezel);
      windows carry the deeper active/glow drop shadow (--shadow-glass-glow). Own
      GPU composite layer. */
+  position: relative;
   background: var(--glass-tint);
-  border-top: 1px solid var(--glass-edge-top);
-  border-left: 1px solid var(--glass-edge-top);
-  border-bottom: 1px solid var(--glass-edge-bottom);
-  border-right: 1px solid var(--glass-edge-bottom);
+  /* Transparent metric border — see glass-panel; ring below paints the edge. */
+  border: 1px solid transparent;
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
@@ -142,6 +151,25 @@
     inset 0 1px 0 0 var(--glass-inset-bezel-top),
     inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom));
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
 }
 
 /*
@@ -160,6 +188,12 @@
 }
 
 /* --- Glass Window Active/Inactive States --- */
+/* Inactive windows drop the bevel ring and rest on the flat --border hairline
+   (recolouring the transparent metric border) so focus reads on the active one. */
+.glass-window[data-active='false']::before {
+  display: none;
+}
+
 .glass-window[data-active='false'] {
   background-color: color-mix(in oklch, var(--glass-tint) 80%, var(--popover));
   border-color: var(--border);
@@ -193,9 +227,9 @@
    Carries the full hairline glass border on all four sides so the element
    reads as a distinct floating surface against the background. Uses
    --shadow-glass as the real delineator (same directional drop shadow as
-   glass-panel / glass-window) — the border is mode-inverted (dark oklch/0.40
-   in light mode, light oklch/0.50 in dark mode) so it remains visible against
-   both page backgrounds. This is a deliberate uniform edge design. */
+   glass-panel / glass-window) — the border is a light specular rim (white in
+   light mode, soft light-violet in dark mode). It is a light-catching effect,
+   not an APCA-gated contrast boundary. This is a deliberate uniform edge design. */
 @utility glass-bar-bordered {
   background: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -268,8 +302,11 @@
     will-change: auto;
   }
 
-  .glass-panel[data-variant='specular']::before,
-  .glass-grain::before {
+  /* The bevel ring (::before) is the glass edge; on the opaque fallback the
+     recoloured --border hairline takes over, so the ring must not ghost. */
+  .glass-panel::before,
+  .glass-window::before,
+  .glass-grain::after {
     display: none;
   }
 }
@@ -290,7 +327,9 @@
     box-shadow: var(--shadow-2);
   }
 
-  .glass-panel[data-variant='specular']::before {
+  .glass-panel::before,
+  .glass-window::before,
+  .glass-grain::after {
     display: none;
   }
 }
@@ -309,6 +348,13 @@
     --glass-tint: color-mix(in oklch, var(--popover) 92%, transparent);
 
     border-color: var(--border);
+  }
+
+  /* The solid --border hairline replaces the bevel ring — hiding it avoids a
+     double edge under higher-contrast preferences. */
+  .glass-panel::before,
+  .glass-window::before {
+    display: none;
   }
 }
 
@@ -331,7 +377,9 @@
     box-shadow: none;
   }
 
-  .glass-panel[data-variant='specular']::before {
+  .glass-panel::before,
+  .glass-window::before,
+  .glass-grain::after {
     display: none;
   }
 
@@ -358,7 +406,9 @@
   backdrop-filter: none;
 }
 
-.glass-a11y-preview[data-transparency='reduced'] .glass-panel[data-variant='specular']::before {
+.glass-a11y-preview[data-transparency='reduced'] .glass-panel::before,
+.glass-a11y-preview[data-transparency='reduced'] .glass-window::before,
+.glass-a11y-preview[data-transparency='reduced'] .glass-grain::after {
   display: none;
 }
 
@@ -372,6 +422,11 @@
   --glass-tint: color-mix(in oklch, var(--popover) 92%, transparent);
 
   border-color: var(--border);
+}
+
+.glass-a11y-preview[data-contrast='more'] .glass-panel::before,
+.glass-a11y-preview[data-contrast='more'] .glass-window::before {
+  display: none;
 }
 
 /* ========================================================================
@@ -579,21 +634,21 @@
   }
 }
 
-/* Forced-colors: gradient is naturally ignored — no extra handling needed. */
-
+/* Note: glass-grain uses ::after. Avoid placing it on elements that also use ::after (e.g. shimmer skeleton-only effects). */
 @utility glass-grain {
   position: relative;
+  isolation: isolate;
 
-  &::before {
+  &::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0.05;
+    inset: 0;
+    opacity: var(--glass-grain-opacity);
+    mix-blend-mode: overlay;
     pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    background-repeat: repeat;
     border-radius: inherit;
   }
 }

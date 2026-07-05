@@ -111,13 +111,22 @@ describe('Animation Identity Exclusivity (Conformity Guard)', () => {
       }
     }
 
-    // Find the prefers-reduced-transparency media query block
-    const mediaQueryRegex =
-      /@media\s*\(\s*prefers-reduced-transparency\s*:\s*reduce\s*\)\s*\{([^}]+)\}/g;
-    const mediaQueryMatch = mediaQueryRegex.exec(content);
-
-    expect(mediaQueryMatch).not.toBeNull();
-    const fallbackBlock = mediaQueryMatch?.[1] ?? '';
+    // Find the prefers-reduced-transparency media query block using brace-balanced parsing
+    const startMatch = content.match(/@media\s*\(\s*prefers-reduced-transparency\s*:\s*reduce\s*\)\s*\{/);
+    expect(startMatch).not.toBeNull();
+    const openIdx = startMatch!.index! + startMatch![0].indexOf('{');
+    let depth = 0;
+    let fallbackBlock = '';
+    for (let i = openIdx; i < content.length; i++) {
+      if (content[i] === '{') depth++;
+      else if (content[i] === '}') {
+        depth--;
+        if (depth === 0) {
+          fallbackBlock = content.slice(openIdx + 1, i);
+          break;
+        }
+      }
+    }
 
     for (const utility of utilities) {
       const classSelector = `.${utility}`;

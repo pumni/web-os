@@ -1,5 +1,8 @@
 # Kế hoạch: Align Glassmorphism playground + ADR với chuẩn 2026
 
+> [!WARNING]
+> **Superseded (2026-07-05)**: Phần 'gate border cả 2 mode' bị rescope bởi [glass-border-doctrine-and-grain-2026.md](file:///V:/web-os/docs/plans/glass-border-doctrine-and-grain-2026.md).
+
 - **Status:** Accepted
 - **Date:** 2026-07-04
 - **Trigger:** Đánh giá khách quan playground `design-trends` so với 7 nguồn

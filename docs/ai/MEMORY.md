@@ -22,5 +22,5 @@ harness-managed primary; this file is the durable log for decisions.
 - Context layer pruning metric → [measure-prune](../plans/archive/context-layer-measure-prune-2026-07.md).
 - 2026-07 refresh → [ADR-0024](../adr/0024-context-layer-2026-07-standards-refresh.md).
 - llms.txt is required (ADR-0022) — keep in sync with docs/ai/index.md.
-- 2026-07-05 — Glassmorphism 2026: ADR-0012 alignment completed. Enforced Lc 25 APCA on mode-inverted --glass-edge tokens. Implemented Card variant="specular". Aligned simulator defaults & primitives (GlassSurface).
-- 2026-07-05 — Glass 2.0 remediation: Specular variant preserves structural hairline, bevel light-mode alphas inverted (top 0.40/bottom 0.50) and dark mode alphas raised (top 0.95/bottom 0.75) to pass APCA Lc 25, double-bezel outline removed, and playground synced with production behavior.
+- 2026-07-05 — Glass 2.0 & Grain: Completed ADR-0012 alignment. Specular variant preserves borders. APCA Lc 25 gate rescoped to dominant top edge; bottom edge exempt shadow `oklch(0.2 0.03 270 / 0.35)`. Upgraded `glass-grain` to `::after` with overlay mix-blend, 200px tile, and mode-dependent opacity (light 0.05 / dark 0.07).
+- 2026-07-05 — Gradient bevel ring: per-side border colours on glass-panel/window retired (hard diagonal miter seams on rounded corners); edge is now a masked 1px `::before` gradient ring (135°, edge-top → edge-bottom) + transparent metric border for a11y fallback re-colouring. Specular = conic layer on the same ring. Tokens & gate scope unchanged.
