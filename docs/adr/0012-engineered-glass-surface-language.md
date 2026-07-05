@@ -1,7 +1,7 @@
 # 0012. Surface Visual Language (consolidated)
 
-- **Status:** Accepted (amended 2026-07-04 per 2026 trend alignment)
-- **Date:** 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-04)
+- **Status:** Accepted (amended 2026-07-05 per 2026 trend alignment)
+- **Date:** 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-05)
 - **Owner:** @pumni/ui design system
 
 ## Context
@@ -104,6 +104,15 @@ ADR edit only captures the *why*.
   GPU-heavy-banned except for the Liquid Glass refraction mask in
   `glass-2026-primitives.tsx` (showcase-only).
 
+### Amendments (2026-07-05 alignment - Specular Stops & Gradient Tint)
+
+- **Specular highlights are mode-adaptive (`--specular-rim-*`).** Previously, `--specular-rim-start` and `--specular-rim-mid` were hardcoded pure white, producing a harsh, synthetic glow in dark mode. We changed them to use `light-dark()`: light mode uses bright white reflections (`oklch(1 0 0 / 0.60)`), while dark mode uses a soft, light neutral-violet reflection (`oklch(0.9 0.03 270 / 0.35)`) to prevent glare on dark interfaces.
+- **Glass utility background accepts gradients (`background: var(--glass-tint)`).** In `glass.css`, changed `background-color: var(--glass-tint)` to `background: var(--glass-tint)` across core glass utilities. This enables alpha-channel gradient tints (simulating physical thickness) to be passed natively.
+- **Refraction / Chromatic Aberration Deleted (2026-07-05).** The Liquid Glass refraction and chromatic aberration offsets were completely deleted from both the production style sheets and the simulator playground to avoid overengineering, visual noise (blurry text), and GPU overhead.
+- **Asymmetric Edge Bevels (`--glass-edge-top`/`--glass-edge-bottom`).** Implemented top-left lighting bevel using asymmetric border colors to simulate depth without GPU cost.
+- **Double-Bezel Sub-Pixel Highlights (`--glass-inset-bezel-*`).** Toggled adaptive double inset highlights for sharp structural outlines (1px for light, 0.5px for dark mode).
+- **Chroma-shifted Shadows.** Tuned `--shadow-glass` to carry a very subtle matching hue in dark mode (`oklch(0.05 0.005 270 / alpha)`) representing light transmission.
+
 ## Consequences
 
 - One ADR instead of nine; design-token churn no longer mints ADRs.
@@ -118,6 +127,9 @@ ADR edit only captures the *why*.
   The drift guard for the 3-token hairline rule (no fourth structural
   hairline token) is unchanged — `variant="specular"` reuses `--glass-edge`
   via `border-image`, not a new token.
+- **(Amended 2026-07-05)** Specular corner highlights are mode-adaptive and soft-glowing violet in dark mode to prevent visual fatigue.
+- **(Amended 2026-07-05)** `--glass-tint` natively supports CSS gradient declarations via the background shorthand.
+- **(Amended 2026-07-05)** Asymmetric borders, double-bezel highlights, and chroma-shifted shadows are standard, while dynamic refraction/chromatic aberration is banned.
 
 ## Alternatives considered
 

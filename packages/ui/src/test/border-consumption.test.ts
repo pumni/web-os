@@ -136,11 +136,14 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
   it.each([
     ['glass-panel', '@utility glass-panel'],
     ['glass-window', '@utility glass-window'],
-  ])('%s uses --glass-edge as its structural hairline', (_label, selector) => {
+  ])('%s uses asymmetric borders as its structural hairline', (_label, selector) => {
     const body = readRuleBody(glassCss, selector);
 
-    expect(body, `${_label} must border with var(--glass-edge)`).toMatch(
-      /border:\s*1px\s+solid\s+var\(--glass-edge\)/,
+    expect(body, `${_label} must use asymmetric borders`).toMatch(
+      /border-top:\s*1px\s+solid\s+var\(--glass-edge-top\)/,
+    );
+    expect(body, `${_label} must use asymmetric borders`).toMatch(
+      /border-bottom:\s*1px\s+solid\s+var\(--glass-edge-bottom\)/,
     );
   });
 
@@ -160,11 +163,11 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
   it.each([
     ['glass-panel', '@utility glass-panel'],
     ['glass-window', '@utility glass-window'],
-  ])('%s carries the glass top rim (--surface-rim-top)', (_label, selector) => {
+  ])('%s carries the glass top rim (--glass-inset-bezel-top)', (_label, selector) => {
     const body = readRuleBody(glassCss, selector);
 
-    expect(body, `${_label} must inset the glass top rim`).toMatch(
-      /inset\s+0\s+1px\s+0\s+0\s+var\(--surface-rim-top\)/,
+    expect(body, `${_label} must inset the glass top bezel`).toMatch(
+      /inset\s+0\s+1px\s+0\s+0\s+var\(--glass-inset-bezel-top\)/,
     );
   });
 

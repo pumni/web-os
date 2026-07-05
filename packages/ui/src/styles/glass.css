@@ -63,13 +63,17 @@
      drop shadow that does the real separation — the standard web glassmorphism
      edge, with no thick or asymmetric top band. The bottom shadow-edge inset is
      held at zero in light mode (dark mode carries it). */
-  background-color: var(--glass-tint);
-  border: 1px solid var(--glass-edge);
+  background: var(--glass-tint);
+  border-top: 1px solid var(--glass-edge-top);
+  border-left: 1px solid var(--glass-edge-top);
+  border-bottom: 1px solid var(--glass-edge-bottom);
+  border-right: 1px solid var(--glass-edge-bottom);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass),
-    inset 0 1px 0 0 var(--surface-rim-top),
+    inset 0 1px 0 0 var(--glass-inset-bezel-top),
+    var(--glass-inset-bezel-outline),
     inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
 }
@@ -93,12 +97,33 @@
  */
 .glass-panel[data-variant="specular"] {
   --specular-corner: tl;
-  border-image: conic-gradient(
-    from var(--specular-angle, 0deg),
-    var(--specular-rim-start) 0deg,
-    var(--specular-rim-mid) 90deg,
-    var(--specular-rim-end) 180deg
-  ) 1;
+  border-color: transparent;
+  position: relative;
+}
+
+.glass-panel[data-variant="specular"]::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from calc(var(--specular-angle, 0deg) - 45deg),
+    transparent 0deg,
+    var(--specular-rim-start) 45deg,
+    var(--specular-rim-mid) 70deg,
+    transparent 90deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
 }
 
 /*
@@ -111,13 +136,17 @@
   /* Same glassmorphism treatment as glass-panel (Fresnel rim + specular bevel);
      windows carry the deeper active/glow drop shadow (--shadow-glass-glow). Own
      GPU composite layer. */
-  background-color: var(--glass-tint);
-  border: 1px solid var(--glass-edge);
+  background: var(--glass-tint);
+  border-top: 1px solid var(--glass-edge-top);
+  border-left: 1px solid var(--glass-edge-top);
+  border-bottom: 1px solid var(--glass-edge-bottom);
+  border-right: 1px solid var(--glass-edge-bottom);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
     var(--shadow-glass-glow),
-    inset 0 1px 0 0 var(--surface-rim-top),
+    inset 0 1px 0 0 var(--glass-inset-bezel-top),
+    var(--glass-inset-bezel-outline),
     inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
 }
@@ -161,7 +190,7 @@
    border — shell edges that touch the viewport should be seamless. Edge
    separation is handled by directional variants below. */
 @utility glass-bar {
-  background-color: var(--glass-tint);
+  background: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow: inset 0 1px 0 0 var(--surface-rim-top);
@@ -175,7 +204,7 @@
    backgrounds where --glass-edge (0.45 alpha white) vanishes against the
    near-white page surface. */
 @utility glass-bar-bordered {
-  background-color: var(--glass-tint);
+  background: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   border: 1px solid var(--glass-edge);
@@ -192,7 +221,7 @@
       Reads stronger on light backgrounds, subtler on dark.
    Together they provide consistent shell separation without theme overrides. */
 @utility glass-bar-edge-r {
-  background-color: var(--glass-tint);
+  background: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
@@ -204,7 +233,7 @@
 /* Shell chrome variant — glass bar base + bottom-side glass edge + depth.
    Same unified dual-mechanism approach as `glass-bar-edge-r`. */
 @utility glass-bar-edge-b {
-  background-color: var(--glass-tint);
+  background: var(--glass-tint);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   box-shadow:
@@ -541,3 +570,20 @@
 }
 
 /* Forced-colors: gradient is naturally ignored — no extra handling needed. */
+
+@utility glass-grain {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.05;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    border-radius: inherit;
+  }
+}

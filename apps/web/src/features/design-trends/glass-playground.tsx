@@ -34,7 +34,6 @@ import { toast } from 'sonner';
 import {
   BACKDROP_PRESETS,
   GlassBackdrop,
-  LiquidGlassCard,
   type BackdropPreset,
 } from './glass-2026-primitives';
 import { parseOklchLiteral, useBlobPrimary } from './use-blob-primary';
@@ -81,43 +80,27 @@ type ShineCorner = 'tl' | 'tr' | 'bl' | 'br';
 
 const SHINE_CORNERS: ShineCorner[] = ['tl', 'tr', 'bl', 'br'];
 
-function buildShineGradient(corner: ShineCorner): string {
-  const bright = formatOklch({ l: 1, c: 0, h: 0 }, { alpha: 0.6, precision: 2 });
-  const mid = formatOklch({ l: 1, c: 0, h: 0 }, { alpha: 0.05, precision: 2 });
-  const angle: Record<ShineCorner, string> = {
-    tl: '135deg',
-    tr: '225deg',
-    bl: '45deg',
-    br: '315deg',
-  };
-  return `linear-gradient(${angle[corner]}, ${bright} 0%, ${mid} 30%, transparent 60%)`;
-}
 
 export function GlassPlayground() {
   // ── Spec-clamped backdrop-filter controls (production ADR-0014 sweet spot)
   const [saturateBoost, setSaturateBoost] = React.useState<number>(1.4);
   const [blurPx, setBlurPx] = React.useState<number>(12);
 
-  // ── Showcase toggles — these are 2026 techniques, OFF by default to match
-  // the production glass surface (which is a uniform hairline + flat tint).
-  const [gradientTint, setGradientTint] = React.useState<boolean>(false);
-  const [cornerShine, setCornerShine] = React.useState<boolean>(false);
+  // ── Showcase toggles — these are 2026 techniques, ON by default to match
+  // the modern glass surface trend (gradient tint + specular corner shine + reactive color absorption).
+  const [gradientTint, setGradientTint] = React.useState<boolean>(true);
+  const [cornerShine, setCornerShine] = React.useState<boolean>(true);
   const [shineCorner, setShineCorner] = React.useState<ShineCorner>('tl');
-  const [reactiveTint, setReactiveTint] = React.useState<boolean>(false);
-  const [liquidGlass, setLiquidGlass] = React.useState<boolean>(false);
+  const [reactiveTint, setReactiveTint] = React.useState<boolean>(true);
   const [showNested, setShowNested] = React.useState<boolean>(false);
   const [showBackdrop, setShowBackdrop] = React.useState<boolean>(true);
-  const [backdropPreset, setBackdropPreset] = React.useState<BackdropPreset>('blob');
+  const [backdropPreset, setBackdropPreset] = React.useState<BackdropPreset>('mesh');
 
-  // ── 2026 alignment — per-mode rim colour overrides. The production
-  // `--glass-edge` (theme.css) is now mode-inverted: dark neutral-blue on
-  // light, light neutral-violet on dark. These two toggles let the
-  // playground reader *invert the inversion* and see why pure-white
-  // fails — by injecting the legacy pure-white rim back, the APCA readout
-  // collapses on light mode over a bright blob. A 2026 alignment teaching
-  // tool, not a production option.
-  const [rimLightOverride, setRimLightOverride] = React.useState<boolean>(false);
-  const [rimDarkOverride, setRimDarkOverride] = React.useState<boolean>(false);
+  // ── Glassmorphism 2.0 Toggles
+  const [asymmetricBorder, setAsymmetricBorder] = React.useState<boolean>(true);
+  const [doubleBezel, setDoubleBezel] = React.useState<boolean>(true);
+  const [chromaShadow, setChromaShadow] = React.useState<boolean>(true);
+  const [glassGrain, setGlassGrain] = React.useState<boolean>(true);
 
   // Theme sync — Pumni uses `class` strategy on <html>. The playground defaults
   // tint sliders per mode so the demo matches production when entering.
@@ -207,25 +190,43 @@ export function GlassPlayground() {
   if (gradientTintBackground) {
     previewCssVars.background = gradientTintBackground;
   }
-  // Border-image corner-shine — emit BOTH the shorthand and the longhand so
-  // React never sees them appear/disappear independently (which triggers the
-  // "mixing shorthand and non-shorthand" rerender warning). When off we omit
-  // both, letting the base `border: 1px solid var(--glass-edge)` of `glass-panel`
-  // take over without conflict.
+  // 2026 alignment: specular light corner-shine uses core --specular-angle variable
+  // instead of ad-hoc inline border-image to support rounded border-radius.
   if (cornerShine) {
-    const shine = buildShineGradient(shineCorner);
-    previewCssVars.borderImage = `${shine} 1`;
+    const specularAngle = shineCorner === 'tl' ? '315deg' : shineCorner === 'tr' ? '45deg' : shineCorner === 'br' ? '135deg' : '225deg';
+    (previewCssVars as Record<string, string>)['--specular-angle'] = specularAngle;
   }
 
   // ── 2026 rim colour override injection — when the toggle is on, inject
-  // the legacy pure-white hairline back into the preview so the reader can
-  // compare against the production mode-inverted token. The APCA readout
-  // will drop below Lc 25 on light mode over a bright blob — the demo.
-  if (rimLightOverride && !isDark) {
-    (previewCssVars as Record<string, string>)['--glass-edge'] = 'oklch(1 0 0 / 0.45)';
+  // ── Glassmorphism 2.0 dynamic property injection
+  const borderOpacityVal = isDark ? 0.25 : 0.40;
+  if (asymmetricBorder) {
+    (previewCssVars as Record<string, string>)['--glass-edge-top'] = `oklch(${Math.min(100, tintL * 100 + 12).toFixed(1)}% ${reactiveChroma.toFixed(4)} ${reactiveHue.toFixed(0)} / ${borderOpacityVal.toFixed(2)})`;
+    (previewCssVars as Record<string, string>)['--glass-edge-bottom'] = `oklch(${Math.max(0, tintL * 100 - 10).toFixed(1)}% ${reactiveChroma.toFixed(4)} ${reactiveHue.toFixed(0)} / ${(borderOpacityVal * 0.6).toFixed(2)})`;
+  } else {
+    (previewCssVars as Record<string, string>)['--glass-edge-top'] = `oklch(${(tintL * 100).toFixed(1)}% ${reactiveChroma.toFixed(4)} ${reactiveHue.toFixed(0)} / ${borderOpacityVal.toFixed(2)})`;
+    (previewCssVars as Record<string, string>)['--glass-edge-bottom'] = `oklch(${(tintL * 100).toFixed(1)}% ${reactiveChroma.toFixed(4)} ${reactiveHue.toFixed(0)} / ${borderOpacityVal.toFixed(2)})`;
   }
-  if (rimDarkOverride && isDark) {
-    (previewCssVars as Record<string, string>)['--glass-edge'] = 'oklch(1 0 0 / 0.14)';
+
+  if (doubleBezel) {
+    const bezelTopAlpha = tintL > 0.5 ? borderOpacityVal * 0.5 : borderOpacityVal * 0.4;
+    const bezelOutlineAlpha = tintL > 0.5 ? borderOpacityVal * 0.25 : borderOpacityVal * 0.15;
+    const bezelOutlineWidth = tintL > 0.5 ? '1px' : '0.5px';
+
+    (previewCssVars as Record<string, string>)['--glass-inset-bezel-top'] = `oklch(1 0 0 / ${bezelTopAlpha.toFixed(3)})`;
+    (previewCssVars as Record<string, string>)['--glass-inset-bezel-outline'] = `inset 0 0 0 ${bezelOutlineWidth} oklch(1 0 0 / ${bezelOutlineAlpha.toFixed(3)})`;
+  } else {
+    (previewCssVars as Record<string, string>)['--glass-inset-bezel-top'] = 'oklch(1 0 0 / 0)';
+    (previewCssVars as Record<string, string>)['--glass-inset-bezel-outline'] = 'inset 0 0 0 0 transparent';
+  }
+
+  // Chroma-shifted shadow calculation
+  if (chromaShadow) {
+    const shadowColorStr = `oklch(${(tintL * 30).toFixed(1)}% ${Math.min(0.2, reactiveChroma * 1.5).toFixed(4)} ${reactiveHue.toFixed(0)} / 0.23)`;
+    (previewCssVars as Record<string, string>)['--shadow-glass'] = `
+      0 16px 32px -3px ${shadowColorStr},
+      0 8px 16px -5px oklch(0 0 0 / 0.25)
+    `;
   }
 
   // ── APCA readout. The composite is text-against-tint-against-backdrop. We
@@ -251,6 +252,24 @@ export function GlassPlayground() {
   const tintSrgb = oklchToSrgb({ l: tintL, c: reactiveChroma, h: reactiveHue });
   const centreLc = Math.abs(apcaContrast(fgSrgb, composite(tintSrgb, tintAlpha)));
 
+  // Border APCA contrast calculation (matching glass-contrast.test.ts)
+  // Top/left edge is used for border APCA verification.
+  const edgeOklch = {
+    l: asymmetricBorder ? Math.min(1, tintL + 0.12) : tintL,
+    c: reactiveChroma,
+    h: reactiveHue,
+    alpha: borderOpacityVal,
+  };
+
+  const edgeSrgb = oklchToSrgb({ l: edgeOklch.l, c: edgeOklch.c, h: edgeOklch.h });
+  const glassOverBlob = composite(tintSrgb, tintAlpha);
+  const edgeOverGlass: [number, number, number] = [
+    edgeSrgb[0] * edgeOklch.alpha + glassOverBlob[0] * (1 - edgeOklch.alpha),
+    edgeSrgb[1] * edgeOklch.alpha + glassOverBlob[1] * (1 - edgeOklch.alpha),
+    edgeSrgb[2] * edgeOklch.alpha + glassOverBlob[2] * (1 - edgeOklch.alpha),
+  ];
+  const borderLc = Math.abs(apcaContrast(edgeOverGlass, glassOverBlob));
+
   // Corner samples for gradient tint — uses the lighter / darker variants.
   let cornerSamples: { label: string; lc: number }[] | null = null;
   if (gradientTint && gradientTintBackground) {
@@ -273,8 +292,8 @@ export function GlassPlayground() {
   // ── Perf dashboard — live layer count + EMA-smoothed FPS.
   const fps = useFps();
   const layerTick = React.useMemo(
-    () => [showNested, showBackdrop, backdropPreset, liquidGlass],
-    [showNested, showBackdrop, backdropPreset, liquidGlass],
+    () => [showNested, showBackdrop, backdropPreset],
+    [showNested, showBackdrop, backdropPreset],
   );
   const layerCount = useGlassLayerCount(layerTick);
   const backdropPass = layerCount.total;
@@ -282,35 +301,578 @@ export function GlassPlayground() {
 
   // ── Generated CSS — reflects the current toggle state so the snippet is a
   // contract: what you see is what you copy.
-  const specularAngle = shineCorner === 'tl' ? '0deg' : shineCorner === 'tr' ? '90deg' : shineCorner === 'br' ? '180deg' : '270deg';
-  const glassCSSCode = `/* Glassmorphism 2.0 — 2026 showcase (ADR-0012/0014 base + 2026 amendments) */
-.glass-panel {
-  background-color: ${gradientTint ? gradientTintBackground ?? previewTint : 'var(--glass-tint)'};
-  border: 1px solid var(--glass-edge);${cornerShine ? `
-  /* Specular cornershine (directional rim): tl = 0deg, tr = 90deg, br = 180deg, bl = 270deg */
-  --specular-angle: ${specularAngle};
-  border-image: conic-gradient(
-    from var(--specular-angle),
-    var(--specular-rim-start) 0deg,
-    var(--specular-rim-mid) 90deg,
-    var(--specular-rim-end) 180deg
-  ) 1;` : ''}
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  box-shadow:
-    var(--shadow-glass),
-    inset 0 1px 0 0 var(--surface-rim-top),
-    inset 0 -1px 0 0 var(--glass-shadow-edge);
-}${reactiveTint ? `
-/* Background-reactive tint (2026 color absorption): rotate --glass-tint hue
-   toward the dominant hue of the backdrop blob it floats over. */` : ''}${liquidGlass ? `
-/* Liquid Glass refraction (2026): localised stronger blur at the cursor via
-   a second masked backdrop-filter layer. */` : ''}
-/* MUST float over a colourful backdrop (ADR-0012/0015). */`;
+  const specularAngle = shineCorner === 'tl' ? '315deg' : shineCorner === 'tr' ? '45deg' : shineCorner === 'br' ? '135deg' : '225deg';
+  
+  const bgL = (tintL * 100).toFixed(0);
+  const bgC = reactiveChroma.toFixed(3);
+  const bgH = reactiveHue.toFixed(0);
+  const op = tintAlpha.toFixed(2);
+  const borderOp = isDark ? 25 : 40;
+  
+  const topL = Math.min(100, tintL * 100 + 12).toFixed(0);
+  const topAlpha = (borderOp / 100).toFixed(2);
+  
+  const bottomL = Math.max(0, tintL * 100 - 10).toFixed(0);
+  const bottomAlpha = ((borderOp * 0.6) / 100).toFixed(3);
+
+  const shadowL = (tintL * 30).toFixed(0);
+  const shadowC = Math.min(0.2, reactiveChroma * 1.5).toFixed(3);
+  const shadowAlpha = (0.15 + 20 / 250).toFixed(2); // matches shadowDepth = 20
+
+  const bezelTopFactor = tintL > 0.5 ? 0.5 : 0.4;
+  const bezelOutlineFactor = tintL > 0.5 ? 0.25 : 0.15;
+  const bezelOutlineW = tintL > 0.5 ? '1px' : '0.5px';
+  const bezelTopOp = ((borderOp * bezelTopFactor) / 100).toFixed(3);
+  const bezelOutlineOp = ((borderOp * bezelOutlineFactor) / 100).toFixed(3);
+
+  const glassCSSCode = `.glass-card {
+  background-color: oklch(${bgL}% ${bgC} ${bgH} / ${op}); /* Màu kính trong suốt */
+  backdrop-filter: blur(${blurPx}px);
+  -webkit-backdrop-filter: blur(${blurPx}px); /* Làm mờ hậu cảnh */
+  
+  /* 1. Viền bất đối xứng 3D */
+  border-top: 1px solid oklch(${topL}% ${bgC} ${bgH} / ${topAlpha});
+  border-left: 1px solid oklch(${topL}% ${bgC} ${bgH} / ${topAlpha});
+  border-bottom: 1px solid oklch(${bottomL}% ${bgC} ${bgH} / ${bottomAlpha});
+  border-right: 1px solid oklch(${bottomL}% ${bgC} ${bgH} / ${bottomAlpha});
+  
+  /* 2. Bắt sáng vát cạnh trong & 3. Bóng đổ nhiễm sắc */
+  box-shadow: 
+    0 16px 32px -3px oklch(${shadowL}% ${shadowC} ${bgH} / ${shadowAlpha}), /* Bóng đổ mang sắc kính */
+    0 8px 16px -5px rgba(0, 0, 0, 0.25),         /* Bóng đổ tối tạo độ sâu tiếp xúc */
+    inset 0 1px 0 0 oklch(100% 0 0 / ${bezelTopOp}),      /* Highlight bắt sáng viền trên */
+    inset 0 0 0 ${bezelOutlineW} oklch(100% 0 0 / ${bezelOutlineOp});     /* Highlight vát cạnh xung quanh */
+}${cornerShine ? `
+
+/* Specular cornershine (directional rim): tl = 315deg, tr = 45deg, br = 135deg, bl = 225deg */
+.glass-card[data-variant="specular"]::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit; /* Preserves parent border-radius */
+  padding: 1px;
+  background: conic-gradient(
+    from calc(var(--specular-angle, ${specularAngle}) - 45deg),
+    transparent 0deg,
+    var(--specular-rim-start) 45deg,
+    var(--specular-rim-mid) 70deg,
+    transparent 90deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}` : ''}${glassGrain ? `
+
+/* 4. Physical Glass Grain/Noise overlay */
+.glass-grain {
+  position: relative;
+}
+
+.glass-grain::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.05;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  border-radius: inherit;
+}` : ''}`;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-12">
-      {/* ═══════════ LEFT — THEORY (nâng cấp lên 6 trụ cột 2026) ═══════════ */}
-      <div className="space-y-6 lg:col-span-5">
+    <div className="grid gap-6 lg:grid-cols-12 items-start">
+      {/* ═══════════ LEFT — VISUAL SIMULATION STAGE & STATS (col-span-8) ═══════════ */}
+      <div className="space-y-6 lg:col-span-8">
+        <Card className="overflow-hidden">
+          <CardHeader className="border-b bg-muted/20 pb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg">Khu Vực Mô Phỏng Glassmorphism 2.0</CardTitle>
+                <CardDescription>
+                  Góc nhìn chi tiết thẻ kính khúc xạ và tương phản thời gian thực.
+                </CardDescription>
+              </div>
+              <Badge tone="success" pulse>
+                Active Simulation
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6 p-6">
+            {/* Live preview stage: Now height h-115 for massive visibility */}
+            <div className="relative flex h-115 w-full items-center justify-center overflow-hidden rounded-2xl border border-border shadow-inner p-8">
+              {showBackdrop ? (
+                <GlassBackdrop preset={backdropPreset} />
+              ) : (
+                <div className="absolute inset-0 bg-background" />
+              )}
+
+              <div className="relative z-10 w-full max-w-sm">
+                <Card
+                  className={cn('rounded-2xl', glassGrain && 'glass-grain')}
+                  style={previewCssVars}
+                  variant={cornerShine ? 'specular' : 'glass'}
+                >
+                  <CardHeader>
+                    <div className="flex items-center justify-between w-full">
+                      <Badge tone="primary" size="sm">
+                        Glassmorphism 2.0
+                      </Badge>
+                      <div className="flex items-center gap-1.5">
+                        <Badge
+                           tone={
+                             centreLc >= 60 ? 'success' : centreLc >= 45 ? 'warning' : 'destructive'
+                           }
+                           size="sm"
+                           className="font-mono text-[10px] px-1.5 py-0.5"
+                           title="Tương phản chữ APCA"
+                        >
+                          Chữ Lc {centreLc.toFixed(1)}
+                        </Badge>
+                        <Badge
+                           tone={borderLc >= 25 ? 'success' : 'destructive'}
+                           size="sm"
+                           className="font-mono text-[10px] px-1.5 py-0.5"
+                           title="Tương phản viền APCA"
+                        >
+                          Viền Lc {borderLc.toFixed(1)}
+                        </Badge>
+                        <span
+                          className={cn(
+                            'flex size-2 animate-pulse rounded-full',
+                            centreLc >= 60 && borderLc >= 25
+                               ? 'bg-success'
+                               : 'bg-destructive',
+                          )}
+                        />
+                      </div>
+                    </div>
+                    <CardTitle className="text-lg font-bold text-foreground mt-2">Bản mô phỏng Kính 2.0</CardTitle>
+                    <CardDescription className="text-xs leading-relaxed text-muted-foreground">
+                      Kéo các thanh điều khiển bên trái để tinh chỉnh kính. Thay đổi canvas bên trên để kiểm tra tương phản APCA trực quan.
+                    </CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="flex flex-col gap-(--surface-gap) flex-1 min-w-0 pb-6">
+                    {showNested && (
+                      <div className="relative">
+                        <Card
+                          variant="glass"
+                          radius="xl"
+                          style={{ ['--glass-tint' as string]: previewTint }}
+                        >
+                          <CardContent className="p-3 text-[10px] text-muted-foreground">
+                            Lớp kính lồng nhau (max 2). Mỗi lớp <code>backdrop-filter</code> ép một render
+                            pass — lớp thứ 3 sẽ vượt spec (xem dashboard).
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* ─── Perf dashboard ─── */}
+            <div
+              className="grid gap-3 rounded-xl border border-border bg-muted/20 p-4 text-xs sm:grid-cols-3"
+              aria-label="Performance dashboard"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 font-semibold text-muted-foreground">
+                  <Gauge className="size-3.5" /> FPS
+                </div>
+                <div className="font-mono text-lg font-bold text-foreground">
+                  {fps}
+                  <span className="ml-1 text-[10px] font-normal text-muted-foreground">/ 60</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 font-semibold text-muted-foreground">
+                  <Layers className="size-3.5" /> Lớp kính
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-lg font-bold text-foreground">
+                    {layerCount.total}
+                  </span>
+                  <Badge
+                    tone={overSpec ? 'destructive' : layerCount.total > 1 ? 'warning' : 'success'}
+                    size="sm"
+                  >
+                    {overSpec ? 'Vượt spec' : `${layerCount.stacked} lớp lồng`}
+                  </Badge>
+                </div>
+                <p className="text-[10px] leading-snug text-muted-foreground">
+                  Stack depth tối đa: <strong>{layerCount.stacked}</strong> · spec cap 2.
+                </p>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 font-semibold text-muted-foreground">
+                  <Activity className="size-3.5" /> Backdrop pass
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-lg font-bold text-foreground">{backdropPass}</span>
+                  <Badge tone="info" size="sm">
+                    render pass
+                  </Badge>
+                </div>
+                 <p className="text-[10px] leading-snug text-muted-foreground">
+                  ≈ {backdropPass} × per-pixel blur. Càng nhiều lớp kính lồng nhau càng tăng pass.
+                </p>
+              </div>
+            </div>
+
+            {/* ─── APCA readout (centre + corners when gradient on) ─── */}
+            <div className="space-y-3 rounded-xl border border-border bg-muted/20 p-4 text-xs">
+              <h4 className="flex items-center gap-1.5 font-bold text-foreground">
+                <Gauge className="size-3.5 text-primary" />
+                Chỉ số Màu & Tương phản (APCA over OKLCH)
+              </h4>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="space-y-1 rounded-lg border bg-card p-3">
+                  <div className="font-semibold text-muted-foreground">APCA trung tâm (Chữ)</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xl font-bold text-foreground">
+                      Lc {centreLc.toFixed(1)}
+                    </span>
+                    <Badge
+                      tone={
+                        centreLc >= 60 ? 'success' : centreLc >= 45 ? 'warning' : 'destructive'
+                      }
+                      size="sm"
+                    >
+                      {centreLc >= 60 ? 'Pass (Body)' : centreLc >= 45 ? 'Pass (Large)' : 'Fail'}
+                    </Badge>
+                  </div>
+                  <p className="text-[10px] leading-snug text-muted-foreground">
+                    Văn bản ≥ Lc 60 (body) · Lc 45 (large).
+                  </p>
+                </div>
+                <div className="space-y-1 rounded-lg border bg-card p-3">
+                  <div className="font-semibold text-muted-foreground">APCA viền (Border)</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xl font-bold text-foreground">
+                      Lc {borderLc.toFixed(1)}
+                    </span>
+                    <Badge
+                      tone={borderLc >= 25 ? 'success' : 'destructive'}
+                      size="sm"
+                    >
+                      {borderLc >= 25 ? 'Pass (Border)' : 'Fail'}
+                    </Badge>
+                  </div>
+                  <p className="text-[10px] leading-snug text-muted-foreground">
+                    Viền kính ≥ Lc 25 (cả 2 mode).
+                  </p>
+                </div>
+                <div className="space-y-1 rounded-lg border bg-card p-3">
+                  <div className="font-semibold text-muted-foreground">OKLCH Tint</div>
+                  <div className="font-mono font-medium text-foreground select-all">
+                    {formatOklch(
+                      { l: tintL, c: reactiveChroma, h: reactiveHue },
+                      { precision: 3, alpha: tintAlpha },
+                    )}
+                  </div>
+                  <p className="text-[10px] leading-snug text-muted-foreground">
+                    {reactiveTint && blobOklch
+                      ? `Hấp hue ${blobOklch.h.toFixed(0)}° từ blob.`
+                      : 'Tint tĩnh (production).'}
+                  </p>
+                </div>
+              </div>
+              {cornerSamples && (
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {cornerSamples.map((s) => (
+                    <div
+                      key={s.label}
+                      className="flex items-center justify-between rounded-lg border bg-card p-2"
+                    >
+                      <span className="font-semibold text-muted-foreground">{s.label}</span>
+                      <Badge
+                        tone={s.lc >= 60 ? 'success' : s.lc >= 45 ? 'warning' : 'destructive'}
+                        size="sm"
+                        className="font-mono"
+                      >
+                        Lc {s.lc.toFixed(1)}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div className="rounded-lg border bg-card p-2">
+                  <div className="font-semibold text-muted-foreground">Composite BG</div>
+                  <div className="font-mono text-[10px] text-foreground select-all">
+                    rgb({composite(tintSrgb, tintAlpha).map((v) => v.toFixed(3)).join(' ')})
+                  </div>
+                </div>
+                <div className="rounded-lg border bg-card p-2">
+                  <div className="font-semibold text-muted-foreground">Backdrop primary</div>
+                  <div className="font-mono text-[10px] text-foreground select-all">
+                    {blobToken ?? '(không lấy được)'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ─── Generated CSS ─── */}
+            <div className="space-y-2 pt-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-foreground">Generated CSS</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-7"
+                  onClick={() => copyToClipboard(glassCSSCode, 'CSS Glass')}
+                >
+                  <Copy className="size-3.5" />
+                </Button>
+              </div>
+              <CardWell padding="none" className="max-h-44 overflow-auto">
+                <pre className="p-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
+                  <code>{glassCSSCode}</code>
+                </pre>
+              </CardWell>
+            </div>
+          </CardContent>
+        </Card>
+
+      </div>
+
+      {/* ═══════════ RIGHT — INTERACTIVE CONTROLS side panel (col-span-4) ═══════════ */}
+      <div className="space-y-6 lg:col-span-4">
+        <Card className="overflow-hidden">
+          <CardHeader className="border-b bg-muted/20 pb-4">
+            <CardTitle className="text-lg">Bộ Điều Khiển Kính</CardTitle>
+            <CardDescription>
+              Tùy chỉnh các thông số và tính năng của kính.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-6">
+            {/* Backdrop preset switcher inside the side control deck */}
+            <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/20 p-3 text-xs">
+              <span className="font-semibold text-foreground">Phông nền (Backdrop):</span>
+              <div className="flex flex-wrap gap-1.5">
+                {BACKDROP_PRESETS.map((p) => (
+                  <Button
+                    key={p.value}
+                    variant={backdropPreset === p.value ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-7 px-2 text-[10px]"
+                    onClick={() => {
+                      setBackdropPreset(p.value);
+                      setShowBackdrop(true);
+                    }}
+                  >
+                    {p.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Backdrop filters */}
+            <div className="space-y-4">
+              <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
+                <Sliders className="size-3.5" /> Backdrop Filters
+                <SpecBadge />
+              </h4>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-semibold">Blur</span>
+                  <span className="font-mono text-muted-foreground">{blurPx}px</span>
+                </div>
+                <Slider
+                  min={SPECS.blur.min}
+                  max={SPECS.blur.max}
+                  step={1}
+                  value={[blurPx]}
+                  onValueChange={(val) => setBlurPx(val[0] ?? 12)}
+                />
+                <p className="text-[10px] leading-snug text-muted-foreground">
+                  Spec {SPECS.blur.min}–{SPECS.blur.max}px · production {SPECS.blur.production}.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-semibold">Saturation</span>
+                  <span className="font-mono text-muted-foreground">{saturateBoost.toFixed(1)}x</span>
+                </div>
+                <Slider
+                  min={SPECS.saturate.min}
+                  max={SPECS.saturate.max}
+                  step={0.1}
+                  value={[saturateBoost]}
+                  onValueChange={(val) => setSaturateBoost(val[0] ?? 1.4)}
+                />
+                <p className="text-[10px] leading-snug text-muted-foreground">
+                  Spec {SPECS.saturate.min.toFixed(1)}–{SPECS.saturate.max.toFixed(1)}x · production{' '}
+                  {SPECS.saturate.production}.
+                </p>
+              </div>
+            </div>
+
+            {/* Tint primitives */}
+            <div className="space-y-4">
+              <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
+                <Palette className="size-3.5" /> OKLCH Tint
+              </h4>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-semibold">Lightness</span>
+                  <span className="font-mono text-muted-foreground">{tintL.toFixed(3)}</span>
+                </div>
+                <Slider
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={[tintL]}
+                  onValueChange={(val) => setTintL(val[0] ?? (isDark ? 0.13 : 1.0))}
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-semibold">Chroma</span>
+                  <span className="font-mono text-muted-foreground">{tintC.toFixed(3)}</span>
+                </div>
+                <Slider
+                  min={0}
+                  max={0.2}
+                  step={0.005}
+                  value={[tintC]}
+                  onValueChange={(val) => setTintC(val[0] ?? (isDark ? 0.02 : 0))}
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-semibold">Hue</span>
+                  <span className="font-mono text-muted-foreground">{tintH.toFixed(0)}°</span>
+                </div>
+                <Slider
+                  min={0}
+                  max={360}
+                  step={1}
+                  value={[tintH]}
+                  onValueChange={(val) => setTintH(val[0] ?? (isDark ? 260 : 0))}
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="font-semibold">Tint opacity</span>
+                  <span className="font-mono text-muted-foreground">
+                    {(tintAlpha * 100).toFixed(0)}%
+                  </span>
+                </div>
+                <Slider
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={[tintAlpha]}
+                  onValueChange={(val) => setTintAlpha(val[0] ?? (isDark ? 0.34 : 0.54))}
+                />
+              </div>
+            </div>
+
+            {/* 2026 technique toggles */}
+            <div className="space-y-4">
+              <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
+                <Sparkles className="size-3.5" /> Kỹ thuật 2026
+              </h4>
+              <div className="space-y-3">
+                <ToggleRow
+                  icon={<Droplets className="size-3.5" />}
+                  label="Gradient tint (alpha-channel)"
+                  desc="Tint sáng TL, tối BR — độ dày vật lý."
+                  checked={gradientTint}
+                  onCheckedChange={setGradientTint}
+                />
+                <ToggleRow
+                  icon={<Sparkles className="size-3.5" />}
+                  label="Border-image corner-shine"
+                  desc="Viền chỉ bắt sáng 1 góc (demo 2026)."
+                  checked={cornerShine}
+                  onCheckedChange={setCornerShine}
+                />
+                {cornerShine && (
+                  <div className="flex gap-1 pl-1">
+                    {SHINE_CORNERS.map((c) => (
+                      <Button
+                        key={c}
+                        variant={shineCorner === c ? 'default' : 'outline'}
+                        size="sm"
+                        className="h-7 px-2 text-[10px] uppercase"
+                        onClick={() => setShineCorner(c)}
+                      >
+                        {c}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+                <ToggleRow
+                  icon={<Activity className="size-3.5" />}
+                  label="Background-reactive tint"
+                  desc="Tint hấp hue của blob primary."
+                  checked={reactiveTint}
+                  onCheckedChange={setReactiveTint}
+                />
+                <ToggleRow
+                  icon={<Palette className="size-3.5" />}
+                  label="Viền 3D bất đối xứng (Asymmetric)"
+                  desc="Cạnh trên/trái sáng hơn, cạnh dưới/phải khuất tối."
+                  checked={asymmetricBorder}
+                  onCheckedChange={setAsymmetricBorder}
+                />
+                <ToggleRow
+                  icon={<Sliders className="size-3.5" />}
+                  label="Bắt sáng kép (Double-Bezel)"
+                  desc="Thêm lớp viền trong đón sáng 1px/0.5px sub-pixel."
+                  checked={doubleBezel}
+                  onCheckedChange={setDoubleBezel}
+                />
+                <ToggleRow
+                  icon={<Sparkles className="size-3.5" />}
+                  label="Bóng đổ nhiễm màu (Chroma Shadow)"
+                  desc="Bóng đổ nhuộm màu của kính (OKLCH light transmission)."
+                  checked={chromaShadow}
+                  onCheckedChange={setChromaShadow}
+                />
+                <ToggleRow
+                  icon={<Sparkles className="size-3.5" />}
+                  label="Kết cấu hạt mịn (Glass Grain)"
+                  desc="Phủ hạt SVG nhiễu tự nhiên tăng nhận diện vật lý."
+                  checked={glassGrain}
+                  onCheckedChange={setGlassGrain}
+                />
+                <ToggleRow
+                  icon={<Layers className="size-3.5" />}
+                  label="Nested stacking (lồng kính)"
+                  desc="Thêm lớp thứ 2 — test spec cap."
+                  checked={showNested}
+                  onCheckedChange={setShowNested}
+                />
+                <ToggleRow
+                  icon={<Layers className="size-3.5" />}
+                  label="Hiển thị backdrop"
+                  desc="Tắt để thấy kính biến thành hộp xám."
+                  checked={showBackdrop}
+                  onCheckedChange={setShowBackdrop}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ═══════════ BOTTOM — THEORY AND BEST PRACTICES (full width, col-span-12) ═══════════ */}
+      <div className="lg:col-span-12 grid gap-6 md:grid-cols-2 border-t pt-6 mt-6">
+        {/* Theory Card */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Glassmorphism 2.0 — 6 trụ cột (2026)</CardTitle>
@@ -353,7 +915,7 @@ export function GlassPlayground() {
                   Edge Highlight (structural + specular)
                 </h4>
                 <p className="pl-6 text-muted-foreground">
-                  Viền 1px <code>--glass-edge</code> (white) + inset top <code>--surface-rim-top</code>{' '}
+                  Viền 1px <code>--glass-edge</code> (mode-adaptive) + inset top <code>--surface-rim-top</code>{' '}
                   + bottom <code>--glass-shadow-edge</code> (contour đáy dark mode).
                 </p>
               </li>
@@ -401,7 +963,10 @@ export function GlassPlayground() {
                   phía sau — kính &ldquo;hấp&rdquo; màu nền.
                 </li>
                 <li>
-                  <strong>Liquid Glass refraction:</strong> backdrop-filter mạnh hơn cục bộ tại con trỏ.
+                  <strong>Double-Bezel sub-pixel:</strong> bắt sáng kép tinh tế dọc viền kính.
+                </li>
+                <li>
+                  <strong>Physical Glass Grain:</strong> phủ hạt mịn SVG nhiễu tự nhiên (.glass-grain) tăng nhận diện vật lý của kính.
                 </li>
               </ul>
             </div>
@@ -420,7 +985,7 @@ export function GlassPlayground() {
           </CardContent>
         </Card>
 
-        {/* Do & Don't table — expanded with 2026 techniques */}
+        {/* Do & Don't Card */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
@@ -474,455 +1039,6 @@ export function GlassPlayground() {
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      {/* ═══════════ RIGHT — LIVE PLAYGROUND ═══════════ */}
-      <div className="space-y-6 lg:col-span-7">
-        <Card className="overflow-hidden">
-          <CardHeader className="border-b bg-muted/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg">Interactive Playground 2.0</CardTitle>
-                <CardDescription>
-                  Mô phỏng Glassmorphism 2.0 — bật các kỹ thuật 2026 để so sánh.
-                </CardDescription>
-              </div>
-              <Badge tone="success" pulse>
-                Live Preview
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6 p-6">
-            {/* ─── Live preview stage ─── */}
-            <div className="relative flex h-80 w-full items-center justify-center overflow-hidden rounded-xl border border-border p-8">
-              {showBackdrop ? (
-                <GlassBackdrop preset={backdropPreset} />
-              ) : (
-                <div className="absolute inset-0 bg-background" />
-              )}
-
-              <div className="relative z-10 w-full max-w-sm">
-                <LiquidGlassCard
-                  enabled={liquidGlass}
-                  className="rounded-2xl"
-                  style={previewCssVars}
-                  data-variant={cornerShine ? 'specular' : undefined}
-                >
-                  <div className="space-y-3 p-5">
-                    <div className="flex items-center justify-between">
-                      <Badge tone="primary" size="sm">
-                        Glassmorphism 2.0
-                      </Badge>
-                      <div className="flex items-center gap-1.5">
-                        <Badge
-                          tone={
-                            centreLc >= 60 ? 'success' : centreLc >= 45 ? 'warning' : 'destructive'
-                          }
-                          size="sm"
-                          className="font-mono"
-                        >
-                          APCA Lc {centreLc.toFixed(1)}
-                        </Badge>
-                        <span
-                          className={cn(
-                            'flex size-2 animate-pulse rounded-full',
-                            centreLc >= 60
-                              ? 'bg-success'
-                              : centreLc >= 45
-                                ? 'bg-warning'
-                                : 'bg-destructive',
-                          )}
-                        />
-                      </div>
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground">Bản mô phỏng Kính 2.0</h3>
-                    <p className="text-xs leading-relaxed text-muted-foreground">
-                      Bật các kỹ thuật 2026 ở thanh điều khiển để so sánh với production. Đổi backdrop
-                      để thấy kính phản ứng khác.
-                    </p>
-
-                    {showNested && (
-                      <div className="relative mt-3">
-                        <GlassSurface
-                          variant="panel"
-                          radius="xl"
-                          style={{ ['--glass-tint' as string]: previewTint }}
-                        >
-                          <div className="p-3 text-[10px] text-muted-foreground">
-                            Lớp kính lồng nhau (max 2). Mỗi lớp <code>backdrop-filter</code> ép một render
-                            pass — lớp thứ 3 sẽ vượt spec (xem dashboard).
-                          </div>
-                        </GlassSurface>
-                      </div>
-                    )}
-                  </div>
-                </LiquidGlassCard>
-              </div>
-            </div>
-
-            {/* ─── Perf dashboard ─── */}
-            <div
-              className="grid gap-3 rounded-xl border border-border bg-muted/20 p-4 text-xs sm:grid-cols-3"
-              aria-label="Performance dashboard"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 font-semibold text-muted-foreground">
-                  <Gauge className="size-3.5" /> FPS
-                </div>
-                <div className="font-mono text-lg font-bold text-foreground">
-                  {fps}
-                  <span className="ml-1 text-[10px] font-normal text-muted-foreground">/ 60</span>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 font-semibold text-muted-foreground">
-                  <Layers className="size-3.5" /> Lớp kính
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-lg font-bold text-foreground">
-                    {layerCount.total}
-                  </span>
-                  <Badge
-                    tone={overSpec ? 'destructive' : layerCount.total > 1 ? 'warning' : 'success'}
-                    size="sm"
-                  >
-                    {overSpec ? 'Vượt spec' : `${layerCount.stacked} lớp lồng`}
-                  </Badge>
-                </div>
-                <p className="text-[10px] leading-snug text-muted-foreground">
-                  Stack depth tối đa: <strong>{layerCount.stacked}</strong> · spec cap 2.
-                </p>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5 font-semibold text-muted-foreground">
-                  <Activity className="size-3.5" /> Backdrop pass
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-lg font-bold text-foreground">{backdropPass}</span>
-                  <Badge tone="info" size="sm">
-                    render pass
-                  </Badge>
-                </div>
-                <p className="text-[10px] leading-snug text-muted-foreground">
-                  ≈ {backdropPass} × per-pixel blur. Liquid Glass thêm 1 pass cục bộ.
-                </p>
-              </div>
-            </div>
-
-            {/* ─── APCA readout (centre + corners when gradient on) ─── */}
-            <div className="space-y-3 rounded-xl border border-border bg-muted/20 p-4 text-xs">
-              <h4 className="flex items-center gap-1.5 font-bold text-foreground">
-                <Gauge className="size-3.5 text-primary" />
-                Chỉ số Màu & Tương phản (APCA over OKLCH)
-              </h4>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1 rounded-lg border bg-card p-3">
-                  <div className="font-semibold text-muted-foreground">APCA trung tâm</div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xl font-bold text-foreground">
-                      Lc {centreLc.toFixed(1)}
-                    </span>
-                    <Badge
-                      tone={
-                        centreLc >= 60 ? 'success' : centreLc >= 45 ? 'warning' : 'destructive'
-                      }
-                      size="sm"
-                    >
-                      {centreLc >= 60 ? 'Pass (Body)' : centreLc >= 45 ? 'Pass (Large)' : 'Fail'}
-                    </Badge>
-                  </div>
-                  <p className="text-[10px] leading-snug text-muted-foreground">
-                    Văn bản ≥ Lc 60 (body) · viền ≥ Lc 25.
-                  </p>
-                </div>
-                <div className="space-y-1 rounded-lg border bg-card p-3">
-                  <div className="font-semibold text-muted-foreground">OKLCH Tint</div>
-                  <div className="font-mono font-medium text-foreground select-all">
-                    {formatOklch(
-                      { l: tintL, c: reactiveChroma, h: reactiveHue },
-                      { precision: 3, alpha: tintAlpha },
-                    )}
-                  </div>
-                  <p className="text-[10px] leading-snug text-muted-foreground">
-                    {reactiveTint && blobOklch
-                      ? `Hấp hue ${blobOklch.h.toFixed(0)}° từ blob primary.`
-                      : 'Tint tĩnh (production).'}
-                  </p>
-                </div>
-              </div>
-              {cornerSamples && (
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {cornerSamples.map((s) => (
-                    <div
-                      key={s.label}
-                      className="flex items-center justify-between rounded-lg border bg-card p-2"
-                    >
-                      <span className="font-semibold text-muted-foreground">{s.label}</span>
-                      <Badge
-                        tone={s.lc >= 60 ? 'success' : s.lc >= 45 ? 'warning' : 'destructive'}
-                        size="sm"
-                        className="font-mono"
-                      >
-                        Lc {s.lc.toFixed(1)}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className="grid gap-2 sm:grid-cols-2">
-                <div className="rounded-lg border bg-card p-2">
-                  <div className="font-semibold text-muted-foreground">Composite BG</div>
-                  <div className="font-mono text-[10px] text-foreground select-all">
-                    rgb({composite(tintSrgb, tintAlpha).map((v) => v.toFixed(3)).join(' ')})
-                  </div>
-                </div>
-                <div className="rounded-lg border bg-card p-2">
-                  <div className="font-semibold text-muted-foreground">Backdrop primary</div>
-                  <div className="font-mono text-[10px] text-foreground select-all">
-                    {blobToken ?? '(không取 được)'}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ─── Controls ─── */}
-            <div className="grid gap-6 text-xs md:grid-cols-3">
-              {/* Backdrop filters — production ADR-0014 sweet spot */}
-              <div className="space-y-4">
-                <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
-                  <Sliders className="size-3.5" /> Backdrop Filters
-                  <SpecBadge />
-                </h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Blur</span>
-                    <span className="font-mono text-muted-foreground">{blurPx}px</span>
-                  </div>
-                  <Slider
-                    min={SPECS.blur.min}
-                    max={SPECS.blur.max}
-                    step={1}
-                    value={[blurPx]}
-                    onValueChange={(val) => setBlurPx(val[0] ?? 12)}
-                  />
-                  <p className="text-[10px] leading-snug text-muted-foreground">
-                    Spec {SPECS.blur.min}–{SPECS.blur.max}px · production {SPECS.blur.production}.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Saturation</span>
-                    <span className="font-mono text-muted-foreground">{saturateBoost.toFixed(1)}x</span>
-                  </div>
-                  <Slider
-                    min={SPECS.saturate.min}
-                    max={SPECS.saturate.max}
-                    step={0.1}
-                    value={[saturateBoost]}
-                    onValueChange={(val) => setSaturateBoost(val[0] ?? 1.4)}
-                  />
-                  <p className="text-[10px] leading-snug text-muted-foreground">
-                    Spec {SPECS.saturate.min.toFixed(1)}–{SPECS.saturate.max.toFixed(1)}x · production{' '}
-                    {SPECS.saturate.production}.
-                  </p>
-                </div>
-              </div>
-
-              {/* Tint primitives + reactive toggle */}
-              <div className="space-y-4">
-                <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
-                  <Palette className="size-3.5" /> OKLCH Tint
-                </h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Lightness</span>
-                    <span className="font-mono text-muted-foreground">{tintL.toFixed(3)}</span>
-                  </div>
-                  <Slider
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    value={[tintL]}
-                    onValueChange={(val) => setTintL(val[0] ?? (isDark ? 0.13 : 1.0))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Chroma</span>
-                    <span className="font-mono text-muted-foreground">{tintC.toFixed(3)}</span>
-                  </div>
-                  <Slider
-                    min={0}
-                    max={0.2}
-                    step={0.005}
-                    value={[tintC]}
-                    onValueChange={(val) => setTintC(val[0] ?? (isDark ? 0.02 : 0))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Hue</span>
-                    <span className="font-mono text-muted-foreground">{tintH.toFixed(0)}°</span>
-                  </div>
-                  <Slider
-                    min={0}
-                    max={360}
-                    step={1}
-                    value={[tintH]}
-                    onValueChange={(val) => setTintH(val[0] ?? (isDark ? 260 : 0))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Tint opacity</span>
-                    <span className="font-mono text-muted-foreground">
-                      {(tintAlpha * 100).toFixed(0)}%
-                    </span>
-                  </div>
-                  <Slider
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    value={[tintAlpha]}
-                    onValueChange={(val) => setTintAlpha(val[0] ?? (isDark ? 0.34 : 0.54))}
-                  />
-                </div>
-              </div>
-
-              {/* 2026 technique toggles */}
-              <div className="space-y-4">
-                <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
-                  <Sparkles className="size-3.5" /> Kỹ thuật 2026
-                </h4>
-                <div className="space-y-3">
-                  <ToggleRow
-                    icon={<Droplets className="size-3.5" />}
-                    label="Gradient tint (alpha-channel)"
-                    desc="Tint sáng TL, tối BR — độ dày vật lý."
-                    checked={gradientTint}
-                    onCheckedChange={setGradientTint}
-                  />
-                  <ToggleRow
-                    icon={<Sparkles className="size-3.5" />}
-                    label="Border-image corner-shine"
-                    desc="Viền chỉ bắt sáng 1 góc (demo 2026)."
-                    checked={cornerShine}
-                    onCheckedChange={setCornerShine}
-                  />
-                  {cornerShine && (
-                    <div className="flex gap-1 pl-1">
-                      {SHINE_CORNERS.map((c) => (
-                        <Button
-                          key={c}
-                          variant={shineCorner === c ? 'default' : 'outline'}
-                          size="sm"
-                          className="h-7 px-2 text-[10px] uppercase"
-                          onClick={() => setShineCorner(c)}
-                        >
-                          {c}
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                  <ToggleRow
-                    icon={<Activity className="size-3.5" />}
-                    label="Background-reactive tint"
-                    desc="Tint hấp hue của blob primary."
-                    checked={reactiveTint}
-                    onCheckedChange={setReactiveTint}
-                  />
-                  <ToggleRow
-                    icon={<Droplets className="size-3.5" />}
-                    label="Liquid Glass refraction"
-                    desc="Blur mạnh hơn tại con trỏ (thêm 1 pass)."
-                    checked={liquidGlass}
-                    onCheckedChange={setLiquidGlass}
-                  />
-                  <ToggleRow
-                    icon={<Layers className="size-3.5" />}
-                    label="Nested stacking (lồng kính)"
-                    desc="Thêm lớp thứ 2 — test spec cap."
-                    checked={showNested}
-                    onCheckedChange={setShowNested}
-                  />
-                  <ToggleRow
-                    icon={<Layers className="size-3.5" />}
-                    label="Hiển thị backdrop"
-                    desc="Tắt để thấy kính biến thành hộp xám."
-                    checked={showBackdrop}
-                    onCheckedChange={setShowBackdrop}
-                  />
-                  <ToggleRow
-                    icon={<Palette className="size-3.5" />}
-                    label="Light mode legacy rim (white)"
-                    desc="Chỉ dùng khi đang ở light — inject pure-white hairline legacy để thấy APCA tank."
-                    checked={rimLightOverride}
-                    onCheckedChange={setRimLightOverride}
-                  />
-                  <ToggleRow
-                    icon={<Palette className="size-3.5" />}
-                    label="Dark mode legacy rim (white)"
-                    desc="Chỉ dùng khi đang ở dark — inject pure-white hairline legacy để thấy glow harsh."
-                    checked={rimDarkOverride}
-                    onCheckedChange={setRimDarkOverride}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* ─── Backdrop preset switcher ─── */}
-            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-muted/20 p-3 text-xs">
-              <span className="font-semibold text-foreground">Backdrop:</span>
-              {BACKDROP_PRESETS.map((p) => (
-                <Button
-                  key={p.value}
-                  variant={backdropPreset === p.value ? 'default' : 'outline'}
-                  size="sm"
-                  className="h-7"
-                  onClick={() => {
-                    setBackdropPreset(p.value);
-                    setShowBackdrop(true);
-                  }}
-                >
-                  {p.label}
-                </Button>
-              ))}
-            </div>
-
-            {/* ─── Generated CSS ─── */}
-            <div className="space-y-2 pt-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-foreground">Generated CSS</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-7"
-                  onClick={() => copyToClipboard(glassCSSCode, 'CSS Glass')}
-                >
-                  <Copy className="size-3.5" />
-                </Button>
-              </div>
-              <CardWell padding="none" className="max-h-44 overflow-auto">
-                <pre className="p-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-                  <code>{glassCSSCode}</code>
-                </pre>
-              </CardWell>
-            </div>
-          </CardContent>
-        </Card>
-
-        {liquidGlass && (
-          <Card>
-            <CardContent className="flex items-start gap-3 pt-6 text-sm">
-              <Info className="mt-0.5 size-4 shrink-0 text-primary" />
-              <p className="text-muted-foreground">
-                <strong className="text-foreground">Liquid Glass</strong> thêm một backdrop-filter
-                cục bộ (masked circle theo con trỏ). Đây là kỹ thuật refraction 2026 — tăng 1 backdrop
-                pass (xem dashboard), nên production chỉ dùng cho hero/showcase, không cho list card.
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );

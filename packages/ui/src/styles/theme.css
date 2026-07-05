@@ -176,13 +176,34 @@
     oklch(0.9 0.03 270 / 0.50)
   );
 
+  /* Asymmetric border tokens (2026 glassmorphism): top-left lighting bevel.
+     The top/left edge receives a slightly brighter highlight; the bottom/right
+     edge is more shadowed/recessed. */
+  --glass-edge-top: light-dark(
+    oklch(0.3 0.02 260 / 0.45),
+    oklch(0.95 0.03 270 / 0.55)
+  );
+  --glass-edge-bottom: light-dark(
+    oklch(0.3 0.02 260 / 0.35),
+    oklch(0.80 0.03 270 / 0.25)
+  );
+
   /* Specular rim gradient stops — consumed by the `glass-panel[data-variant="specular"]`
      utility in glass.css. The corner-shine border-image reads a directional
-     white-to-transparent gradient; these stops are defined here (the only file
-     that may hold raw OKLCH values in the UI package) so glass.css stays
-     token-clean. */
-  --specular-rim-start: oklch(1 0 0 / 0.6);
-  --specular-rim-mid: oklch(1 0 0 / 0.1);
+     gradient; these stops are defined here (the only file that may hold raw OKLCH
+     values in the UI package) so glass.css stays token-clean.
+     UX Pilot 2026: "In dark mode, glass needs softer highlights... switch to
+     neutral-gray highlights or a subtle colored rim (navy, violet, teal) instead
+     of pure white." Light mode uses a bright white highlight (alpha 0.60);
+     dark mode uses a soft light neutral-violet highlight (alpha 0.35). */
+  --specular-rim-start: light-dark(
+    oklch(1 0 0 / 0.60),
+    oklch(0.9 0.03 270 / 0.35)
+  );
+  --specular-rim-mid: light-dark(
+    oklch(1 0 0 / 0.10),
+    oklch(0.9 0.03 270 / 0.08)
+  );
   --specular-rim-end: transparent;
 
   /* The lit top rim. Glass-only since ADR-0020 (which amended ADR-0018):
@@ -201,6 +222,16 @@
      Bottom shadow-edge held at zero alpha so the pinned box-shadow layer + the
      glass-rim drift guard (dark > light) still hold. Dark mode carries the rim. */
   --glass-shadow-edge: light-dark(oklch(0 0 0 / 0), oklch(0 0 0 / 0.22));
+
+  /* Double-Bezel sub-pixel highlights: a top highlight and a sub-pixel border highlight.
+     In light mode (lightness > 50%), uses a 1px outline; in dark mode (lightness <= 50%),
+     uses a 0.5px ultra-fine outline. */
+  --glass-inset-bezel-top: light-dark(oklch(1 0 0 / 0.20), oklch(1 0 0 / 0.15));
+  --glass-inset-bezel-outline: light-dark(
+    inset 0 0 0 1px oklch(1 0 0 / 0.10),
+    inset 0 0 0 0.5px oklch(1 0 0 / 0.05)
+  );
+
   --glass-fallback-bg: var(--popover);
   --glass-blur: var(--blur-glass);
 

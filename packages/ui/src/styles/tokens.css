@@ -200,15 +200,18 @@
      slight downward bias, instead of a symmetric ambient halo. Reads as a
      real lit object rather than a flat frosted plane. */
   --shadow-glass:
-    0 1px 2px -1px oklch(0 0 0 / 0.07), 0 8px 16px -6px oklch(0 0 0 / 0.12),
-    0 20px 40px -14px oklch(0 0 0 / 0.16);
+    0 1px 2px -1px light-dark(oklch(0 0 0 / 0.07), oklch(0.05 0.005 270 / 0.07)),
+    0 8px 16px -6px light-dark(oklch(0 0 0 / 0.12), oklch(0.05 0.005 270 / 0.12)),
+    0 20px 40px -14px light-dark(oklch(0 0 0 / 0.16), oklch(0.05 0.005 270 / 0.16));
   --shadow-glass-glow-soft:
-    0 1px 1px -0.5px oklch(0 0 0 / 0.04), 0 6px 14px -6px oklch(0 0 0 / 0.1),
-    0 18px 36px -14px oklch(0 0 0 / 0.16);
+    0 1px 1px -0.5px light-dark(oklch(0 0 0 / 0.04), oklch(0.05 0.005 270 / 0.04)),
+    0 6px 14px -6px light-dark(oklch(0 0 0 / 0.1), oklch(0.05 0.005 270 / 0.1)),
+    0 18px 36px -14px light-dark(oklch(0 0 0 / 0.16), oklch(0.05 0.005 270 / 0.16));
   /* Active windows: deeper layered shadow. Outline added dynamically in theme.css. */
   --shadow-glass-glow-base:
-    0 2px 4px -1px oklch(0 0 0 / 0.06), 0 12px 28px -8px oklch(0 0 0 / 0.18),
-    0 28px 56px -18px oklch(0 0 0 / 0.22);
+    0 2px 4px -1px light-dark(oklch(0 0 0 / 0.06), oklch(0.05 0.005 270 / 0.06)),
+    0 12px 28px -8px light-dark(oklch(0 0 0 / 0.18), oklch(0.05 0.005 270 / 0.18)),
+    0 28px 56px -18px light-dark(oklch(0 0 0 / 0.22), oklch(0.05 0.005 270 / 0.22));
 
   /* Solid content elevation */
   --shadow-card-raised: 0 1px 2px -1px oklch(0 0 0 / 0.05), 0 4px 10px -3px oklch(0 0 0 / 0.07);
