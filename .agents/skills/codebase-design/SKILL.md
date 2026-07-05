@@ -74,3 +74,11 @@ above. This is the design-time companion to the simplicity rule in
       reason to change them.
 - [ ] The interface is demonstrated by a test through its public seam (a
       failing-then-passing test, or a named test seam) — `bun run test`.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Module feels "shallow" | Interface is large but implementation is simple; callers do too much work. | Move logic from callers into the module implementation; shrink the public surface. |
+| Tests require extensive mocking | The module has too many hidden dependencies or high coupling. | Pass dependencies as arguments; use smaller, cohesive interfaces at seams. |
+| Changes in one package break others | Breaking change at a foundational boundary without verifying dependents. | Consult `docs/architecture/project-graph.md`; run `bun run typecheck` monorepo-wide. |

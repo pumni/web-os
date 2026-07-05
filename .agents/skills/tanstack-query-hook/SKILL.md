@@ -31,3 +31,11 @@ mutations in `apps/web/src/features/<feature>`.
 - [ ] Mutation has `onSuccess` or `onSettled` cache handling.
 - [ ] No `useEffect` copies query data into a Zustand setter.
 - [ ] `bun run ai:eval` and `bun run typecheck` pass.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Query stays stale after mutation | `queryClient.invalidateQueries` missing or key mismatch. | Check the `queryKey` in the mutation's `onSuccess` matches the query's key. |
+| Server data in Zustand | `useEffect` used to sync `data` to a store; breaks SSR/PPR and cache SSOT. | Delete the store mirror; read directly from `useQuery` or a selector. |
+| "Infinite" loading | `queryFn` throws but error is not handled; or query key depends on unstable value. | Ensure `queryFn` is stable; handle `isError` in UI; memoize complex keys. |

@@ -55,3 +55,11 @@ Scaffold one behavior at a time from
 - [ ] Refactoring, if any, happened only after tests were green.
 - [ ] `bun run test` passes.
 - [ ] `bun run typecheck` passes when TypeScript test code changed.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Flaky tests | Shared state between tests; or reliance on system time/randomness without seeds. | Reset mocks/state in `beforeEach`; use deterministic seeds or mock `Date.now()`. |
+| Brittle tests | Tests point to private functions or specific HTML tag structures. | Test through the public interface; use `getByRole` or `getByText` instead of `nth-child`. |
+| Slow test suite | Unnecessary mocking of large libraries; or too many component renders. | Use focused unit tests for logic; use component tests only for UI interactions. |

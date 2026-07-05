@@ -671,9 +671,15 @@ function checkDesignTokenBoundaries() {
   // The design-system showcase visualizes colour math: it constructs oklch()
   // from runtime-selected anchor values to render live APCA contrast previews.
   // That is the demonstration's purpose, not a hardcoded design colour — exempt
-  // from the raw-colour pattern only (primitive-var rules still apply).
+  // from the raw-colour pattern only (primitive-var rules still apply). The
+  // design-trends glassmorphism playground is the same kind of showcase — it
+  // builds `oklch(...)` strings via `formatOklch` to teach APCA + the 2026
+  // tint/edge techniques, and its doc comment references the function name.
   const colorDemoFiles = new Set([
     'apps/web/src/features/design-system/components/apca-section.tsx',
+    'apps/web/src/features/design-trends/glass-playground.tsx',
+    'apps/web/src/features/design-trends/glass-2026-primitives.tsx',
+    'apps/web/src/features/design-trends/use-blob-primary.ts',
   ]);
   const files = [
     ...collectFiles('apps/web/src', ['.css', '.ts', '.tsx']),

@@ -143,10 +143,15 @@
         margin: worst-case text Lc 79 light / 62 dark (amber blob).
      2. Blur + 3. Saturation — frosted vibrancy (tokens.css: --blur-glass 12px,
         --glass-saturate 1.4).
-     4. Edge — a luminous WHITE border (light reflecting off the cut edge) + a
-        brighter inset top highlight for dimension. NOT APCA-gated: glassmorphism
-        panels are delineated by their drop shadow, so the edge is the decorative
-        light glow, not a contrast boundary (ADR-0014 rescopes the gate).
+     4. Edge — a mode-inverted luminous rim (ADR-0012 2026-07-04
+        alignment). UX Pilot 2026: "In light mode, glass needs stronger
+        boundaries" and "In dark mode, swap to a colored rim, not pure
+        white." A pure-white edge composites with the white `--glass-tint`
+        in light mode and produces near-zero APCA over a brightly-lit
+        blob — so the edge is dark-on-light / light-on-dark: light carries
+        a dark neutral-blue hairline, dark carries a light neutral-violet
+        hairline. Both clear APCA Lc 25 over the worst-case blob. The drop
+        shadow (--shadow-glass) remains the primary delineator.
      5. Shadow — soft directional --shadow-glass for float separation.
      Fallback — opaque surface when transparency/blur is unavailable. */
   /* Dark tint alpha 40% (was 34%): the minimum that keeps --foreground at
@@ -155,7 +160,30 @@
     color-mix(in oklch, var(--neutral-0) 54%, transparent),
     color-mix(in oklch, var(--neutral-900) 40%, transparent)
   );
-  --glass-edge: light-dark(oklch(1 0 0 / 0.45), oklch(1 0 0 / 0.14));
+  /* Mode-adaptive glass edge (ADR-0012 2026-07-04 alignment):
+     UX Pilot 2026: "In light mode, glass needs stronger boundaries" and
+     "In dark mode, swap to neutral-gray highlights or a subtle colored
+     rim (navy, violet, teal) instead of pure white." A pure-white edge
+     composites with the white `--glass-tint` in light mode and produces
+     near-zero APCA over a brightly-lit blob — so the edge is mode-
+     inverted: LIGHT carries a dark neutral-blue rim (L 0.30, chroma 0.02,
+     hue 260, alpha 0.40) for boundary contrast; DARK carries a light
+     neutral-violet rim (L 0.90, chroma 0.03, hue 270, alpha 0.50) —
+     softer than pure white so it doesn't glow harsh against dark.
+     Both clear the APCA Lc 25 floor over the worst-case blob. */
+  --glass-edge: light-dark(
+    oklch(0.3 0.02 260 / 0.40),
+    oklch(0.9 0.03 270 / 0.50)
+  );
+
+  /* Specular rim gradient stops — consumed by the `glass-panel[data-variant="specular"]`
+     utility in glass.css. The corner-shine border-image reads a directional
+     white-to-transparent gradient; these stops are defined here (the only file
+     that may hold raw OKLCH values in the UI package) so glass.css stays
+     token-clean. */
+  --specular-rim-start: oklch(1 0 0 / 0.6);
+  --specular-rim-mid: oklch(1 0 0 / 0.1);
+  --specular-rim-end: transparent;
 
   /* The lit top rim. Glass-only since ADR-0020 (which amended ADR-0018):
      every floating glass surface reads it as the inset-top specular highlight.
@@ -163,9 +191,9 @@
      seam), but ADR-0020 dropped the solid half — `surface-raised` is now
      structural-only (`--shadow-card-raised`, no rim). The token stays defined
      (glass-owned); only its name is retained from ADR-0018. Kept close to the
-     --glass-edge alpha so the edge reads as ONE uniform luminous hairline,
-     not a brighter/thicker top. Standard web glassmorphism: equal-weight rim on
-     all sides + soft drop shadow. */
+     --glass-edge alpha so the edge reads as ONE luminous hairline — the rim
+     highlight is the directional light effect, the hairline is the
+     structural edge (now APCA-gated in both modes per 2026-07-04 align). */
   --surface-rim-top: light-dark(oklch(1 0 0 / 0.5), oklch(1 0 0 / 0.2));
 
   /* Light glass carries NO dark inner edge / contour (Hype4/Malewicz glassmorphism,

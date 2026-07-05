@@ -67,3 +67,11 @@ not inline its tables here.
 - [ ] Contrast pairs resolved by `glass-contrast.test.ts` (APCA), not eyeballed.
 - [ ] New component: `cva` variants, `data-slot` hooks, exported from its role barrel (e.g. `packages/ui/src/components/form/index.ts`), no `@/` or server imports.
 - [ ] `bun run ai:check` passes.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Glass surface looks like a grey box | Missing a colourful backdrop (media/blob); glassmorphism requires refraction to read. | Add a desktop blob or media background; or switch to `Card variant="solid"`. |
+| APCA contrast gate fails | Raw token value too light/dark for the surface; or gamma-decoding missing in manual check. | Trust the `glass-contrast.test.ts` result; adjust token lightness or use Step-11 text tokens. |
+| UI feels "sluggish" on scroll | Over-use of `backdrop-filter` on multiple stacked layers or large areas. | Cap glass at 2 layers; ensure `will-change` is scoped to transitions only. |

@@ -29,5 +29,5 @@
 
 ## Skills & verification
 
-- [.agents/skills/README.md](.agents/skills/README.md): how the 15 reusable skills are authored (canonical, tool-agnostic; Claude Code shims are generated).
+- [.agents/skills/README.md](.agents/skills/README.md): how the 16 reusable skills are authored (canonical, tool-agnostic; Claude Code shims are generated).
 - Gate: run `bun run ai:check` + `bun run ai:eval` before "done"; `bun run ai:premerge` is the full pass.

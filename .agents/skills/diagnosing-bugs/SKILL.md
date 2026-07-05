@@ -105,3 +105,11 @@ Before reporting done:
 - [ ] Original repro was re-run after the fix.
 - [ ] Temporary debug logs and harnesses were removed or clearly marked.
 - [ ] Verified that the fix passes the regression test or original reproduction loop.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Red-capable loop never fails (stays green) | The loop exercises a nearby path, not the actual bug path; or env/data differs. | Compare trace/logs of the loop vs the failure; match the user's exact inputs/state. |
+| Fix works in loop but not in app | Repro was too minimized and lost a load-bearing environmental factor (e.g. auth, middleware). | Re-add environmental factors to the loop until it fails again; then re-verify fix. |
+| Debug logs left in PR | Unique `[DEBUG-...]` prefix not used or cleanup skipped. | Search for `[DEBUG-` and remove before reporting "done". |

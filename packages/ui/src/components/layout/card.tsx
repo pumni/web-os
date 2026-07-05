@@ -49,6 +49,8 @@ const cardVariants = cva('flex flex-col gap-(--surface-gap) py-(--surface-paddin
       // Opt-in: floating translucent glass. Use ONLY when the card literally
       // floats over other content. Most content should NOT use this.
       glass: 'glass-panel',
+      // Opt-in: hero/showcase specular light corner-shine. Uses glass panel base.
+      specular: 'glass-panel',
       // Opt-in: pointer-tracked spotlight highlight on hover.
       // Renders the same opaque raised base as `solid` + adds a ::before radial
       // gradient that follows the cursor (requires CardSpotlight client wrapper).

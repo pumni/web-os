@@ -138,7 +138,7 @@ export function BentoSimulator() {
               ))}
             </div>
             <hr className="border-border" />
-            <p className="text-[11px] text-muted-foreground italic">
+            <p className="type-caption text-muted-foreground italic">
               💡 Responsive: grid tự ép về 6 cột ở Tablet và xếp dọc 1 cột ở Mobile, bảo toàn nội
               dung. Ô <code>hero</code>/<code>feature</code> cao đúng 2 hàng metric nhờ{' '}
               <code>rowHeight</code>.
@@ -165,7 +165,7 @@ export function BentoSimulator() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            <pre className="max-h-52 overflow-x-auto rounded-b-xl border-t bg-muted p-3 font-mono text-[11px] text-muted-foreground">
+            <pre className="max-h-52 overflow-x-auto rounded-b-xl border-t bg-muted p-3 font-mono text-xs text-muted-foreground">
               <code>{bentoGridRecipeCode}</code>
             </pre>
           </CardContent>
@@ -223,7 +223,7 @@ export function BentoSimulator() {
                   <span className="size-2 rounded-full bg-border" />
                   <span className="size-2 rounded-full bg-border" />
                 </div>
-                <div className="mx-auto rounded-md border bg-background px-8 py-0.5 font-mono text-[10px] select-none">
+                <div className="mx-auto rounded-md border bg-background px-8 py-0.5 font-mono text-xs select-none">
                   pumni.os/dashboard?view={simulatedBreakpoint}
                 </div>
               </div>
@@ -233,7 +233,7 @@ export function BentoSimulator() {
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-muted-foreground">
                     MẶT BẰNG GRID{' '}
-                    <span className="font-mono text-[10px] text-foreground/60">
+                    <span className="font-mono text-xs text-foreground/60">
                       ({BREAKPOINT_BADGE[simulatedBreakpoint]})
                     </span>
                   </h4>
@@ -252,14 +252,14 @@ export function BentoSimulator() {
                     description="Báo cáo hiệu suất nhân CPU và tốc độ đọc ghi IO."
                   >
                     <CardWell padding="sm" radius="lg" className="my-1 space-y-2">
-                      <div className="flex justify-between text-[10px]">
+                      <div className="flex justify-between text-xs">
                         <span>V8 Engine Performance</span>
                         <span className="font-semibold text-primary">99.8%</span>
                       </div>
                       <div className="h-1.5 w-full overflow-hidden rounded-full bg-background">
                         <div className="h-full rounded-full bg-primary" style={{ width: '85%' }} />
                       </div>
-                      <div className="flex justify-between gap-4 text-[9px] text-muted-foreground">
+                      <div className="flex justify-between gap-4 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Zap className="size-3 text-warning" /> Compile time: 42ms
                         </span>
@@ -269,10 +269,10 @@ export function BentoSimulator() {
                       </div>
                     </CardWell>
                     <div className="flex justify-end pt-1">
-                      <Button
+                        <Button
                         size="xs"
                         variant="outline"
-                        className="h-7 px-2 text-[10px]"
+                        className="h-7 px-2 text-xs"
                         onClick={() => toast.info('Click sự kiện mẫu của Bento hero tile!')}
                       >
                         Chi tiết <ChevronRight className="size-3" />
@@ -289,12 +289,12 @@ export function BentoSimulator() {
                     description="Card này minh họa radial-gradient chạy theo con trỏ chuột."
                   >
                     <CardWell padding="sm" radius="lg" className="my-2 text-center">
-                      <p className="text-[10px] font-medium text-primary">Bản dùng thử Spotlight</p>
-                      <p className="mt-0.5 text-[9px] text-muted-foreground">
+                      <p className="text-xs font-medium text-primary">Bản dùng thử Spotlight</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         Rà chuột qua card để thấy đèn phát sáng.
                       </p>
                     </CardWell>
-                    <div className="flex items-center gap-1 text-[9px] text-muted-foreground">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Code className="size-3" />
                       <span>
                         Dùng <code>variant=&quot;spotlight&quot;</code>
@@ -308,7 +308,7 @@ export function BentoSimulator() {
                     ariaLabel={`${userCount.toLocaleString()} người dùng đang hoạt động`}
                   >
                     <div className="flex items-start justify-between">
-                      <div className="text-[10px] font-medium text-muted-foreground uppercase">
+                      <div className="text-xs font-medium text-muted-foreground uppercase">
                         Active Users
                       </div>
                       <Badge tone="success" size="sm">
@@ -319,7 +319,7 @@ export function BentoSimulator() {
                       <div className="text-2xl font-bold tracking-tight text-foreground">
                         {userCount.toLocaleString()}
                       </div>
-                      <div className="mt-0.5 text-[9px] text-muted-foreground">
+                      <div className="mt-0.5 text-xs text-muted-foreground">
                         Tải thực tế mỗi 4 giây
                       </div>
                     </div>
@@ -356,7 +356,7 @@ export function BentoSimulator() {
                         />
                       ))}
                     </div>
-                    <div className="truncate text-[9px] text-muted-foreground">
+                    <div className="truncate text-xs text-muted-foreground">
                       Hệ màu:{' '}
                       <span className="font-semibold text-foreground capitalize">
                         {accentColor}
@@ -371,10 +371,10 @@ export function BentoSimulator() {
                     title="Quick Add"
                   >
                     <div className="flex flex-1 items-end">
-                      <Button
+                        <Button
                         size="xs"
                         variant="outline"
-                        className="h-6 w-full px-2 text-[10px]"
+                        className="h-6 w-full px-2 text-xs"
                         onClick={() => toast.success('Đã thêm tile mẫu!')}
                       >
                         <Code className="size-3" /> + Tile
@@ -384,7 +384,7 @@ export function BentoSimulator() {
 
                   {/* ACCENT — second shortcut tile */}
                   <BentoGridItem tier="accent" title="Export">
-                    <div className="truncate text-[9px] text-muted-foreground">
+                    <div className="truncate text-xs text-muted-foreground">
                       Phím tắt bento · 2 cột
                     </div>
                   </BentoGridItem>
@@ -395,7 +395,7 @@ export function BentoSimulator() {
                     title="Full Tile (12-Col) — Bảng Nhật Ký"
                     description="Tự động trải rộng toàn trang ở mọi chế độ."
                   >
-                    <div className="my-2 space-y-1 font-mono text-[10px] text-muted-foreground">
+                    <div className="my-2 space-y-1 font-mono text-xs text-muted-foreground">
                       <div className="flex justify-between border-b border-border pb-0.5">
                         <span>[14:52:10] GET /api/design-trends - 200 OK</span>
                         <span className="text-success">Rendered</span>

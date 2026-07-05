@@ -83,10 +83,18 @@ shell surfaces stay opaque.
 dark bottom edge** (`--surface-rim-top` / `--glass-shadow-edge`, inset box-shadows
 in the `glass-*` utilities) and **vibrancy** via the single `--glass-saturate`
 knob (≈1.4; the `glass-saturate.test.ts` guard locks the tokenization, not the
-value). Blur is frosted (`--blur-glass` 8–16px; dark uses 16px). Float depth is
-the directional `--shadow-glass`. The luminous border read comes from
-`--surface-rim-top` (specular, ungated) — a pure-light `--glass-edge` fails the
-Lc 25 gate on light surfaces, so the border token stays a gated definition line.
+value). Blur is frosted (`--blur-glass` 8–16px; dark uses 16px) — a deliberate
+"frosted" choice over the 2026 subtle baseline of 4–6px (UX Pilot 2026),
+recorded as such by the ADR-0012 2026-07-04 amendment. Float depth is
+the directional `--shadow-glass`. The border read comes from
+`--surface-rim-top` (specular light inset) + the **mode-inverted
+`--glass-edge`** (2026-07-04 alignment): light mode carries a dark
+neutral-blue rim and dark mode a light neutral-violet rim. A
+pure-white edge would composite with the white `--glass-tint` in light
+mode and lose all APCA contrast on a bright backdrop, so the edge is
+dark-on-light / light-on-dark — the opposite of the prior uniform
+white hairline. The glass border is now APCA-gated at Lc 25 in both
+modes.
 **Perf discipline:** `will-change` is scoped to overlay transitions only
 (`[data-state=open|closed]`); stacked glass is capped at 2 layers (each layer
 forces a separate backdrop render pass — a doc/skill rule).
@@ -161,9 +169,14 @@ APCA gate — tune `--glass-tint` / `--glass-edge`, never the thresholds.
   `CardWell`. The real delineator for solid surfaces.
 - `--input` — dark, one shade deeper than `--border`. Form controls only. Flat,
   no specular rim.
-- `--glass-edge` — **white** (light `0.45` / dark `0.14`). Glass surfaces only.
-  On glass the *structural* hairline is specular; the **drop shadow**
-  (`--shadow-glass`) is the real delineator.
+- `--glass-edge` — **mode-inverted** (2026-07-04 alignment): light
+  `oklch(0.3 0.02 260 / 0.40)` dark neutral-blue rim (a pure-white edge
+  composites with the white `--glass-tint` and loses all APCA contrast
+  on a bright blob); dark `oklch(0.9 0.03 270 / 0.50)` light neutral-
+  violet rim (softer than pure white so it doesn't glow harsh against
+  dark). Both clear APCA Lc 25 over the worst-case amber/coral blob.
+  Glass surfaces only. On glass the *structural* hairline is specular;
+  the **drop shadow** (`--shadow-glass`) is the real delineator.
 
 **`--surface-rim-top` is glass-only (ADR-0012).** Solid cards carry
 **no rim at all** — `--border` (hairline) + `--shadow-card-raised` (elevation)
@@ -171,10 +184,12 @@ only. The bottom rim (`--glass-shadow-edge`) stays glass-only by design.
 
 | | Solid card (`surface-raised`) | Glass card (`glass-panel`) |
 | --- | --- | --- |
-| Structural hairline | `--border` (dark) | `--glass-edge` (white) |
+| Structural hairline | `--border` (dark) | `--glass-edge` (mode-inverted: light=dark neutral-blue, dark=light neutral-violet) |
 | Top rim | none (deliberate, ADR-0012) | `--surface-rim-top` |
 | Bottom rim | none (deliberate) | `--glass-shadow-edge` |
 | Real delineator | the hairline itself | `--shadow-glass` (drop shadow) |
+| APCA Lc 25 gate | enforced | enforced (2026-07-04 alignment; was exempt before) |
+| Hero specular | n/a | opt-in via `glass-panel[data-variant="specular"]` |
 
 **Decision tree** — pick the path that matches the element, never write a border
 or inset rim in TSX:

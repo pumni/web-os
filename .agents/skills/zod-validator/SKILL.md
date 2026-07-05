@@ -35,3 +35,11 @@ Keep it framework-agnostic so it crosses the client/server boundary cleanly.
 - [ ] No authorization logic embedded in the schema.
 - [ ] All consumers updated when an exported name or inferred type changed.
 - [ ] `bun --filter @pumni/validators typecheck` and `bun run typecheck` pass.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Import error in browser | Schema imports `server-only`, `@pumni/env`, or a database helper. | Remove the import; keep schemas pure and side-effect free. |
+| Type drift across boundary | Schema changed but inferred type was not updated in the Server Action or Form. | Always use `z.infer` to export a single type; use it in both Form and Action. |
+| Validation too strict | Schema uses `z.string().min(1)` for an optional field that sends empty string. | Use `.optional()` or `.transform(v => v === "" ? null : v)` for empty strings. |

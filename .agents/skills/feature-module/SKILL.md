@@ -46,3 +46,11 @@ piece and routes the detail to the matching implementation skill.
       `docs/ai/golden-examples.md` (use a `path#symbol` anchor) so agents have a
       local example to copy.
 - [ ] `bun run typecheck` and the relevant feature gate pass.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Logic leaked into route files | Page/layout files contain complex fetching or mutation logic. | Move logic into `queries.ts` or `actions.ts`; keep routes for composition only. |
+| Server data in Zustand | Server state is manually synced to a Zustand store for UI access. | Read directly from Server Components or use TanStack Query; delete the Zustand mirror. |
+| Shared code in wrong package | App-specific logic promoted to `@pumni/*` without a cross-app need. | Move code back to `apps/web/src/features`; only promote truly generic logic. |

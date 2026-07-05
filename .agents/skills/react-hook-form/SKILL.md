@@ -41,3 +41,11 @@ two seams clean so validation, submission, and cache refresh stay predictable.
 - [ ] Server-data mutation is followed by `router.refresh()` or query invalidation.
 - [ ] Pending state disables inputs and submit.
 - [ ] `bun run typecheck` and `bun run test` pass.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Submit error not visible | `FormMessage` missing; or action failure caught silently in `handleSubmit`. | Ensure `FormMessage` is inside the `FormItem`; throw in `mutationFn` so `onError` captures it. |
+| Stale data after submit | `updateTag` missing in action; or `router.refresh()` missing in client. | Add `updateTag` to the Server Action and `router.refresh()` to the form success handler. |
+| Double submission | `SubmitButton` not disabled during `isPending`. | Pass `isPending` to the `SubmitButton` or disable it explicitly in the `Form` footer. |

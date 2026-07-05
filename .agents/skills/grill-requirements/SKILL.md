@@ -53,3 +53,11 @@ implementation skills.
 - [ ] Domain terms reconciled with `docs/ai/domain-language.md`.
 - [ ] The spec was confirmed before implementation began, or the assumption was
       recorded.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Scope creep during implementation | Unstated requirements surface mid-task; out-of-scope boundaries were vague. | Stop and re-grill; update the spec with clear in-scope/out-of-scope sections. |
+| Security/RLS missing in spec | The spec focused on UI/UX but ignored the data ownership boundary. | Explicitly name the `auth.uid()` or RLS requirement before coding. |
+| Verification gate fails at "done" | The gate was chosen at the end, not defined in the spec; criteria were not testable. | Define the narrowest verification gate (test/gate) in the spec first. |

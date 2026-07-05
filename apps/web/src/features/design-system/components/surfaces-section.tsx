@@ -86,6 +86,14 @@ export function SurfacesSection() {
                   </span>
                   <span className="font-semibold text-primary">Active</span>
                 </GlassSurface>
+                <Card variant="specular" className="p-4 text-xs gap-1">
+                  <div className="font-semibold text-foreground">
+                    Hero Specular Card (<code>Card variant="specular"</code>)
+                  </div>
+                  <div className="text-muted-foreground">
+                    Luminous directional corner-shine border highlight.
+                  </div>
+                </Card>
                 <GlassSurface variant="panel" className="space-y-1 p-4 text-xs">
                   <div className="font-semibold text-foreground">
                     Dialog / popover panel role (<code>.glass-panel</code>)

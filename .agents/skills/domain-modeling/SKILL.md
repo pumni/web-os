@@ -42,3 +42,11 @@ skill changes the glossary; merely reading the glossary does not require it.
 - [ ] ADRs were offered only for hard-to-reverse, surprising trade-offs.
 - [ ] `docs/ai/domain-language.md` updated (or explicitly recorded as
       no-change) and `bun run ai:check` passes.
+
+## Known Failure Modes
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Ambiguous terminology in code/docs | Multiple terms for the same concept; glossary out of sync with implementation. | Consolidate terms in `docs/ai/domain-language.md`; rename code/docs for consistency. |
+| Glossary is too technical | Definitions focus on implementation (e.g., "Postgres table") rather than domain (e.g., "Profile"). | Rephrase to focus on business/product value and durable concepts. |
+| Term drift | A term is redefined in a feature but not updated in the central glossary. | Update the central glossary when a feature clarifies a durable term. |

@@ -74,6 +74,39 @@
   transform: translateZ(0);
 }
 
+/*
+ * Specular variant — 2026 directional rim / corner-shine for hero/showcase
+ * cards only (ADR-0012 2026-07-04 alignment).
+ *
+ * `border-image` carries a directional gradient that highlights one corner
+ * (top-left by default), simulating the rim light along the side facing the
+ * light source — Apple Liquid Glass / UX Pilot 2026 reference. The 1px
+ * `--glass-edge` border stays as the structural hairline; `border-image` only
+ * overrides the *fill*, the width is preserved.
+ *
+ * Cap: one specular card per visible surface. Bulk list cards MUST use plain
+ * `glass-panel` (ADR-0016 sheen removal still applies to lists). The variant
+ * is opt-in only; no default-on path exists.
+ *
+ * `--specular-corner` may be overridden inline by the consumer (one of
+ * tl/tr/bl/br); defaults to `tl` matching Apple's top-left key-light.
+ */
+.glass-panel[data-variant="specular"] {
+  --specular-corner: tl;
+  border-image: conic-gradient(
+    from var(--specular-angle, 0deg),
+    var(--specular-rim-start) 0deg,
+    var(--specular-rim-mid) 90deg,
+    var(--specular-rim-end) 180deg
+  ) 1;
+}
+
+/*
+ * Corner → angle map so consumers can flip the highlight corner without
+ * hand-writing a new gradient. Set inline via `style="--specular-angle: 180deg"`.
+ * tl = 0deg (default) · tr = 90deg · br = 180deg · bl = 270deg.
+ */
+
 @utility glass-window {
   /* Same glassmorphism treatment as glass-panel (Fresnel rim + specular bevel);
      windows carry the deeper active/glow drop shadow (--shadow-glass-glow). Own

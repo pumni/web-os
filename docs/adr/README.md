@@ -19,7 +19,7 @@ that source code and conventions cannot carry on their own.
 | 0009 | Context Layer — Lean 2026 | Accepted | 2026-06-20 |
 | 0010 | Frontend Platform Foundation — `@pumni/ui` as a Reusable OS Skeleton | Accepted (two rejections revised by ADR-0021) | 2026-06-20 |
 | 0011 | Watch Sync as an Explicit State Machine + an Observability Seam | Accepted | 2026-06-20 |
-| 0012 | Surface Visual Language (consolidated) | Accepted | 2026-06-20 (consolidated 2026-06-22) |
+| 0012 | Surface Visual Language (consolidated) | Accepted (amended 2026-07-04 per 2026 trend alignment) | 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-04) |
 | 0013 | Context Layer — 2026-06 Cleanup | Accepted (§4 `llms.txt` removal superseded by ADR-0022) | 2026-06-24 |
 | 0021 | Revisit ADR-0010 Rejections — Component Catalog + DTCG Token Export | Accepted | 2026-06-30 |
 | 0022 | Keep llms.txt as the Agentic Handshake Map | Accepted | 2026-07-01 |

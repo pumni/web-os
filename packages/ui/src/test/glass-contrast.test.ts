@@ -54,23 +54,57 @@ describe('Glass contrast tokens', () => {
     },
   );
 
-  // ADR-0014: glassmorphism panels are delineated by the drop shadow
-  // (`--shadow-glass`) plus a luminous WHITE edge highlight — NOT by a
-  // high-contrast border. A white edge on a light glass surface cannot clear
-  // APCA Lc 25 and is not the delineator, so the old "border ≥ Lc 25" gate was
-  // rescoped: the text gate above stays authoritative (readability), and the
-  // edge is guarded only for presence (so it can't be silently zeroed).
+  // ADR-0012 (2026-07-04 alignment): glass border is now APCA-gated at
+  // Lc 25 in BOTH modes. The prior exempt (ADR-0014 "rescopes the gate")
+  // was a workaround for the低-alpha white edge that could not clear Lc 25
+  // over a near-white light backdrop — fixed by the mode-adaptive
+  // `--glass-edge` token (light: 0.70 alpha white; dark: light neutral-
+  // violet rim). The drop shadow (`--shadow-glass`) still separates the
+  // panel from its backdrop, but the border itself now carries a contrast
+  // floor. Reference: UX Pilot 2026, Orizon rule #7 "Add subtle edge
+  // highlights".
+  //
+  // Method: the `border` sits on the glass surface, so it composites with
+  // (glass-tint over blob) — APCA is measured between that composited
+  // `border` colour and the underlying (glass-tint over blob) colour, not
+  // between the raw edge sRGB and the surface. This mirrors how a real
+  // browser renders a semi-transparent 1px `border` on a semi-transparent
+  // panel over a coloured backdrop.
   it.each(['light', 'dark'] as const)(
-    'delineates glass panels via the float shadow + a present luminous edge in %s mode',
+    'keeps glass border at APCA Lc 25 over desktop blobs in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-
-      // (1) The float shadow that actually separates the panel from its backdrop.
-      expect(tokenMap.has('--shadow-glass'), `${mode} --shadow-glass defined`).toBe(true);
-
-      // (2) The edge highlight must be an actual visible near-white colour.
       const edge = tokenColor('--glass-edge', tokenMap);
-      expect(edge.l, `${mode} glass edge is near-white`).toBeGreaterThanOrEqual(0.9);
+
+      for (const blobToken of desktopBlobTokens) {
+        const blobColor = tokenColor(blobToken, tokenMap);
+        const glass = tokenColor('--glass-tint', tokenMap);
+        const glassOverBlob: Rgb = composite(glass, blobColor);
+        // Compose the edge alpha onto the (glass-tint over blob) layer to
+        // get the rendered border colour, then measure APCA against the
+        // underlying glass surface.
+        const edgeOverGlass: Rgb = [
+          oklchToSrgb(edge)[0] * edge.alpha + glassOverBlob[0] * (1 - edge.alpha),
+          oklchToSrgb(edge)[1] * edge.alpha + glassOverBlob[1] * (1 - edge.alpha),
+          oklchToSrgb(edge)[2] * edge.alpha + glassOverBlob[2] * (1 - edge.alpha),
+        ];
+
+        expect(
+          Math.abs(apcaContrast(edgeOverGlass, glassOverBlob)),
+          `${mode} ${blobToken} border contrast (APCA Lc 25)`,
+        ).toBeGreaterThanOrEqual(25);
+      }
+    },
+  );
+
+  // The float shadow remains the primary delineator (ADR-0012 unchanged).
+  // Assert presence so it can't be silently zeroed.
+  it.each(['light', 'dark'] as const)(
+    'delineates glass panels via the float shadow in %s mode',
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      expect(tokenMap.has('--shadow-glass'), `${mode} --shadow-glass defined`).toBe(true);
+      const edge = tokenColor('--glass-edge', tokenMap);
       expect(edge.alpha, `${mode} glass edge is visible`).toBeGreaterThan(0.1);
     },
   );
