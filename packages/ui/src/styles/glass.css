@@ -85,6 +85,7 @@
      a smooth light→shadow transition (Apple Liquid Glass idiom). */
   &::before {
     content: '';
+    display: var(--glass-bevel-ring-display, block);
     position: absolute;
     inset: -1px;
     border-radius: inherit;
@@ -103,6 +104,28 @@
   }
 }
 
+/* --- Frosted Glass Panels (Simple Background-clip Border) --- */
+@utility glass-panel-simple {
+  /* Glassmorphism — Simple model using background-clip:
+     Nền kính (fill) được giới hạn trong padding-box, viền gradient bo góc liên tục
+     nằm ở border-box (không cần phần tử giả và mask-composite).
+     Thích hợp cho các panel tĩnh, tối ưu hóa render pass trên GPU. */
+  position: relative;
+  background:
+    linear-gradient(var(--glass-tint), var(--glass-tint)) padding-box,
+    linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom)) border-box;
+  /* Transparent metric border giữ nguyên kích thước hộp và để lộ viền gradient */
+  border: 1px solid transparent;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  box-shadow:
+    var(--shadow-glass),
+    inset 0 1px 0 0 var(--glass-inset-bezel-top),
+    inset 0 -1px 0 0 var(--glass-shadow-edge);
+  transform: translateZ(0);
+}
+
+
 /*
  * Specular variant — 2026 directional rim / corner-shine for hero/showcase
  * cards only (ADR-0012 2026-07-04 alignment).
@@ -119,9 +142,19 @@
  * is opt-in only; no default-on path exists.
  */
 .glass-panel[data-variant='specular']::before {
+  /* Dynamic specular angle: calculates the angle from the card center (50%, 50%)
+     to the cursor position (--spot-x, --spot-y) using CSS atan2.
+     Defaults to 0%, 0% (translating to a top-left vector (-50%, -50%) which yields a -45deg
+     relative angle, i.e., 315deg angle matching the default key light angle). */
+  --spot-x-val: var(--spot-x, 0%);
+  --spot-y-val: var(--spot-y, 0%);
+  --specular-angle-dynamic: calc(
+    atan2(calc(var(--spot-y-val) - 50%), calc(var(--spot-x-val) - 50%)) + 90deg
+  );
+
   background:
     conic-gradient(
-      from calc(var(--specular-angle, 315deg) - 45deg),
+      from calc(var(--specular-angle-dynamic, var(--specular-angle, 315deg)) - 45deg),
       transparent 0deg,
       var(--specular-rim-start) 45deg,
       var(--specular-rim-mid) 70deg,
@@ -154,6 +187,7 @@
 
   &::before {
     content: '';
+    display: var(--glass-bevel-ring-display, block);
     position: absolute;
     inset: -1px;
     border-radius: inherit;
@@ -182,6 +216,8 @@
  */
 .glass-panel[data-state='open'],
 .glass-panel[data-state='closed'],
+.glass-panel-simple[data-state='open'],
+.glass-panel-simple[data-state='closed'],
 .glass-window[data-state='open'],
 .glass-window[data-state='closed'] {
   will-change: transform, opacity;
@@ -286,6 +322,7 @@
    Fall back to an opaque popover surface and drop the blur entirely. */
 @media (prefers-reduced-transparency: reduce) {
   .glass-panel,
+  .glass-panel-simple,
   .glass-window,
   .glass-bar,
   .glass-bar-bordered,
@@ -316,6 +353,7 @@
    readable on older browsers by using the opaque surface path. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-panel,
+  .glass-panel-simple,
   .glass-window,
   .glass-bar,
   .glass-bar-bordered,
@@ -339,6 +377,7 @@
    popover surface and use a solid semantic border for clearer edges. */
 @media (prefers-contrast: more) {
   .glass-panel,
+  .glass-panel-simple,
   .glass-window,
   .glass-bar,
   .glass-bar-bordered,
@@ -363,6 +402,7 @@
    shadows, and Tailwind ring box-shadows are ignored. */
 @media (forced-colors: active) {
   .glass-panel,
+  .glass-panel-simple,
   .glass-window,
   .glass-bar,
   .glass-bar-bordered,
@@ -392,6 +432,7 @@
 
 /* --- Accessibility — In-App Theme & Transparency Previews --- */
 .glass-a11y-preview[data-transparency='reduced'] .glass-panel,
+.glass-a11y-preview[data-transparency='reduced'] .glass-panel-simple,
 .glass-a11y-preview[data-transparency='reduced'] .glass-window,
 .glass-a11y-preview[data-transparency='reduced'] .glass-bar,
 .glass-a11y-preview[data-transparency='reduced'] .glass-bar-bordered,
@@ -413,6 +454,7 @@
 }
 
 .glass-a11y-preview[data-contrast='more'] .glass-panel,
+.glass-a11y-preview[data-contrast='more'] .glass-panel-simple,
 .glass-a11y-preview[data-contrast='more'] .glass-window,
 .glass-a11y-preview[data-contrast='more'] .glass-bar,
 .glass-a11y-preview[data-contrast='more'] .glass-bar-bordered,

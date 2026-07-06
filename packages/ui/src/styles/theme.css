@@ -174,16 +174,16 @@
      (Earlier revisions inverted light mode to a dark navy stroke to satisfy an
      APCA Lc 25 "delineation" gate; that gate was false doctrine — the glass edge
      is a light effect — and has been removed.) */
-  --glass-edge: light-dark(oklch(1 0 0 / 0.55), oklch(0.9 0.03 270 / 0.5));
+  --glass-edge: light-dark(oklch(1 0 0 / 0.55), oklch(0.86 0.02 270 / 0.24));
 
   /* Asymmetric bevel pair (2026 glassmorphism): a bright light-catch along the
      top-left fading to a faint contact shadow at the bottom-right — directional,
      matching the top key-light of `--shadow-glass`. Both stops are specular
      shading; neither is APCA-gated. LIGHT: white top rim + a faint cool bottom
      shadow. DARK: soft light-violet top rim + a dark violet contact shadow. */
-  --glass-edge-top: light-dark(oklch(1 0 0 / 0.65), oklch(0.95 0.03 270 / 0.55));
+  --glass-edge-top: light-dark(oklch(1 0 0 / 0.65), oklch(0.88 0.02 270 / 0.28));
   /* Matches getEdgeTokens bottom in glass-playground.tsx (cross-file contract) */
-  --glass-edge-bottom: light-dark(oklch(0.4 0.02 260 / 0.14), oklch(0.2 0.03 270 / 0.35));
+  --glass-edge-bottom: light-dark(oklch(0.4 0.02 260 / 0.14), oklch(0.2 0.02 270 / 0.15));
 
   /* Specular rim gradient stops — consumed by the `glass-panel[data-variant="specular"]`
      utility in glass.css. The corner-shine border-image reads a directional
@@ -192,9 +192,9 @@
      UX Pilot 2026: "In dark mode, glass needs softer highlights... switch to
      neutral-gray highlights or a subtle colored rim (navy, violet, teal) instead
      of pure white." Light mode uses a bright white highlight (alpha 0.60);
-     dark mode uses a soft light neutral-violet highlight (alpha 0.35). */
-  --specular-rim-start: light-dark(oklch(1 0 0 / 0.6), oklch(0.9 0.03 270 / 0.35));
-  --specular-rim-mid: light-dark(oklch(1 0 0 / 0.1), oklch(0.9 0.03 270 / 0.08));
+     dark mode uses a soft light neutral-violet highlight (alpha 0.20). */
+  --specular-rim-start: light-dark(oklch(1 0 0 / 0.6), oklch(0.86 0.02 270 / 0.20));
+  --specular-rim-mid: light-dark(oklch(1 0 0 / 0.1), oklch(0.86 0.02 270 / 0.05));
   --specular-rim-end: transparent;
 
   /* The lit top rim. Glass-only since ADR-0020 (which amended ADR-0018):
@@ -219,7 +219,7 @@
      In light mode (lightness > 50%), uses a 1px outline; in dark mode (lightness <= 50%),
      uses a 0.5px ultra-fine outline.
      Bezel outline was removed (uniform white hairline decision); only bezel-top is retained. */
-  --glass-inset-bezel-top: light-dark(oklch(1 0 0 / 0.2), oklch(1 0 0 / 0.15));
+  --glass-inset-bezel-top: light-dark(oklch(1 0 0 / 0.2), oklch(1 0 0 / 0.08));
 
   --glass-fallback-bg: var(--popover);
   --glass-blur: var(--blur-glass);

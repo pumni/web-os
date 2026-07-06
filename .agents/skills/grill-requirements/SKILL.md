@@ -28,7 +28,8 @@ implementation skills.
 5. Write the agreed spec as: outcome, in-scope, out-of-scope, acceptance
    criteria, and the verification gate that will prove it.
 6. Confirm the spec with the user, then route to the matching implementation
-   skill (`server-action`, `supabase-migration`, etc.).
+   skill (`server-action`, `supabase-migration`, etc.). When the request is a
+   structural reshuffle rather than new behavior, route to `refactor-plan`.
 
 ## Rules
 

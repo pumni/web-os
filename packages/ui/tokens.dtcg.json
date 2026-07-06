@@ -643,15 +643,30 @@
     "ease": {
       "in-out": {
         "$type": "cubicBezier",
-        "$value": [0.65, 0, 0.35, 1]
+        "$value": [
+          0.65,
+          0,
+          0.35,
+          1
+        ]
       },
       "out": {
         "$type": "cubicBezier",
-        "$value": [0.16, 1, 0.3, 1]
+        "$value": [
+          0.16,
+          1,
+          0.3,
+          1
+        ]
       },
       "spring": {
         "$type": "color",
-        "$value": [0.175, 0.885, 0.32, 1.275]
+        "$value": [
+          0.175,
+          0.885,
+          0.32,
+          1.275
+        ]
       }
     },
     "font-size": {
@@ -1719,7 +1734,7 @@
         "$value": "oklch(1 0 0 / 0.1)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.9 0.03 270 / 0.08)"
+            "dark": "oklch(0.86 0.02 270 / 0.05)"
           }
         }
       },
@@ -1728,7 +1743,7 @@
         "$value": "oklch(1 0 0 / 0.6)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.9 0.03 270 / 0.35)"
+            "dark": "oklch(0.86 0.02 270 / 0.20)"
           }
         }
       },
@@ -1793,7 +1808,7 @@
         "$value": "oklch(1 0 0 / 0.55)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.9 0.03 270 / 0.5)"
+            "dark": "oklch(0.86 0.02 270 / 0.24)"
           }
         }
       },
@@ -1802,7 +1817,7 @@
         "$value": "oklch(0.4 0.02 260 / 0.14)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.2 0.03 270 / 0.35)"
+            "dark": "oklch(0.2 0.02 270 / 0.15)"
           }
         }
       },
@@ -1913,7 +1928,7 @@
         "$value": "oklch(1 0 0 / 0.65)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.95 0.03 270 / 0.55)"
+            "dark": "oklch(0.88 0.02 270 / 0.28)"
           }
         }
       },
@@ -1935,7 +1950,7 @@
         "$value": "oklch(1 0 0 / 0.2)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(1 0 0 / 0.15)"
+            "dark": "oklch(1 0 0 / 0.08)"
           }
         }
       },

@@ -18,7 +18,9 @@ import { apcaContrast } from '@pumni/ui/lib/apca';
 import { formatOklch, oklchToSrgb } from '@pumni/ui/lib/oklch';
 import {
   Activity,
+  AlertTriangle,
   Check,
+  Code,
   Copy,
   Droplets,
   Gauge,
@@ -170,6 +172,9 @@ export function GlassPlayground() {
   const [doubleBezel, setDoubleBezel] = React.useState<boolean>(true);
   const [chromaShadow, setChromaShadow] = React.useState<boolean>(true);
   const [glassGrain, setGlassGrain] = React.useState<boolean>(true);
+  const [borderEngine, setBorderEngine] = React.useState<'mask' | 'clip' | 'asymmetric'>('mask');
+  const [optimizerTab, setOptimizerTab] = React.useState<'audit' | 'formulas' | 'spec'>('audit');
+  const [pointerCoords, setPointerCoords] = React.useState<{ x: string; y: string } | null>(null);
 
   // Theme sync — Pumni uses `class` strategy on <html>. The playground defaults
   // tint sliders per mode so the demo matches production when entering.
@@ -256,14 +261,24 @@ export function GlassPlayground() {
     return `linear-gradient(135deg, ${light} 0%, ${dark} 100%)`;
   }, [gradientTint, tintL, tintAlpha, reactiveChroma, reactiveHue, isDark]);
 
+  // ── Glassmorphism 2.0 dynamic property injection
+  const edgeTokens = getEdgeTokens(isDark, asymmetricBorder, reactiveChroma, reactiveHue);
+  const edgeTopStr = `oklch(${(edgeTokens.top.l * 100).toFixed(1)}% ${edgeTokens.top.c.toFixed(4)} ${edgeTokens.top.h.toFixed(0)} / ${edgeTokens.top.alpha.toFixed(2)})`;
+  const edgeBottomStr = `oklch(${(edgeTokens.bottom.l * 100).toFixed(1)}% ${edgeTokens.bottom.c.toFixed(4)} ${edgeTokens.bottom.h.toFixed(0)} / ${edgeTokens.bottom.alpha.toFixed(2)})`;
+
   const previewCssVars: React.CSSProperties = {
     ['--glass-blur' as string]: `${blurPx}px`,
     ['--glass-saturate' as string]: `${saturateBoost}`,
     ['--glass-tint' as string]: previewTint,
+    ['--glass-edge-top' as string]: edgeTopStr,
+    ['--glass-edge-bottom' as string]: edgeBottomStr,
   };
-  if (gradientTintBackground) {
-    previewCssVars.background = gradientTintBackground;
+
+  if (pointerCoords) {
+    (previewCssVars as Record<string, string>)['--spot-x'] = pointerCoords.x;
+    (previewCssVars as Record<string, string>)['--spot-y'] = pointerCoords.y;
   }
+
   // 2026 alignment: specular light corner-shine uses core --specular-angle variable
   // instead of ad-hoc inline border-image to support rounded border-radius.
   if (cornerShine) {
@@ -277,13 +292,6 @@ export function GlassPlayground() {
             : '225deg';
     (previewCssVars as Record<string, string>)['--specular-angle'] = specularAngle;
   }
-
-  // ── Glassmorphism 2.0 dynamic property injection
-  const edgeTokens = getEdgeTokens(isDark, asymmetricBorder, reactiveChroma, reactiveHue);
-  (previewCssVars as Record<string, string>)['--glass-edge-top'] =
-    `oklch(${(edgeTokens.top.l * 100).toFixed(1)}% ${edgeTokens.top.c.toFixed(4)} ${edgeTokens.top.h.toFixed(0)} / ${edgeTokens.top.alpha.toFixed(2)})`;
-  (previewCssVars as Record<string, string>)['--glass-edge-bottom'] =
-    `oklch(${(edgeTokens.bottom.l * 100).toFixed(1)}% ${edgeTokens.bottom.c.toFixed(4)} ${edgeTokens.bottom.h.toFixed(0)} / ${edgeTokens.bottom.alpha.toFixed(2)})`;
 
   if (doubleBezel) {
     (previewCssVars as Record<string, string>)['--glass-inset-bezel-top'] =
@@ -299,6 +307,32 @@ export function GlassPlayground() {
       0 16px 32px -3px ${shadowColorStr},
       0 8px 16px -5px oklch(0 0 0 / 0.25)
     `;
+  }
+
+  // Apply Border Engine values to previewCssVars
+  if (borderEngine === 'clip') {
+    (previewCssVars as Record<string, string>)['--glass-bevel-ring-display'] = 'none';
+    previewCssVars.border = '1px solid transparent';
+    const bgFill = gradientTintBackground || `linear-gradient(${previewTint}, ${previewTint})`;
+    previewCssVars.background = `${bgFill} padding-box, linear-gradient(135deg, ${edgeTopStr}, ${edgeBottomStr}) border-box`;
+  } else if (borderEngine === 'asymmetric') {
+    (previewCssVars as Record<string, string>)['--glass-bevel-ring-display'] = 'none';
+    if (gradientTintBackground) {
+      previewCssVars.background = gradientTintBackground;
+    } else {
+      previewCssVars.backgroundColor = previewTint;
+    }
+    previewCssVars.borderTop = `1px solid ${edgeTopStr}`;
+    previewCssVars.borderLeft = `1px solid ${edgeTopStr}`;
+    previewCssVars.borderBottom = `1px solid ${edgeBottomStr}`;
+    previewCssVars.borderRight = `1px solid ${edgeBottomStr}`;
+  } else {
+    // mask engine
+    (previewCssVars as Record<string, string>)['--glass-bevel-ring-display'] = 'block';
+    previewCssVars.border = '1px solid transparent';
+    if (gradientTintBackground) {
+      previewCssVars.background = gradientTintBackground;
+    }
   }
 
   // ── APCA readout. The composite is text-against-tint-against-backdrop. We
@@ -424,80 +458,112 @@ export function GlassPlayground() {
 
   const bevelGradient = `linear-gradient(135deg, oklch(${topL}% ${topC} ${topH} / ${topAlpha}), oklch(${bottomL}% ${bottomC} ${bottomH} / ${bottomAlpha}))`;
 
-  const glassCSSCode = `.glass-card {
-  ${backgroundLine}
-  backdrop-filter: blur(${blurPx}px) saturate(${saturateBoost.toFixed(1)});
-  -webkit-backdrop-filter: blur(${blurPx}px) saturate(${saturateBoost.toFixed(1)}); /* Làm mờ & tăng bão hòa hậu cảnh */
+  const blurVal = blurPx.toString();
+  const saturateVal = saturateBoost.toFixed(1);
 
-  /* 1. Viền: metric border trong suốt — cạnh nhìn thấy là gradient ring ::before */
-  position: relative;
-  border: 1px solid transparent;
+  let grainCSS = '';
+  if (glassGrain) {
+    const grainOpacity = isDark ? '0.07' : '0.05';
+    grainCSS = '\n\n/* 4. Physical Glass Grain/Noise overlay */\n' +
+      '.glass-grain {\n' +
+      '  position: relative;\n' +
+      '  isolation: isolate;\n' +
+      '}\n\n' +
+      '.glass-grain::after {\n' +
+      '  content: "";\n' +
+      '  position: absolute;\n' +
+      '  inset: 0;\n' +
+      '  opacity: ' + grainOpacity + '; /* Opacity theo mode */\n' +
+      '  mix-blend-mode: overlay;\n' +
+      '  pointer-events: none;\n' +
+      "  background-image: url(\"data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\");\n" +
+      '  background-size: 200px 200px;\n' +
+      '  background-repeat: repeat;\n' +
+      '  border-radius: inherit;\n' +
+      '}';
+  }
 
-  /* 2. Bắt sáng viền trong & 3. Bóng đổ nhiễm sắc */
-  ${boxCssCode}
-}
+  let glassCSSCode = '';
 
-/* 1b. Bevel ring liên tục: sáng TL (biên chủ đạo, APCA-gated) → tối BR (bevel
-   shading) — bám border-radius, không seam chéo ở góc như border 4 cạnh khác màu */
-.glass-card::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: ${bevelGradient};
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  z-index: 1;
-}${
-    cornerShine
-      ? `
+  if (borderEngine === 'clip') {
+    const bgFillCode = gradientTint && gradientTintBackground
+      ? gradientTintBackground
+      : 'linear-gradient(oklch(' + bgL + '% ' + bgC + ' ' + bgH + ' / ' + op + '), oklch(' + bgL + '% ' + bgC + ' ' + bgH + ' / ' + op + '))';
 
-/* Specular cornershine: lớp conic chồng LÊN bevel ring, cùng ::before
-   (tl = 315deg, tr = 45deg, br = 135deg, bl = 225deg) */
-.glass-card[data-variant="specular"]::before {
-  background:
-    conic-gradient(
-      from calc(var(--specular-angle, ${specularAngle}) - 45deg),
-      transparent 0deg,
-      var(--specular-rim-start) 45deg,
-      var(--specular-rim-mid) 70deg,
-      transparent 90deg
-    ),
-    ${bevelGradient};
-}`
-      : ''
-  }${
-    glassGrain
-      ? `
+    glassCSSCode = '.glass-card {\n' +
+      '  /* 1. Viền gradient dùng Background-clip (không cần phần tử giả ::before) */\n' +
+      '  background: \n' +
+      '    ' + bgFillCode + ' padding-box,\n' +
+      '    ' + bevelGradient + ' border-box;\n' +
+      '  border: 1px solid transparent;\n\n' +
+      '  backdrop-filter: blur(' + blurVal + 'px) saturate(' + saturateVal + ');\n' +
+      '  -webkit-backdrop-filter: blur(' + blurVal + 'px) saturate(' + saturateVal + '); /* Làm mờ & tăng bão hòa hậu cảnh */\n\n' +
+      '  /* 2. Bắt sáng viền trong & 3. Bóng đổ nhiễm sắc */\n' +
+      '  ' + boxCssCode + '\n' +
+      '}' + grainCSS;
+  } else if (borderEngine === 'asymmetric') {
+    glassCSSCode = '.glass-card {\n' +
+      '  ' + backgroundLine + '\n' +
+      '  backdrop-filter: blur(' + blurVal + 'px) saturate(' + saturateVal + ');\n' +
+      '  -webkit-backdrop-filter: blur(' + blurVal + 'px) saturate(' + saturateVal + '); /* Làm mờ & tăng bão hòa hậu cảnh */\n\n' +
+      '  /* 1. Viền bất đối xứng phẳng (Legacy) */\n' +
+      '  border-top: 1px solid oklch(' + topL + '% ' + topC + ' ' + topH + ' / ' + topAlpha + ');\n' +
+      '  border-left: 1px solid oklch(' + topL + '% ' + topC + ' ' + topH + ' / ' + topAlpha + ');\n' +
+      '  border-bottom: 1px solid oklch(' + bottomL + '% ' + bottomC + ' ' + bottomH + ' / ' + bottomAlpha + ');\n' +
+      '  border-right: 1px solid oklch(' + bottomL + '% ' + bottomC + ' ' + bottomH + ' / ' + bottomAlpha + ');\n\n' +
+      '  /* 2. Bắt sáng viền trong & 3. Bóng đổ nhiễm sắc */\n' +
+      '  ' + boxCssCode + '\n' +
+      '}' + grainCSS;
+  } else {
+    // Current mask-composite engine
+    let cornershineCSS = '';
+    if (cornerShine) {
+      cornershineCSS = '\n\n/* Specular cornershine: lớp conic chồng LÊN bevel ring, cùng ::before\n' +
+        '   (tl = 315deg, tr = 45deg, br = 135deg, bl = 225deg) */\n' +
+        '.glass-card[data-variant="specular"]::before {\n' +
+        '  background:\n' +
+        '    conic-gradient(\n' +
+        '      from calc(var(--specular-angle, ' + specularAngle + ') - 45deg),\n' +
+        '      transparent 0deg,\n' +
+        '      var(--specular-rim-start) 45deg,\n' +
+        '      var(--specular-rim-mid) 70deg,\n' +
+        '      transparent 90deg\n' +
+        '    ),\n' +
+        '    ' + bevelGradient + ';\n' +
+        '}';
+    }
 
-/* 4. Physical Glass Grain/Noise overlay */
-.glass-grain {
-  position: relative;
-  isolation: isolate;
-}
-
-.glass-grain::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: ${isDark ? '0.07' : '0.05'}; /* Opacity theo mode */
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-  background-repeat: repeat;
-  border-radius: inherit;
-}`
-      : ''
-  }`;
+    glassCSSCode = '.glass-card {\n' +
+      '  ' + backgroundLine + '\n' +
+      '  backdrop-filter: blur(' + blurVal + 'px) saturate(' + saturateVal + ');\n' +
+      '  -webkit-backdrop-filter: blur(' + blurVal + 'px) saturate(' + saturateVal + '); /* Làm mờ & tăng bão hòa hậu cảnh */\n\n' +
+      '  /* 1. Viền: metric border trong suốt — cạnh nhìn thấy là gradient ring ::before */\n' +
+      '  position: relative;\n' +
+      '  border: 1px solid transparent;\n\n' +
+      '  /* 2. Bắt sáng viền trong & 3. Bóng đổ nhiễm sắc */\n' +
+      '  ' + boxCssCode + '\n' +
+      '}\n\n' +
+      '/* 1b. Bevel ring liên tục: sáng TL (biên chủ đạo, APCA-gated) → tối BR (bevel\n' +
+      '   shading) — bám border-radius, không seam chéo ở góc như border 4 cạnh khác màu */\n' +
+      '.glass-card::before {\n' +
+      '  content: "";\n' +
+      '  position: absolute;\n' +
+      '  inset: -1px;\n' +
+      '  border-radius: inherit;\n' +
+      '  padding: 1px;\n' +
+      '  background: ' + bevelGradient + ';\n' +
+      '  -webkit-mask:\n' +
+      '    linear-gradient(#fff 0 0) content-box,\n' +
+      '    linear-gradient(#fff 0 0);\n' +
+      '  mask:\n' +
+      '    linear-gradient(#fff 0 0) content-box,\n' +
+      '    linear-gradient(#fff 0 0);\n' +
+      '  -webkit-mask-composite: xor;\n' +
+      '  mask-composite: exclude;\n' +
+      '  pointer-events: none;\n' +
+      '  z-index: 1;\n' +
+      '}' + cornershineCSS + grainCSS;
+  }
 
   return (
     <div className="grid items-start gap-6 lg:grid-cols-12">
@@ -531,6 +597,15 @@ export function GlassPlayground() {
                   className={cn('rounded-2xl', glassGrain && 'glass-grain')}
                   style={previewCssVars}
                   variant={cornerShine ? 'specular' : 'glass'}
+                  onPointerMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    setPointerCoords({ x: x + '%', y: y + '%' });
+                  }}
+                  onPointerLeave={() => {
+                    setPointerCoords(null);
+                  }}
                 >
                   <CardHeader>
                     <div className="flex w-full items-center justify-between">
@@ -833,6 +908,33 @@ export function GlassPlayground() {
               </div>
             </div>
 
+            {/* Border Engine */}
+            <div className="space-y-4">
+              <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
+                <Code className="size-3.5" /> Border Engine
+              </h4>
+              <div className="space-y-2">
+                <div className="grid grid-cols-3 gap-1 bg-muted/20 p-1 rounded-lg border text-center">
+                  {(['mask', 'clip', 'asymmetric'] as const).map((mode) => (
+                    <Button
+                      key={mode}
+                      variant={borderEngine === mode ? 'default' : 'ghost'}
+                      size="sm"
+                      className="h-7 text-[10px] capitalize px-1"
+                      onClick={() => setBorderEngine(mode)}
+                    >
+                      {mode === 'mask' ? 'Mask' : mode === 'clip' ? 'Clip' : 'Asym'}
+                    </Button>
+                  ))}
+                </div>
+                <p className="text-[10px] leading-snug text-muted-foreground">
+                  {borderEngine === 'mask' && 'Masked Gradient Ring (Pumni OS) - Bo góc hoàn hảo.'}
+                  {borderEngine === 'clip' && 'Background-clip (Studio) - Gọn nhẹ, không dùng DOM ảo.'}
+                  {borderEngine === 'asymmetric' && 'Viền bất đối xứng (Legacy) - Chia 4 cạnh màu khác.'}
+                </p>
+              </div>
+            </div>
+
             {/* Tint primitives */}
             <div className="space-y-4">
               <h4 className="flex items-center gap-1.5 border-b pb-1 font-bold text-foreground">
@@ -985,7 +1087,7 @@ export function GlassPlayground() {
       </div>
 
       {/* ═══════════ BOTTOM — THEORY AND BEST PRACTICES (full width, col-span-12) ═══════════ */}
-      <div className="mt-6 grid gap-6 border-t pt-6 md:grid-cols-2 lg:col-span-12">
+      <div className="mt-6 grid gap-6 border-t pt-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 lg:col-span-12">
         {/* Theory Card */}
         <Card>
           <CardHeader>
@@ -1154,6 +1256,164 @@ export function GlassPlayground() {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Spec & Blend Optimizer Card */}
+        <Card className="flex flex-col h-full justify-between">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Activity className="size-4 text-primary animate-pulse" />
+                Spec & Blend Optimizer
+              </CardTitle>
+              <Badge tone="success" size="sm">
+                LQC Compliant
+              </Badge>
+            </div>
+            <CardDescription className="text-xs">
+              Đánh giá đặc tả kính và phân tích toán học.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-2 flex-1 text-xs">
+            {/* Tabs */}
+            <div className="grid grid-cols-3 gap-1 bg-muted/20 p-1 rounded-lg border text-center">
+              {(['audit', 'formulas', 'spec'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setOptimizerTab(tab)}
+                  className={cn(
+                    "py-1 rounded text-[10px] font-mono transition-all font-semibold",
+                    optimizerTab === tab
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {tab === 'audit' ? 'Audit' : tab === 'formulas' ? 'Math' : 'Spec'}
+                </button>
+              ))}
+            </div>
+
+            {/* Audit tab content */}
+            {optimizerTab === 'audit' && (
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2 p-2 rounded bg-muted/30 border border-border/50">
+                    <span className={cn("size-2 rounded-full mt-1.5 shrink-0", blurPx >= 8 && blurPx <= 16 ? "bg-success" : "bg-destructive")} />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-foreground flex justify-between gap-2">
+                        <span>Độ mờ kính (Blur)</span>
+                        <span className={blurPx >= 8 && blurPx <= 16 ? "text-success" : "text-destructive"}>
+                          {blurPx >= 8 && blurPx <= 16 ? "Optimal" : "Over-budget"}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5 leading-normal">
+                        {blurPx >= 8 && blurPx <= 16
+                          ? "Trong khung chuẩn 8-16px. GPU xử lý tối ưu trên thiết bị di động."
+                          : "Vượt giới hạn thiết kế. Blur quá lớn làm tăng chi phí tính toán pixel chênh lệch trên GPU."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2 p-2 rounded bg-muted/30 border border-border/50">
+                    <span className={cn("size-2 rounded-full mt-1.5 shrink-0", saturateBoost >= 1.0 && saturateBoost <= 1.5 ? "bg-success" : "bg-warning")} />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-foreground flex justify-between gap-2">
+                        <span>Độ bão hòa (Saturate)</span>
+                        <span className={saturateBoost >= 1.0 && saturateBoost <= 1.5 ? "text-success" : "text-warning"}>
+                          {saturateBoost >= 1.0 && saturateBoost <= 1.5 ? "Optimal" : "Vibrant"}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5 leading-normal">
+                        {saturateBoost <= 1.5
+                          ? "Bão hòa màu nhẹ nhàng, giữ cảm giác trung thực của chất liệu."
+                          : "Độ bão hòa cao tạo hiệu ứng neon rực rỡ, thích hợp cho phong cách Cyberpunk."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2 p-2 rounded bg-muted/30 border border-border/50">
+                    <span className="size-2 rounded-full mt-1.5 shrink-0 bg-success" />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-foreground flex justify-between gap-2">
+                        <span>Chroma-shifted Shadow</span>
+                        <span className="text-success">Active</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-0.5 leading-normal">
+                        Bóng đổ hấp thụ sắc độ kính gốc ({reactiveHue.toFixed(0)}°). Tránh bóng đục xám bẩn.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-[10px] h-8"
+                  onClick={() => {
+                    setBlurPx(isDark ? 16 : 12);
+                    setSaturateBoost(1.4);
+                    setGradientTint(true);
+                    toast.success("Đã tự động cân chỉnh tối ưu theo chuẩn Pumni OS!");
+                  }}
+                >
+                  ⚡ Auto-Calibrate cho {isDark ? "Dark Base" : "Light Base"}
+                </Button>
+              </div>
+            )}
+
+            {/* Formulas tab content */}
+            {optimizerTab === 'formulas' && (
+              <div className="space-y-2.5 font-mono text-[10px] text-muted-foreground">
+                <div className="bg-muted/30 p-2 rounded border border-border/50 space-y-1">
+                  <div className="text-foreground font-semibold uppercase text-[9px] text-primary flex justify-between">
+                    <span>1. Overlay Blend Mode</span>
+                    <span>Dark Spec Default</span>
+                  </div>
+                  <div className="text-[9px] py-0.5">
+                    if (base &lt; 0.5) result = 2 * base * blend;<br />
+                    else result = 1 - 2 * (1 - base) * (1 - blend);
+                  </div>
+                  <p className="text-[9px] text-muted-foreground leading-normal font-sans pt-0.5">
+                    Giữ lại các điểm sáng bóng của hạt nhiễu và bóng kính mà không làm xám bề mặt tối.
+                  </p>
+                </div>
+
+                <div className="bg-muted/30 p-2 rounded border border-border/50 space-y-1">
+                  <div className="text-foreground font-semibold uppercase text-[9px] text-primary flex justify-between">
+                    <span>2. Soft Light Blend Mode</span>
+                    <span>Light Spec Default</span>
+                  </div>
+                  <div className="text-[9px] py-0.5">
+                    result = (1 - 2*blend) * base^2 + 2 * blend * base;
+                  </div>
+                  <p className="text-[9px] text-muted-foreground leading-normal font-sans pt-0.5">
+                    Mô phỏng nguồn sáng tán xạ mềm dịu chiếu vào tấm kính màu nhạt.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Specs tab content */}
+            {optimizerTab === 'spec' && (
+              <div className="space-y-2 text-muted-foreground leading-relaxed text-[10px]">
+                <div className="flex items-center gap-1.5 font-bold text-foreground">
+                  <Info className="size-3.5 text-primary" />
+                  <span>Quy tắc Thiết kế Glassmorphism 2026:</span>
+                </div>
+                <ul className="list-disc list-inside space-y-1.5">
+                  <li>
+                    <strong className="text-foreground">Giới hạn Fill-rate GPU:</strong> Không dùng quá 2 lớp kính lồng nhau trên một góc nhìn.
+                  </li>
+                  <li>
+                    <strong className="text-foreground">Đổ bóng nhiễm sắc:</strong> Dùng bóng đổ mang sắc thái màu nền của kính để giữ độ trong suốt tự nhiên.
+                  </li>
+                  <li>
+                    <strong className="text-foreground">Kỹ thuật Border kép:</strong> Kết hợp viền gradient 1px với bóng phản chiếu góc nghiêng giúp tăng chiều sâu vật lý.
+                  </li>
+                </ul>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
