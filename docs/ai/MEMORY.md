@@ -26,7 +26,7 @@ harness-managed primary; this file is the durable log for decisions.
   borders; APCA Lc 25 gate rescoped to top edge (bottom exempt via
   `oklch(0.2 0.03 270 / 0.35)`). `glass-grain` = `::after` overlay mix-blend,
   200px tile, mode-dependent opacity (light 0.05 / dark 0.07).
-- 2026-07-05 — Gradient bevel ring: per-side border colours on glass-panel/window
-  retired (diagonal miter seams on rounded corners); edge is now a masked 1px
-  `::before` gradient ring (135°, edge-top → edge-bottom) + transparent metric
-  border for a11y fallback recolouring. Specular = conic layer on the same ring.
+- 2026-07-05 — Gradient bevel ring: per-side glass border colours retired
+  (miter seams on rounded corners); edge = masked 1px `::before` gradient ring
+  (135°, edge-top → edge-bottom) + transparent metric border for a11y fallback.
+  Specular = conic layer on the same ring.

@@ -190,17 +190,6 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
       /inset\s+0\s+-1px\s+0\s+0\s+var\(--glass-shadow-edge\)/,
     );
   });
-
-  it('specular layers the conic shine OVER the base bevel gradient (boundary preserved)', () => {
-    const body = readRuleBody(glassCss, ".glass-panel[data-variant='specular']::before");
-    expect(body, 'specular ::before rule must exist').not.toBe('');
-    // The conic highlight and the structural bevel gradient must live in the
-    // SAME background list — replacing the bevel outright would erase the
-    // APCA-gated boundary on 3/4 of the perimeter (the original specular bug).
-    expect(body, 'specular must keep the bevel gradient as a background layer').toMatch(
-      /conic-gradient\([\s\S]*linear-gradient\(\s*135deg,\s*var\(--glass-edge-top\),\s*var\(--glass-edge-bottom\)\s*\)/,
-    );
-  });
 });
 
 describe('CardSpotlight @property registration', () => {

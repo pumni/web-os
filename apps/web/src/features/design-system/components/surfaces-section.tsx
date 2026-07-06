@@ -86,12 +86,12 @@ export function SurfacesSection() {
                   </span>
                   <span className="font-semibold text-primary">Active</span>
                 </GlassSurface>
-                <Card variant="specular" className="p-4 text-xs gap-1">
+                <Card variant="glass" className="p-4 text-xs gap-1">
                   <div className="font-semibold text-foreground">
-                    Hero Specular Card (<code>Card variant="specular"</code>)
+                    Glass Card (<code>Card variant="glass"</code>)
                   </div>
                   <div className="text-muted-foreground">
-                    Luminous directional corner-shine border highlight.
+                    Luminous translucent glassmorphism surface.
                   </div>
                 </Card>
                 <GlassSurface variant="panel" className="space-y-1 p-4 text-xs">
