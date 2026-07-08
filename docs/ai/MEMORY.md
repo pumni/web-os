@@ -22,11 +22,8 @@ harness-managed primary; this file is the durable log for decisions.
 - Context layer pruning metric → [measure-prune](../plans/archive/context-layer-measure-prune-2026-07.md).
 - 2026-07 refresh → [ADR-0024](../adr/0024-context-layer-2026-07-standards-refresh.md).
 - llms.txt is required (ADR-0022) — keep in sync with docs/ai/index.md.
-- 2026-07-05 — Glass 2.0 & grain: ADR-0012 alignment. Specular preserves
-  borders; APCA Lc 25 gate rescoped to top edge (bottom exempt via
-  `oklch(0.2 0.03 270 / 0.35)`). `glass-grain` = `::after` overlay mix-blend,
-  200px tile, mode-dependent opacity (light 0.05 / dark 0.07).
-- 2026-07-05 — Gradient bevel ring: per-side glass border colours retired
-  (miter seams on rounded corners); edge = masked 1px `::before` gradient ring
-  (135°, edge-top → edge-bottom) + transparent metric border for a11y fallback.
-  Specular = conic layer on the same ring.
+- 2026-07-05 — Glass 2.0 & grain: ADR-0012 amendment (specular border doctrine,
+  APCA Lc 25 gate rescope). See `docs/adr/0012-engineered-glass-surface-language.md`
+  and `docs/conventions/design-system.md`.
+- 2026-07-05 — Gradient bevel ring: per-side glass border colours retired in
+  favor of masked 1px gradient ring. See ADR-0012 amendment.

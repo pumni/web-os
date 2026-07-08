@@ -508,6 +508,97 @@ function analyzeCacheTagUnparameterized(files, findings) {
   }
 }
 
+function analyzeUseCachePlacement(files, findings) {
+  // 'use cache' inside a wrapper function that returns another function/arrow
+  // is silently ignored by the Next.js cache compiler. Detect the pattern:
+  //   function wrapper(fn) { return async () => { 'use cache'; ... }; }
+  // The directive must be at file-level or directly in the fetch function body.
+  const wrapperArrow = /\bfunction\s+\w+\s*\([^)]*\)\s*\{[\s\S]{0,200}?\breturn\b[\s\S]{0,200}?'use\s+cache'/g;
+  const wrapperConst = /\bconst\s+\w+\s*=\s*(?:\([^)]*\)|[^=]*)\s*=>\s*(?:\([^)]*\)|[^=]*)\s*=>[\s\S]{0,200}?'use\s+cache'/g;
+
+  for (const file of files) {
+    const rel = relPath(file);
+    if (!CODE_EXTENSIONS.has(path.extname(file))) continue;
+    if (/(__tests__|\.test\.|\.spec\.)/.test(rel)) continue;
+    const content = readText(file);
+    // Skip files that already have file-level 'use cache' — those are fine.
+    const hasFileLevelCache = /^\s*(?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*['"]use\s+cache['"]/.test(
+      content.slice(0, 400),
+    );
+
+    for (const regex of [wrapperArrow, wrapperConst]) {
+      regex.lastIndex = 0;
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        if (hasFileLevelCache) {
+          // The file-level directive makes the wrapper-level one redundant but
+          // not harmful — skip.
+          continue;
+        }
+        addFinding(
+          findings,
+          RULES.USE_CACHE_PLACEMENT,
+          rel,
+          content,
+          match.index,
+          content.slice(match.index, match.index + 100),
+          "'use cache' inside a wrapper function is silently ignored — move it to the actual fetch function or file-level.",
+        );
+      }
+    }
+  }
+}
+
+function analyzeUpdateTagScope(files, findings) {
+  // updateTag() is a Server Action API (revalidateTag for the cache, but inside
+  // the action scope). Using it in a regular function or Route Handler throws at
+  // runtime. Detect updateTag(...) in files that do NOT carry "use server".
+  const updateTagRe = /\bupdateTag\s*\(/g;
+  for (const file of files) {
+    const rel = relPath(file);
+    if (!CODE_EXTENSIONS.has(path.extname(file))) continue;
+    if (/(__tests__|\.test\.|\.spec\.)/.test(rel)) continue;
+    const content = readText(file);
+    // File-level "use server" — this is a valid Server Action file.
+    if (/^\s*(?:\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*['"]use\s+server['"]/.test(content.slice(0, 400))) {
+      continue;
+    }
+    // Function-level "use server" (inline Server Action).
+    updateTagRe.lastIndex = 0;
+    let match;
+    while ((match = updateTagRe.exec(content)) !== null) {
+      // Skip prose mentions: in JSX text/attrs or comment-only lines.
+      // Real code calls to updateTag() appear as standalone expressions, not
+      // inside quotes or template-literal props.
+      const lineStart = content.lastIndexOf('\n', match.index) + 1;
+      const lineText = content.slice(lineStart, content.indexOf('\n', match.index));
+      const lineIndex = match.index - lineStart;
+      const beforeMatch = lineText.slice(0, lineIndex);
+      // Inside a JSX string attribute (description="...updateTag()...") or
+      // inside a code example (code={`...updateTag()...`}).
+      if (/["'`]/.test(beforeMatch) && /description=|title=|label=|code=|placeholder=/i.test(lineText)) continue;
+      if (/^s*(?:\/\/|\/\*|\`|\*)/.test(lineText.trim())) continue;
+      // Skip if the match is in a JSX code block or string template.
+      // Scan backward up to 800 chars for a function declaration that has "use server"
+      const prefix = content.slice(Math.max(0, match.index - 800), match.index);
+      if (/['"]use\s+server['"]/.test(prefix)) continue;
+      // Also check forward for "use server" in the enclosing function body
+      const suffix = content.slice(match.index, match.index + 400);
+      if (/['"]use\s+server['"]/.test(suffix)) continue;
+
+      addFinding(
+        findings,
+        RULES.UPDATE_TAG_SCOPE,
+        rel,
+        content,
+        match.index,
+        content.slice(match.index, Math.min(match.index + 60, content.length)),
+        'updateTag() outside a "use server" scope throws at runtime — move to a Server Action.',
+      );
+    }
+  }
+}
+
 function analyzeTrustedUserIdWrites(files, findings, sqlEvidence) {
   const fromRegex = /\.from\(\s*['"`]([^'"`]+)['"`]\s*\)/g;
   for (const file of files) {
@@ -943,6 +1034,8 @@ function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
   analyzeServerOnlyImportsInClient(files, findings);
   analyzeCacheLifeTooShort(files, findings);
   analyzeCacheTagUnparameterized(files, findings);
+  analyzeUseCachePlacement(files, findings);
+  analyzeUpdateTagScope(files, findings);
   analyzeTrustedUserIdWrites(files, findings, sqlEvidence);
   analyzeSwallowedErrors(files, findings);
   analyzeMissingAuthUidPolicies(sqlFiles, findings);
@@ -973,6 +1066,7 @@ function runSelfTest() {
   const clientFile = 'apps/web/src/features/selftest/form.tsx';
   const stateFile = 'apps/web/src/features/selftest/panel.tsx';
   const routeFile = 'apps/web/src/app/selftest/page.tsx';
+  const routeHandlerFile = 'apps/web/src/app/selftest/route.ts';
   const sqlFile = 'supabase/migrations/00000000000000_selftest.sql';
   const middlewareFile = 'apps/web/src/middleware.ts';
   const testFile = 'apps/web/src/test/selftest/weak.test.ts';
@@ -1000,6 +1094,12 @@ function runSelfTest() {
       cacheLife('seconds');
       cacheTag('profile');
       revalidateTag('stale_tag');
+    }
+    function withRetry(fn: () => Promise<unknown>) {
+      return async () => {
+        'use cache';
+        return fn();
+      };
     }
   `;
   const clientFixture = `
@@ -1041,6 +1141,14 @@ function runSelfTest() {
       return <button onClick={() => mutation.mutate()}>Save</button>;
     }
   `;
+  const routeHandlerFixture = `
+    import { revalidateTag } from 'next/cache';
+    export async function GET() {
+      updateTag('stale_profile');
+      revalidateTag('posts', 'max');
+      return Response.json({ ok: true });
+    }
+  `;
   const sqlFixture = `
     create policy "Users view own unsafe" on public.unsafe_things
       for select to authenticated using (user_id = p_user_id);
@@ -1071,6 +1179,7 @@ function runSelfTest() {
     [resolveRel(clientFile)]: clientFixture,
     [resolveRel(stateFile)]: stateFixture,
     [resolveRel(routeFile)]: routeFixture,
+    [resolveRel(routeHandlerFile)]: routeHandlerFixture,
     [resolveRel(sqlFile)]: sqlFixture,
     [resolveRel(middlewareFile)]: 'export default function middleware() {}',
     [resolveRel(testFile)]: testFixture,
@@ -1086,6 +1195,7 @@ function runSelfTest() {
         resolveRel(clientFile),
         resolveRel(stateFile),
         resolveRel(routeFile),
+        resolveRel(routeHandlerFile),
         resolveRel(middlewareFile),
         resolveRel(testFile),
       ],

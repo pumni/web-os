@@ -134,95 +134,82 @@
 
   /* ========================================================================
      CATEGORY IV: GLASSMORPHISM & DEPTH EFFECTS
-     ======================================================================== */
+     ========================================================================
 
-  /* --- Glassmorphism Properties ---
-     Glassmorphism tokens — 5-element model (ADR-0014, amended by ADR-0016):
-     1. Tint — base fill, never fully transparent; tuned so --foreground holds
-        APCA Lc 60 over the worst desktop blob (glass-contrast.test.ts). Verified
-        margin: worst-case text Lc 79 light / 62 dark (amber blob).
-     2. Blur + 3. Saturation — frosted vibrancy (tokens.css: --blur-glass 12px,
-        --glass-saturate 1.4).
-     4. Edge — a specular LIGHT rim (ADR-0012 border doctrine). A thin translucent
-        light stroke that catches light along the panel edge: white in light mode,
-        softened to a light neutral-violet in dark mode so it doesn't glow harsh.
-        It is deliberately low-contrast and carries NO APCA gate — the glass edge
-        is a light effect, not a readability boundary (WCAG 1.4.11 scopes contrast
-        to interactive controls, which is why --input, not the glass rim, carries
-        the a11y duty). The drop shadow (--shadow-glass) is the real delineator;
-        prefers-contrast / prefers-reduced-transparency are the real a11y path.
-     5. Shadow — soft directional --shadow-glass for float separation.
-     Fallback — opaque surface when transparency/blur is unavailable. */
-  /* Dark tint alpha 40% (was 34%): the minimum that keeps --foreground at
-     APCA Lc >= 60 over the amber blob, the worst-case backdrop. */
+     Rewritten exclusively from: glassmorphism-card-laboratory
+     (OKLCH + APCA 3.0, Liquid Glass bevel ring, Relative OKLCH border)
+
+     6-element model:
+       1. Tint — OKLCH literal fill (Lab presets)
+       2. Blur — 20px light / 24px dark (tokens.css)
+       3. Saturation — 130% light / 150% dark (Lab "Kính Sáng" / "Kính Tối" presets)
+       4. Brightness — 110% light / 85% dark (Lab presets)
+       5. Bevel ring — gradient mask ring ::before (light-catch TL → contact shadow BR)
+       6. Volumetric drop shadow — 0 25px 60px -15px (Lab CSS export)
+     Plus: diagonal reflection overlay (Lab: "Shiny diagonal reflection line to
+           simulate real physical glass edges") via ::after
+  */
+
+  /* 1. TINT
+     Lab presets (glassmorphism-card-laboratory):
+       "Kính Sáng" (Light): L=0.96, C=0.01, H=250, A=0.20 (Lab default)
+       "Kính Tối"  (Dark):  L=0.18, C=0.02, H=240, A=0.40
+     Alpha raised for the APCA Lc ≥ 60 gate over the Pumni OS desktop blob palette:
+     light alpha 0.20 would let saturated coral/amber blobs bleed through and drop
+     foreground below Lc 60. 0.58 keeps the frosted-white visual while clearing the gate.
+     Dark alpha 0.40 (from Lab preset) passes the gate directly. */
   --glass-tint: light-dark(
-    color-mix(in oklch, var(--neutral-0) 54%, transparent),
-    color-mix(in oklch, var(--neutral-900) 40%, transparent)
+    oklch(0.96 0.01 250 / 0.58),
+    oklch(0.18 0.02 240 / 0.40)
   );
-  /* Glass edge = specular LIGHT rim, NOT a contrast boundary (2026 border
-     doctrine). The edge is a thin translucent light stroke that catches light
-     along the panel rim — the 2026 glassmorphism / Apple Liquid Glass consensus:
-     "a thin, semi-transparent white stroke, visible enough to define the shape
-     but light enough not to draw attention." It is deliberately low-contrast and
-     carries NO APCA gate — no accessibility standard asks a container border to
-     hit a contrast ratio (WCAG 1.4.11 scopes contrast to interactive controls,
-     so --input, not the glass rim, holds that duty). The real delineator is the
-     drop shadow (--shadow-glass); the real a11y path is the prefers-contrast /
-     prefers-reduced-transparency fallbacks that recolour the edge to solid
-     --border. LIGHT mode = a pure-white rim; DARK = a light neutral-violet rim,
-     softened from pure white so it doesn't glow harsh against the dark fill.
-     (Earlier revisions inverted light mode to a dark navy stroke to satisfy an
-     APCA Lc 25 "delineation" gate; that gate was false doctrine — the glass edge
-     is a light effect — and has been removed.) */
-  --glass-edge: light-dark(oklch(1 0 0 / 0.55), oklch(0.86 0.02 270 / 0.24));
 
-  /* Asymmetric bevel pair (2026 glassmorphism): a bright light-catch along the
-     top-left fading to a faint contact shadow at the bottom-right — directional,
-     matching the top key-light of `--shadow-glass`. Both stops are specular
-     shading; neither is APCA-gated. LIGHT: white top rim + a faint cool bottom
-     shadow. DARK: soft light-violet top rim + a dark violet contact shadow. */
-  --glass-edge-top: light-dark(oklch(1 0 0 / 0.65), oklch(0.88 0.02 270 / 0.28));
-  /* Matches getEdgeTokens bottom in glass-playground.tsx (cross-file contract) */
-  --glass-edge-bottom: light-dark(oklch(0.4 0.02 260 / 0.14), oklch(0.2 0.02 270 / 0.15));
+  /* 2+3+4: Backdrop filter knobs — resolved from tokens.css primitives.
+     Light uses 160% saturate + 105% brightness; dark uses 140% + 90%.
+     .dark overrides --glass-saturate and --glass-brightness in the .dark block. */
+  --glass-blur: var(--blur-glass);
 
-  /* Specular rim gradient stops — consumed by the `glass-panel[data-variant="specular"]`
-     utility in glass.css. The corner-shine border-image reads a directional
-     gradient; these stops are defined here (the only file that may hold raw OKLCH
-     values in the UI package) so glass.css stays token-clean.
-     UX Pilot 2026: "In dark mode, glass needs softer highlights... switch to
-     neutral-gray highlights or a subtle colored rim (navy, violet, teal) instead
-     of pure white." Light mode uses a bright white highlight (alpha 0.60);
-     dark mode uses a soft light neutral-violet highlight (alpha 0.20). */
-  --specular-rim-start: light-dark(oklch(1 0 0 / 0.6), oklch(0.86 0.02 270 / 0.20));
-  --specular-rim-mid: light-dark(oklch(1 0 0 / 0.1), oklch(0.86 0.02 270 / 0.05));
+  /* 5. BEVEL RING — gradient mask ring stops
+     Border doctrine (unchanged): the glass edge is a specular LIGHT rim, NOT a
+     contrast boundary. It is deliberately low-contrast and carries NO APCA gate
+     (WCAG 1.4.11 scopes contrast to interactive controls; --input holds that
+     duty). The real delineator is --shadow-glass. The real a11y path is the
+     prefers-contrast / prefers-reduced-transparency fallbacks.
+
+     Light top:  pure white light-catch  (alpha 0.65 — bright specular)
+     Light bottom: faint cool contact shadow (alpha 0.14)
+     Dark top:   near-white neutral rim  (L=0.98, alpha 0.35 — restrained, not harsh)
+     Dark bottom: dark neutral contact shadow (alpha 0.15) */
+  --glass-edge-top: light-dark(oklch(1 0 0 / 0.65), oklch(0.98 0.005 0 / 0.35));
+  --glass-edge-bottom: light-dark(oklch(0.4 0.02 260 / 0.14), oklch(0.2 0.01 250 / 0.15));
+
+  /* Uniform edge for glass bars / titlebars (single-stop, not a gradient ring) */
+  --glass-edge: light-dark(oklch(1 0 0 / 0.55), oklch(0.98 0.005 0 / 0.24));
+
+  /* Specular rim gradient stops — consumed by glass-panel[data-variant="specular"]. */
+  --specular-rim-start: light-dark(oklch(1 0 0 / 0.6), oklch(0.98 0.005 0 / 0.20));
+  --specular-rim-mid: light-dark(oklch(1 0 0 / 0.1), oklch(0.98 0.005 0 / 0.05));
   --specular-rim-end: transparent;
 
-  /* The lit top rim. Glass-only since ADR-0020 (which amended ADR-0018):
-     every floating glass surface reads it as the inset-top specular highlight.
-     Solid cards previously shared it via `surface-raised` (ADR-0018's shared
-     seam), but ADR-0020 dropped the solid half — `surface-raised` is now
-     structural-only (`--shadow-card-raised`, no rim). The token stays defined
-     (glass-owned); only its name is retained from ADR-0018. Kept close to the
-     --glass-edge alpha so the edge reads as ONE luminous hairline — the rim
-     highlight is the directional light effect layered over the specular light
-     edge (neither is APCA-gated; the glass edge is a light effect, not a
-     readability boundary). */
+  /* Inset bezel pair — top highlight + bottom shadow-edge on glass-panel/window.
+     Pins the glass-rim drift guard (glass-rim.test.ts). */
   --surface-rim-top: light-dark(oklch(1 0 0 / 0.5), oklch(1 0 0 / 0.2));
-
-  /* Light glass carries NO dark inner edge / contour (Hype4/Malewicz glassmorphism,
-     Apple Liquid Glass, Tailwind glass all rely on the light rim + drop shadow).
-     Bottom shadow-edge held at zero alpha so the pinned box-shadow layer + the
-     glass-rim drift guard (dark > light) still hold. Dark mode carries the rim. */
   --glass-shadow-edge: light-dark(oklch(0 0 0 / 0), oklch(0 0 0 / 0.22));
-
-  /* Double-Bezel sub-pixel highlights: a top highlight and a sub-pixel border highlight.
-     In light mode (lightness > 50%), uses a 1px outline; in dark mode (lightness <= 50%),
-     uses a 0.5px ultra-fine outline.
-     Bezel outline was removed (uniform white hairline decision); only bezel-top is retained. */
   --glass-inset-bezel-top: light-dark(oklch(1 0 0 / 0.2), oklch(1 0 0 / 0.08));
 
+  /* 6. DIAGONAL REFLECTION OVERLAY
+     Physical glass simulation: a faint diagonal gradient that mimics the
+     specular highlight along the top-left edge of real frosted glass
+     (from glassmorphism-card-laboratory: "Shiny diagonal reflection line to
+     simulate real physical glass edges" + modern-glassmorphism-card-simulator
+     Apple Liquid Glass reflection). Applied via ::after on glass-panel/window. */
+  --glass-reflection: linear-gradient(
+    135deg,
+    oklch(1 0 0 / 0.08) 0%,
+    oklch(1 0 0 / 0) 50%,
+    oklch(0 0 0 / 0.02) 100%
+  );
+
   --glass-fallback-bg: var(--popover);
-  --glass-blur: var(--blur-glass);
   --glass-grain-opacity: 0.05;
 
   /* --- OS Desktop Ambience & Blobs ---
@@ -280,8 +267,11 @@
   --font-weight-heading: var(--font-weight-heading-dark); /* 550 */
   --tracking-body: var(--tracking-body-dark); /* 0.01em */
 
-  /* Glassmorphism Properties overrides (non-color) */
+  /* Glassmorphism Properties overrides (non-color)
+     Lab "Kính Tối" (Dark) preset: saturate 150%, brightness 85%, blur 24px. */
   --glass-blur: var(--blur-glass-lg);
+  --glass-saturate: 150%;
+  --glass-brightness: 85%;
   --glass-grain-opacity: 0.07;
 
   /* Shadows overrides (non-color) */

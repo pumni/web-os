@@ -5,7 +5,6 @@ copy/docs. Static rules + ❌/✅: `scripts/review-gate-rules.mjs` (via
 `bun run ai:eval`) and `docs/ai/common-mistakes.md`. This adds the
 **behavioural items a static analyzer cannot see**. Report in
 `## Risks / follow-up`; any **P0** miss stops the task.
-
 ## P0 — Security (blocking, immutable)
 
 - [ ] No RLS bypass; access control relies on RLS, not UI hiding.
@@ -25,7 +24,7 @@ edit on any structural reshuffle (the `refactor-plan` skill owns the procedure):
 
 ## Behaviour a static check can't see
 
-- [ ] Zustand holds client UI state only — no server data mirrored.
+- [ ] Zustand holds client UI state only (`docs/conventions/data-fetching.md`).
 - [ ] Tests cover the happy path **and** at least one failure path.
 - [ ] Errors in server I/O are propagated/returned/logged — not swallowed.
 - [ ] Imports respect package boundaries in `docs/architecture/overview.md`.

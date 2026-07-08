@@ -11,25 +11,49 @@ that source code and conventions cannot carry on their own.
 
 | ADR | Title | Status | Date |
 |---|---|---|---|
-| 0001 | Structured Prompting and Model Routing Guidance | Accepted | 2026-06-18 |
+| 0001 | Structured Prompting and Model Routing Guidance | Deprecated (decisions deleted in ADR-0009 lean overhaul; structured prompting + model routing files removed — harness-native capabilities replaced them) | 2026-06-18 |
 | 0002 | Next.js Cache API Static Rules — Scope and Limits | Accepted | 2026-06-18 |
 | 0003 | Cursor `.mdc` and Claude `settings.json` Permission Allow-Deny | Accepted (decision: defer adoption) | 2026-06-19 |
-| 0004 | Memory Layer Harness Managed Hybrid Model | Accepted | 2026-06-19 |
-| 0008 | Refined Command Policy | Accepted | 2026-06-19 |
-| 0009 | Context Layer — Lean 2026 | Accepted | 2026-06-20 |
+| 0004 | Memory Layer Harness Managed Hybrid Model | Deprecated (hybrid memory model fully operational in `docs/ai/MEMORY.md` lines 2-8; `.agents/scratchpad/` deleted) | 2026-06-19 |
+| 0008 | Refined Command Policy | Deprecated (all decisions fully implemented in `docs/ai/agent-command-policy.md`; `&&` resolution, `# Architecture Decision Records
+
+This directory holds Architecture Decision Records (ADRs) for Pumni Web OS. An
+ADR records **why** a non-obvious architectural decision was made — the "why"
+that source code and conventions cannot carry on their own.
+
+## Register
+
+ hazard, `bun run` preference, no `.ps1` scripts) | 2026-06-19 |
+| 0009 | Context Layer — Lean 2026 | Deprecated (all 7 decisions live in repo state: single `docs/ai/index.md` router, `docs/ai/*` with description frontmatter, `.claude/rules/` deduplication, validation altitude, hybrid skill shims, `review-gate.md` only workflow) | 2026-06-20 |
 | 0010 | Frontend Platform Foundation — `@pumni/ui` as a Reusable OS Skeleton | Accepted (two rejections revised by ADR-0021) | 2026-06-20 |
 | 0011 | Watch Sync as an Explicit State Machine + an Observability Seam | Accepted | 2026-06-20 |
-| 0012 | Surface Visual Language (consolidated) | Accepted (amended 2026-07-05 per 2026 trend alignment) | 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-05) |
-| 0013 | Context Layer — 2026-06 Cleanup | Accepted (§4 `llms.txt` removal superseded by ADR-0022) | 2026-06-24 |
+| 0012 | Surface Visual Language (consolidated) | Accepted (amended 2026-07-05 per 2026 trend alignment — inline amendment per convention; cosmetic scope, not a supersede) | 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-05) |
+| 0013 | Context Layer — 2026-06 Cleanup | Deprecated (§4 llms.txt reversal by ADR-0022; freshness treadmill gone, description frontmatter live, sync-skills.mjs operational, reuse-first ladder in codebase-design skill) | 2026-06-24 |
 | 0021 | Revisit ADR-0010 Rejections — Component Catalog + DTCG Token Export | Accepted | 2026-06-30 |
 | 0022 | Keep llms.txt as the Agentic Handshake Map | Accepted | 2026-07-01 |
-| 0023 | Context Layer — Team-Scale Maturity | Accepted | 2026-07-01 |
-| 0024 | Context Layer — 2026-07 Standards Refresh | Accepted | 2026-07-02 |
+| 0023 | Context Layer — Team-Scale Maturity | Deprecated (Known Failure Modes sections, context-drift detector, Tier-2 exemplar subagents all live; rejection rationale for full agent fleet and vector memory preserved in `docs/adr/README.md` historical note) | 2026-07-01 |
+| 0024 | Context Layer — 2026-07 Standards Refresh | Deprecated (subagent seam + re-anchor hook + Agent Skills spec compliance all live in `.claude/agents/*`, `.claude/hooks/*`, `.agents/skills/**/SKILL.md`) | 2026-07-02 |
 | 0025 | CSS-Native Color Pipeline Modernization | Accepted | 2026-07-04 |
 
 > Number gaps are intentional: 0005–0007 squashed into 0009; 0014–0020 are
 > retired draft numbers. A gap never implies a missing decision.
 <!-- END:auto-generated-adr-register -->
+
+### Context-layer ADRs — historical note (2026-07)
+
+ADR-0001, 0004, 0008, 0009, 0013, 0023, and 0024 were deprecated in 2026-07
+after their decisions became live repo state. Two design decisions from
+ADR-0023 are preserved here for audit trails:
+
+- **Tier-2 agent fleet rejected:** one exemplar reviewer subagent, not a fleet
+  of 19 personas. Rationale: too many agents would shift maintainer workload
+  from code to agent debugging, and the cost of keeping 19 system prompts in
+  sync with a fast-moving codebase is a context-rot multiplier.
+- **Vector memory rejected** (Mem0/Letta/Zep): cost, vendor lock-in, opaque
+  drift, and failure to outperform the current hybrid model (harness session +
+  `docs/ai/MEMORY.md`). The "run metrics" trigger from ADR-0023 was evolved
+  into the `bun run ai:metrics` script and the evidence requirement in
+  the "When to write one" section below.
 
 ## Priority
 
@@ -50,11 +74,13 @@ Write an ADR when a decision is:
 Do **not** write one for:
 - Trivial choices, naming, or anything already settled by an enforced config or conventions doc.
 - Reversible visual/token tuning (update `docs/conventions/design-system.md` instead) — see ADR-0012's consolidation.
-- **Further context-layer tuning.** The AI context layer is settled by ADR-0009 +
-  0013. Do not open a new context-layer ADR for prose trims, doc moves, or router
-  tweaks — make the edit. Only write one if there is a *measured* regression
-  (e.g. meta-vs-rule size inversion, or a gate that demonstrably missed real
-  drift). Five context-layer ADRs in June 2026 was the over-tuning this prevents.
+- **Further context-layer tuning.** The AI context layer is settled. Do not open
+  a new context-layer ADR for prose trims, doc moves, or router tweaks — make the
+  edit. Only write one if there is a *measured* regression (e.g. meta-vs-rule size
+  inversion, or a gate that demonstrably missed real drift). Seven context-layer
+  ADRs in June 2026 (all now deprecated) was the over-tuning this prevents.
+  **Before opening a context-layer ADR:** run `bun run ai:metrics` and cite at
+  least one metric from `scripts/ai-metrics.json` as regression evidence.
 
 ## Format (MADR-lite)
 
@@ -90,13 +116,18 @@ Followed by exactly four sections, in order:
   `Proposed` → `Accepted` → `Deprecated` → `Superseded by ADR-0XXX`.
 - To supersede, create a new ADR that references the old one by ID and update the
   old ADR's status line to point at the new one.
+- **Amendment convention:** cosmetic scope adjustments (visual tuning, token
+  values, clarified wording) amend the same ADR inline with date-stamped
+  changelog (see ADR-0012). A decision reversal or fundamental scope change
+  supersedes via a new ADR (see ADR-0021 superseding rejections in ADR-0010).
+  One ADR must not mix both patterns.
 
 ## Naming
 
 `NNNN-kebab-title.md`, zero-padded to four digits, starting at `0001`. Numbers
 are monotonic and never reused. Gaps are expected: 0005–0007 were squashed into 0009; 0014–0020 were
-draft/working numbers retired without a load-bearing record (recoverable from
-git). A gap never implies a missing decision.
+same-week glass micro-ADRs consolidated into ADR-0012 and their numbers retired
+(burned, not reusable). A gap never implies a missing decision.
 
 ## Enforcement
 

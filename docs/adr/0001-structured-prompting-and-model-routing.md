@@ -1,6 +1,6 @@
 # 0001. Structured Prompting and Model Routing Guidance
 
-- **Status:** Accepted
+- **Status:** Deprecated (decisions deleted in ADR-0009 lean overhaul; structured prompting + model routing files removed — harness-native capabilities replaced them)
 - **Date:** 2026-06-18
 - **Owner:** AI context layer (see `docs/ai/index.md`)
 

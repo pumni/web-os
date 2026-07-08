@@ -15,6 +15,8 @@ export const RULES = {
   SERVER_ONLY_IN_CLIENT: 'server-only-in-client',
   CACHE_LIFE_TOO_SHORT: 'cache-life-too-short',
   CACHE_TAG_UNPARAMETERIZED: 'cache-tag-unparameterized',
+  USE_CACHE_PLACEMENT: 'use-cache-placement',
+  UPDATE_TAG_SCOPE: 'update-tag-scope',
   LEGACY_MIDDLEWARE: 'legacy-middleware',
   IMAGE_PRIORITY_DEPRECATED: 'image-priority-deprecated',
   SINGLE_ARG_REVALIDATE_TAG: 'single-arg-revalidate-tag',
@@ -101,6 +103,16 @@ export const RULE_INFO = {
     severity: 'B1',
     summary: 'cacheTag() with a non-parameterized literal collides across users.',
     fix: "Pass an identifying parameter: cacheTag(`profile:${userId}`) instead of cacheTag('profile').",
+  },
+  [RULES.USE_CACHE_PLACEMENT]: {
+    severity: 'B1',
+    summary: "'use cache' inside a wrapper function is silently ignored by the compiler.",
+    fix: "Move 'use cache' to the file-level or the actual fetch function body, not a wrapper that returns another function.",
+  },
+  [RULES.UPDATE_TAG_SCOPE]: {
+    severity: 'B1',
+    summary: 'updateTag() is a Server Action API and throws at runtime outside "use server" files.',
+    fix: 'Move the updateTag() call into a "use server" Server Action, or use revalidateTag() in Route Handlers.',
   },
   [RULES.LEGACY_MIDDLEWARE]: {
     severity: 'B1',

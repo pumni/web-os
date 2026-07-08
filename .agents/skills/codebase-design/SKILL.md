@@ -1,6 +1,6 @@
 ---
 name: codebase-design
-description: Design or improve modules with small interfaces, deep implementations, clean seams, and testable public surfaces. Use when shaping feature modules, refactoring shallow helpers, choosing test seams, or making code easier for agents to navigate.
+description: Design or improve single modules with small interfaces, deep implementations, clean seams, and testable public surfaces. Use when choosing test seams, refactoring shallow helpers, or making code easier for agents to navigate — not for scaffolding new feature slices.
 ---
 
 # Codebase Design

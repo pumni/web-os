@@ -82,8 +82,7 @@ shell surfaces stay opaque.
 (`--glass-tint`) tuned to the APCA gate edge, with: a **luminous light top edge +
 dark bottom edge** (`--surface-rim-top` / `--glass-shadow-edge`, inset box-shadows
 in the `glass-*` utilities) and **vibrancy** via the single `--glass-saturate`
-knob (≈1.4; the `glass-saturate.test.ts` guard locks the tokenization, not the
-value). Blur is frosted (`--blur-glass` 8–16px; dark uses 16px) — a deliberate
+knob (130% light / 150% dark). Blur is frosted (`--blur-glass` 20px light / 24px dark) — a deliberate
 "frosted" choice over the 2026 subtle baseline of 4–6px (UX Pilot 2026),
 recorded as such by the ADR-0012 2026-07-04 amendment. Float depth is
 the directional `--shadow-glass` — the **real delineator**. The border read
@@ -172,8 +171,8 @@ border-contrast threshold.
   - `--border` — dark, builds contrast against the fill. Card solid/inset, `CardWell`. The real delineator for solid surfaces.
   - `--input` — dark, one shade deeper than `--border`. Form controls only. Flat, no specular rim.
 - **Glass-flow** — a specular **light rim**, not a contrast boundary (see the delineation doctrine below):
-  - `--glass-edge` — uniform light rim (white in light mode, soft light-violet in dark), used by `glass-bar-bordered` and `glass-titlebar`.
-  - `--glass-edge-top` / `--glass-edge-bottom` — bevel pair, painted by the masked 1px **gradient bevel ring** (`&::before`, 135° light-catch top-left → contact-shadow bottom-right) on `glass-panel` / `glass-window`. Per-side border colours were retired: CSS miters differently-coloured borders with a hard diagonal seam, which breaks the rim on rounded corners; the ring follows `border-radius` smoothly. The element keeps a transparent 1px metric border that a11y fallbacks re-colour. Light mode top: `oklch(1 0 0 / 0.65)` (white light-catch) and bottom: `oklch(0.4 0.02 260 / 0.14)` (faint cool shadow); dark mode top: `oklch(0.95 0.03 270 / 0.55)` (soft violet rim) and bottom: `oklch(0.2 0.03 270 / 0.35)` (violet contact shadow). Neither stop is APCA-gated — the edge is a light effect, and the drop shadow is what delineates the panel.
+  - `--glass-edge` — uniform light rim (white in light mode, near-white neutral in dark), used by `glass-bar-bordered` and `glass-titlebar`.
+  - `--glass-edge-top` / `--glass-edge-bottom` — bevel pair, painted by the masked 1px **gradient bevel ring** (`&::before`, 135° light-catch top-left → contact-shadow bottom-right) on `glass-panel` / `glass-window`. Per-side border colours were retired: CSS miters differently-coloured borders with a hard diagonal seam, which breaks the rim on rounded corners; the ring follows `border-radius` smoothly. The element keeps a transparent 1px metric border that a11y fallbacks re-colour. Light mode top: `oklch(1 0 0 / 0.65)` (white light-catch) and bottom: `oklch(0.4 0.02 260 / 0.14)` (faint cool shadow); dark mode top: `oklch(0.98 0.005 0 / 0.35)` (near-white neutral rim) and bottom: `oklch(0.2 0.01 250 / 0.15)` (subdued contact shadow). Neither stop is APCA-gated — the edge is a light effect, and the drop shadow is what delineates the panel.
 
 ### Delineation doctrine — the drop shadow separates, the edge catches light
 
@@ -183,7 +182,7 @@ A glass surface is separated from its backdrop by the **drop shadow**
 rim** — a thin translucent light stroke that catches light along the panel edge,
 "visible enough to define the shape but light enough not to draw attention"
 (2026 glassmorphism / Apple Liquid Glass consensus). It is deliberately
-low-contrast, light in both modes (white in light, soft light-violet in dark).
+low-contrast, light in both modes (white in light, near-white neutral in dark).
 
 **The glass edge is NOT APCA-gated.** No accessibility standard asks a container
 border to hit a contrast ratio — WCAG 1.4.11 scopes contrast to *interactive
@@ -196,7 +195,7 @@ The real accessibility path for transparency is the system media-query fallbacks
 (`prefers-contrast: more` / `prefers-reduced-transparency`), which recolour the
 edge to a solid `--border`.
 
-**`--surface-rim-top` is strictly for uniform chrome bars/titlebars.** Glass panels and windows consume `--glass-inset-bezel-top` as their top rim highlight instead. Solid cards carry **no rim at all** — `--border` (hairline) + `--shadow-card-raised` (elevation) only. The bottom rim (`--glass-shadow-edge`) stays glass-only by design.
+**`--surface-rim-top` is for chrome bars, titlebars, and inactive windows.** Active glass panels and windows consume `--glass-inset-bezel-top` as their top rim highlight instead. Inactive glass windows fall back to the bar-style `--surface-rim-top` inset top. Solid cards carry **no rim at all** — `--border` (hairline) + `--shadow-card-raised` (elevation) only. The bottom rim (`--glass-shadow-edge`) stays glass-only by design.
 
 | | Solid card (`surface-raised`) | Glass card (`glass-panel`) |
 | --- | --- | --- |
@@ -229,6 +228,46 @@ STATUS INDICATOR (badge, error/success card)?
 SHELL CHROME (sidebar rail, topbar, dock)?
   → glass-bar / glass-bar-edge-r/b. vertical rim = --glass-edge-rim. [no 4-sided border]
 ```
+
+### Extended glass token set (theme.css / tokens.css)
+
+Beyond the surface identity tokens above, the glass system exposes these
+additional CSS custom properties for chrome, specular effects, and backdrop:
+
+**Shell chrome tokens** (glass-bar-edge-r / glass-bar-edge-b):
+- `--glass-edge-rim` / `--glass-edge-rim-bottom` — directional inset offsets for
+  sidebar/topbar/dock edge definition (`light-dark()`)
+- `--shadow-shell-depth` / `--shadow-shell-depth-bottom` — directional edge
+  shadows paired with the rim tokens
+
+**Specular rim tokens** (hero specular variant on glass-panel):
+- `--specular-rim-start` / `--specular-rim-mid` / `--specular-rim-end` —
+  gradient stops for the conic specular shine layer on `glass-panel[data-variant="specular"]`
+
+**Reflection overlay**:
+- `--glass-reflection` — diagonal `linear-gradient(135deg)` overlay for the
+  `glass-panel` / `glass-window` `::after` pseudo-element
+
+**Backdrop filter knobs**:
+- `--glass-saturate` — base `130%` (light) / `150%` (dark)
+- `--glass-brightness` — base `110%` (light) / `85%` (dark)
+- `--blur-glass-sm` — `8px`
+- `--blur-glass` — `20px` light / `24px` dark
+- `--blur-glass-lg` — `24px`
+
+**Shadow composition intermediaries**:
+- `--shadow-glass-glow-base` — base glow layer composed into `--shadow-glass-glow`
+- `--shadow-glass-glow-soft` — soft inactive glow (`glass-window[data-active='false']`)
+
+**Backdrop colour context**:
+- `--desktop-blob-primary` / `--desktop-blob-secondary` / `--desktop-blob-accent` / `--desktop-blob-cyan` — four blob colours for glass backdrop
+
+**Fallback**:
+- `--glass-bevel-ring-display` (default `block`) — toggle to `none` to hide the
+  gradient bevel ring
+- `--glass-fallback-bg` (`var(--popover)`) — opaque fallback for
+  `prefers-reduced-transparency`
+- `--glass-grain-opacity` — mode-dependent grain opacity (light `0.05` / dark `0.07`)
 
 **Golden rules:**
 

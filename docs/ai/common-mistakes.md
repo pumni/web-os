@@ -5,27 +5,15 @@ description: Common AI mistakes in this codebase as ❌/✅ pairs, cross-referen
 # Common Mistakes
 
 `bun run ai:eval` _catches_ these; this doc helps you _avoid_ them. Rule ids
-are defined in `scripts/review-gate-rules.mjs`.
+are defined in `scripts/review-gate-rules.mjs`. Unlabeled = enforced;
+`(partial)` or `(honor-system)` = not fully automated.
 
 ## 1. State ownership (`query-result-in-zustand`)
 
-Server data belongs in the TanStack Query cache, not Zustand.
+Server data belongs in the TanStack Query cache, not Zustand (`docs/conventions/data-fetching.md`).
 
-❌
-
-```ts
-const { data } = useQuery({ queryKey: ['profile'], queryFn: getProfile });
-useEffect(() => {
-  useProfileStore.getState().setProfile(data);
-}, [data]);
-```
-
-✅
-
-```ts
-const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: getProfile });
-// Read `profile` directly. Zustand holds client UI state only.
-```
+❌ `useEffect(() => useProfileStore.getState().setProfile(data), [data])` after `useQuery`
+✅ Read `data` directly from `useQuery`; Zustand is for client UI state only.
 
 ## 2. Supabase select-all (`supabase-select-star`)
 
@@ -42,14 +30,13 @@ const { data: profile } = useQuery({ queryKey: ['profile'], queryFn: getProfile 
 
 ❌ `create policy "all" on notes for all using (true);`
 ✅
-
 ```sql
 alter table public.notes enable row level security;
 create policy "owner reads" on public.notes for select
   to authenticated using (user_id = (select auth.uid()));
 ```
 
-`docs/conventions/supabase-security.md`: RLS + policies + grants, one migration.
+`docs/conventions/supabase-security.md` for the full RLS + policy + grant pattern.
 
 ## 5. Trusting a client-supplied user_id (`trusted-client-user-id-write`)
 
@@ -60,14 +47,7 @@ on an RLS `WITH CHECK (user_id = auth.uid())` policy.
 ## 6. Mutation without cache update (`mutation-without-invalidation`)
 
 ❌ `useMutation({ mutationFn: updateProfile })` with no `onSuccess`/`onSettled`.
-✅ Invalidate or set the precise query data on success:
-
-```ts
-useMutation({
-  mutationFn: updateProfile,
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['profile'] }),
-});
-```
+✅ `onSuccess: () => queryClient.invalidateQueries({ queryKey: ['profile'] })`
 
 ## 7. Logic in route files (`route-business-logic`)
 
@@ -85,9 +65,11 @@ useMutation({
 ❌ `try { await save(); } catch (e) {}` in `actions.ts`/`queries.ts`.
 ✅ Throw, return an explicit failure, or log before continuing.
 
-## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`)
+## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`, `use-cache-placement`, `update-tag-scope`)
 
 Single source of truth: `.claude/rules/nextjs-cache-components.md` (auto-loads on App Router files).
+All four cache rules now enforced by static gate: `cache-life-too-short`, `cache-tag-unparameterized`,
+`use-cache-placement`, and `update-tag-scope`.
 
 ## 11. Weakening a test to make it pass (`test-weakening`)
 
@@ -96,10 +78,10 @@ Single source of truth: `.claude/rules/nextjs-cache-components.md` (auto-loads o
 ✅ Fix the code; assert with `expect(() => x()).toThrow()`. Intentional skip →
 allowlist with a reason (`ai-review-rule-allowlist.json`).
 
-## 12. Premature abstraction (simplicity — no static rule)
+## 12. Premature abstraction (simplicity — no static rule) (honor-system)
 
 ❌ A strategy/factory/registry for one case; an interface with one impl; caching
 or config flags nobody asked for.
-✅ Minimum code for today's task; add the abstraction when a second real caller
-appears. Reversible/cosmetic decisions get no ADR (`docs/adr/README.md`).
+✅ Minimum code for today's task; add abstraction when a second real caller
+appears. Reversible decisions get no ADR (`docs/adr/README.md`).
 

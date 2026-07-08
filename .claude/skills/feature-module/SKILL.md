@@ -1,6 +1,6 @@
 ---
 name: feature-module
-description: Scaffold or extend a vertical feature slice under apps/web/src/features/<feature> with the right split of server reads, Server Actions, client components, and shared packages. Use when starting a new feature, adding files to one, or deciding what to promote into packages/*.
+description: Scaffold or extend a vertical feature slice under apps/web/src/features/<feature> with the right split of server reads, Server Actions, client components, and shared packages. Use when starting a new feature, adding files to one, or deciding what to promote into packages/*. For module-internals design, use codebase-design.
 ---
 
 # Feature Module (pointer)

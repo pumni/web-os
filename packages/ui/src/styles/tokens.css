@@ -202,7 +202,7 @@
   --shadow-glass:
     0 1px 2px -1px light-dark(oklch(0 0 0 / 0.07), oklch(0.05 0.005 270 / 0.07)),
     0 8px 16px -6px light-dark(oklch(0 0 0 / 0.12), oklch(0.05 0.005 270 / 0.12)),
-    0 20px 40px -14px light-dark(oklch(0 0 0 / 0.16), oklch(0.05 0.005 270 / 0.16));
+    0 25px 60px -15px light-dark(oklch(0 0 0 / 0.25), oklch(0.05 0.005 270 / 0.22));
   --shadow-glass-glow-soft:
     0 1px 1px -0.5px light-dark(oklch(0 0 0 / 0.04), oklch(0.05 0.005 270 / 0.04)),
     0 6px 14px -6px light-dark(oklch(0 0 0 / 0.1), oklch(0.05 0.005 270 / 0.1)),
@@ -216,16 +216,22 @@
   /* Solid content elevation */
   --shadow-card-raised: 0 1px 2px -1px oklch(0 0 0 / 0.05), 0 4px 10px -3px oklch(0 0 0 / 0.07);
 
-  /* --- Glass blur */
+  /* --- Glass blur
+     Rewritten from glassmorphism-card-laboratory + modern-glassmorphism-card-simulator.
+     macOS Vision Pro presets: Light = 24px, Dark = 28px. Base uses 20px (≈ Lab preset
+     default of 18px, rounded to nearest 4px grid). sm kept at 8px for scrim overlays. */
   --blur-glass-sm: 8px;
-  --blur-glass: 12px;
-  --blur-glass-lg: 16px;
+  --blur-glass: 20px;
+  --blur-glass-lg: 24px;
   --blur-scrim: 4px;
 
-  /* Glassmorphism vibrancy pump — saturates the backdrop showing through the
-     frost so colours read richer (the signature glassmorphism look). The single
-     knob consumed by every `glass-*` utility (drift guard: glass-saturate.test.ts). */
-  --glass-saturate: 1.4;
+  /* Glassmorphism backdrop-filter knobs — from glassmorphism-card-laboratory.
+     "Kính Sáng" (Light) preset: saturate 130%, brightness 110%.
+     "Kính Tối" (Dark) preset: saturate 150%, brightness 85% (overridden in .dark in theme.css).
+     Reference CSS from lab: backdrop-filter: blur(Xpx) saturate(Y%) brightness(Z%).
+     Base defaults to the Light preset. */
+  --glass-saturate: 130%;
+  --glass-brightness: 110%;
 
   /* ========================================================================
      CATEGORY IV: MOTION & INTERACTION SYSTEM

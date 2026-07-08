@@ -1,6 +1,6 @@
 # 0004. Memory Layer Harness Managed Hybrid Model
 
-- **Status:** Accepted
+- **Status:** Deprecated (hybrid memory model fully operational in `docs/ai/MEMORY.md` lines 2-8; `.agents/scratchpad/` deleted)
 - **Date:** 2026-06-19
 - **Owner:** AI context layer (see `docs/ai/index.md`)
 

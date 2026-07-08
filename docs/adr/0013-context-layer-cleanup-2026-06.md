@@ -1,6 +1,6 @@
 # 0013. Context Layer — 2026-06 Cleanup
 
-- **Status:** Accepted (§4 `llms.txt` removal superseded by ADR-0022)
+- **Status:** Deprecated (§4 llms.txt reversal by ADR-0022; freshness treadmill gone, description frontmatter live, sync-skills.mjs operational, reuse-first ladder in codebase-design skill)
 - **Date:** 2026-06-24
 - **Owner:** AI context layer (see `docs/ai/index.md`)
 - **Refines:** ADR-0009 (Context Layer — Lean 2026)

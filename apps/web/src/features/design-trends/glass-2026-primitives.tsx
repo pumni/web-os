@@ -4,107 +4,136 @@ import * as React from 'react';
 import { cn } from '@/shared/lib/utils';
 
 /**
- * Backdrop presets for the Glassmorphism 2.0 playground.
+ * Backdrop presets for the Glassmorphism playground.
  *
- * Each preset renders a colourful backdrop that a glass surface can refract
- * (ADR-0012 backdrop precondition). The presets differ in dominant hue so
- * the *background-reactive tint* technique has something reactive to react
- * to — coral blobs push the tint warm, cyan/indigo blobs push it cool.
+ * Rewritten exclusively from glassmorphism-card-laboratory:
+ *   • "Floating Orbs" — violet/cyan/rose animated orbs (motion.div simulation via CSS animation)
+ *   • "Mesh Gradient" — radial mesh gradient
+ *   • "HD Wallpaper" — abstract wallpaper image
+ *
+ * Three ambient wallpaper presets matching the Lab's BACKGROUND_PRESETS:
+ *   • "Cosmic Obsidian" — deep indigo/black (#0f0c20 → #1a103c → #0a0718)
+ *   • "Sunset Ember"    — vibrant rose/magenta (#eb4b64 → #b5179e → #7209b7)
+ *   • "Aurora Borealis" — teal/cyan/navy (#1ebea5 → #0077b6 → #03045e)
  */
-export type BackdropPreset = 'mesh' | 'shapes' | 'grid' | 'off';
 
-export interface DominantColor {
-  l: number;
-  c: number;
-  h: number;
+export type BackdropStyle = 'orbs' | 'gradient' | 'image';
+
+export interface AmbientPreset {
+  id: string;
+  name: string;
+  description: string;
+  /** Dominant RGB for APCA contrast calculation (matching Lab's preset.rgb). */
+  rgb: { r: number; g: number; b: number };
+  gradientFrom: string;
+  gradientVia: string;
+  gradientTo: string;
 }
 
-export interface PresetInfo {
-  value: BackdropPreset;
-  label: string;
-  dominant: DominantColor | null;
-}
-
-const PRESETS: PresetInfo[] = [
-  { value: 'mesh', label: 'Cosmic Mesh', dominant: { l: 0.55, c: 0.22, h: 300 } },
-  { value: 'shapes', label: 'Sharp Shapes', dominant: { l: 0.60, c: 0.20, h: 330 } },
-  { value: 'grid', label: 'Modern Grid', dominant: { l: 0.50, c: 0.18, h: 265 } },
-  { value: 'off', label: 'Tắt (Flat)', dominant: null },
+export const AMBIENT_PRESETS: AmbientPreset[] = [
+  {
+    id: 'cosmic',
+    name: 'Cosmic Obsidian',
+    description: 'Deep, rich cosmic nebula with indigo and black hues',
+    rgb: { r: 15, g: 12, b: 32 },
+    gradientFrom: '#0f0c20',
+    gradientVia: '#1a103c',
+    gradientTo: '#0a0718',
+  },
+  {
+    id: 'sunset',
+    name: 'Sunset Ember',
+    description: 'Vibrant high-energy sunset rose and magenta gradient',
+    rgb: { r: 235, g: 75, b: 100 },
+    gradientFrom: '#eb4b64',
+    gradientVia: '#b5179e',
+    gradientTo: '#7209b7',
+  },
+  {
+    id: 'aurora',
+    name: 'Aurora Borealis',
+    description: 'Glowing polar teal, emerald, and electric cyan mix',
+    rgb: { r: 30, g: 190, b: 165 },
+    gradientFrom: '#1ebea5',
+    gradientVia: '#0077b6',
+    gradientTo: '#03045e',
+  },
 ];
 
-export { PRESETS as BACKDROP_PRESETS };
+export const BACKDROP_PRESETS: { value: BackdropStyle; label: string }[] = [
+  { value: 'orbs', label: 'Floating Orbs' },
+  { value: 'gradient', label: 'Mesh Gradient' },
+  { value: 'image', label: 'HD Wallpaper' },
+];
 
-/** Render a backdrop preset as an absolutely-positioned layer. */
-export function GlassBackdrop({
-  preset,
-  className,
-  isDark = true,
-}: {
-  preset: BackdropPreset;
+interface GlassBackdropProps {
+  style: BackdropStyle;
+  preset: AmbientPreset;
   className?: string;
-  isDark?: boolean;
-}) {
-  const bgClass = isDark ? 'bg-[#050608]' : 'bg-[#f8fafc]';
-  const dotColor = isDark ? '#334155' : '#cbd5e1';
+}
 
-  if (preset === 'off') {
-    return <div aria-hidden className={cn('absolute inset-0 bg-background', className)} />;
-  }
-  if (preset === 'mesh') {
+/** Render the animated backdrop layer inside the simulation stage. */
+export function GlassBackdrop({ style, preset, className }: GlassBackdropProps) {
+  const bg = `linear-gradient(135deg, ${preset.gradientFrom}, ${preset.gradientVia}, ${preset.gradientTo})`;
+
+  if (style === 'orbs') {
     return (
-      <div aria-hidden className={cn('absolute inset-0 pointer-events-none transition-all duration-700', bgClass, className)}>
-        <div className={cn(
-          "absolute top-[15%] left-[20%] w-[180px] h-[180px] rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 blur-[35px] transition-all",
-          isDark ? "opacity-65" : "opacity-35"
-        )} />
-        <div className={cn(
-          "absolute bottom-[10%] right-[15%] w-[220px] h-[220px] rounded-full bg-gradient-to-tr from-pink-500 to-rose-600 blur-[45px] transition-all",
-          isDark ? "opacity-60" : "opacity-30"
-        )} />
-        <div className={cn(
-          "absolute top-[40%] right-[30%] w-[120px] h-[120px] rounded-full bg-cyan-500 blur-[25px] transition-all",
-          isDark ? "opacity-55" : "opacity-25"
-        )} />
+      <div
+        aria-hidden
+        className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}
+        style={{ background: bg }}
+      >
+        {/* Huge vibrating violet orb */}
+        <div
+          className="absolute w-72 h-72 rounded-full mix-blend-screen blur-3xl -top-10 -left-10 animate-glass-orb-1"
+          style={{ background: 'oklch(0.55 0.28 290 / 0.40)' }}
+        />
+        {/* Hyper-vibrant cyan/emerald orb */}
+        <div
+          className="absolute w-80 h-80 rounded-full mix-blend-screen blur-3xl top-1/3 -right-10 animate-glass-orb-2"
+          style={{ background: 'oklch(0.68 0.22 195 / 0.35)' }}
+        />
+        {/* Fiery rose orb */}
+        <div
+          className="absolute w-64 h-64 rounded-full mix-blend-screen blur-2xl -bottom-10 left-1/3 animate-glass-orb-3"
+          style={{ background: 'oklch(0.62 0.26 350 / 0.30)' }}
+        />
       </div>
     );
   }
-  if (preset === 'shapes') {
+
+  if (style === 'gradient') {
     return (
-      <div aria-hidden className={cn('absolute inset-0 pointer-events-none transition-all duration-700 flex items-center justify-center', bgClass, className)}>
-        <div className={cn(
-          "absolute w-40 h-40 bg-pink-500 rotate-[22deg] rounded-3xl blur-[2px] translate-x-[-80px] translate-y-[-40px] transition-all",
-          isDark ? "opacity-70" : "opacity-35"
-        )} />
-        <div className={cn(
-          "absolute w-48 h-48 bg-purple-600 rotate-[55deg] rounded-xl blur-[3px] translate-x-[90px] translate-y-[60px] transition-all",
-          isDark ? "opacity-60" : "opacity-30"
-        )} />
-        <div className={cn(
-          "absolute w-32 h-32 bg-cyan-400 rounded-full blur-[1px] translate-y-[-90px] transition-all",
-          isDark ? "opacity-65" : "opacity-35"
-        )} />
+      <div
+        aria-hidden
+        className={cn('absolute inset-0 pointer-events-none opacity-80', className)}
+        style={{ background: bg }}
+      >
+        <div
+          className="absolute inset-0 saturate-150"
+          style={{
+            background:
+              'radial-gradient(circle at 30% 20%, #00f2fe 0%, transparent 50%), radial-gradient(circle at 70% 60%, #4facfe 0%, transparent 50%), radial-gradient(circle at 50% 90%, #ff0844 0%, transparent 60%)',
+          }}
+        />
       </div>
     );
   }
-  // grid
+
+  // image
   return (
-    <div aria-hidden className={cn('absolute inset-0 pointer-events-none transition-all duration-700', bgClass, className)}>
-      <div 
-        className="absolute inset-0 opacity-20"
-        style={{
-          backgroundImage: `radial-gradient(circle, ${dotColor} 1px, transparent 1.5px)`,
-          backgroundSize: '24px 24px'
-        }}
+    <div
+      aria-hidden
+      className={cn('absolute inset-0 pointer-events-none', className)}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="https://picsum.photos/seed/vibrant/1000/700"
+        alt="Abstract HD background"
+        referrerPolicy="no-referrer"
+        className="absolute inset-0 w-full h-full object-cover select-none brightness-75 scale-105 saturate-125"
       />
-      <div className={cn(
-        "absolute top-[20%] left-[30%] w-[160px] h-[160px] bg-purple-600 blur-[50px] transition-all",
-        isDark ? "opacity-60" : "opacity-30"
-      )} />
-      <div className={cn(
-        "absolute bottom-[15%] right-[25%] w-[200px] h-[200px] bg-blue-600 blur-[60px] transition-all",
-        isDark ? "opacity-50" : "opacity-25"
-      )} />
+      <div className="absolute inset-0 bg-black/25 mix-blend-overlay" />
     </div>
   );
 }
-

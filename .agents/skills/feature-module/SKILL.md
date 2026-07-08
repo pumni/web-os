@@ -1,6 +1,6 @@
 ---
 name: feature-module
-description: Scaffold or extend a vertical feature slice under apps/web/src/features/<feature> with the right split of server reads, Server Actions, client components, and shared packages. Use when starting a new feature, adding files to one, or deciding what to promote into packages/*.
+description: Scaffold or extend a vertical feature slice under apps/web/src/features/<feature> with the right split of server reads, Server Actions, client components, and shared packages. Use when starting a new feature, adding files to one, or deciding what to promote into packages/*. For module-internals design, use codebase-design.
 ---
 
 # Feature Module
@@ -20,8 +20,8 @@ piece and routes the detail to the matching implementation skill.
   interactivity (form state, handlers, optimistic UI, local view state).
 - Do not move database reads into client components to avoid prop drilling — pass
   server data down as props.
-- Server state stays in Server Components or the TanStack Query cache; client UI
-  state lives in Zustand only. Never mirror server data into Zustand.
+- Server state ownership: `docs/conventions/data-fetching.md`. Never mirror server
+  data into Zustand.
 - Validate inputs with `@pumni/validators` schemas; derive the user server-side;
   rely on RLS as the data boundary.
 - Promote code into `packages/*` only at a real reuse boundary (`validators`,

@@ -1,6 +1,6 @@
 ---
 name: zustand-store
-description: Create Zustand stores scoped to client UI state only, never server data. Use when adding or changing a store for panels, dialogs, selection, or draft UI controls in apps/web/src/stores or feature-local state.
+description: Create Zustand stores scoped to client UI state only (`docs/conventions/data-fetching.md`). Use when adding or changing a store for panels, dialogs, selection, or draft UI controls in apps/web/src/stores or feature-local state. For server-derived data, use tanstack-query-hook.
 ---
 
 # Zustand Store (pointer)

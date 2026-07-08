@@ -14,6 +14,31 @@
       "name": "design-system",
       "code": ["packages/ui/src/**"],
       "owners": ["docs/conventions/design-system.md", ".agents/skills/ui-styling/SKILL.md"]
+    },
+    {
+      "name": "feature-module",
+      "code": ["apps/web/src/features/**"],
+      "owners": ["docs/conventions/feature-module.md", ".agents/skills/feature-module/SKILL.md"]
+    },
+    {
+      "name": "data-fetching",
+      "code": ["apps/web/src/features/**/queries.ts", "apps/web/src/features/**/actions.ts", "apps/web/src/features/**/stores/**", "apps/web/src/stores/**"],
+      "owners": ["docs/conventions/data-fetching.md", ".claude/rules/nextjs-cache-components.md"]
+    },
+    {
+      "name": "server-client-boundary",
+      "code": ["packages/supabase/src/**", "packages/env/src/**"],
+      "owners": ["docs/conventions/server-client-boundary.md", ".agents/skills/server-action/SKILL.md"]
+    },
+    {
+      "name": "supabase-security",
+      "code": ["supabase/migrations/**", "packages/supabase/src/server.ts", "packages/supabase/src/service-role.ts"],
+      "owners": ["docs/conventions/supabase-security.md", ".agents/skills/supabase-migration/SKILL.md"]
+    },
+    {
+      "name": "testing",
+      "code": ["apps/web/src/test/**", "packages/ui/src/test/**", "apps/web/vitest.config.ts", "packages/ui/vitest.config.ts"],
+      "owners": ["docs/conventions/testing.md", ".agents/skills/testing-template/SKILL.md"]
     }
   ]
 }

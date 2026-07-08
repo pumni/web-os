@@ -1,6 +1,6 @@
 # 0012. Surface Visual Language (consolidated)
 
-- **Status:** Accepted (amended 2026-07-05 per 2026 trend alignment)
+- **Status:** Accepted (amended 2026-07-05 per 2026 trend alignment — inline amendment per convention; cosmetic scope, not a supersede)
 - **Date:** 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-05)
 - **Owner:** @pumni/ui design system
 

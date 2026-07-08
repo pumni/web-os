@@ -663,6 +663,7 @@ function checkDesignTokenBoundaries() {
     'packages/ui/src/styles/theme.css',
     'packages/ui/src/styles/component-tokens.css',
     'packages/ui/src/styles/personalization.css',
+    'packages/ui/src/styles/glass.css',
   ]);
   // The colour-math library is the one place allowed to parse/construct oklch()
   // strings programmatically (regex + formatters), not hardcoded design colours.
@@ -703,6 +704,88 @@ function checkDesignTokenBoundaries() {
       while ((match = pattern.exec(content)) !== null) {
         reportError(
           `Design token boundary violation in ${relativePath}:${lineNumber(content, match.index)} -> ${match[0]}`,
+        );
+      }
+    }
+  }
+}
+
+// Canonical invariant phrases and their owning files. An invariant must be
+// stated in full at exactly one canonical home; every other mention must be a
+// pointer (a `path.md` link) back to that home. This detector flags duplicate
+// full statements — same invariant in ≥2 places without a pointer.
+//
+// Each entry: [phraseRegex, canonicalPath] — the canonicalPath is the one file
+// allowed to carry the full statement. The regex matches the invariant's
+// identifying key-phrase. Add entries when the same invariant is found stated in
+// full across multiple files during review.
+const CANONICAL_INVARIANTS = [
+  [
+    /\bnever\s+mirror\s+server\s+(state|data)\s+into\s+Zustand\b/i,
+    'docs/conventions/data-fetching.md',
+  ],
+  [
+    /\bZustand\s+(holds|is\s+for|stores?\s+only)\s+client\b/i,
+    'docs/conventions/data-fetching.md',
+  ],
+  [
+    /\bservice-?role\b.*\bnever\b.*\b(client|browser|bundle)\b/i,
+    'AGENTS.md',
+  ],
+  [
+    /\bglass\s+=\s+floating\s+layers\s+only\b/i,
+    'docs/adr/0012-engineered-glass-surface-language.md',
+  ],
+  [
+    /\bsolid\s+\(surface-raised\)\s+=\s+dense\s+content\b/i,
+    'docs/adr/0012-engineered-glass-surface-language.md',
+  ],
+  [
+    /\bRLS\b.*\breal\s+data\s+boundary\b/i,
+    'docs/conventions/supabase-security.md',
+  ],
+];
+
+function checkInvariantDuplicates() {
+  const canonicalSet = new Set(CANONICAL_INVARIANTS.map(([, c]) => c));
+  const targets = getMarkdownLinkFiles().filter(
+    (p) =>
+      p.startsWith('docs/ai/') ||
+      p.startsWith('docs/conventions/') ||
+      p.startsWith('.agents/') ||
+      p === 'AGENTS.md',
+  );
+
+  for (const [phraseRegex, canonicalPath] of CANONICAL_INVARIANTS) {
+    const hits = [];
+
+    for (const relativePath of targets) {
+      const sourcePath = resolveRel(relativePath);
+      if (!fs.existsSync(sourcePath)) continue;
+      const content = fs.readFileSync(sourcePath, 'utf8');
+      phraseRegex.lastIndex = 0;
+      if (phraseRegex.test(content)) {
+        hits.push(relativePath);
+      }
+    }
+
+    // The canonical file itself may carry the full statement — that is fine.
+    const nonCanonicalHits = hits.filter((p) => p !== canonicalPath);
+    if (nonCanonicalHits.length > 0) {
+      // Check whether each non-canonical hit carries a pointer back to canonical.
+      const pointerPattern = new RegExp(
+        `\\\`${canonicalPath.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')}\\\``,
+        'i',
+      );
+      const missingPointer = nonCanonicalHits.filter((p) => {
+        const content = fs.readFileSync(resolveRel(p), 'utf8');
+        return !pointerPattern.test(content);
+      });
+
+      if (missingPointer.length > 0) {
+        const list = missingPointer.map((p) => `  ${p}`).join('\n');
+        reportWarn(
+          `Invariant "${phraseRegex.source}" appears in ${nonCanonicalHits.length} file(s) beyond canonical home ${canonicalPath}. Convert to a pointer (backtick ref to ${canonicalPath}) or remove:\n${list}`,
         );
       }
     }
@@ -788,9 +871,21 @@ checkPackageScripts();
 checkDesignTokenBoundaries();
 checkUiPackageBoundaries();
 checkDocApiDenylist();
+checkInvariantDuplicates();
 checkSkillShimsSync();
 checkProjectGraphSync();
 checkAdrRegisterSync();
+
+// Advisory metrics snapshot — writes scripts/ai-metrics.json, never blocks the gate.
+try {
+  execFileSync(process.execPath, [path.join(__dirname, 'ai-metrics.mjs')], {
+    stdio: 'pipe',
+    cwd: ROOT,
+    timeout: 10_000,
+  });
+} catch {
+  // fail-open: metrics are advisory
+}
 
 if (errors > 0) {
   console.error(`\nValidation failed with ${errors} error(s) and ${warnings} warning(s).`);

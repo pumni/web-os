@@ -1,6 +1,6 @@
 # 0009. Context Layer — Lean 2026
 
-- **Status:** Accepted
+- **Status:** Deprecated (all 7 decisions live in repo state: single `docs/ai/index.md` router, `docs/ai/*` with description frontmatter, `.claude/rules/` deduplication, validation altitude, hybrid skill shims, `review-gate.md` only workflow)
 - **Date:** 2026-06-20
 - **Owner:** AI context layer (see `docs/ai/index.md`)
 - **Refined by:** ADR-0013 (2026-06-24) — removed the per-doc freshness check,

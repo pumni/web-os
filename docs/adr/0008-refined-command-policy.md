@@ -2,7 +2,7 @@
 
 > Renumbered from 0007 (collided with `0007-context-efficiency-2026.md`); see ADR-0009.
 
-- **Status:** Accepted
+- **Status:** Deprecated (all decisions fully implemented in `docs/ai/agent-command-policy.md`; `&&` resolution, `$` hazard, `bun run` preference, no `.ps1` scripts)
 - **Date:** 2026-06-19
 - **Owner:** AI command execution (see `docs/ai/agent-command-policy.md`)
 

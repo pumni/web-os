@@ -1,6 +1,6 @@
 # 0024. Context Layer — 2026-07 Standards Refresh
 
-- **Status:** Accepted
+- **Status:** Deprecated (subagent seam + re-anchor hook + Agent Skills spec compliance all live in `.claude/agents/*`, `.claude/hooks/*`, `.agents/skills/**/SKILL.md`)
 - **Date:** 2026-07-02
 - **Owner:** AI context layer (see `docs/ai/index.md`)
 

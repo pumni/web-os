@@ -1,6 +1,6 @@
 # 0023. Context Layer — Team-Scale Maturity
 
-- **Status:** Accepted
+- **Status:** Deprecated (Known Failure Modes sections, context-drift detector, Tier-2 exemplar subagents all live; rejection rationale for full agent fleet and vector memory preserved in `docs/adr/README.md` historical note)
 - **Date:** 2026-07-01
 - **Owner:** AI context layer (see `docs/ai/index.md`)
 

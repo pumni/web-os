@@ -1,6 +1,6 @@
 ---
 name: server-component-read
-description: Fetch request-scoped data in Server Components and queries.ts with Next 16 'use cache', parameterized cacheTag, and a safe cacheLife. Use when adding or changing a server read in features/<feature>/queries.ts, caching a Supabase read, or wrapping dynamic server data in Suspense.
+description: Fetch request-scoped data in Server Components and queries.ts with Next 16 'use cache', parameterized cacheTag, and a safe cacheLife. Use when adding or changing a server-side read in features/<feature>/queries.ts, caching a Supabase read, or wrapping dynamic server data in Suspense. For server-side mutations, use server-action.
 ---
 
 # Server Component Read (pointer)

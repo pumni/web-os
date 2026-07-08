@@ -1,6 +1,6 @@
 ---
 name: zustand-store
-description: Create Zustand stores scoped to client UI state only, never server data. Use when adding or changing a store for panels, dialogs, selection, or draft UI controls in apps/web/src/stores or feature-local state.
+description: Create Zustand stores scoped to client UI state only (`docs/conventions/data-fetching.md`). Use when adding or changing a store for panels, dialogs, selection, or draft UI controls in apps/web/src/stores or feature-local state. For server-derived data, use tanstack-query-hook.
 ---
 
 # Zustand Store
@@ -14,7 +14,8 @@ or feature-local UI state.
 - Store only client UI state: panels, dialogs, selected local IDs, draft UI
   controls, optimistic view flags, or toast state.
 - Do not store Supabase rows, Query results, authenticated user objects, or data
-  that should live in Server Components or TanStack Query.
+  that should live in Server Components or TanStack Query. State ownership:
+  `docs/conventions/data-fetching.md`.
 - Keep store actions small and synchronous unless the local pattern already
   supports async UI actions.
 - Do not import server-only modules or Supabase service-role clients.
