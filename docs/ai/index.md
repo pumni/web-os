@@ -37,33 +37,34 @@ need to the canonical doc that owns it.
 | Known ❌/✅ mistake pairs | `docs/ai/common-mistakes.md` |
 | MCP servers (next-devtools runtime + postgres schema, optional) | `docs/ai/mcp.md` |
 | Repo map for external agents/tools (agentic handshake) | `llms.txt` |
+| Long-term settled-decision log | `docs/ai/MEMORY.md` |
+
+## Tool Support Matrix
+
+Non-Claude agents read `AGENTS.md` + canonical skills declaratively
+(advisory); Claude Code adds hooks + subagent + path-rules enforcement on top.
+
+| Capability | Path | Claude Code | Other agents |
+|---|---|---|---|
+| Entry contract (P0–P6) | `AGENTS.md` | via `CLAUDE.md` | reads |
+| Handshake map | `llms.txt` | fetched | fetched |
+| Need→doc router | `docs/ai/index.md` | on demand | on demand |
+| Long-term memory | `docs/ai/MEMORY.md` | manual | manual |
+| Path-scoped rules | `.claude/rules/*.md` (`globs:`) | auto by path | — |
+| Skill discovery | `.agents/skills/*/SKILL.md` | fires by desc | per spec |
+| Skill shim | `.claude/skills/<name>/SKILL.md` | generated, do not hand-edit | — |
+| Subagent reviewers | `.claude/agents/*-reviewer.md` | dispatched from `review-gate.md` | — |
+| Lifecycle hooks | `.claude/hooks/*.mjs` | enforce `ai:check` on edits | — |
+| MCP servers | `.mcp.json` | opt-in, dev-only | any MCP client |
+| Validation gates | `bun run ai:check`/`ai:eval` | manual + Stop hook | manual |
 
 ## Skills (reusable procedures in `.agents/skills`)
 
-Claude Code auto-surfaces these by description via thin shims in
-`.claude/skills/<name>/SKILL.md`; the canonical, tool-agnostic content lives in
-`.agents/skills` (the shims just point back to it). How to write or change a
-skill: `.agents/skills/README.md` (authoring standard).
-
-| Repeated task | Skill |
-| --- | --- |
-| Scope a vague request before coding | `.agents/skills/grill-requirements/SKILL.md` |
-| Scaffold a feature vertical slice | `.agents/skills/feature-module/SKILL.md` |
-| Next.js Server Action | `.agents/skills/server-action/SKILL.md` |
-| Server Component read + Next 16 cache | `.agents/skills/server-component-read/SKILL.md` |
-| @pumni/ui styling / tokens / surfaces | `.agents/skills/ui-styling/SKILL.md` |
-| Supabase migration / RLS / grants | `.agents/skills/supabase-migration/SKILL.md` |
-| TanStack Query hook or mutation | `.agents/skills/tanstack-query-hook/SKILL.md` |
-| Client form (RHF + Zod + Server Action) | `.agents/skills/react-hook-form/SKILL.md` |
-| Shared Zod input schema in @pumni/validators | `.agents/skills/zod-validator/SKILL.md` |
-| Watch-together playback sync (reducer / anchors / clock) | `.agents/skills/watch-sync/SKILL.md` |
-| Zustand client UI store | `.agents/skills/zustand-store/SKILL.md` |
-| Deterministic unit/component testing | `.agents/skills/testing-template/SKILL.md` |
-| Dependency version updates (Bun catalog tiers) | `.agents/skills/dependency-update/SKILL.md` |
-| Disciplined bug diagnosis / repro loops | `.agents/skills/diagnosing-bugs/SKILL.md` |
-| Deep modules / testable interfaces | `.agents/skills/codebase-design/SKILL.md` |
-| Multi-step behavior-preserving refactor plan | `.agents/skills/refactor-plan/SKILL.md` |
-| Glossary & domain term discipline | `.agents/skills/domain-modeling/SKILL.md` |
+17 skills live in `.agents/skills/<name>/SKILL.md` (canonical, tool-agnostic);
+Claude Code surfaces them by description via generated
+`.claude/skills/<name>/SKILL.md` shims (do not hand-edit — run
+`bun run ai:skills:sync`). Authoring standard: `.agents/skills/README.md`.
+See `.agents/skills/domain-modeling/SKILL.md` and siblings for the inventory.
 
 ## Verification
 

@@ -26,8 +26,9 @@
 - [docs/ai/domain-language.md](docs/ai/domain-language.md): domain glossary.
 - [docs/ai/MEMORY.md](docs/ai/MEMORY.md): durable settled-decision log (harness-managed hybrid memory).
 - [docs/ai/mcp.md](docs/ai/mcp.md): MCP servers.
+- [docs/ai/index.md#tool-support-matrix](docs/ai/index.md): which capabilities are Claude Code–only (hooks, subagents, path rules) vs all agents (declared in AGENTS.md).
 
 ## Skills & verification
 
-- [.agents/skills/README.md](.agents/skills/README.md): how the 16 reusable skills are authored (canonical, tool-agnostic; Claude Code shims are generated).
+- [.agents/skills/README.md](.agents/skills/README.md): how the 17 reusable skills are authored (canonical, tool-agnostic; Claude Code shims are generated).
 - Gate: run `bun run ai:check` + `bun run ai:eval` before "done"; `bun run ai:premerge` is the full pass.

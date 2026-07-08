@@ -92,16 +92,36 @@ if (fs.existsSync(skillDir)) {
 }
 metrics.skillCount = skillCount;
 
-// Overlap: count pairs whose descriptions share ≥3 significant words
+// Overlap: count pairs whose descriptions share ≥4 significant words, treating
+// cross-reference clauses ("use X", "Not for X", "For X, use Y") as negative
+// direction, not positive overlap. Otherwise a skill that points at another
+// skill inflates its own overlap with the very skill it disambiguates from.
+// Threshold raised from ≥3 to ≥4 (15 of the 31 baseline pairs shared exactly
+// 3 noise tokens: 'adding', 'changing', 'server', 'client'). Skill identity
+// tokens (other skills' names) excluded too — they are pointers, not content.
 const stopWords = new Set([
   'use', 'when', 'for', 'the', 'a', 'an', 'of', 'to', 'in', 'is', 'it', 'on',
   'and', 'or', 'not', 'be', 'with', 'as', 'at', 'by', 'or', 'from', 'that',
-  'this', 'add', 'change', 'build', 'create', 'make', 'shape',
+  'this', 'add', 'change', 'build', 'create', 'make', 'shape', 'adding',
+  'changing', 'server', 'client', 'code', 'before', 'into', 'are',
 ]);
+function stripCrossReferenceClauses(s) {
+  // Remove "Not for <X>", "For <X>, use <Y>", "use <Y>" tail clauses — all
+  // negative direction, not positive content overlap. Strip until end of
+  // the sentence (period) or end of string.
+  return s
+    .replace(/\bnot\s+for\b[^.]*\.?/gi, ' ')
+    .replace(/\bfor\s+(?:client|server|module|the\s+\w+)[^.,]*,?\s*use\b[^.]*\.?/gi, ' ')
+    .replace(/\bfor\s+\w[\w\s-]*,\s*use\b[^.]*\.?/gi, ' ')
+    .replace(/\buse\s+(?:react-hook-form|server-action|zod-validator|feature-module|tanstack-query-hook|zustand-store|refactor-plan|codebase-design|grill-requirements|domain-modeling|server-component-read|supabase-migration|ui-styling|watch-sync|testing-template|dependency-update|diagnosing-bugs)\b/gi, ' ')
+    .replace(/\bserver\s+action\s+(?:mutation|logic)\b/gi, ' ');
+}
 function words(s) {
-  return s.toLowerCase().replace(/[^a-z0-9 -]/g, '').split(/\s+/).filter(
-    (w) => w.length > 2 && !stopWords.has(w),
-  );
+  const cleaned = stripCrossReferenceClauses(s.toLowerCase());
+  return cleaned
+    .replace(/[^a-z0-9 -]/g, '')
+    .split(/\s+/)
+    .filter((w) => w.length > 2 && !stopWords.has(w));
 }
 let overlapScore = 0;
 for (let i = 0; i < skillDescriptions.length; i++) {
@@ -110,7 +130,7 @@ for (let i = 0; i < skillDescriptions.length; i++) {
     const wj = new Set(words(skillDescriptions[j]));
     let shared = 0;
     for (const w of wi) if (wj.has(w)) shared++;
-    if (shared >= 3) overlapScore++;
+    if (shared >= 4) overlapScore++;
   }
 }
 metrics.skillOverlapPairs = overlapScore;
@@ -166,6 +186,92 @@ const totalContextSize = allContextDocs.reduce((a, b) => a + b, 0);
 const adrTotalSize = adrContent.reduce((sum, { path: p }) => sum + fileSizeBytes(p), 0);
 metrics.contextDocsBytes = totalContextSize;
 metrics.adrDocsBytes = adrTotalSize;
+
+// 8. Tool Support Matrix coverage — count capabilities the index documents
+// vs the real mechanisms that exist on disk. Each required capability that is
+// missing from docs/ai/index.md's Tool Support Matrix (or the section itself)
+// counts as one mismatch. Drives ADR-0009 freeze-gate evidence for context-
+// layer edits to the matrix.
+const REQUIRED_CAPABILITY_KEYWORDS = [
+  { capability: 'entry contract', re: /AGENTS\.md/ },
+  { capability: 'handshake map', re: /llms\.txt/ },
+  { capability: 'router', re: /docs\/ai\/index\.md/ },
+  { capability: 'long-term memory', re: /MEMORY\.md/ },
+  { capability: 'path-scoped rules', re: /\.claude\/rules/ },
+  { capability: 'skill discovery', re: /\.agents\/skills/ },
+  { capability: 'skill shim (generated)', re: /\.claude\/skills/ },
+  { capability: 'subagent reviewers', re: /\.claude\/agents/ },
+  { capability: 'lifecycle hooks', re: /\.claude\/hooks/ },
+  { capability: 'MCP servers', re: /\.mcp\.json/ },
+  { capability: 'validation gates', re: /ai:check/ },
+];
+const indexContent = readAny('docs/ai/index.md');
+let toolMatrixMismatches = 0;
+if (!/## Tool Support Matrix/.test(indexContent)) {
+  toolMatrixMismatches = REQUIRED_CAPABILITY_KEYWORDS.length;
+} else {
+  for (const { re } of REQUIRED_CAPABILITY_KEYWORDS) {
+    if (!re.test(indexContent)) toolMatrixMismatches++;
+  }
+}
+metrics.toolMatrixMismatches = toolMatrixMismatches;
+
+// 9. Skill negative-clause coverage — of the skills that baseline-overlapped
+// with another skill, count how many carry an explicit disambiguation clause
+// ("Not for", "For X, use Y"). Advisory; drives the Workstream-B freeze-gate
+// evidence along with skillOverlapPairs.
+const skillCanonicalDir = resolveRel('.agents/skills');
+let skillsNeedingNegativeClause = 0;
+let skillsWithNegativeClause = 0;
+if (fs.existsSync(skillCanonicalDir)) {
+  const allSkillNames = fs
+    .readdirSync(skillCanonicalDir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name);
+  for (const name of allSkillNames) {
+    const skillPath = path.join(skillCanonicalDir, name, 'SKILL.md');
+    if (!fs.existsSync(skillPath)) continue;
+    const content = fs.readFileSync(skillPath, 'utf8');
+    const m = content.match(/^description:\s*(.+)$/m);
+    if (!m) continue;
+    const desc = m[1];
+    const otherNames = allSkillNames.filter((n) => n !== name).join('|');
+    const referencesOther = new RegExp(
+      `\\buse\\s+(?:${otherNames})\\b`,
+      'i',
+    ).test(desc) || /\bnot\s+for\b/i.test(desc);
+    if (referencesOther) {
+      skillsNeedingNegativeClause++;
+      skillsWithNegativeClause++;
+    }
+  }
+}
+metrics.skillNegativeClauseCoverage = skillsNeedingNegativeClause === 0
+  ? '0/0 (no cross-references)'
+  : `${skillsWithNegativeClause}/${skillsNeedingNegativeClause}`;
+
+// 10. Behavioral baseline — pass rates from last run of `bun run ai:eval:behavioral`.
+// Advisory snapshot (read from scripts/behavioral-evals/last-run.json); null when
+// the suite has not been run yet. Drives freeze-gate evidence alongside
+// skillOverlapPairs / skillNegativeClauseCoverage / toolMatrixMismatches.
+let behavioralBaseline = null;
+try {
+  const lastRunPath = path.join(__dirname, 'behavioral-evals', 'last-run.json');
+  if (fs.existsSync(lastRunPath)) {
+    const lr = JSON.parse(fs.readFileSync(lastRunPath, 'utf8'));
+    behavioralBaseline = {
+      ranAt: lr.ranAt,
+      taskCount: lr.taskCount,
+      trialsPerMode: lr.trialsPerMode,
+      passRateA_avg: lr.passRateA_avg ?? null,
+      passRateB_avg: lr.passRateB_avg ?? null,
+      regressions: lr.regressions ?? null,
+    };
+  }
+} catch {
+  // fail-open: malformed last-run.json is not a metric failure
+}
+metrics.behavioralBaseline = behavioralBaseline;
 
 const outputPath = path.join(__dirname, 'ai-metrics.json');
 fs.writeFileSync(outputPath, JSON.stringify(metrics, null, 2) + '\n');

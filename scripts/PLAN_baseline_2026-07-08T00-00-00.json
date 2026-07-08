@@ -1,17 +1,14 @@
 {
   "docCount": 16,
-  "totalSizeBytes": 63012,
+  "totalSizeBytes": 63321,
   "adrActiveCount": 8,
   "adrDeprecatedCount": 7,
   "adrMetaRatio": "0%",
   "skillCount": 17,
-  "skillOverlapPairs": 1,
+  "skillOverlapPairs": 31,
   "invariantDuplicateCategories": 3,
   "manifestItemCount": 42,
   "commonMistakesEnforcementGap": 3,
-  "contextDocsBytes": 63012,
-  "adrDocsBytes": 86624,
-  "toolMatrixMismatches": 0,
-  "skillNegativeClauseCoverage": "9/9",
-  "behavioralBaseline": null
+  "contextDocsBytes": 63321,
+  "adrDocsBytes": 86624
 }
