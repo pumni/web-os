@@ -88,7 +88,7 @@ export function SurfacesSection() {
                 </GlassSurface>
                 <Card variant="glass" className="p-4 text-xs gap-1">
                   <div className="font-semibold text-foreground">
-                    Glass Card (<code>Card variant="glass"</code>)
+                    Glass Card (<code>Card variant=&quot;glass&quot;</code>)
                   </div>
                   <div className="text-muted-foreground">
                     Luminous translucent glassmorphism surface.

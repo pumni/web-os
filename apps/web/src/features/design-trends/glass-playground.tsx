@@ -386,7 +386,7 @@ export function GlassPlayground() {
 
                   <div className="absolute left-4 top-4 z-10 flex items-center gap-1.5 rounded-full border border-purple-500/20 bg-purple-900/40 px-2 py-1 text-xs text-purple-300">
                     <Sparkles className="size-3.5" />
-                    Mô phỏng "Vũ đạo của kính" (Liquid Glass Merging)
+                    Mô phỏng &quot;Vũ đạo của kính&quot; (Liquid Glass Merging)
                   </div>
 
                   <div className="relative flex-1 w-full mt-8 rounded-2xl bg-[#050309] flex items-center justify-center overflow-hidden">
