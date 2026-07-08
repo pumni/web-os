@@ -1,7 +1,9 @@
 # Kế hoạch: Align Glassmorphism playground + ADR với chuẩn 2026
 
 > [!WARNING]
-> **Superseded (2026-07-05)**: Phần 'gate border cả 2 mode' bị rescope bởi [glass-border-doctrine-and-grain-2026.md](file:///V:/web-os/docs/plans/glass-border-doctrine-and-grain-2026.md).
+> **Superseded (2026-07-05)**: Phần 'gate border cả 2 mode', 'viền xanh dương đậm light-mode' và APCA Lc 25 border gate trong plan này đã bị rescope bởi [glass-border-doctrine-and-grain-2026.md](file:///V:/web-os/docs/plans/glass-border-doctrine-and-grain-2026.md) + amendment ADR-0012 2026-07-05.
+>
+> The shipped `--glass-edge` is `light-dark(oklch(1 0 0 / 0.55), oklch(0.98 0.005 0 / 0.24))` — a specular LIGHT rim, NOT the dark navy `oklch(0.3 0.02 260 / 0.40)` described in the plan body. The glass edge is NOT APCA-gated (per final ADR-0012 amendment). Do NOT re-introduce the navy light-mode rim or the Lc 25 gate on glass edges — both are false doctrine.
 
 - **Status:** Accepted
 - **Date:** 2026-07-04

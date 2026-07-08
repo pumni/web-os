@@ -54,11 +54,17 @@ function GlassSurface({
   className,
   variant,
   radius,
+  active,
   asChild = false,
   ...props
 }: React.ComponentProps<'div'> &
   VariantProps<typeof glassSurfaceVariants> & {
     asChild?: boolean;
+    /** Only meaningful with `variant="window"` — sets the `data-active` attribute
+     *  (`false` → inactive glass-window styling: lighter tint, no bevel ring,
+     *  flat border, softer shadow as documented in `glass.css:231-250`). Omitted
+     *  on other variants — only `glass-window[data-active='false']` exists. */
+    active?: boolean;
   }) {
   const Comp = asChild ? Slot.Root : 'div';
 
@@ -66,6 +72,7 @@ function GlassSurface({
     <Comp
       data-slot="glass-surface"
       data-variant={variant}
+      data-active={active === undefined ? undefined : active}
       className={cn(glassSurfaceVariants({ variant, radius }), className)}
       {...props}
     />

@@ -99,13 +99,12 @@ ADR edit only captures the *why*.
   one specular card per visible surface, always over a colourful backdrop.
   This aligns with Apple Liquid Glass and UX Pilot's *"rim light along
   the side facing the light source"*.
-- **Blur range 8–16px is a deliberate "frosted" choice, not the 2026
+- **Blur range is a deliberate "frosted" choice, not the 2026 subtle
   baseline.** UX Pilot 2026 cites `blur(4–6px)` as the subtle baseline.
-  Pumni keeps 8–16px because the OS visual identity is "frosted glass,
-  not tinted overlay" — the ADR now records that rationale. Production
-  sweet spot 12px (light) / 16px (dark) stays. `>16px` remains
-  GPU-heavy-banned except for the Liquid Glass refraction mask in
-  `glass-2026-primitives.tsx` (showcase-only).
+  Pumni identity is "frosted glass, not tinted overlay." **Amended 2026-07-09:**
+  production ladder is soft **12** / default light **16** / default dark **20** /
+  strong **24** (cap). Engineered frosted glassmorphism only — **not** Apple
+  Liquid Glass lensing/refraction on production chrome.
 
 ### Amendments (2026-07-05 alignment - Specular Stops & Gradient Tint)
 
@@ -135,7 +134,9 @@ ADR edit only captures the *why*.
   `oklch(1 0 0 / 0.65)`, bottom a faint cool contact shadow `oklch(0.4 0.02
   260 / 0.14)`), softened to a light neutral-violet in dark mode. The
   **drop shadow (`--shadow-glass`) is the delineator**; the only APCA gate on
-  glass is **text over `--glass-tint` (Lc 60)**. Accessibility for transparency
+  glass is **text over `--glass-tint-readable` / chrome composites (Lc 60 =
+  chrome/short-text floor, not APCA body 75/90)**. Multi-line body stays on
+  solid insets (`DialogBody` / `CardWell`). Accessibility for transparency
   is the `prefers-contrast` / `prefers-reduced-transparency` fallbacks that
   recolour the edge to a solid `--border`.
 - **Test change.** `glass-contrast.test.ts` drops the Lc 25 edge gate and
@@ -143,10 +144,22 @@ ADR edit only captures the *why*.
   alpha 0.1–0.7; bottom edge is a shadow subordinate to the top rim). The
   text-over-tint Lc 60 gate and the drop-shadow-delineator guard are unchanged.
 
+### Amendments (2026-07-09 — modern glass program)
+
+- **Two-tier tint:** `--glass-tint-chrome` (shell bars) vs `--glass-tint-readable`
+  (`--glass-tint` alias for panels/menus/dialogs). Chrome is more translucent;
+  readable holds the APCA composite floor over desktop blobs + worst-case fixtures.
+- **Blur SSOT:** 12 / 16 / 20 / 24 ladder; soft/strong personalization also shifts
+  tint alpha (open vs dense).
+- **Body-on-glass policy:** forbid multi-line body on bare glass; `DialogBody`
+  solid well is the dialog exemplar.
+- **Perf/grain guards:** `glass-performance.test.ts` pins no animated
+  `backdrop-filter`, blur ladder, and grain only on `glass-panel-simple`.
+
 ## Consequences
 
 - One ADR instead of nine; design-token churn no longer mints ADRs.
-- `design-system.md` + the CSS drift guards (`glass-rim`, `glass-performance`,
+- `design-system.md` + the CSS drift guards (`glass-contrast`, `glass-performance`,
   `border-consumption`) are the enforcement plane.
 - **(Amended 2026-07-04 · SUPERSEDED 2026-07-05)** This bullet formerly required
   `glass-contrast.test.ts` to enforce APCA Lc 25 on `--glass-edge`. That gate was

@@ -70,6 +70,7 @@ import {
 
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,
@@ -363,6 +364,7 @@ describe('SSR Safety: Overlay Components', () => {
               <DialogTitle>Title</DialogTitle>
               <DialogDescription>Description</DialogDescription>
             </DialogHeader>
+            <DialogBody>Solid body well for multi-line content.</DialogBody>
             <DialogFooter>
               <DialogClose>Close</DialogClose>
             </DialogFooter>

@@ -16,7 +16,7 @@ import { repoRoot } from './token-test-utils';
  * to catch it in review — `--glass-edge` on a solid card still "looks like a
  * border" — so this test pins the wiring.
  *
- * Mirrors the read-the-CSS + literal-regex pattern of `glass-rim.test.ts`.
+ * Mirrors the read-the-CSS + literal-regex pattern used by glass contrast/performance guards.
  *
  * What this guard pins:
  *

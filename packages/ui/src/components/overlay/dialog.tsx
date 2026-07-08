@@ -140,8 +140,27 @@ function DialogDescription({
   );
 }
 
+/**
+ * Solid content well inside a glass dialog shell.
+ * Multi-line body / forms / dense copy must NOT sit on bare glass (APCA + Apple
+ * HIG chrome-only doctrine). Prefer this (or CardWell) for readable content.
+ */
+function DialogBody({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="dialog-body"
+      className={cn(
+        'rounded-lg border border-border bg-card p-3 text-card-foreground type-body',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,

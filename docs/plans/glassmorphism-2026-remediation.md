@@ -1,7 +1,7 @@
 # Kế hoạch: Remediation Glassmorphism 2.0 (hậu-review 2026-07-05)
 
 > [!WARNING]
-> **Superseded (2026-07-05)**: Giá trị dark bottom trong plan này đã bị thay bởi doctrine mới (bottom = shadow bevel, miễn gate) trong [glass-border-doctrine-and-grain-2026.md](file:///V:/web-os/docs/plans/glass-border-doctrine-and-grain-2026.md).
+> **Superseded (2026-07-05)**: Giá trị dark bottom trong plan này đã bị thay bởi doctrine mới (bottom = shadow bevel, miễn gate) trong [glass-border-doctrine-and-grain-2026.md](file:///V:/web-os/docs/plans/glass-border-doctrine-and-grain-2026.md). The shipped `--glass-edge` light-mode is `oklch(1 0 0 / 0.55)` (a specular white rim, NOT the dark navy `oklch(0.3 0.02 260 / 0.40)` this plan originally derived). Do NOT re-introduce the navy light-mode rim — see final ADR-0012 amendment 2026-07-05.
 
 - **Status:** Proposed
 - **Date:** 2026-07-05

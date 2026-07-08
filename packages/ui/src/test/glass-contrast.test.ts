@@ -34,13 +34,19 @@ function composite(foreground: Color, background: Color): Rgb {
   ];
 }
 
+/**
+ * APCA role floors (Myndex / APCA in a Nutshell):
+ * - Lc 60 = minimum for chrome / short content text (NOT body columns)
+ * - Lc 75+ = body text (Pumni forbids multi-line body on bare glass — use DialogBody)
+ * Glass gates below use Lc 60 for short UI text over frosted fill composites.
+ */
 describe('Glass contrast tokens', () => {
   it.each(['light', 'dark'] as const)(
-    'keeps text contrast at APCA Lc 60 over desktop blobs in %s mode',
+    'keeps chrome/short text at APCA Lc 60 over readable glass + desktop blobs in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
       const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
-      const glass = tokenColor('--glass-tint', tokenMap);
+      const glass = tokenColor('--glass-tint-readable', tokenMap);
 
       for (const blobToken of desktopBlobTokens) {
         const background = tokenColor(blobToken, tokenMap);
@@ -48,9 +54,80 @@ describe('Glass contrast tokens', () => {
 
         expect(
           Math.abs(apcaContrast(foreground, glassOverBlob)),
-          `${mode} ${blobToken} text contrast (APCA)`,
+          `${mode} ${blobToken} readable-glass text contrast (APCA)`,
         ).toBeGreaterThanOrEqual(60);
       }
+    },
+  );
+
+  it.each(['light', 'dark'] as const)(
+    'keeps chrome/short text at APCA Lc 60 over chrome glass + desktop blobs in %s mode',
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
+      const glass = tokenColor('--glass-tint-chrome', tokenMap);
+
+      for (const blobToken of desktopBlobTokens) {
+        const background = tokenColor(blobToken, tokenMap);
+        const glassOverBlob = composite(glass, background);
+
+        expect(
+          Math.abs(apcaContrast(foreground, glassOverBlob)),
+          `${mode} ${blobToken} chrome-glass text contrast (APCA)`,
+        ).toBeGreaterThanOrEqual(60);
+      }
+    },
+  );
+
+  it.each(['light', 'dark'] as const)(
+    'keeps readable glass Lc 60 over high-chroma (valid glass backdrop) synthetics in %s mode',
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
+      const glass = tokenColor('--glass-tint-readable', tokenMap);
+
+      // ADR-0012: glass requires a colourful backdrop — pure near-black/near-white
+      // are invalid glass contexts (use solid Card). Stress high-chroma media-like fills.
+      const worstCases: Array<{ label: string; bg: Color }> = [
+        { label: 'max-chroma-coral', bg: { l: 0.7, c: 0.18, h: 30, alpha: 1 } },
+        { label: 'max-chroma-amber', bg: { l: 0.75, c: 0.16, h: 75, alpha: 1 } },
+        { label: 'max-chroma-blue', bg: { l: 0.55, c: 0.18, h: 250, alpha: 1 } },
+        { label: 'max-chroma-violet', bg: { l: 0.55, c: 0.18, h: 300, alpha: 1 } },
+      ];
+
+      for (const { label, bg } of worstCases) {
+        const glassOverBg = composite(glass, bg);
+        expect(
+          Math.abs(apcaContrast(foreground, glassOverBg)),
+          `${mode} ${label} readable-glass text contrast (APCA)`,
+        ).toBeGreaterThanOrEqual(60);
+      }
+    },
+  );
+
+  it.each(['light', 'dark'] as const)(
+    'pins frosted blur ladder primitives in %s mode',
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      expect(tokenMap.get('--blur-glass-sm')).toBe('12px');
+      expect(tokenMap.get('--blur-glass')).toBe('16px');
+      expect(tokenMap.get('--blur-glass-md')).toBe('20px');
+      expect(tokenMap.get('--blur-glass-lg')).toBe('24px');
+      // Semantic blur points at the ladder (raw map keeps var() — no dimension resolver).
+      expect(tokenMap.get('--glass-blur')).toBe(
+        mode === 'dark' ? 'var(--blur-glass-md)' : 'var(--blur-glass)',
+      );
+    },
+  );
+
+  it.each(['light', 'dark'] as const)(
+    'keeps chrome tint more translucent than readable in %s mode',
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const chrome = tokenColor('--glass-tint-chrome', tokenMap);
+      const readable = tokenColor('--glass-tint-readable', tokenMap);
+      expect(chrome.alpha, `${mode} chrome alpha`).toBeLessThan(readable.alpha);
+      expect(readable.alpha, `${mode} readable alpha floor`).toBeGreaterThanOrEqual(0.4);
     },
   );
 
@@ -164,8 +241,8 @@ describe('Accent personalization contrast', () => {
 /* ------------------------------------------------------------------ *
  * Semantic surface contrast (Phase 2)
  * Gates the core muted, secondary, and card surfaces so that their
- * foreground text always passes at minimum APCA Lc 60 for body-sized
- * text in BOTH modes. These are the most common reading surfaces.
+ * foreground text always passes at minimum APCA Lc 60 (chrome / content-short
+ * floor; solid surfaces also host body — prefer Lc 75+ for long columns).
  * ------------------------------------------------------------------ */
 
 describe('Semantic surface contrast', () => {
@@ -245,7 +322,7 @@ const STATUS_TOKENS = ['--destructive', '--success', '--warning', '--primary', '
 
 /*
  * Pinned floors, measured with the spec-correct APCA pipeline (gamma-encoded
- * sRGB input — see oklch.ts). Floors below the Lc 60 body-text target are the
+ * sRGB input — see oklch.ts). Floors below the Lc 60 chrome/short-text target are the
  * documented cost of a single token serving BOTH solid-fill and text roles:
  * - light warning (48): amber has a hard readability ceiling on cream — the
  *   amber-600 stop is already the darkest value that still scans as amber.

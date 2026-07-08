@@ -150,22 +150,34 @@
            simulate real physical glass edges") via ::after
   */
 
-  /* 1. TINT
-     Lab presets (glassmorphism-card-laboratory):
-       "Kính Sáng" (Light): L=0.96, C=0.01, H=250, A=0.20 (Lab default)
-       "Kính Tối"  (Dark):  L=0.18, C=0.02, H=240, A=0.40
-     Alpha raised for the APCA Lc ≥ 60 gate over the Pumni OS desktop blob palette:
-     light alpha 0.20 would let saturated coral/amber blobs bleed through and drop
-     foreground below Lc 60. 0.58 keeps the frosted-white visual while clearing the gate.
-     Dark alpha 0.40 (from Lab preset) passes the gate directly. */
-  --glass-tint: light-dark(
+  /* 1. TINT — two-tier glass (chrome vs readable)
+     Base optical recipe (OKLCH Lab "Kính Sáng"/"Kính Tối" L/C/H):
+       Light: L=0.96 C=0.01 H=250 · Dark: L=0.18 C=0.02 H=240
+     Tiers (2026 modernization):
+       --glass-tint-chrome   → dock / topbar / titlebar / shell rails (lighter alpha)
+       --glass-tint-readable → panels, windows, menus, dialogs (APCA Lc ≥ 60 over blobs)
+       --glass-tint          → alias of readable (backward-compat for consumers)
+     Readable light alpha 0.58 clears the APCA chrome/short-text gate over desktop
+     blobs; chrome stays more translucent for shell hierarchy (Apple HIG: glass =
+     functional chrome layer, not content). Multi-line body copy never sits on bare
+     glass — use a solid inset (`DialogBody` / `CardWell` / `bg-card`). */
+  --glass-tint-base: light-dark(
+    oklch(0.96 0.01 250 / 0.48),
+    oklch(0.18 0.02 240 / 0.36)
+  );
+  --glass-tint-chrome: light-dark(
+    oklch(0.96 0.01 250 / 0.52),
+    oklch(0.18 0.02 240 / 0.34)
+  );
+  --glass-tint-readable: light-dark(
     oklch(0.96 0.01 250 / 0.58),
     oklch(0.18 0.02 240 / 0.40)
   );
+  --glass-tint: var(--glass-tint-readable);
 
-  /* 2+3+4: Backdrop filter knobs — resolved from tokens.css primitives.
-     Light uses 160% saturate + 105% brightness; dark uses 140% + 90%.
-     .dark overrides --glass-saturate and --glass-brightness in the .dark block. */
+  /* 2+3+4: Backdrop filter knobs — tokens.css primitives.
+     Light: saturate 130%, brightness 110% (defaults).
+     Dark: saturate 150%, brightness 85% (.dark block below). */
   --glass-blur: var(--blur-glass);
 
   /* 5. BEVEL RING — gradient mask ring stops
@@ -191,7 +203,7 @@
   --specular-rim-end: transparent;
 
   /* Inset bezel pair — top highlight + bottom shadow-edge on glass-panel/window.
-     Pins the glass-rim drift guard (glass-rim.test.ts). */
+     Pins glass inset rim consumption (border-consumption / glass-contrast). */
   --surface-rim-top: light-dark(oklch(1 0 0 / 0.5), oklch(1 0 0 / 0.2));
   --glass-shadow-edge: light-dark(oklch(0 0 0 / 0), oklch(0 0 0 / 0.22));
   --glass-inset-bezel-top: light-dark(oklch(1 0 0 / 0.2), oklch(1 0 0 / 0.08));
@@ -268,8 +280,8 @@
   --tracking-body: var(--tracking-body-dark); /* 0.01em */
 
   /* Glassmorphism Properties overrides (non-color)
-     Lab "Kính Tối" (Dark) preset: saturate 150%, brightness 85%, blur 24px. */
-  --glass-blur: var(--blur-glass-lg);
+     Lab "Kính Tối" (Dark): saturate 150%, brightness 85%, blur md (20px). */
+  --glass-blur: var(--blur-glass-md);
   --glass-saturate: 150%;
   --glass-brightness: 85%;
   --glass-grain-opacity: 0.07;

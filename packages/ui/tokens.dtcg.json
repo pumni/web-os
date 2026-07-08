@@ -298,21 +298,28 @@
       "glass": {
         "$type": "dimension",
         "$value": {
-          "value": 12,
+          "value": 16,
           "unit": "px"
         }
       },
       "glass-lg": {
         "$type": "dimension",
         "$value": {
-          "value": 16,
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "glass-md": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
           "unit": "px"
         }
       },
       "glass-sm": {
         "$type": "dimension",
         "$value": {
-          "value": 8,
+          "value": 12,
           "unit": "px"
         }
       },
@@ -929,9 +936,13 @@
         "$type": "number",
         "$value": 0.95
       },
+      "glass-brightness": {
+        "$type": "other",
+        "$value": "110%"
+      },
       "glass-saturate": {
         "$type": "number",
-        "$value": 1.4
+        "$value": "130%"
       },
       "hover-lift-scale": {
         "$type": "number",
@@ -1192,16 +1203,16 @@
               "unit": "px"
             },
             "offsetY": {
-              "value": 20,
+              "value": 25,
               "unit": "px"
             },
             "inset": false,
             "blur": {
-              "value": 40,
+              "value": 60,
               "unit": "px"
             },
             "spread": {
-              "value": -14,
+              "value": -15,
               "unit": "px"
             }
           }
@@ -1734,7 +1745,7 @@
         "$value": "oklch(1 0 0 / 0.1)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.86 0.02 270 / 0.05)"
+            "dark": "oklch(0.98 0.005 0 / 0.05)"
           }
         }
       },
@@ -1743,7 +1754,7 @@
         "$value": "oklch(1 0 0 / 0.6)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.86 0.02 270 / 0.20)"
+            "dark": "oklch(0.98 0.005 0 / 0.20)"
           }
         }
       },
@@ -1799,7 +1810,7 @@
         "$value": "{primitive.blur.glass}",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "{primitive.blur.glass-lg}"
+            "dark": "{primitive.blur.glass-md}"
           }
         }
       },
@@ -1808,7 +1819,7 @@
         "$value": "oklch(1 0 0 / 0.55)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.86 0.02 270 / 0.24)"
+            "dark": "oklch(0.98 0.005 0 / 0.24)"
           }
         }
       },
@@ -1817,7 +1828,7 @@
         "$value": "oklch(0.4 0.02 260 / 0.14)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.2 0.02 270 / 0.15)"
+            "dark": "oklch(0.2 0.01 250 / 0.15)"
           }
         }
       },
@@ -1928,7 +1939,7 @@
         "$value": "oklch(1 0 0 / 0.65)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.88 0.02 270 / 0.28)"
+            "dark": "oklch(0.98 0.005 0 / 0.35)"
           }
         }
       },
@@ -1954,6 +1965,10 @@
           }
         }
       },
+      "reflection": {
+        "$type": "other",
+        "$value": "linear-gradient(\n    135deg,\n    oklch(1 0 0 / 0.08) 0%,\n    oklch(1 0 0 / 0) 50%,\n    oklch(0 0 0 / 0.02) 100%\n  )"
+      },
       "shadow-edge": {
         "$type": "color",
         "$value": "oklch(0 0 0 / 0)",
@@ -1965,10 +1980,32 @@
       },
       "tint": {
         "$type": "color",
-        "$value": "color-mix(in oklch, {primitive.color.neutral-0} 54%, transparent)",
+        "$value": "{semantic.glass.tint-readable}"
+      },
+      "tint-base": {
+        "$type": "color",
+        "$value": "oklch(0.96 0.01 250 / 0.48)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "color-mix(in oklch, {primitive.color.neutral-900} 40%, transparent)"
+            "dark": "oklch(0.18 0.02 240 / 0.36)"
+          }
+        }
+      },
+      "tint-chrome": {
+        "$type": "color",
+        "$value": "oklch(0.96 0.01 250 / 0.52)",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "oklch(0.18 0.02 240 / 0.34)"
+          }
+        }
+      },
+      "tint-readable": {
+        "$type": "color",
+        "$value": "oklch(0.96 0.01 250 / 0.58)",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "oklch(0.18 0.02 240 / 0.40)"
           }
         }
       }

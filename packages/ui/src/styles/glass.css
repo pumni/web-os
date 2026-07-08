@@ -8,16 +8,21 @@
  * topbar, dock, window titlebar, dialog, sheet, popover, command palette,
  * toast. Never apply to large background areas — `backdrop-filter` is
  * GPU-intensive (each glass element forces a separate backdrop render pass,
- * see WebKit/Web-perf guidance). Blur is 20px light / 24px dark via `--glass-blur`.
+ * see WebKit/Web-perf guidance). Blur ladder via `--glass-blur`:
+ * soft 12 / default 16 light · 20 dark / strong 24 (production cap).
+ *
+ * Optical honesty: engineered frosted glassmorphism (blur + tint + specular),
+ * NOT Apple Liquid Glass lensing/refraction (deleted for web GPU + text clarity).
  *
  * 6-element model (from glassmorphism-card-laboratory):
- *   1. Tint (`--glass-tint`) — OKLCH literal fill (Lab "Kính Sáng"/"Kính Tối" presets)
- *   2. Blur (`--glass-blur`) — 20px light / 24px dark
+ *   1. Tint — two-tier: `--glass-tint-chrome` (bars) / `--glass-tint-readable`
+ *      (panels); `--glass-tint` aliases readable for compat
+ *   2. Blur (`--glass-blur`) — ladder above
  *   3. Saturation (`--glass-saturate`) — 130% light / 150% dark
  *   4. Brightness (`--glass-brightness`) — 110% light / 85% dark
  *   5. Bevel ring — gradient mask ring ::before (light-catch TL → contact shadow BR)
- *   6. Volumetric drop shadow (`--shadow-glass`, 0 25px 60px -15px) — real delineator.
- *   Plus: diagonal reflection overlay (Lab: "Shiny diagonal reflection line") via ::after.
+ *   6. Volumetric drop shadow (`--shadow-glass`) — real delineator.
+ *   Plus: diagonal reflection overlay via ::after on panels/windows.
  *
  * Performance discipline (unchanged):
  * - `will-change` is NOT set on static glass; scoped to overlays actively
@@ -50,20 +55,14 @@
 
 /* --- Frosted Glass Panels --- */
 @utility glass-panel {
-  /* Glassmorphism — 6-element model (rewritten from glassmorphism-card-laboratory
-     + modern-glassmorphism-card-simulator):
-     1. Tint: --glass-tint (macOS Vision Pro OKLCH literal)
-     2. Blur: --glass-blur (20px light / 24px dark)
-3. Saturation: --glass-saturate (130% light / 150% dark)
-      4. Brightness: --glass-brightness (110% light / 85% dark) — NEW
-     5. Bevel ring: gradient mask ::before (light-catch top-left → contact shadow bottom-right)
-     6. Volumetric drop shadow: --shadow-glass (real delineator, 25px/60px/-15px)
-     Plus: diagonal reflection ::after overlay (physical Liquid Glass simulation)
+  /* Glassmorphism — 6-element model (readable tier for floating panels).
+     Tint: --glass-tint-readable (via --glass-tint alias). Multi-line body copy
+     belongs in a solid inset (DialogBody / CardWell), not on bare glass.
 
      GPU-promoted via translateZ(0). `will-change` intentionally omitted on
      static glass — reserved for animated overlay state below. */
   position: relative;
-  background: var(--glass-tint);
+  background: var(--glass-tint-readable);
   border: 1px solid transparent;
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
@@ -85,12 +84,15 @@
     border-radius: inherit;
     padding: 1px;
     background: linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom));
+    /* Mask layers use a fully-opaque fill: the colour value is irrelevant
+       (only the alpha channel matters for `mask-composite: exclude`), but we
+       use `oklch(1 0 0)` to keep the token tier free of hex literals. */
     -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
+      linear-gradient(oklch(1 0 0) 0 0) content-box,
+      linear-gradient(oklch(1 0 0) 0 0);
     mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
+      linear-gradient(oklch(1 0 0) 0 0) content-box,
+      linear-gradient(oklch(1 0 0) 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -115,44 +117,57 @@
 
 /* --- Frosted Glass Panels (Simple Background-clip Border) --- */
 @utility glass-panel-simple {
-  /* glassmorphism-card-laboratory "Kính Tối" (Dark) preset:
-     L=0.18, C=0.02, H=240, A=0.40, blur=24px, saturate=150%, brightness=85%.
-     Uses background-clip border technique for the gradient ring
-     (simpler DOM — no ::before pseudo-element, no mask). */
+  /* Token-driven variant of glass-panel, sharing the same Lab Dark preset via
+     `--glass-tint` / `--glass-blur` / `--glass-saturate` / `--glass-brightness`.
+     Using the shared tokens means:
+       - the `data-glass="soft|strong"` personalization in personalization.css
+         (which only re-points `--glass-blur`) actually affects this variant;
+       - there is one source of truth for the dark glass preset (theme.css),
+         not two — a future token tuning flows through here as well.
+     Geometry technique stays "simple" — no `::before` pseudo-element, no
+     `mask-composite` ring — the rim is a `linear-gradient(...) border-box`
+     painted from the shared `--glass-edge-top` / `--glass-edge-bottom` stops
+     (the same specular rim pair `glass-panel` paints via the masked ::before),
+     and the volumetric shadow is `var(--shadow-glass)` (the real delineator,
+     ADR-0012). The metric border is transparent so the gradient border shows. */
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(oklch(18% 0.02 240 / 0.40), oklch(18% 0.02 240 / 0.40)) padding-box,
-    linear-gradient(135deg, oklch(33% 0.02 240 / 0.35) 0%, oklch(2% 0.01 240 / 0.12) 100%) border-box;
+    linear-gradient(var(--glass-tint-readable), var(--glass-tint-readable)) padding-box,
+    linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom)) border-box;
   border: 1px solid transparent;
-  -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(85%);
-  backdrop-filter: blur(24px) saturate(150%) brightness(85%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   box-shadow:
-    0 25px 60px -15px oklch(3.6% 0 0 / 0.25),
-    0 8px 16px -6px oklch(0% 0 0 / 0.12),
-    inset 0 1px 0 0 oklch(100% 0 0 / 0.08),
-    inset 0 0 0 0.5px oklch(100% 0 0 / 0.03);
+    var(--shadow-glass),
+    inset 0 1px 0 0 var(--glass-inset-bezel-top),
+    inset 0 -1px 0 0 var(--glass-shadow-edge);
   transform: translateZ(0);
 
-  /* 1. Diagonal Reflection Overlay (physical glass simulation) */
+  /* 1. Diagonal Reflection Overlay (physical glass simulation) — consumed
+     from the same --glass-reflection token as glass-panel / glass-window, so
+     the reflection pair stays identical across the three floating surfaces. */
   &::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(135deg, oklch(100% 0 0 / 0.08) 0%, oklch(100% 0 0 / 0) 50%, oklch(0% 0 0 / 0.02) 100%);
+    background: var(--glass-reflection);
     pointer-events: none;
     z-index: 0;
   }
 
-  /* 2. Micro-grain Noise Overlay */
+  /* 2. Micro-grain Noise Overlay — locally owned by the simple variant (it is
+     absent from glass-panel / glass-window). Opacity follows the shared
+     --glass-grain-opacity token so dark-mode's heavier grain (0.07 vs 0.05)
+     applies here too via .dark in theme.css. */
   &::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     mix-blend-mode: overlay;
-    opacity: 0.05;
+    opacity: var(--glass-grain-opacity);
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     background-size: 180px 180px;
     pointer-events: none;
@@ -166,7 +181,7 @@
      brightness + reflection overlay); windows carry the deeper active/glow drop
      shadow (--shadow-glass-glow). Own GPU composite layer. */
   position: relative;
-  background: var(--glass-tint);
+  background: var(--glass-tint-readable);
   border: 1px solid transparent;
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
@@ -184,12 +199,13 @@
     border-radius: inherit;
     padding: 1px;
     background: linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom));
+    /* Mask layers use a fully-opaque fill (see glass-panel for rationale). */
     -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
+      linear-gradient(oklch(1 0 0) 0 0) content-box,
+      linear-gradient(oklch(1 0 0) 0 0);
     mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
+      linear-gradient(oklch(1 0 0) 0 0) content-box,
+      linear-gradient(oklch(1 0 0) 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -255,7 +271,7 @@
    border — shell edges that touch the viewport should be seamless. Edge
    separation is handled by directional variants below. */
 @utility glass-bar {
-  background: var(--glass-tint);
+  background: var(--glass-tint-chrome);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   box-shadow: inset 0 1px 0 0 var(--surface-rim-top);
@@ -269,7 +285,7 @@
    light mode, soft light-violet in dark mode). It is a light-catching effect,
    not an APCA-gated contrast boundary. This is a deliberate uniform edge design. */
 @utility glass-bar-bordered {
-  background: var(--glass-tint);
+  background: var(--glass-tint-chrome);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   border: 1px solid var(--glass-edge);
@@ -286,7 +302,7 @@
       Reads stronger on light backgrounds, subtler on dark.
    Together they provide consistent shell separation without theme overrides. */
 @utility glass-bar-edge-r {
-  background: var(--glass-tint);
+  background: var(--glass-tint-chrome);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   box-shadow:
@@ -298,7 +314,7 @@
 /* Shell chrome variant — glass bar base + bottom-side glass edge + depth.
    Same unified dual-mechanism approach as `glass-bar-edge-r`. */
 @utility glass-bar-edge-b {
-  background: var(--glass-tint);
+  background: var(--glass-tint-chrome);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   box-shadow:
@@ -308,7 +324,7 @@
 }
 
 @utility glass-titlebar {
-  background-color: color-mix(in oklch, var(--glass-tint) 82%, var(--popover));
+  background-color: color-mix(in oklch, var(--glass-tint-chrome) 82%, var(--popover));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
   border-bottom: 1px solid var(--glass-edge);

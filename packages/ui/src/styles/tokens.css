@@ -216,20 +216,23 @@
   /* Solid content elevation */
   --shadow-card-raised: 0 1px 2px -1px oklch(0 0 0 / 0.05), 0 4px 10px -3px oklch(0 0 0 / 0.07);
 
-  /* --- Glass blur
-     Rewritten from glassmorphism-card-laboratory + modern-glassmorphism-card-simulator.
-     macOS Vision Pro presets: Light = 24px, Dark = 28px. Base uses 20px (≈ Lab preset
-     default of 18px, rounded to nearest 4px grid). sm kept at 8px for scrim overlays. */
-  --blur-glass-sm: 8px;
-  --blur-glass: 20px;
+  /* --- Glass blur ladder (2026 frosted OS SSOT)
+     Engineered frosted glass, not the 4–6px "subtle" web baseline and not Apple
+     Liquid Glass lensing. Personalization maps:
+       soft    → --blur-glass-sm (12px)
+       default → --blur-glass (16px light) / --blur-glass-md (20px dark)
+       strong  → --blur-glass-lg (24px, production cap)
+     Scrim overlays use the lighter --blur-scrim, not the glass ladder. */
+  --blur-glass-sm: 12px;
+  --blur-glass: 16px;
+  --blur-glass-md: 20px;
   --blur-glass-lg: 24px;
   --blur-scrim: 4px;
 
-  /* Glassmorphism backdrop-filter knobs — from glassmorphism-card-laboratory.
-     "Kính Sáng" (Light) preset: saturate 130%, brightness 110%.
-     "Kính Tối" (Dark) preset: saturate 150%, brightness 85% (overridden in .dark in theme.css).
-     Reference CSS from lab: backdrop-filter: blur(Xpx) saturate(Y%) brightness(Z%).
-     Base defaults to the Light preset. */
+  /* Glassmorphism backdrop-filter knobs — Lab "Kính Sáng" light defaults.
+     Light: saturate 130%, brightness 110%.
+     Dark (theme.css .dark): saturate 150%, brightness 85%.
+     Reference: backdrop-filter: blur(X) saturate(Y%) brightness(Z%). */
   --glass-saturate: 130%;
   --glass-brightness: 110%;
 

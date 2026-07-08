@@ -78,23 +78,41 @@ ContextMenu, Command palette, Toast, Topbar, Dock, Sidebar rail, OS
 `Window`/titlebar, and small floating pills/overlays. Large backgrounds and flat
 shell surfaces stay opaque.
 
-**Surface identity = glassmorphism for floating layers (ADR-0012).** A glass surface is a frosted translucent fill
-(`--glass-tint`) tuned to the APCA gate edge, with: a **luminous light top edge +
-dark bottom edge** (`--surface-rim-top` / `--glass-shadow-edge`, inset box-shadows
-in the `glass-*` utilities) and **vibrancy** via the single `--glass-saturate`
-knob (130% light / 150% dark). Blur is frosted (`--blur-glass` 20px light / 24px dark) — a deliberate
-"frosted" choice over the 2026 subtle baseline of 4–6px (UX Pilot 2026),
-recorded as such by the ADR-0012 2026-07-04 amendment. Float depth is
+**Surface identity = glassmorphism for floating layers (ADR-0012).** Optical
+honesty: this is **engineered frosted glass** (blur + tint + specular), not Apple
+Liquid Glass lensing/refraction (intentionally omitted on the web for GPU cost
+and text clarity).
+
+A glass surface is a frosted translucent fill tuned to the APCA **chrome / short-text**
+gate (Lc 60 — *not* APCA body preferred 90 / min 75). Two tint tiers:
+
+| Tier | Token | Consumers |
+| --- | --- | --- |
+| Chrome | `--glass-tint-chrome` | `glass-bar*`, `glass-titlebar` (dock, topbar, shell) |
+| Readable | `--glass-tint-readable` (`--glass-tint` alias) | `glass-panel`, `glass-window`, menus, dialogs |
+
+**Multi-line body copy must not sit on bare glass** — use `DialogBody`, `CardWell`,
+or `bg-card` solid inset inside the glass shell (Apple HIG: glass = functional
+chrome layer, not content).
+
+Vibrancy uses `--glass-saturate` (130% light / 150% dark) + `--glass-brightness`
+(110% light / 85% dark). Blur ladder (soft / default / strong personalization):
+
+| Step | Token | Value |
+| --- | --- | --- |
+| soft | `--blur-glass-sm` | **12px** |
+| default light | `--blur-glass` | **16px** |
+| default dark | `--blur-glass-md` | **20px** |
+| strong (cap) | `--blur-glass-lg` | **24px** |
+
+Frosted choice over the 4–6px subtle web baseline; production cap 24px. Float depth is
 the directional `--shadow-glass` — the **real delineator**. The border read
 comes from `--surface-rim-top` (specular light inset) + the **specular light
 `--glass-edge`**: a thin translucent light stroke that catches light along the
 panel rim — white in light mode, softened to a light neutral-violet in dark
 mode so it doesn't glow harsh. It is deliberately low-contrast and carries **no
 APCA gate**: the glass edge is a light effect, not a readability boundary (WCAG
-1.4.11 scopes contrast to interactive controls). Earlier revisions inverted the
-light-mode rim to a dark navy stroke to satisfy an "Lc 25 delineation" gate —
-that made glass read like a solid-card outline, so the gate was removed and the
-rim is light in both modes again.
+1.4.11 scopes contrast to interactive controls).
 **Perf discipline:** `will-change` is scoped to overlay transitions only
 (`[data-state=open|closed]`); stacked glass is capped at 2 layers (each layer
 forces a separate backdrop render pass — a doc/skill rule).
@@ -127,18 +145,20 @@ icon chip, `tone` `primary-soft`/`raised`/`muted`). `BentoGridItem` owns layout
 only and renders through these same primitives, so a bento tile and a feature
 card share one surface vocabulary. APCA contrast is gated per surface pair in
 `glass-contrast.test.ts` (spec-correct APCA: `oklchToSrgb` emits gamma-encoded
-sRGB, which `apcaContrast` decodes) — Lc 60 body-text target for reading
-surfaces, muted, and glass-over-blob in **both** modes, with documented pinned
+sRGB, which `apcaContrast` decodes) — **Lc 60 chrome/short-text** target for reading
+surfaces, muted, and glass-over-blob (readable + chrome tiers, including
+worst-case synthetic backdrops) in **both** modes, with documented pinned
 floors below it only for accent surfaces (45) and status tints (per-token table
 in the test; light warning and the dark destructive/primary chips sit lower
-because those tokens double as solid fills). When the brand/destructive colour
+because those tokens double as solid fills). Long body columns should target
+Lc 75+ on **solid** surfaces — not bare glass. When the brand/destructive colour
 is needed AS page text (link button, `FormMessage`, error/eyebrow copy), use the
 Step-11 text tokens `text-primary-text` / `text-destructive-text` — the base
 `primary`/`destructive` are anchored dark for the solid-fill role and read at
 only Lc ~34/37 as dark text. Do not add a WCAG 2.x ratio
 gate. The rim tokens **and the glass edge** are specular light effects, NOT
 subject to any APCA gate — the only APCA gate on glass is text over
-`--glass-tint` (Lc 60). Tune `--glass-tint` / `--glass-edge`, never a
+`--glass-tint-readable` / chrome composites (Lc 60). Tune tint alphas / edges, never a
 border-contrast threshold.
 
 **Hard rules:**
@@ -187,7 +207,7 @@ low-contrast, light in both modes (white in light, near-white neutral in dark).
 **The glass edge is NOT APCA-gated.** No accessibility standard asks a container
 border to hit a contrast ratio — WCAG 1.4.11 scopes contrast to *interactive
 controls*, which is why `--input` (not the glass rim) carries that duty. The
-only APCA gate on glass is **text over `--glass-tint`** (Lc 60). An earlier
+only APCA gate on glass is **text over `--glass-tint-readable` / chrome composites** (Lc 60 chrome/short-text). An earlier
 revision imposed an "Lc 25 delineation" floor on the dominant edge and inverted
 the light-mode rim to a dark navy stroke to pass it; that made glass read like a
 solid-card outline — the opposite of the material — so the floor was removed.
@@ -203,7 +223,7 @@ edge to a solid `--border`.
 | Top rim | none (deliberate, ADR-0012) | `--glass-inset-bezel-top` |
 | Bottom rim | none (deliberate) | `--glass-shadow-edge` |
 | Real delineator | the hairline itself | `--shadow-glass` (drop shadow) |
-| Edge/border APCA gate | none — `--border` is a structural hairline | none — the edge is a light effect; only text-on-`--glass-tint` is gated (Lc 60) |
+| Edge/border APCA gate | none — `--border` is a structural hairline | none — the edge is a light effect; only text-on-readable/chrome tint is gated (Lc 60) |
 | Hero specular | n/a | opt-in via `glass-panel[data-variant="specular"]` (conic shine layered on the SAME `::before` bevel ring — the boundary gradient stays visible underneath) |
 
 **Decision tree** — pick the path that matches the element, never write a border
@@ -248,12 +268,17 @@ additional CSS custom properties for chrome, specular effects, and backdrop:
 - `--glass-reflection` — diagonal `linear-gradient(135deg)` overlay for the
   `glass-panel` / `glass-window` `::after` pseudo-element
 
+**Tint tiers**:
+- `--glass-tint-chrome` — shell bars / titlebar (more translucent)
+- `--glass-tint-readable` — panels / windows / menus (`--glass-tint` alias)
+
 **Backdrop filter knobs**:
 - `--glass-saturate` — base `130%` (light) / `150%` (dark)
 - `--glass-brightness` — base `110%` (light) / `85%` (dark)
-- `--blur-glass-sm` — `8px`
-- `--blur-glass` — `20px` light / `24px` dark
-- `--blur-glass-lg` — `24px`
+- `--blur-glass-sm` — `12px` (soft)
+- `--blur-glass` — `16px` (default light)
+- `--blur-glass-md` — `20px` (default dark)
+- `--blur-glass-lg` — `24px` (strong / production cap)
 
 **Shadow composition intermediaries**:
 - `--shadow-glass-glow-base` — base glow layer composed into `--shadow-glass-glow`

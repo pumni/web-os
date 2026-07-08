@@ -99,10 +99,29 @@
   );
 }
 
-/* Glass intensity — bias the shared blur token without touching surfaces. */
+/* Glass intensity — blur + tint alpha (soft more open, strong denser fill).
+   Readable tier remains the APCA-gated surface; chrome stays lighter. */
 [data-glass='soft'] {
   --glass-blur: var(--blur-glass-sm);
+  --glass-tint-chrome: light-dark(
+    oklch(0.96 0.01 250 / 0.46),
+    oklch(0.18 0.02 240 / 0.30)
+  );
+  --glass-tint-readable: light-dark(
+    oklch(0.96 0.01 250 / 0.54),
+    oklch(0.18 0.02 240 / 0.36)
+  );
+  --glass-tint: var(--glass-tint-readable);
 }
 [data-glass='strong'] {
   --glass-blur: var(--blur-glass-lg);
+  --glass-tint-chrome: light-dark(
+    oklch(0.96 0.01 250 / 0.58),
+    oklch(0.18 0.02 240 / 0.40)
+  );
+  --glass-tint-readable: light-dark(
+    oklch(0.96 0.01 250 / 0.65),
+    oklch(0.18 0.02 240 / 0.48)
+  );
+  --glass-tint: var(--glass-tint-readable);
 }

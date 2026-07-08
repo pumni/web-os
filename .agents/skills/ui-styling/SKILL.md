@@ -24,7 +24,10 @@ reference detail.
   chip) are the sub-surface primitives. Never hand-roll `border bg-muted` wells,
   inline status pills, or icon chips — `pumniNoAdHocSurface` blocks the well.
   `BentoGridItem` is layout-only and renders through these primitives.
-- Contrast is APCA-gated per surface pair in `glass-contrast.test.ts` (spec-correct APCA: gamma-encoded sRGB into `apcaContrast`) — Lc 60 body-text target for surfaces, muted, and glass-over-blob in both modes, with documented pinned floors below it only for accent surfaces (45) and status tints (per-token table in `packages/ui/src/test/glass-contrast.test.ts`). The **glass edge is NOT contrast-gated** — it is a specular light rim (a light effect), delineation comes from the drop shadow (`--shadow-glass`), and the a11y path is the `prefers-contrast` / `prefers-reduced-transparency` fallbacks. Do not reintroduce a WCAG 2.x ratio gate, and never gate the glass border on a contrast ratio.
+- Contrast is APCA-gated per surface pair in `glass-contrast.test.ts` (spec-correct APCA: gamma-encoded sRGB into `apcaContrast`) — **Lc 60 chrome/short-text** target for surfaces, muted, and glass-over-blob (readable + chrome tiers) in both modes, with documented pinned floors below it only for accent surfaces (45) and status tints (per-token table in `packages/ui/src/test/glass-contrast.test.ts`). Long body → solid surface (Lc 75+ preferred); never multi-line body on bare glass (`DialogBody` / `CardWell`). The **glass edge is NOT contrast-gated** — specular light rim; delineation is `--shadow-glass`; a11y path is `prefers-contrast` / `prefers-reduced-transparency`. No WCAG 2.x ratio gate; never gate the glass border on contrast.
+- Glass tiers: `--glass-tint-chrome` (bars/shell) vs `--glass-tint-readable` /
+  `--glass-tint` (panels). Blur ladder soft **12** / default light **16** / dark
+  **20** / strong **24**. Personalization soft|strong adjusts blur + tint alpha.
 - Glass performance: never animate `backdrop-filter`; cap stacked glass at 2
   layers (each layer forces a separate backdrop render pass; doc/skill rule);
   `will-change` is reserved for overlay transitions, not static glass.
@@ -57,8 +60,8 @@ not inline its tables here.
 - [ ] No raw `oklch()`, primitive var, or Tailwind built-in palette in component classes.
 - [ ] Surface is one of the closed-set roles; no `bg-{card,background,popover}/NN`.
 - [ ] One `border-border`; status tint is the only `/20` border exception.
-- [ ] Floating layer uses `GlassSurface`/`glass-*`; frosted blur 8-16px only.
-- [ ] Glass backdrop (ADR-0012): glass only over colourful backdrop (blobs/media/overlay); dense content always solid; on flat backgrounds → use `Card variant="solid"`.
+- [ ] Floating layer uses `GlassSurface`/`glass-*`; blur ladder 12/16/20/24 only (no raw `backdrop-blur-*`).
+- [ ] Glass backdrop (ADR-0012): glass only over colourful backdrop (blobs/media/overlay); dense/multi-line content always solid (`DialogBody` / `CardWell` / `Card variant="solid"`); on flat backgrounds → solid.
 - [ ] Glass perf: no `backdrop-filter` in transitions/animations; ≤2 glass layers stacked.
 - [ ] Radius/z-index use named utilities; no `rounded-[Npx]`, no raw `z-40`/`z-50` for cross-component layers.
 - [ ] Motion uses recipes / `motion-safe:` CSS; `useReducedMotion()` on JS motion.

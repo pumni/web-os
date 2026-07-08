@@ -27,3 +27,7 @@ harness-managed primary; this file is the durable log for decisions.
   and `docs/conventions/design-system.md`.
 - 2026-07-05 — Gradient bevel ring: per-side glass border colours retired in
   favor of masked 1px gradient ring. See ADR-0012 amendment.
+- 2026-07-09 — Glass modernization: two-tier tint (chrome/readable), blur
+  ladder 12/16/20/24, APCA Lc 60 = chrome/short-text (not body), body-on-glass
+  forbidden (`DialogBody` solid well). ADR-0012 2026-07-09 amendment +
+  `design-system.md`.
