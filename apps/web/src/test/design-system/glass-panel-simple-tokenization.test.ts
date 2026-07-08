@@ -25,7 +25,7 @@ import { repoRoot } from './token-test-utils';
  *
  * The guard pins token consumption so the simple variant behaves as a member
  * of the same surface family. Mirrors the regex-over-file pattern of
- * `glass-saturate.test.ts` and `glass-rim.test.ts`.
+ * `glass-saturate.test.ts` and `glass-panel-simple-tokenization.test.ts`.
  */
 
 const GLASS_CSS = 'packages/ui/src/styles/glass.css';
@@ -35,7 +35,7 @@ function stripComments(css: string): string {
   return css.replace(/\/\*[\s\S]*?\*\//g, '');
 }
 
-/** See `glass-rim.test.ts` for the brace-balanced body extractor. */
+/** Brace-balanced body extractor — reads the rule between the selector's opening and closing braces. */
 function readRuleBody(css: string, selector: string): string {
   const stripped = stripComments(css);
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

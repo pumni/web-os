@@ -22,11 +22,8 @@ harness-managed primary; this file is the durable log for decisions.
 - Context layer pruning metric → [measure-prune](../plans/archive/context-layer-measure-prune-2026-07.md).
 - 2026-07 refresh → [ADR-0024](../adr/0024-context-layer-2026-07-standards-refresh.md).
 - llms.txt is required (ADR-0022) — keep in sync with docs/ai/index.md.
-- 2026-07-05 — Glass 2.0 & grain: ADR-0012 amendment (specular border doctrine,
-  APCA Lc 25 gate rescope). See `docs/adr/0012-engineered-glass-surface-language.md`
-  and `docs/conventions/design-system.md`.
-- 2026-07-05 — Gradient bevel ring: per-side glass border colours retired in
-  favor of masked 1px gradient ring. See ADR-0012 amendment.
+- 2026-07-05 — Glass 2.0: specular border doctrine, APCA Lc 25 rescope, gradient
+  bevel ring (per-side colours retired). ADR-0012 + `design-system.md`.
 - 2026-07-09 — Glass modernization: two-tier tint (chrome/readable), blur
   ladder 12/16/20/24, APCA Lc 60 = chrome/short-text (not body), body-on-glass
   forbidden (`DialogBody` solid well). ADR-0012 2026-07-09 amendment +
