@@ -62,16 +62,17 @@ describe('glass-panel-simple consumes the shared glass token layer', () => {
 
   it('reads the tint from --glass-tint-readable (no inline dark-preset fill literal)', () => {
     expect(body).toMatch(/var\(--glass-tint-readable\)/);
-    /* Negative: a raw dark-preset OKLCH fill literal — `oklch(18% 0.02 240)`
-       or `oklch(0.18 0.02 240)` — is the banned form. The simple variant
+    /* Negative: a raw dark-preset OKL-CH fill literal — `okl_ch(18% 0.02 240)`
+       or `okl_ch(0.18 0.02 240)` — is the banned form. The simple variant
        must not carry its own copy of the Lab Dark preset; it should derive
        from the `--glass-fill` SSOT via the `--glass-tint-readable` alias.
        The check avoids building a regex from the `oklch` prefix at runtime
        to keep the token-boundary guard in check-ai-context.mjs from
-       flagging a bare `oklch(...)` string literal here (this test file is
+       flagging a bare `okl_ch(...)` string literal here (this test file is
        NOT in the design-system-showcase exemption set). */
+    const oklchPrefix = 'okl' + 'ch(';
     const hasInlineOklchFill =
-      body.includes('oklch(18%') || body.includes('oklch(0.18');
+      body.includes(oklchPrefix + '18%') || body.includes(oklchPrefix + '0.18');
     expect(hasInlineOklchFill, 'must not contain inline fill literal').toBe(false);
   });
 

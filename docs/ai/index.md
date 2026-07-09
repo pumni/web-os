@@ -35,9 +35,13 @@ need to the canonical doc that owns it.
 | Domain glossary | `docs/ai/domain-language.md` |
 | Local production patterns to copy | `docs/ai/golden-examples.md` |
 | Known ❌/✅ mistake pairs | `docs/ai/common-mistakes.md` |
-| MCP servers (next-devtools runtime + postgres schema, optional) | `docs/ai/mcp.md` |
+| MCP servers (pinned versions; fallback when offline) | `docs/ai/mcp.md` |
 | Repo map for external agents/tools (agentic handshake) | `llms.txt` |
 | Long-term settled-decision log | `docs/ai/MEMORY.md` |
+
+## Playground Surfaces
+
+- `apps/web/src/features/sky-player`, `apps/web/src/features/design-trends`, `apps/web/src/app/(app)/todos` are playground/demo surfaces only. Do not apply full feature-module requirements; however, P0 security mandates (RLS/auth) still apply if they touch any server resource.
 
 ## Tool Support Matrix
 

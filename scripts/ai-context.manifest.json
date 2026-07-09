@@ -43,6 +43,25 @@
     "docs/conventions/transpile-packages.md",
     "docs/quality-gates.md"
   ],
+  "requiredExistingPaths": [
+    "apps/web/src/shared/stores/app-ui-store.ts",
+    "apps/web/src/features/profile/use-profile-mutation.ts",
+    "apps/web/src/features/watch/stores/volume-store.ts",
+    "apps/web/src/shared/components/app-shell/app-shell.tsx",
+    "apps/web/src/features/profile/actions.ts",
+    "apps/web/src/features/profile/queries.ts",
+    "apps/web/src/features/profile/profile-form.tsx",
+    "apps/web/src/features/watch/sync-machine.ts",
+    "apps/web/src/features/watch/sync-math.ts",
+    "apps/web/src/features/watch/hooks/use-sync-controller.ts",
+    "apps/web/src/features/watch/hooks/use-server-clock.ts",
+    "apps/web/src/test/features/watch-sync-machine.test.ts",
+    "supabase/migrations/001_initial_profiles.sql",
+    "supabase/migrations/002_user_settings.sql",
+    "supabase/migrations/003_audit_events.sql",
+    "supabase/migrations/017_harden_watch_queue_rls.sql",
+    "supabase/migrations/018_harden_watch_rpcs.sql"
+  ],
   "requiredPackageScripts": [
     "ai:check",
     "ai:eval",

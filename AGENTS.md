@@ -48,7 +48,7 @@ Next.js 16 (App Router, React Compiler) web app in a Bun + Turborepo monorepo.
 Stack: Supabase (RLS-first), TanStack Query (client async only), Zustand (client
 UI state only), Zod validators.
 
-- `apps/web/src/{app,components,features,lib,stores}` — Next.js delivery layer.
+- `apps/web/src/{app,features,shared,test}` — Next.js delivery layer (shared/ contains shell, providers, cross-feature components/hooks/lib/stores; domain logic lives in features/).
 - `packages/*` — `auth`, `env`, `supabase`, `ui`, `validators`, `config`, `features`, `test-utils` (each has a nearest-file `AGENTS.md`).
 - `supabase/migrations` — schema + RLS + grants together.
 

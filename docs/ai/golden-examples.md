@@ -9,13 +9,10 @@ verify against the canonical convention docs.
 
 ## Feature Module
 
-- `apps/web/src/features/profile/actions.ts#requireUser`: Server Action with Zod
-  validation, `requireUser()`, Supabase update, and `updateTag(...)`.
-- `apps/web/src/features/profile/profile-form.tsx`: Client form with
-  `useMutation`, pending state, optimistic form reset, and error handling.
-- `apps/web/src/features/profile/queries.ts`: cached server read with explicit
-  projection and user-scoped cache tag. Review server-only and service-role
-  boundaries before copying this pattern.
+- `apps/web/src/features/profile/actions.ts#updateProfile`: Server Action with Zod validation (using `profileSchema`), user authentication verification via `@pumni/auth` `requireUser()`, Supabase update, and `updateTag(\`profile:${user.id}\`)`.
+- `apps/web/src/features/profile/use-profile-mutation.ts`: Client mutation orchestration with TanStack Query `useMutation` that manages avatar storage uploads (browser Storage API) and Server Action mutations, followed by `router.refresh()` and toast triggers on success.
+- `apps/web/src/features/profile/profile-form.tsx`: Client form utilizing React Hook Form and `@pumni/ui` Form primitives, delegating submission orchestration to the custom mutation hook (`use-profile-mutation.ts`).
+- `apps/web/src/features/profile/queries.ts`: Cached server reads with explicit projection, parameterized `cacheTag`, and a warning regarding using the service-role client ONLY when using server-derived user IDs.
 
 ## Watch Sync (Realtime)
 
@@ -33,11 +30,10 @@ for the architecture rules before copying.
 - `apps/web/src/test/features/watch-sync-machine.test.ts`: transition-by-transition
   test mapping — the template for adding new sync behavior.
 
-## Feature-Local State (Zustand)
+## State Ownership & Zustand
 
-- `apps/web/src/features/watch/stores/volume-store.ts`: feature-scoped Zustand
-  store with localStorage persistence — the template for UI state that belongs
-  to one feature, not the global shared layer.
+- `apps/web/src/features/watch/stores/volume-store.ts`: Feature-scoped Zustand store with `localStorage` persistence, serving as the pattern for UI state scoped strictly to one feature.
+- `apps/web/src/shared/stores/app-ui-store.ts`: Global shared UI state store (e.g. sidebar toggle, panel states) serving as the pattern for cross-feature UI chrome.
 
 ## Supabase
 
@@ -45,6 +41,8 @@ for the architecture rules before copying.
   grants, private trigger function, `search_path`, and function execute revoke.
 - `supabase/migrations/002_user_settings.sql`: user-owned settings table pattern.
 - `supabase/migrations/003_audit_events.sql`: audit/event table pattern.
+- `supabase/migrations/017_harden_watch_queue_rls.sql`: Pattern for hardening existing table RLS policies using security definer functions or user-scoped conditions.
+- `supabase/migrations/018_harden_watch_rpcs.sql`: Pattern for hardening database RPC functions to prevent privilege escalation or data exposure.
 
 ## App Router
 

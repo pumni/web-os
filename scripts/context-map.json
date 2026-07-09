@@ -22,7 +22,7 @@
     },
     {
       "name": "data-fetching",
-      "code": ["apps/web/src/features/**/queries.ts", "apps/web/src/features/**/actions.ts", "apps/web/src/features/**/stores/**", "apps/web/src/stores/**"],
+      "code": ["apps/web/src/features/**/queries.ts", "apps/web/src/features/**/actions.ts", "apps/web/src/features/**/stores/**", "apps/web/src/shared/stores/**"],
       "owners": ["docs/conventions/data-fetching.md", ".claude/rules/nextjs-cache-components.md"]
     },
     {

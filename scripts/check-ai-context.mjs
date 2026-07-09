@@ -24,6 +24,7 @@ try {
 }
 
 const REQUIRED_FILES = manifest.requiredFiles ?? [];
+const REQUIRED_EXISTING_PATHS = manifest.requiredExistingPaths ?? [];
 const REQUIRED_PACKAGE_SCRIPTS = manifest.requiredPackageScripts ?? [];
 const FRONTMATTER_REQUIRED = manifest.frontmatterRequired ?? [];
 const INDEX_REQUIRED_REFERENCES = manifest.indexRequiredReferences ?? [];
@@ -104,6 +105,14 @@ function checkRequiredFiles() {
   for (const relativePath of REQUIRED_FILES) {
     if (!fs.existsSync(resolveRel(relativePath))) {
       reportError(`Required AI context file is missing: ${relativePath}`);
+    }
+  }
+}
+
+function checkRequiredExistingPaths() {
+  for (const relativePath of REQUIRED_EXISTING_PATHS) {
+    if (!fs.existsSync(resolveRel(relativePath))) {
+      reportError(`Required path cited in context does not exist on disk: ${relativePath}`);
     }
   }
 }
@@ -851,6 +860,7 @@ if (selfTest) {
 console.log('Running AI context validation...');
 
 checkRequiredFiles();
+checkRequiredExistingPaths();
 checkFrontmatter();
 checkStructuredMarkdown({
   dir: '.agents/skills',

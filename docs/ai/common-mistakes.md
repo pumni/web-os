@@ -10,10 +10,8 @@ are defined in `scripts/review-gate-rules.mjs`. Unlabeled = enforced;
 
 ## 1. State ownership (`query-result-in-zustand`)
 
-Server data belongs in the TanStack Query cache, not Zustand (`docs/conventions/data-fetching.md`).
-
 ❌ `useEffect(() => useProfileStore.getState().setProfile(data), [data])` after `useQuery`
-✅ Read `data` directly from `useQuery`; Zustand is for client UI state only.
+    ✅ Read directly from `useQuery`; Zustand is for client UI only (`docs/conventions/data-fetching.md`).
 
 ## 2. Supabase select-all (`supabase-select-star`)
 
@@ -22,38 +20,28 @@ Server data belongs in the TanStack Query cache, not Zustand (`docs/conventions/
 
 ## 3. Service-role in client code (`service-role-client`, P0)
 
-❌ Importing the admin/service-role client into a `"use client"` component.
-✅ Service-role lives in server-only code (`actions.ts`, route handlers,
-`@pumni/auth`). Browser uses the `NEXT_PUBLIC_*` publishable key only.
+❌ Importing admin/service-role client into a `"use client"` component.
+✅ Admin client lives in server-only code. Browser uses publishable keys only.
 
 ## 4. RLS not enforced (`missing-auth-uid-policy`, P0)
 
 ❌ `create policy "all" on notes for all using (true);`
-✅
-```sql
-alter table public.notes enable row level security;
-create policy "owner reads" on public.notes for select
-  to authenticated using (user_id = (select auth.uid()));
-```
-
-`docs/conventions/supabase-security.md` for the full RLS + policy + grant pattern.
+✅ Enable RLS; check `user_id = auth.uid()` (see `docs/conventions/supabase-security.md`).
 
 ## 5. Trusting a client-supplied user_id (`trusted-client-user-id-write`)
 
-❌ Client component does `supabase.from('notes').insert({ user_id: userId, ... })`.
-✅ Write through a Server Action that derives the owner from `auth.uid()`, or rely
-on an RLS `WITH CHECK (user_id = auth.uid())` policy.
+❌ Client component inserts `{ user_id: userId, ... }`.
+✅ Server Action derives owner from `auth.uid()`, or RLS uses `WITH CHECK (user_id = auth.uid())`.
 
 ## 6. Mutation without cache update (`mutation-without-invalidation`)
 
-❌ `useMutation({ mutationFn: updateProfile })` with no `onSuccess`/`onSettled`.
-✅ `onSuccess: () => queryClient.invalidateQueries({ queryKey: ['profile'] })`
+❌ `useMutation({ mutationFn: updateProfile })` with no cache refresh.
+✅ client: `onSuccess: () => queryClient.invalidateQueries(...)`; server: call `router.refresh()` / `updateTag` on action success.
 
 ## 7. Logic in route files (`route-business-logic`)
 
 ❌ A `page.tsx` defining `useMutation`, calling external `fetch`, or running timers.
-✅ Route files compose UI; behaviour lives in a feature hook or
-`actions.ts`/`queries.ts` (`docs/conventions/feature-module.md`).
+✅ Route files compose UI; behavior lives in feature actions/queries (`docs/conventions/feature-module.md`).
 
 ## 8. Missing loading state (`missing-loading-state`)
 
@@ -67,21 +55,30 @@ on an RLS `WITH CHECK (user_id = auth.uid())` policy.
 
 ## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`, `use-cache-placement`, `update-tag-scope`)
 
-Single source of truth: `.claude/rules/nextjs-cache-components.md` (auto-loads on App Router files).
-All four cache rules now enforced by static gate: `cache-life-too-short`, `cache-tag-unparameterized`,
-`use-cache-placement`, and `update-tag-scope`.
+SSOT: `.claude/rules/nextjs-cache-components.md` (enforced by static check).
 
 ## 11. Weakening a test to make it pass (`test-weakening`)
 
-❌ `describe.only` / `it.skip`, or `try { x() } catch {}` to silence a throw
-(`.only` disables every other test).
-✅ Fix the code; assert with `expect(() => x()).toThrow()`. Intentional skip →
-allowlist with a reason (`ai-review-rule-allowlist.json`).
+❌ `describe.only`/`it.skip` or swallowing exceptions to silence a throw.
+✅ Fix code; assert with `toThrow()`. Skip goes to `ai-review-rule-allowlist.json`.
 
-## 12. Premature abstraction (simplicity — no static rule) (honor-system)
+## 12. Legacy middleware (`legacy-middleware`)
 
-❌ A strategy/factory/registry for one case; an interface with one impl; caching
-or config flags nobody asked for.
-✅ Minimum code for today's task; add abstraction when a second real caller
-appears. Reversible decisions get no ADR (`docs/adr/README.md`).
+❌ Implementing routing or auth check inside App Router `middleware.ts`.
+✅ Use Node-based auth proxy at `apps/web/src/proxy.ts` (or equivalent).
+
+## 13. Next 16 revalidate tag (`single-arg-revalidate-tag`)
+
+❌ `revalidateTag(tag)` (Next 16 requires two arguments).
+✅ `revalidateTag(tag, profile)`.
+
+## 14. Server-only leaks (`server-only-in-client`, `server-action-missing-auth`, `server-action-missing-revalidation`)
+
+❌ Importing `"server-only"` in client code, or actions missing auth check / tag updates.
+✅ Server-only stays on server; authenticate actions via `requireUser()`; run `updateTag(tag)`.
+
+## 15. Premature abstraction (simplicity) (honor-system)
+
+❌ A strategy/factory/registry for one case; interface with one impl.
+✅ Minimum code for today's task; add abstraction when a second caller appears.
 

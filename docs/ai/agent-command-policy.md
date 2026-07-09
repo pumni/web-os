@@ -90,5 +90,10 @@ reflex. If a gate fails, fix it before moving to the next.
 |End-to-end flows|`bunx playwright test` (from `apps/web`)|requires running app + Supabase|
 |Multi-scope / pre-merge|`bun run ai:premerge` (full ladder)||
 
+> [!NOTE]
+> **Advisory & Opt-In Gates:**
+> - `bun run ai:metrics` is only used as freeze evidence for context-layer ADR changes; it is NOT part of standard feature Definition of Done.
+> - `bun run ai:eval:behavioral` is an opt-in regression test suite; it fails open without API keys and is not required for normal feature completion.
+
 A bug fix starts with a failing test that goes green. Never bypass security or
 skip validation; if a command cannot be run, say why.

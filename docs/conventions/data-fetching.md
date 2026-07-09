@@ -41,8 +41,9 @@ Delegate data querying to TanStack Query when:
 
 ## Local State (Zustand)
 
-Use Zustand only for layout-level UI toggle values:
+Use Zustand only for layout-level UI chrome and preferences (global UI stores live in `apps/web/src/shared/stores`; feature-local UI state in `features/<feature>/stores`):
 
 - Opening or closing sidebars
-- Rendering system toast events
 - Storing active modal context IDs
+- Storing non-sensitive local layout preferences (e.g. density)
+- **Never** mirror server data or toast event logs into Zustand; trigger toasts directly using Sonner / `@pumni/ui` toaster primitives.
