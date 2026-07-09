@@ -20,3 +20,4 @@ harness-managed primary; this file is the durable log for decisions.
 - Context layer frozen (no new ADR without measured regression) → [adr/README.md](../adr/README.md).
 - Enforcement = checkCodeReferences (drift) + test-weakening (reward-hacking) + path-existence → `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
 - llms.txt is required (ADR-0022) — keep in sync with docs/ai/index.md.
+- Last behavioral eval dry-run: 2026-07-10.

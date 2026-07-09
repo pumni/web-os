@@ -55,10 +55,7 @@ UI state only), Zod validators.
 State ownership: server state stays in Server Components or TanStack Query cache;
 never mirror server data into Zustand (`docs/conventions/data-fetching.md`).
 
-React Compiler is active monorepo-wide: **do not** hand-write `useMemo` /
-`useCallback` for ordinary values, callback stability, or context. Optimize
-manually only for scheduler priority (`useTransition`), ref cleanup, or dynamic
-third-party JSX props (e.g. reduced-motion layout projection).
+React Compiler is active monorepo-wide: prefer relying on React Compiler; do not add **new** `useMemo` / `useCallback` for ordinary stability. Existing patterns in profile/watch may remain. Optimize manually only for scheduler priority (`useTransition`), ref cleanup, or dynamic third-party JSX props (e.g. reduced-motion layout projection).
 
 ## How to work
 
