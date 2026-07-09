@@ -56,12 +56,25 @@ Favor structured tools over raw shell — results stay parseable and auditable.
   a later call depends on an earlier result.
 - **Absolute paths, no `cd`.** Working directory is already the repo root.
 - **Read before you edit.** Don't re-read to "verify".
-- **Keep output lean.** Cap output at the source (`--quiet`, `| tail`).
+- **Keep output lean.** Cap large output at source (`--quiet`, `| Select-Object -Last N`, fail-only flags).
+  Do not paste full build traces, `node_modules` paths, or multi-thousand-line SQL dumps into the transcript — summarize paths + first error.
+  Prefer re-running a targeted gate over re-reading megabyte logs.
 - **Diagnose failures.** Read errors, fix, then re-run. No sleep-loop polling.
 - **Background long commands.** Run builds and watchers in background.
 - **Destructive commands need fresh evidence.** Re-check `git status` before reset/delete.
 - **Never print secrets.** Reference env vars by name, never echo contents.
 - **Regenerate generated files.** Run sync scripts; never hand-edit codegen.
+
+## Minimum path (any harness)
+
+Always: read `AGENTS.md` → `docs/ai/index.md` → only task-relevant rows.
+Claude Code: hooks may run `ai:check` on context edits; glob rules auto-load.
+Other harnesses (Cursor, Copilot, Codex, …): no hooks/globs/subagents — you must:
+1. Load path-relevant `.claude/rules/*` yourself when editing App Router / cache code.
+2. Before "done" on code: run the narrowest gate (`typecheck` / `lint` / `test`).
+3. Before "done" on context/security/arch touch: `bun run ai:check` and `bun run ai:eval`.
+4. High-risk diffs (`supabase/migrations`, `features/watch` sync): follow
+   `.agents/workflows/review-gate.md` domain reviewer notes manually if no subagent dispatch.
 
 ## Validation Gates
 

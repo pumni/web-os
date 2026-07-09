@@ -193,7 +193,28 @@ ADR edit only captures the *why*.
   not architecture.
 
 
-## Alternatives considered
+- **(Amended 2026-07-09 — B6 Apple HIG / Material 3 primary-source dating).** The
+  ADR-0012 tier model (`Chrome` / `Readable` / `Solid`) and the deliberate
+  omission of Apple Liquid Glass lensing are anchored to two vendor primary
+  sources — the Apple Human Interface Guidelines "Materials" page and the
+  Material 3 elevation spec — both of which are JS-gated SPAs that resist
+  static scraping. This amendment pins **manual verification dates** so the
+  glass spec carries an auditable freshness indicator without pretending to
+  be auto-refreshed from the source URL. Verification dates (next manual
+  recheck: 2026-08-15, or earlier if a vendor ships a major revision):
+  - **Apple HIG — Materials** (`developer.apple.com/design/human-interface-guidelines/materials`):
+    last manually reviewed 2026-07-09 (Liquid Glass tier vocabulary: "clear",
+    "regular", "thick"; lensing/refraction is iOS/visionOS-only and web
+    unverifiable).
+  - **Material 3 — Elevation** (`m3.material.io/styles/elevation/overview`):
+    last manually reviewed 2026-07-09 (shadow tier ladder, overlay-during-state
+    pattern).
+  Re-verification of either source accrues to `design-system.md` as a dated
+  note alongside the "Apple HIG tier map" sentence. A future major vendor
+  revision (e.g. Liquid Glass for the web, Material 4) mints a new amendment
+  here, not a new ADR — see "Alternatives considered" below.
+
+
 
 - Keep nine ADRs with status transitions. Rejected: they are reversible
   cosmetic decisions, not architecture; the bookkeeping cost outweighs the

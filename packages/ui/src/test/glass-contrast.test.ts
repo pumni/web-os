@@ -38,10 +38,19 @@ function composite(foreground: Color, background: Color): Rgb {
 }
 
 /**
- * APCA role floors (Myndex / APCA in a Nutshell):
- * - Lc 60 = minimum for chrome / short content text (NOT body columns)
- * - Lc 75+ = body text (Pumni forbids multi-line body on bare glass — use DialogBody)
- * Glass gates below use Lc 60 for short UI text over frosted fill composites.
+ * APCA role floors per APC-RC Bronze Simple Mode (readtech.org/ARC/tests/bronze-simple-mode):
+ * — the SAPC-APCA repo's "APCA in a Nutshell" is *superseded* by APC-RC Bronze
+ *   Simple Mode; the algorithm constants are unchanged but the use-case threshold
+ *   definitions are owned by the ARC.
+ * - Lc 90 = PREFERRED for body columns (18px/300, 14px/400, 12px non-body)
+ * - Lc 75 = MINIMUM for body columns (24px/300, 18px/400, 16px/500, 14px/700)
+ * - Lc 60 = MINIMUM for chrome / short content text (NOT body columns)
+ *   — 48px/200, 24px/400, 16px/700, etc. AAA: add Lc 15 to each.
+ * - Lc 45 = MINIMUM for large/heavy headlines (36px/400, 24px/700) + fine pictograms
+ * Glass gates below use Lc 60 for short UI text over frosted fill composites; body
+ * text stays on solid insets (DialogBody / CardWell), targeting Lc 75 minimum with
+ * Lc 90 preferred for long-form columns (see `glass-wcag2-bridge.test.ts` for the
+ * non-gating WCAG 2.x compliance audit printed alongside the APCA gates).
  */
 describe('Glass contrast tokens', () => {
   it.each(['light', 'dark'] as const)(

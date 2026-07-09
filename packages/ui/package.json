@@ -45,6 +45,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "apca-w3": "catalog:",
     "eslint": "catalog:",
     "jsdom": "catalog:",
     "typescript": "catalog:",

@@ -84,7 +84,11 @@ Liquid Glass lensing/refraction (intentionally omitted on the web for GPU cost
 and text clarity).
 
 A glass surface is a frosted translucent fill tuned to the APCA **chrome / short-text**
-gate (Lc 60 — *not* APCA body preferred 90 / min 75). Two tint tiers derive from a
+gate (Lc 60 — *not* APCA body, which per APC-RC Bronze Simple Mode is **Lc 75 minimum
+/ Lc 90 preferred** for fluent columns). The APCA reference is APC-RC Bronze Simple Mode
+(`readtech.org/ARC/tests/bronze-simple-mode/`, `apca-w3` canonical npm); the
+hand-roll in `packages/ui/src/lib/apca.ts` is drift-guarded against `apca-w3` in
+`apca-canonical-drift.test.ts`. Two tint tiers derive from a
 single fill source via CSS Color 5 relative syntax:
 
 **Fill source (single L/C/H SSOT — CSS Color 5):**
@@ -92,7 +96,9 @@ single fill source via CSS Color 5 relative syntax:
 --glass-fill: light-dark(oklch(0.96 0.01 250), oklch(0.18 0.02 240));  /* no alpha */
 ```
 
-**Apple HIG tier map:**
+**Apple HIG tier map** (HIG + Material 3 primary-source verification dates pinned in
+ADR-0012 §B6 amendment; both vendor docs are JS-gated so they cannot be scraped —
+verification is a dated manual checkpoint):
 
 | Tier | Token | Apple analogue | APCA target | Content policy |
 | --- | --- | --- | --- | --- |
@@ -124,8 +130,9 @@ All intensities pass APCA Lc 60 over desktop blobs and high-chroma synthetics
 > `glass-border-doctrine-and-grain-2026.md`) are archived under `docs/plans/archive/`.
 > Do not read them for design guidance — see ADR-0012 + this document.
 
-Vibrancy uses `--glass-saturate` (130% light / 150% dark) + `--glass-brightness`
-(110% light / 85% dark). Blur ladder (soft / default / strong personalization):
+Vibrancy uses `--glass-saturate` (≈1.3× light / 130% light / 150% dark) +
+`--glass-brightness` (110% light / 85% dark). Blur ladder (soft / default / strong
+personalization); the production span is **12–24px** (light default 16px, dark default 20px):
 
 | Step | Token | Value |
 | --- | --- | --- |
@@ -185,7 +192,13 @@ is needed AS page text (link button, `FormMessage`, error/eyebrow copy), use the
 Step-11 text tokens `text-primary-text` / `text-destructive-text` — the base
 `primary`/`destructive` are anchored dark for the solid-fill role and read at
 only Lc ~34/37 as dark text. Do not add a WCAG 2.x ratio
-gate. The rim tokens **and the glass edge** are specular light effects, NOT
+gate. **WCAG 2.x AA bridge audit (non-gating):** `packages/ui/src/test/glass-wcag2-bridge.test.ts`
+prints a WCAG 2.1 contrast report per gated surface pair in both modes — the legal
+floor in jurisdictions that audit WCAG 2.x by statute — but never gates on it. The APCA
+Lc gate stays authoritative (JND-aware; APCA correctly orders low-saturation text-on-glass
+that WCAG 2.x under-counts). As of this revision the bridge logs one pair (light-mode
+`muted-foreground` on `muted`) at WCAG 2.1 ≈ 4.35 — under AA 4.5 but at APCA Lc —66, well
+above the Lc 60 floor: the floor is the gate, the bridge is the record. The rim tokens **and the glass edge** are specular light effects, NOT
 subject to any APCA gate — the only APCA gate on glass is text over
 `--glass-tint-readable` / chrome composites (Lc 60). Tune tint alphas / edges, never a
 border-contrast threshold.
@@ -203,6 +216,21 @@ border-contrast threshold.
 5. Radius via named utilities only (`rounded-md/lg/xl`, `rounded-full`). No
    `rounded-[Npx]`.
 6. No new color tokens. Reuse existing semantic tokens.
+7. **Backdrop-root trap (MDN §backdrop-filter).** Never wrap a glass element
+   in an ancestor carrying `opacity < 1`, `mix-blend-mode`, or
+   `will-change: opacity|mix-blend-mode` — descendant `backdrop-filter` silently
+   stops rendering. Glass / overlay opacity animation lives ON the glass element
+   itself (flat string utilities `fade-in-0` / `fade-out-0` over
+   `[data-state=open|closed]`). Guarded by
+   `apps/web/src/test/design-system/glass-backdrop-root-trap.test.ts`.
+8. **Accent Lc 45 ↔ font-size pairing (APCA Bronze Simple Mode).** Lc 45 (the
+   accent-surface gate pinned in `glass-contrast.test.ts`) is the Bronze
+   Simple Mode floor for **large/heavy** text — 24px / 700 or 36px / 400. A
+   small accent chip label must therefore carry `≥ text-sm font-semibold`
+   (14px / 600) or heavier. Raising the accent Lc floor above 45 lets the
+   size floor drop commensurately; see `glass-accent-font-floor.test.ts`
+   for the `fontLookupAPCA` per-weight px table surfaced from canonical
+   `apca-w3`.
 
 ## Border consumption flow (ADR-0012)
 

@@ -14,6 +14,19 @@ when a task needs the runtime bridge or live schema. If the servers are not
 enabled or not running, fall back to `bun run typecheck`, `bun run build`, and
 direct code reads. P0–P4 in `AGENTS.md` always win. Never edit `.mcp.json` to bypass a gate or disable validation.
 
+## Version pin policy
+
+Versions in `.mcp.json` are **pinned to exact releases** (no `@latest`). Bump
+intentionally: check npm changelog → edit pin → enable locally → smoke one tool
+call → leave disabled-by-default. Never reintroduce `@latest`.
+
+## When MCP is unavailable / handshake fails
+
+- **next-devtools unavailable:** fall back to `bun run typecheck` / `bun run build`
+  / direct code reads. **Do not invent runtime errors.**
+- **postgres unavailable:** prefer `packages/supabase/src/types.ts` + migrations
+  under `supabase/migrations`. **Do not invent columns, types, or policies.**
+
 ---
 
 ## 1. next-devtools (Runtime Bridge)

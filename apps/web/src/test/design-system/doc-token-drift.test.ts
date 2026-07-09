@@ -76,24 +76,30 @@ describe('doc ↔ tokens.css numeric drift', () => {
   }
 
   // --- Glass vibrancy knob: both the convention doc and the skill reference
-  //     quote it as "≈1.4". (glass-saturate.test.ts guards the tokenization;
-  //     this guards the documented number.) ---------------------------------
-  it('glass vibrancy "≈N" in docs matches --glass-saturate', () => {
-    const value = readUnitless('--glass-saturate'); // 1.4
-    const approx = new RegExp('≈\\s*' + String(value).replace('.', '\\.'));
+  //     quote it as "≈1.3×" (the % value ÷ 100, expressed as a multiplier).
+  //     The token itself is a percentage (`--glass-saturate: 130%`); the doc
+  //     quotes a more human-friendly `≈1.3×` next to the literal `130%`.
+  //     (`glass-saturate.test.ts` guards the tokenization; this guards the
+  //     documented multiplier number.) -------------------------------------
+  it('glass vibrancy "≈N×" in docs matches --glass-saturate', () => {
+    const raw = readUnitless('--glass-saturate'); // e.g. 130 (parsed from "130%")
+    expect(raw, 'sanity: --glass-saturate is a percentage ≥100').toBeGreaterThanOrEqual(100);
+    const multiplier = (raw / 100).toFixed(1); // "1.3"
+    const approx = new RegExp('≈\\s*' + multiplier.replace('.', '\\.'));
     expect(designSystem, 'design-system.md --glass-saturate note is stale').toMatch(approx);
     expect(reference, 'ui-styling/REFERENCE.md --glass-saturate note is stale').toMatch(approx);
   });
 
-  // --- Frosted blur range: design-system.md states "--blur-glass 8–16px; dark
-  //     uses 16px". Both endpoints are owned tokens. -----------------------
+  // --- Frosted blur range: design-system.md states "--blur-glass 12–24px".
+  //     Both endpoints are owned tokens; the strong cap (24px) literal also
+  //     needs to appear in the doc. --------------------------------------
   it('blur range "S–Lpx" in design-system.md matches the blur tokens', () => {
-    const small = Number.parseInt(readToken('--blur-glass-sm'), 10); // 8
-    const large = Number.parseInt(readToken('--blur-glass-lg'), 10); // 16
+    const small = Number.parseInt(readToken('--blur-glass-sm'), 10); // 12
+    const large = Number.parseInt(readToken('--blur-glass-lg'), 10); // 24
     expect(designSystem, 'design-system.md blur range is stale').toMatch(
       new RegExp(`${small}[–-]${large}px`),
     );
-    expect(designSystem, 'design-system.md dark-blur note is stale').toMatch(
+    expect(designSystem, 'design-system.md strong-cap blur note is stale').toMatch(
       new RegExp(`${large}px`),
     );
   });

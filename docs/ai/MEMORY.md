@@ -19,7 +19,6 @@ harness-managed primary; this file is the durable log for decisions.
 - MCP runtime role → [mcp.md](mcp.md).
 - Context layer frozen — no new ADR without measured regression → [ADR-0009](../adr/0009-context-layer-lean-2026.md), [adr/README.md](../adr/README.md).
 - Enforcement = checkCodeReferences (drift) + test-weakening (reward-hacking) → `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
-- Context layer pruning metric → [measure-prune](../plans/archive/context-layer-measure-prune-2026-07.md).
 - 2026-07 refresh → [ADR-0024](../adr/0024-context-layer-2026-07-standards-refresh.md).
 - llms.txt is required (ADR-0022) — keep in sync with docs/ai/index.md.
 - 2026-07-05 — Glass 2.0: specular border doctrine, glass edge **ungated** specular
@@ -27,3 +26,4 @@ harness-managed primary; this file is the durable log for decisions.
 - 2026-07-09 — Glass modernization: `--glass-fill` single L/C/H SSOT; chrome/readable
   derive via relative Color 5 alpha-only scale; soft/strong gated APCA Lc 60 (all modes);
   body-on-glass forbidden. False-doctrine plans archived. ADR-0012 + `design-system.md`.
+- 2026-07-09 — MCP versions pinned (next-devtools-mcp@0.4.0, @modelcontextprotocol/server-postgres@0.6.2); never `@latest`. Bump ritual + fail-closed guidance in `docs/ai/mcp.md`.

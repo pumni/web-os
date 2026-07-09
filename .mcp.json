@@ -2,14 +2,14 @@
   "mcpServers": {
     "next-devtools": {
       "command": "npx",
-      "args": ["-y", "next-devtools-mcp@latest"],
+      "args": ["-y", "next-devtools-mcp@0.4.0"],
       "env": {
         "NEXT_TELEMETRY_DISABLED": "1"
       }
     },
     "postgres": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres@latest"],
+      "args": ["-y", "@modelcontextprotocol/server-postgres@0.6.2"],
       "env": {
         "POSTGRESQL_CONNECTION_URI": "${SUPABASE_DEV_DB_READONLY}"
       }

@@ -1,7 +1,14 @@
 /* ✦ APCA - Advanced Perceptual Contrast Algorithm ✦ */
-/* Reference: https://github.com/Myndex/SAPC-APCA               */
-/* W3 implementation: https://github.com/Myndex/apca-w3         */
-/* Version: 0.0.98G-4g (Feb 15, 2021)                          */
+/* Reference implementation: https://github.com/Myndex/apca-w3            */
+/* Algorithm spec (0.0.98G-4g, Feb 15 2021):                              */
+/*   https://github.com/Myndex/SAPC-APCA/blob/master/documentation/APCA-W3-LaTeX.md */
+/* Living guideline (use-case Lc floors live here, not in the algorithm   */
+/* repo, which has been superseded — see SAPC-APCA README):               */
+/*   APCA Readability Criterion — Bronze Simple Mode                      */
+/*   https://readtech.org/ARC/tests/bronze-simple-mode/                    */
+/* Version: 0.0.98G-4g (Feb 15, 2021) — matches apca-w3@0.1.9 base alg.   */
+/* Drift guard: see `apca-canonical-drift.test.ts` (diffs against npm).   */
+/* WCAG 2.x compliance bridge (non-gating): see `glass-wcag2-bridge.test.ts`. */
 
 import { formatOklch, oklchToSrgb } from './oklch';
 
