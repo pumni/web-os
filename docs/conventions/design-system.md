@@ -84,16 +84,45 @@ Liquid Glass lensing/refraction (intentionally omitted on the web for GPU cost
 and text clarity).
 
 A glass surface is a frosted translucent fill tuned to the APCA **chrome / short-text**
-gate (Lc 60 — *not* APCA body preferred 90 / min 75). Two tint tiers:
+gate (Lc 60 — *not* APCA body preferred 90 / min 75). Two tint tiers derive from a
+single fill source via CSS Color 5 relative syntax:
 
-| Tier | Token | Consumers |
-| --- | --- | --- |
-| Chrome | `--glass-tint-chrome` | `glass-bar*`, `glass-titlebar` (dock, topbar, shell) |
-| Readable | `--glass-tint-readable` (`--glass-tint` alias) | `glass-panel`, `glass-window`, menus, dialogs |
+**Fill source (single L/C/H SSOT — CSS Color 5):**
+```css
+--glass-fill: light-dark(oklch(0.96 0.01 250), oklch(0.18 0.02 240));  /* no alpha */
+```
+
+**Apple HIG tier map:**
+
+| Tier | Token | Apple analogue | APCA target | Content policy |
+| --- | --- | --- | --- | --- |
+| Chrome | `--glass-tint-chrome` | Clear-ish shell | Lc 60 short labels | Dock, topbar, titlebar, rails |
+| Readable | `--glass-tint-readable` (`--glass-tint` alias) | Regular material | Lc 60 short UI | Panels, windows, menus, dialog chrome |
+| Solid | `DialogBody` / `CardWell` / `bg-card` | Content layer | Lc 75+ body | Forms, tables, multi-line body |
+
+**"readable" ≠ "body"** — the name means readable short-UI tier, not body text.
 
 **Multi-line body copy must not sit on bare glass** — use `DialogBody`, `CardWell`,
 or `bg-card` solid inset inside the glass shell (Apple HIG: glass = functional
 chrome layer, not content).
+
+**Alpha matrix** (chrome derives from fill; only alpha varies per intensity):
+
+| Intensity | Mode | Chrome α | Readable α |
+| --- | --- | --- | --- |
+| default | light | 0.52 | 0.58 |
+| default | dark | 0.34 | 0.40 |
+| soft | light | 0.46 | 0.54 |
+| soft | dark | 0.30 | 0.36 |
+| strong | light | 0.58 | 0.65 |
+| strong | dark | 0.40 | 0.48 |
+
+All intensities pass APCA Lc 60 over desktop blobs and high-chroma synthetics
+(`glass-contrast.test.ts` gates default + soft + strong, both modes).
+
+> Superseded plans (`glassmorphism-2026-alignment.md`, `glassmorphism-2026-remediation.md`,
+> `glass-border-doctrine-and-grain-2026.md`) are archived under `docs/plans/archive/`.
+> Do not read them for design guidance — see ADR-0012 + this document.
 
 Vibrancy uses `--glass-saturate` (130% light / 150% dark) + `--glass-brightness`
 (110% light / 85% dark). Blur ladder (soft / default / strong personalization):
@@ -268,9 +297,10 @@ additional CSS custom properties for chrome, specular effects, and backdrop:
 - `--glass-reflection` — diagonal `linear-gradient(135deg)` overlay for the
   `glass-panel` / `glass-window` `::after` pseudo-element
 
-**Tint tiers**:
-- `--glass-tint-chrome` — shell bars / titlebar (more translucent)
-- `--glass-tint-readable` — panels / windows / menus (`--glass-tint` alias)
+**Tint tiers and fill source**:
+- `--glass-fill` — single opaque L/C/H source (CSS Color 5, no alpha); light/dark via `light-dark()`
+- `--glass-tint-chrome` — shell bars / titlebar (more translucent), derives via `oklch(from var(--glass-fill) l c h / α)`
+- `--glass-tint-readable` — panels / windows / menus (`--glass-tint` alias), derives same fill
 
 **Backdrop filter knobs**:
 - `--glass-saturate` — base `130%` (light) / `150%` (dark)

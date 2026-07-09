@@ -1,3 +1,5 @@
+> Archived 2026-07-09. Successor: docs/plans/glass-modernization-relative-apca-2026-07.md
+
 # Kế hoạch: Align Glassmorphism playground + ADR với chuẩn 2026
 
 > [!WARNING]

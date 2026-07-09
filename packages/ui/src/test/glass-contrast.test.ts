@@ -6,6 +6,9 @@ import {
   buildAccentTokenMap,
   resolveColor,
   mixOklch,
+  readBlock,
+  css,
+  type Mode,
 } from '../../scripts/lib/token-resolver';
 
 type Rgb = [number, number, number];
@@ -187,11 +190,141 @@ describe('Glass contrast tokens', () => {
   // Assert presence so it can't be silently zeroed.
   it.each(['light', 'dark'] as const)(
     'delineates glass panels via the float shadow in %s mode',
+    // keep this test marker for context
     (mode) => {
       const tokenMap = buildTokenMap(mode);
       expect(tokenMap.has('--shadow-glass'), `${mode} --shadow-glass defined`).toBe(true);
       const edge = tokenColor('--glass-edge', tokenMap);
       expect(edge.alpha, `${mode} glass edge is visible`).toBeGreaterThan(0.1);
+    },
+  );
+});
+
+/* ------------------------------------------------------------------ *
+ * Glass intensity personalization — soft + strong APCA gate (Step 1.1)
+ * Mirrors how `[data-glass='soft']` and `[data-glass='strong']` CSS blocks
+ * override chrome/readable tints in personalization.css. We inject those
+ * overrides into the base map so token-resolver can resolve and APCA-gate
+ * the composites.
+ *
+ * Keep this helper in sync with personalization.css selector names.
+ * ------------------------------------------------------------------ */
+
+function buildGlassIntensityMap(
+  mode: Mode,
+  intensity: 'soft' | 'strong',
+): Map<string, string> {
+  const map = buildTokenMap(mode);
+  // Merge [data-glass='soft'|'strong'] block — simulate CSS attribute override
+  for (const [name, value] of readBlock(css.personalization, `[data-glass='${intensity}']`)) {
+    map.set(name, value);
+  }
+  return map;
+}
+
+describe('Glass intensity — soft/strong APCA gate', () => {
+  const intensities = ['soft', 'strong'] as const;
+
+  it.each(
+    intensities.flatMap((intensity) =>
+      (['light', 'dark'] as const).map((mode) => [intensity, mode] as const),
+    ),
+  )(
+    'keeps chrome/short text at Lc 60 over readable glass + desktop blobs in %s %s',
+    (intensity, mode) => {
+      const tokenMap = buildGlassIntensityMap(mode, intensity);
+      const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
+      const glass = tokenColor('--glass-tint-readable', tokenMap);
+
+      for (const blobToken of desktopBlobTokens) {
+        const background = tokenColor(blobToken, tokenMap);
+        const glassOverBlob = composite(glass, background);
+
+        expect(
+          Math.abs(apcaContrast(foreground, glassOverBlob)),
+          `${intensity} ${mode} ${blobToken} readable-glass text contrast (APCA)`,
+        ).toBeGreaterThanOrEqual(60);
+      }
+    },
+  );
+
+  it.each(
+    intensities.flatMap((intensity) =>
+      (['light', 'dark'] as const).map((mode) => [intensity, mode] as const),
+    ),
+  )(
+    'keeps readable glass Lc 60 over high-chroma synthetics in %s %s',
+    (intensity, mode) => {
+      const tokenMap = buildGlassIntensityMap(mode, intensity);
+      const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
+      const glass = tokenColor('--glass-tint-readable', tokenMap);
+
+      const worstCases: Array<{ label: string; bg: Color }> = [
+        { label: 'max-chroma-coral', bg: { l: 0.7, c: 0.18, h: 30, alpha: 1 } },
+        { label: 'max-chroma-amber', bg: { l: 0.75, c: 0.16, h: 75, alpha: 1 } },
+        { label: 'max-chroma-blue', bg: { l: 0.55, c: 0.18, h: 250, alpha: 1 } },
+        { label: 'max-chroma-violet', bg: { l: 0.55, c: 0.18, h: 300, alpha: 1 } },
+      ];
+
+      for (const { label, bg } of worstCases) {
+        const glassOverBg = composite(glass, bg);
+        expect(
+          Math.abs(apcaContrast(foreground, glassOverBg)),
+          `${intensity} ${mode} ${label} readable-glass text contrast (APCA)`,
+        ).toBeGreaterThanOrEqual(60);
+      }
+    },
+  );
+
+  it.each(
+    intensities.flatMap((intensity) =>
+      (['light', 'dark'] as const).map((mode) => [intensity, mode] as const),
+    ),
+  )(
+    'keeps chrome tint more translucent than readable in %s %s',
+    (intensity, mode) => {
+      const tokenMap = buildGlassIntensityMap(mode, intensity);
+      const chrome = tokenColor('--glass-tint-chrome', tokenMap);
+      const readable = tokenColor('--glass-tint-readable', tokenMap);
+      expect(chrome.alpha, `${intensity} ${mode} chrome alpha < readable alpha`).toBeLessThan(
+        readable.alpha,
+      );
+    },
+  );
+});
+
+/* ------------------------------------------------------------------ *
+ * Glass fill relative derivation invariant (Step 1.1)
+ * After Phase 1.2 migrates to --glass-fill + relative Color 5 alpha scale,
+ * chrome and readable must share the same L/C/H (from the single fill source),
+ * differing only in alpha. This pins the CSS Color 5 SSOT invariant.
+ * ------------------------------------------------------------------ */
+describe('Glass fill relative derivation invariant', () => {
+  it.each(['light', 'dark'] as const)(
+    'chrome and readable share L/C/H from the same fill source in %s mode',
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const chrome = tokenColor('--glass-tint-chrome', tokenMap);
+      const readable = tokenColor('--glass-tint-readable', tokenMap);
+
+      const TOLERANCE = 0.001;
+      expect(
+        Math.abs(chrome.l - readable.l),
+        `${mode} chrome.l == readable.l (shared fill source)`,
+      ).toBeLessThan(TOLERANCE);
+      expect(
+        Math.abs(chrome.c - readable.c),
+        `${mode} chrome.c == readable.c (shared fill source)`,
+      ).toBeLessThan(TOLERANCE);
+      // Hue is achromatic-safe (c ≈ 0 makes h arbitrary) — only check when chroma > 0
+      if (chrome.c > 0.001) {
+        expect(
+          Math.abs(chrome.h - readable.h),
+          `${mode} chrome.h == readable.h (shared fill source)`,
+        ).toBeLessThan(TOLERANCE);
+      }
+      // Alpha must differ: chrome is more translucent
+      expect(chrome.alpha, `${mode} chrome alpha < readable alpha`).toBeLessThan(readable.alpha);
     },
   );
 });

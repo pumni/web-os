@@ -25,9 +25,12 @@ reference detail.
   inline status pills, or icon chips — `pumniNoAdHocSurface` blocks the well.
   `BentoGridItem` is layout-only and renders through these primitives.
 - Contrast is APCA-gated per surface pair in `glass-contrast.test.ts` (spec-correct APCA: gamma-encoded sRGB into `apcaContrast`) — **Lc 60 chrome/short-text** target for surfaces, muted, and glass-over-blob (readable + chrome tiers) in both modes, with documented pinned floors below it only for accent surfaces (45) and status tints (per-token table in `packages/ui/src/test/glass-contrast.test.ts`). Long body → solid surface (Lc 75+ preferred); never multi-line body on bare glass (`DialogBody` / `CardWell`). The **glass edge is NOT contrast-gated** — specular light rim; delineation is `--shadow-glass`; a11y path is `prefers-contrast` / `prefers-reduced-transparency`. No WCAG 2.x ratio gate; never gate the glass border on contrast.
-- Glass tiers: `--glass-tint-chrome` (bars/shell) vs `--glass-tint-readable` /
-  `--glass-tint` (panels). Blur ladder soft **12** / default light **16** / dark
-  **20** / strong **24**. Personalization soft|strong adjusts blur + tint alpha.
+- Glass tiers: `--glass-fill` is the single opaque L/C/H fill SSOT. `--glass-tint-chrome`
+  (bars/shell) and `--glass-tint-readable` / `--glass-tint` (panels) derive via
+  `oklch(from var(--glass-fill) l c h / α)` — only alpha varies. Blur ladder soft **12** /
+  default light **16** / dark **20** / strong **24**. Personalization soft|strong adjusts blur +
+  alpha only (never re-state L/C/H in personalization overrides). Glass edge is **ungated
+  specular**; text-on-glass Lc 60 is the only APCA gate.
 - Glass performance: never animate `backdrop-filter`; cap stacked glass at 2
   layers (each layer forces a separate backdrop render pass; doc/skill rule);
   `will-change` is reserved for overlay transitions, not static glass.

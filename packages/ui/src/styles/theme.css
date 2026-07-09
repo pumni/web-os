@@ -136,44 +136,39 @@
      CATEGORY IV: GLASSMORPHISM & DEPTH EFFECTS
      ========================================================================
 
-     Rewritten exclusively from: glassmorphism-card-laboratory
-     (OKLCH + APCA 3.0, Liquid Glass bevel ring, Relative OKLCH border)
-
-     6-element model:
-       1. Tint — OKLCH literal fill (Lab presets)
-       2. Blur — 20px light / 24px dark (tokens.css)
-       3. Saturation — 130% light / 150% dark (Lab "Kính Sáng" / "Kính Tối" presets)
-       4. Brightness — 110% light / 85% dark (Lab presets)
+     6-element model (ADR-0012 canonical, 2026-07-09 amendment):
+       1. Tint — CSS Color 5 relative alpha scale from --glass-fill SSOT
+       2. Blur — ladder 12/16/20/24px (tokens.css primitives)
+       3. Saturation — 130% light / 150% dark (--glass-saturate)
+       4. Brightness — 110% light / 85% dark (--glass-brightness)
        5. Bevel ring — gradient mask ring ::before (light-catch TL → contact shadow BR)
-       6. Volumetric drop shadow — 0 25px 60px -15px (Lab CSS export)
-     Plus: diagonal reflection overlay (Lab: "Shiny diagonal reflection line to
-           simulate real physical glass edges") via ::after
+       6. Volumetric drop shadow — --shadow-glass (primary delineator, ADR-0012)
+     Plus: diagonal reflection overlay via ::after
   */
 
-  /* 1. TINT — two-tier glass (chrome vs readable)
-     Base optical recipe (OKLCH Lab "Kính Sáng"/"Kính Tối" L/C/H):
+  /* 1. TINT — two-tier glass (chrome vs readable) via single fill source
+     Single opaque L/C/H recipe (CSS Color 5 "fill" pattern — ADR-0025):
+       --glass-fill holds the base colour, NO alpha; chrome/readable derive alpha only.
        Light: L=0.96 C=0.01 H=250 · Dark: L=0.18 C=0.02 H=240
-     Tiers (2026 modernization):
-       --glass-tint-chrome   → dock / topbar / titlebar / shell rails (lighter alpha)
-       --glass-tint-readable → panels, windows, menus, dialogs (APCA Lc ≥ 60 over blobs)
+     Apple HIG map (two-tier naming, content policy):
+       --glass-tint-chrome   → Clear-ish shell: dock / topbar / titlebar / rails
+                               APCA Lc ≥ 60 over blobs (chrome/short labels)
+       --glass-tint-readable → Regular material: panels, windows, menus, dialog chrome
+                               APCA Lc ≥ 60 over blobs (short UI); multi-line body →
+                               solid inset (DialogBody / CardWell / bg-card)
        --glass-tint          → alias of readable (backward-compat for consumers)
-     Readable light alpha 0.58 clears the APCA chrome/short-text gate over desktop
-     blobs; chrome stays more translucent for shell hierarchy (Apple HIG: glass =
-     functional chrome layer, not content). Multi-line body copy never sits on bare
-     glass — use a solid inset (`DialogBody` / `CardWell` / `bg-card`). */
-  --glass-tint-base: light-dark(
-    oklch(0.96 0.01 250 / 0.48),
-    oklch(0.18 0.02 240 / 0.36)
+     "readable" ≠ "body" — the name signals the readable short-UI tier, not body text.
+     Alpha matrix (default intensity; see personalization.css for soft/strong):
+       Light chrome 0.52 / readable 0.58 · Dark chrome 0.34 / readable 0.40
+     Relative Color 5 grammar keeps L/C/H in one place; soft/strong only override alpha. */
+  --glass-fill: light-dark(
+    oklch(0.96 0.01 250),
+    oklch(0.18 0.02 240)
   );
-  --glass-tint-chrome: light-dark(
-    oklch(0.96 0.01 250 / 0.52),
-    oklch(0.18 0.02 240 / 0.34)
-  );
-  --glass-tint-readable: light-dark(
-    oklch(0.96 0.01 250 / 0.58),
-    oklch(0.18 0.02 240 / 0.40)
-  );
+  --glass-tint-chrome:   oklch(from var(--glass-fill) l c h / 0.52);
+  --glass-tint-readable: oklch(from var(--glass-fill) l c h / 0.58);
   --glass-tint: var(--glass-tint-readable);
+
 
   /* 2+3+4: Backdrop filter knobs — tokens.css primitives.
      Light: saturate 130%, brightness 110% (defaults).
@@ -211,9 +206,8 @@
   /* 6. DIAGONAL REFLECTION OVERLAY
      Physical glass simulation: a faint diagonal gradient that mimics the
      specular highlight along the top-left edge of real frosted glass
-     (from glassmorphism-card-laboratory: "Shiny diagonal reflection line to
-     simulate real physical glass edges" + modern-glassmorphism-card-simulator
-     Apple Liquid Glass reflection). Applied via ::after on glass-panel/window. */
+     (light catch top-left → fade → dark contact bottom-right).
+     Applied via ::after on glass-panel/window. */
   --glass-reflection: linear-gradient(
     135deg,
     oklch(1 0 0 / 0.08) 0%,

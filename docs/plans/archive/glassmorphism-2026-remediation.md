@@ -1,3 +1,5 @@
+> Archived 2026-07-09. Successor: docs/plans/glass-modernization-relative-apca-2026-07.md
+
 # Kế hoạch: Remediation Glassmorphism 2.0 (hậu-review 2026-07-05)
 
 > [!WARNING]

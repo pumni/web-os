@@ -27,7 +27,7 @@ that source code and conventions cannot carry on their own.
 | 0009 | Context Layer — Lean 2026 | Deprecated (all 7 decisions live in repo state: single `docs/ai/index.md` router, `docs/ai/*` with description frontmatter, `.claude/rules/` deduplication, validation altitude, hybrid skill shims, `review-gate.md` only workflow) | 2026-06-20 |
 | 0010 | Frontend Platform Foundation — `@pumni/ui` as a Reusable OS Skeleton | Accepted (two rejections revised by ADR-0021) | 2026-06-20 |
 | 0011 | Watch Sync as an Explicit State Machine + an Observability Seam | Accepted | 2026-06-20 |
-| 0012 | Surface Visual Language (consolidated) | Accepted (amended 2026-07-05 per 2026 trend alignment — inline amendment per convention; cosmetic scope, not a supersede) | 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-05) |
+| 0012 | Surface Visual Language (consolidated) | Accepted (amended 2026-07-05 per 2026 trend alignment; amended 2026-07-09 relative OKLCH alpha scale — inline amendments per convention; cosmetic/token scope, not supersedes) | 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-05 · amended 2026-07-09) |
 | 0013 | Context Layer — 2026-06 Cleanup | Deprecated (§4 llms.txt reversal by ADR-0022; freshness treadmill gone, description frontmatter live, sync-skills.mjs operational, reuse-first ladder in codebase-design skill) | 2026-06-24 |
 | 0021 | Revisit ADR-0010 Rejections — Component Catalog + DTCG Token Export | Accepted | 2026-06-30 |
 | 0022 | Keep llms.txt as the Agentic Handshake Map | Accepted | 2026-07-01 |

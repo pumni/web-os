@@ -1,6 +1,6 @@
 {
   "docCount": 16,
-  "totalSizeBytes": 64045,
+  "totalSizeBytes": 65572,
   "adrActiveCount": 8,
   "adrDeprecatedCount": 7,
   "adrMetaRatio": "0%",
@@ -9,8 +9,8 @@
   "invariantDuplicateCategories": 3,
   "manifestItemCount": 42,
   "commonMistakesEnforcementGap": 3,
-  "contextDocsBytes": 64045,
-  "adrDocsBytes": 87424,
+  "contextDocsBytes": 65572,
+  "adrDocsBytes": 88450,
   "toolMatrixMismatches": 0,
   "skillNegativeClauseCoverage": "9/9",
   "behavioralBaseline": null

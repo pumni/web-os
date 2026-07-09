@@ -1,9 +1,6 @@
 /*
  * Pumni OS — Glassmorphism surface utilities
  * ------------------------------------------
- * Rewritten exclusively from: glassmorphism-card-laboratory
- * (OKLCH + APCA 3.0, Liquid Glass bevel ring, Relative OKLCH border)
- *
  * Reusable glassmorphism surfaces for FLOATING layers only:
  * topbar, dock, window titlebar, dialog, sheet, popover, command palette,
  * toast. Never apply to large background areas — `backdrop-filter` is
@@ -14,9 +11,9 @@
  * Optical honesty: engineered frosted glassmorphism (blur + tint + specular),
  * NOT Apple Liquid Glass lensing/refraction (deleted for web GPU + text clarity).
  *
- * 6-element model (from glassmorphism-card-laboratory):
- *   1. Tint — two-tier: `--glass-tint-chrome` (bars) / `--glass-tint-readable`
- *      (panels); `--glass-tint` aliases readable for compat
+ * 6-element model (ADR-0012 canonical, 2026-07-09 amendment):
+ *   1. Tint — CSS Color 5 relative scale from `--glass-fill`: `--glass-tint-chrome`
+ *      (bars) / `--glass-tint-readable` (panels); `--glass-tint` aliases readable
  *   2. Blur (`--glass-blur`) — ladder above
  *   3. Saturation (`--glass-saturate`) — 130% light / 150% dark
  *   4. Brightness (`--glass-brightness`) — 110% light / 85% dark
@@ -99,11 +96,10 @@
     z-index: 1;
   }
 
-  /* Diagonal reflection: physical glass simulation from glassmorphism-card-laboratory.
-     "Shiny diagonal reflection line to simulate real physical glass edges" — a faint
-     135° gradient from white (alpha 0.08) through transparent to a barely-there
-     dark (alpha 0.02) at the bottom-right. Creates a real-world glass refraction
-     feel without adding GPU cost (no extra backdrop pass). */
+  /* Diagonal reflection: physical glass simulation — a faint 135° gradient from
+     white (alpha 0.08) through transparent to a barely-there dark (alpha 0.02)
+     at the bottom-right. Creates a real-world glass refraction feel without
+     adding GPU cost (no extra backdrop pass). */
   &::after {
     content: '';
     position: absolute;

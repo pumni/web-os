@@ -1,3 +1,5 @@
+> Archived 2026-07-09. Successor: docs/plans/glass-modernization-relative-apca-2026-07.md
+
 # Kế hoạch: Border doctrine đúng tri giác + Grain chuẩn 2026
 
 - **Status:** Proposed

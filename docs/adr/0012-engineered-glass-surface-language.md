@@ -1,7 +1,7 @@
 # 0012. Surface Visual Language (consolidated)
 
-- **Status:** Accepted (amended 2026-07-05 per 2026 trend alignment — inline amendment per convention; cosmetic scope, not a supersede)
-- **Date:** 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-05)
+- **Status:** Accepted (amended 2026-07-05 per 2026 trend alignment; amended 2026-07-09 relative OKLCH alpha scale — inline amendments per convention; cosmetic/token scope, not supersedes)
+- **Date:** 2026-06-20 (consolidated 2026-06-22 · amended 2026-07-05 · amended 2026-07-09)
 - **Owner:** @pumni/ui design system
 
 ## Context
@@ -180,6 +180,18 @@ ADR edit only captures the *why*.
   transparent 1px metric border for box stability, which the a11y fallbacks
   re-colour to `--border`. Token values and the gate scope are unchanged.
 - **(Amended 2026-07-05 grain 2026)** Upgraded `glass-grain` utility to use `::after` (resolving conflict with specular ::before), `isolation: isolate`, and `mix-blend-mode: overlay`. Hạt nhiễu được cố định kích thước 200px (Luminance-only SVG) và điều chỉnh opacity theo mode (`--glass-grain-opacity`: light 0.05 / dark 0.07).
+- **(Amended 2026-07-09 — relative OKLCH alpha scale)** Introduces `--glass-fill` as the
+  single opaque L/C/H fill source (`light-dark(oklch(0.96 0.01 250), oklch(0.18 0.02 240))`).
+  `--glass-tint-chrome` and `--glass-tint-readable` now derive exclusively via CSS Color 5
+  relative syntax `oklch(from var(--glass-fill) l c h / α)` — only alpha varies between tiers
+  and intensities. `[data-glass='soft'|'strong']` in `personalization.css` overrides alpha only
+  (no L/C/H restated). APCA gate extended to cover default + soft + strong for both modes,
+  chrome + readable, over desktop blobs + high-chroma synthetics — all pass Lc ≥ 60 with the
+  documented alpha matrix (see `design-system.md`). Three superseded plans teaching false
+  doctrine (Lc 25 edge gates, navy rim, blur 8–16) archived under `docs/plans/archive/`;
+  use `design-system.md` + this ADR as the SSOT. No ADR-0026 minted — token + gate scope,
+  not architecture.
+
 
 ## Alternatives considered
 

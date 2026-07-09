@@ -1947,6 +1947,15 @@
         "$type": "other",
         "$value": "{semantic.color.popover}"
       },
+      "fill": {
+        "$type": "color",
+        "$value": "oklch(0.96 0.01 250)",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "oklch(0.18 0.02 240)"
+          }
+        }
+      },
       "grain-opacity": {
         "$type": "number",
         "$value": 0.05,
@@ -1982,32 +1991,13 @@
         "$type": "color",
         "$value": "{semantic.glass.tint-readable}"
       },
-      "tint-base": {
-        "$type": "color",
-        "$value": "oklch(0.96 0.01 250 / 0.48)",
-        "$extensions": {
-          "com.pumni.modes": {
-            "dark": "oklch(0.18 0.02 240 / 0.36)"
-          }
-        }
-      },
       "tint-chrome": {
         "$type": "color",
-        "$value": "oklch(0.96 0.01 250 / 0.52)",
-        "$extensions": {
-          "com.pumni.modes": {
-            "dark": "oklch(0.18 0.02 240 / 0.34)"
-          }
-        }
+        "$value": "oklch(from {semantic.glass.fill} l c h / 0.52)"
       },
       "tint-readable": {
         "$type": "color",
-        "$value": "oklch(0.96 0.01 250 / 0.58)",
-        "$extensions": {
-          "com.pumni.modes": {
-            "dark": "oklch(0.18 0.02 240 / 0.40)"
-          }
-        }
+        "$value": "oklch(from {semantic.glass.fill} l c h / 0.58)"
       }
     },
     "shadow": {
