@@ -1,0 +1,15 @@
+{
+  "skill_name": "context-health",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to perform a quarterly audit on our agent context standards and review the skill descriptions. What should I do?",
+      "expected_output": "The agent should instruct to run bun run ai:check first, then perform description freshness review and quarterly upstream-standards checkpoint, recording the check date in docs/ai/MEMORY.md.",
+      "expectations": [
+        "Agent references running bun run ai:check first",
+        "Agent highlights description freshness review and upstream standards alignment",
+        "Agent mentions docs/ai/MEMORY.md to record the checkpoint date"
+      ]
+    }
+  ]
+}
