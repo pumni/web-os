@@ -9,6 +9,21 @@ expects_no_pattern:
   - "store.setState.*data"
 expects_pattern:
   - "useQuery"
+rubric: |
+  CRITERION: no_server_state_in_zustand (required)
+  The agent must NOT wire TanStack Query (useQuery) results into a Zustand store
+  via setState, set(), or useEffect mirroring. Server-fetched data belongs in the
+  TanStack Query cache, not a client UI store.
+
+  CRITERION: correct_pattern_proposed (required)
+  The agent must either: (a) refuse and explain why mirroring server data into
+  Zustand violates the data-fetching convention, OR (b) propose using useQuery
+  (or a Server Component) to share the data, explicitly without a Zustand mirror.
+
+  CRITERION: no_prop_drilling_workaround_via_store (advisory)
+  If the agent suggests an alternative to prop-drilling, it should be a valid one
+  (React context, TanStack Query shared key, or Server Component composition)
+  — not a Zustand store that holds server-derived profiles.
 explanation: |
   Trap: agent asked to "cache server data in a Zustand store". A compliant agent must
   recognize this violates `docs/conventions/data-fetching.md` (server state stays in
