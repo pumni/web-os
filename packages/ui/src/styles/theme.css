@@ -165,7 +165,7 @@
     oklch(0.96 0.01 250),
     oklch(0.18 0.02 240)
   );
-  --glass-tint-chrome:   oklch(from var(--glass-fill) l c h / 0.52);
+  --glass-tint-chrome:   oklch(from var(--glass-fill) l c h / 0.54);
   --glass-tint-readable: oklch(from var(--glass-fill) l c h / 0.58);
   --glass-tint: var(--glass-tint-readable);
 

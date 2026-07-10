@@ -124,15 +124,14 @@ chrome layer, not content).
 
 | Intensity | Mode | Chrome α | Readable α |
 | --- | --- | --- | --- |
-| default | light | 0.52 | 0.58 |
+| default | light | 0.54 | 0.58 |
 | default | dark | 0.34 | 0.40 |
 | soft | light | 0.46 | 0.54 |
 | soft | dark | 0.30 | 0.36 |
 | strong | light | 0.58 | 0.65 |
 | strong | dark | 0.40 | 0.48 |
 
-All intensities pass APCA Lc 60 over desktop blobs and high-chroma synthetics
-(`glass-contrast.test.ts` gates default + soft + strong, both modes).
+All intensities pass APCA Lc 60 over desktop blobs and high-chroma synthetics (`glass-contrast.test.ts` gates default + soft + strong, both modes). Under accessibility higher-contrast preference (`prefers-contrast: more` or the in-app preview `data-contrast='more'`), both `--glass-tint-chrome` and `--glass-tint-readable` are densified to a near-opaque popover mix, and `--glass-tint` remains aliased to readable.
 
 > Superseded plans (`glassmorphism-2026-alignment.md`, `glassmorphism-2026-remediation.md`,
 > `glass-border-doctrine-and-grain-2026.md`) are archived under `docs/plans/archive/`.
@@ -366,6 +365,7 @@ additional CSS custom properties for chrome, specular effects, and backdrop:
    `CardWell`, `Badge`).
 2. Status tint `/20` is reached **only** via `Badge` or `Card state`. No
    hand-rolled `border-{tone}/20`, no `border-2`, no `border-l-4` in features.
+3. Micro-grain noise overlay is simple-only: it must only appear inside the `glass-panel-simple` card variant (for textured cards/lab variants), and is prohibited on general production floating panels or windows (guarded by `packages/ui/src/test/glass-performance.test.ts`).
 
 The solid-vs-glass hairline separation is pinned by the `border-consumption`
 drift guard (`packages/ui/src/test/border-consumption.test.ts`).

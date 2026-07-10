@@ -37,6 +37,50 @@ function composite(foreground: Color, background: Color): Rgb {
   ];
 }
 
+function parsePercentFactor(value: string | undefined, fallback: number): number {
+  if (!value) return fallback;
+  const match = value.match(/^([\d.]+)%$/);
+  if (match) {
+    return parseFloat(match[1]) / 100;
+  }
+  const floatVal = parseFloat(value);
+  return isNaN(floatVal) ? fallback : floatVal;
+}
+
+function compositeGlass(
+  foreground: Color,
+  background: Color,
+  tokenMap: Map<string, string>,
+): Rgb {
+  const brightnessVal = tokenMap.get('--glass-brightness');
+  const saturateVal = tokenMap.get('--glass-saturate');
+
+  const brightness = parsePercentFactor(brightnessVal, 1.0);
+  const saturate = parsePercentFactor(saturateVal, 1.0);
+
+  const fg = oklchToSrgb(foreground);
+  const bg = oklchToSrgb(background);
+
+  let r = bg[0] * brightness;
+  let g = bg[1] * brightness;
+  let b = bg[2] * brightness;
+
+  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  r = luma + (r - luma) * saturate;
+  g = luma + (g - luma) * saturate;
+  b = luma + (b - luma) * saturate;
+
+  r = Math.max(0, Math.min(1, r));
+  g = Math.max(0, Math.min(1, g));
+  b = Math.max(0, Math.min(1, b));
+
+  return [
+    fg[0] * foreground.alpha + r * (1 - foreground.alpha),
+    fg[1] * foreground.alpha + g * (1 - foreground.alpha),
+    fg[2] * foreground.alpha + b * (1 - foreground.alpha),
+  ];
+}
+
 /**
  * APCA role floors per APC-RC Bronze Simple Mode (readtech.org/ARC/tests/bronze-simple-mode):
  * — the SAPC-APCA repo's "APCA in a Nutshell" is *superseded* by APC-RC Bronze
@@ -62,7 +106,7 @@ describe('Glass contrast tokens', () => {
 
       for (const blobToken of desktopBlobTokens) {
         const background = tokenColor(blobToken, tokenMap);
-        const glassOverBlob = composite(glass, background);
+        const glassOverBlob = compositeGlass(glass, background, tokenMap);
 
         expect(
           Math.abs(apcaContrast(foreground, glassOverBlob)),
@@ -81,7 +125,7 @@ describe('Glass contrast tokens', () => {
 
       for (const blobToken of desktopBlobTokens) {
         const background = tokenColor(blobToken, tokenMap);
-        const glassOverBlob = composite(glass, background);
+        const glassOverBlob = compositeGlass(glass, background, tokenMap);
 
         expect(
           Math.abs(apcaContrast(foreground, glassOverBlob)),
@@ -108,7 +152,7 @@ describe('Glass contrast tokens', () => {
       ];
 
       for (const { label, bg } of worstCases) {
-        const glassOverBg = composite(glass, bg);
+        const glassOverBg = compositeGlass(glass, bg, tokenMap);
         expect(
           Math.abs(apcaContrast(foreground, glassOverBg)),
           `${mode} ${label} readable-glass text contrast (APCA)`,
@@ -207,6 +251,22 @@ describe('Glass contrast tokens', () => {
       expect(edge.alpha, `${mode} glass edge is visible`).toBeGreaterThan(0.1);
     },
   );
+
+  it('differs from raw composite for synthetic colorful backgrounds when filters are active', () => {
+    const tokenMap = buildTokenMap('light');
+    const tint: Color = { l: 0.96, c: 0.01, h: 250, alpha: 0.58 };
+    const bg: Color = { l: 0.7, c: 0.18, h: 30, alpha: 1.0 }; // high-chroma coral
+
+    const raw = composite(tint, bg);
+    const proxy = compositeGlass(tint, bg, tokenMap);
+
+    const diff = Math.max(
+      Math.abs(raw[0] - proxy[0]),
+      Math.abs(raw[1] - proxy[1]),
+      Math.abs(raw[2] - proxy[2])
+    );
+    expect(diff).toBeGreaterThan(0.01);
+  });
 });
 
 /* ------------------------------------------------------------------ *
@@ -247,7 +307,7 @@ describe('Glass intensity — soft/strong APCA gate', () => {
 
       for (const blobToken of desktopBlobTokens) {
         const background = tokenColor(blobToken, tokenMap);
-        const glassOverBlob = composite(glass, background);
+        const glassOverBlob = compositeGlass(glass, background, tokenMap);
 
         expect(
           Math.abs(apcaContrast(foreground, glassOverBlob)),
@@ -276,7 +336,7 @@ describe('Glass intensity — soft/strong APCA gate', () => {
       ];
 
       for (const { label, bg } of worstCases) {
-        const glassOverBg = composite(glass, bg);
+        const glassOverBg = compositeGlass(glass, bg, tokenMap);
         expect(
           Math.abs(apcaContrast(foreground, glassOverBg)),
           `${intensity} ${mode} ${label} readable-glass text contrast (APCA)`,

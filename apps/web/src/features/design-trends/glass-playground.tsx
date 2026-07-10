@@ -271,9 +271,12 @@ export function GlassPlayground() {
                   <Badge tone="primary" size="sm" className="ml-2 align-middle text-[10px]">
                     OKLCH + APCA 3.0
                   </Badge>
+                  <Badge tone="warning" size="sm" className="ml-2 align-middle text-[10px]">
+                    Thử nghiệm
+                  </Badge>
                 </CardTitle>
                 <CardDescription className="mt-1">
-                  Phòng thí nghiệm tương tác mô phỏng kiến trúc kính Liquid Glass.
+                  Phòng thí nghiệm tương tác mô phỏng kiến trúc kính Liquid Glass (Lưu ý: viền tương đối và hợp nhất chất lỏng là tính năng thử nghiệm sandbox, sản xuất sử dụng các token viền phản xạ tĩnh trong hệ thống Pumni OS).
                 </CardDescription>
               </div>
               {/* Background style switcher */}

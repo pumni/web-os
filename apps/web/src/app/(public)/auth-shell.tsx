@@ -2,8 +2,7 @@ import * as React from 'react';
 
 import { DesktopBackground } from '@/shared/components/app-shell/desktop-background';
 
-import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@pumni/ui/layout';
-import { GlassSurface } from '@pumni/ui/identity';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@pumni/ui/layout';
 
 type AuthShellProps = {
   subtitle: React.ReactNode;
@@ -27,7 +26,7 @@ export function AuthShell({ subtitle, title, description, footer, children }: Au
           <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
 
-        <GlassSurface className="flex flex-col gap-6 py-6">
+        <Card className="flex flex-col gap-6 py-6" variant="solid">
           <CardHeader>
             <CardTitle className="text-xl">{title}</CardTitle>
             {description ? <CardDescription>{description}</CardDescription> : null}
@@ -38,7 +37,7 @@ export function AuthShell({ subtitle, title, description, footer, children }: Au
               {footer}
             </CardFooter>
           ) : null}
-        </GlassSurface>
+        </Card>
       </div>
     </div>
   );

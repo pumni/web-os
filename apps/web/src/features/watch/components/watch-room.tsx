@@ -8,6 +8,7 @@ import { Badge, Spinner } from '@pumni/ui/feedback';
 import { Button, Input, Label } from '@pumni/ui/form';
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -129,28 +130,30 @@ function SourceChangeDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label className="type-label">Nguồn video</Label>
-            <VideoSourceTabs value={newSourceType} onChange={setNewSourceType} />
-          </div>
+          <DialogBody className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label className="type-label">Nguồn video</Label>
+              <VideoSourceTabs value={newSourceType} onChange={setNewSourceType} />
+            </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="new-source-ref" className="type-label">
-              {newSourceType === 'youtube' ? 'Link hoặc ID video YouTube' : 'Link video trực tiếp'}
-            </Label>
-            <Input
-              id="new-source-ref"
-              placeholder={
-                newSourceType === 'youtube'
-                  ? 'https://www.youtube.com/watch?v=...'
-                  : 'https://example.com/video.mp4'
-              }
-              value={newSourceRef}
-              onChange={(e) => setNewSourceRef(e.target.value)}
-              disabled={isPending}
-              required
-            />
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="new-source-ref" className="type-label">
+                {newSourceType === 'youtube' ? 'Link hoặc ID video YouTube' : 'Link video trực tiếp'}
+              </Label>
+              <Input
+                id="new-source-ref"
+                placeholder={
+                  newSourceType === 'youtube'
+                    ? 'https://www.youtube.com/watch?v=...'
+                    : 'https://example.com/video.mp4'
+                }
+                value={newSourceRef}
+                onChange={(e) => setNewSourceRef(e.target.value)}
+                disabled={isPending}
+                required
+              />
+            </div>
+          </DialogBody>
 
           <DialogFooter className="mt-2">
             <Button

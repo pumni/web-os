@@ -1,6 +1,6 @@
 # Plan: Glass modernization — relative OKLCH scale, APCA soft gate, cleanup
 
-- **Status:** Shipped (2026-07-09)
+- **Status:** Shipped (2026-07-09) — Successor for remaining P0–P2 hardening: [glass-modern-standard-hardening-2026-07.md](file:///v:/web-os/docs/plans/glass-modern-standard-hardening-2026-07.md)
 - **Date:** 2026-07-09
 - **Owner:** `@pumni/ui` design system
 - **Research basis:** W3C CSS Color 4/5, APCA Nutshell, MDN/web.dev `backdrop-filter`, Apple HIG Materials (Liquid Glass), Chrome relative-color guide, Evil Martians OKLCH

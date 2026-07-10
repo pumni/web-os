@@ -82,13 +82,13 @@ export function SurfacesSection() {
                   className="flex items-center justify-between rounded-lg px-4 py-2 text-xs"
                 >
                   <span>
-                    Topbar / dock rail role (<code>.glass-bar</code>)
+                    Topbar / dock rail role (Chrome tier — <code>.glass-bar</code>)
                   </span>
                   <span className="font-semibold text-primary">Active</span>
                 </GlassSurface>
                 <Card variant="glass" className="p-4 text-xs gap-1">
                   <div className="font-semibold text-foreground">
-                    Glass Card (<code>Card variant=&quot;glass&quot;</code>)
+                    Glass Card (Feature/hero tier — <code>Card variant=&quot;glass&quot;</code>)
                   </div>
                   <div className="text-muted-foreground">
                     Luminous translucent glassmorphism surface.
@@ -96,7 +96,7 @@ export function SurfacesSection() {
                 </Card>
                 <GlassSurface variant="panel" className="space-y-1 p-4 text-xs">
                   <div className="font-semibold text-foreground">
-                    Dialog / popover panel role (<code>.glass-panel</code>)
+                    Dialog / popover panel role (Readable tier — <code>.glass-panel</code>)
                   </div>
                   <div className="text-muted-foreground">Maximum readability over gradients.</div>
                 </GlassSurface>
@@ -106,7 +106,7 @@ export function SurfacesSection() {
                     className="flex items-center justify-between border-b px-3 py-2 text-xs"
                   >
                     <span>
-                      Window Titlebar (<code>.glass-titlebar</code>)
+                      Window Titlebar (Chrome tier — <code>.glass-titlebar</code>)
                     </span>
                     {/* Neutral monochrome controls (de-Appled per ADR-0012) */}
                     <div className="flex gap-1.5 text-muted-foreground">
@@ -116,7 +116,7 @@ export function SurfacesSection() {
                     </div>
                   </GlassSurface>
                   <div className="min-h-20 p-4 text-xs">
-                    Window container body role (<code>.glass-window</code>)
+                    Window container body role (Readable tier — <code>.glass-window</code>)
                   </div>
                 </GlassSurface>
               </div>

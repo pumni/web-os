@@ -244,7 +244,7 @@
 }
 
 .glass-window[data-active='false'] {
-  background-color: color-mix(in oklch, var(--glass-tint) 80%, var(--popover));
+  background-color: color-mix(in oklch, var(--glass-tint-readable) 80%, var(--popover));
   border-color: var(--border);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -254,7 +254,7 @@
 }
 
 .glass-window[data-active='false'] .glass-titlebar {
-  background-color: color-mix(in oklch, var(--glass-tint) 75%, var(--muted));
+  background-color: color-mix(in oklch, var(--glass-tint-readable) 75%, var(--muted));
   border-color: var(--border);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -384,8 +384,9 @@
 }
 
 /* --- Accessibility — Higher Contrast ---
-   Keep the glass role but raise the translucent fill toward the opaque
-   popover surface and use a solid semantic border for clearer edges. */
+   Keep the glass role but raise both translucent chrome and readable fill
+   tokens toward the opaque popover surface and use a solid semantic border
+   for clearer edges. */
 @media (prefers-contrast: more) {
   .glass-panel,
   .glass-panel-simple,
@@ -395,7 +396,9 @@
   .glass-bar-edge-r,
   .glass-bar-edge-b,
   .glass-titlebar {
-    --glass-tint: color-mix(in oklch, var(--popover) 92%, transparent);
+    --glass-tint-chrome: color-mix(in oklch, var(--popover) 92%, transparent);
+    --glass-tint-readable: color-mix(in oklch, var(--popover) 92%, transparent);
+    --glass-tint: var(--glass-tint-readable);
 
     border-color: var(--border);
   }
@@ -472,7 +475,9 @@
 .glass-a11y-preview[data-contrast='more'] .glass-bar-edge-r,
 .glass-a11y-preview[data-contrast='more'] .glass-bar-edge-b,
 .glass-a11y-preview[data-contrast='more'] .glass-titlebar {
-  --glass-tint: color-mix(in oklch, var(--popover) 92%, transparent);
+  --glass-tint-chrome: color-mix(in oklch, var(--popover) 92%, transparent);
+  --glass-tint-readable: color-mix(in oklch, var(--popover) 92%, transparent);
+  --glass-tint: var(--glass-tint-readable);
 
   border-color: var(--border);
 }

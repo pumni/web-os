@@ -63,3 +63,25 @@ describe('glass grain policy', () => {
     expect(afterBlock).not.toMatch(/fractalNoise/);
   });
 });
+
+describe('glass stack budget static audit', () => {
+  const overlayFiles = ['dialog.tsx', 'sheet.tsx', 'alert-dialog.tsx', 'command-palette.tsx'];
+
+  it.each(overlayFiles)('ensures %s overlay uses at most one scrim and one glass panel', (filename) => {
+    const filePath = resolve(import.meta.dirname, '../components/overlay', filename);
+    const content = readFileSync(filePath, 'utf8');
+
+    // Count occurrences of overlay-scrim
+    const scrimHits = (content.match(/overlay-scrim/g) || []).length;
+    expect(scrimHits, `${filename} must have exactly 1 overlay-scrim`).toBe(1);
+
+    // Count occurrences of glass utilities/panels
+    const glassHits = (content.match(/glass-panel|glass-window/g) || []).length;
+    expect(glassHits, `${filename} must have exactly 1 glass-panel/window`).toBe(1);
+
+    // Ensure no third backdrop filter is nested within the component
+    // (e.g. no nested glass-bar, glass-titlebar, glass-panel, glass-window)
+    expect(content, `${filename} must not contain nested glass utilities`).not.toMatch(/glass-(?:bar|titlebar|panel-simple)/);
+  });
+});
+

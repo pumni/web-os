@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Button } from '@pumni/ui/form';
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -67,7 +68,7 @@ export function CropDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="px-6 py-4">
+        <DialogBody className="mx-6 my-4">
           <div
             className="relative h-64 w-full overflow-hidden rounded-md border border-border bg-(--neutral-950)"
           >
@@ -100,7 +101,7 @@ export function CropDialog({
               className="h-1 w-full cursor-pointer appearance-none rounded-lg accent-primary"
             />
           </div>
-        </div>
+        </DialogBody>
 
         <DialogFooter className="border-t border-border px-6 py-4">
           <Button type="button" variant="outline" onClick={handleCancel}>

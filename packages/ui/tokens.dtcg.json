@@ -1993,7 +1993,7 @@
       },
       "tint-chrome": {
         "$type": "color",
-        "$value": "oklch(from {semantic.glass.fill} l c h / 0.52)"
+        "$value": "oklch(from {semantic.glass.fill} l c h / 0.54)"
       },
       "tint-readable": {
         "$type": "color",
