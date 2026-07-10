@@ -49,12 +49,12 @@ Color tokens default to `light-dark()` function defined at `:root` rather than d
 
 ### Glass placement (stable product rule)
 
-**Glass = floating layers only** (dialog, sheet, popover, dropdown, context menu, command palette, toast, floating dock/topbar rail, OS window titlebar, small floating pills). Glass must sit over a **colourful / media / blob backdrop** so frost reads. Sticky glass bars (e.g. `AppTopbar` using `glass-bar-edge-b`) must carry the `glass-scroll-edge-b` utility class to separate scrolled content visually from the glass header via a scroll-driven edge line. Media-floating overlays over arbitrary video or media must use the `glass-panel-media` utility class leveraging the `--glass-media-dim` token (`light-dark(oklch(1 0 0 / 0.85), oklch(0 0 0 / 0.40))`) to ensure APCA contrast Lc >= 60 is maintained over both white and black frames.
+**Glass = floating layers only** (dialog, sheet, popover, dropdown, context menu, command palette, toast, floating dock/topbar rail, OS window titlebar, small floating pills). Glass must sit over a **colourful / media / blob backdrop** so frost reads. Sticky glass bars (e.g. `AppTopbar` using `glass-bar-edge-b`) must carry the `glass-scroll-edge-b` utility class to separate scrolled content visually from the glass header via a scroll-driven edge line. Media-floating overlays over arbitrary video or media must use the `glass-panel-media` utility class leveraging the `--glass-media-dim` token (`light-dark(oklch(1 0 0 / 0.85), oklch(0 0 0 / 0.40))`) to ensure APCA contrast Lc >= 60 is maintained over both white and black frames. Frosted glass parameters: saturation ≈1.3 (light mode multiplier), and blur range 12-24px (where 24px is the maximum strong cap).
 **Solid = dense content and flat backgrounds:** forms, tables, long reading text, full-page backgrounds, large content cards on flat fills. Do not use glass for primary form surfaces or long body text.
 
 ### Token inventory
 
-Token inventory: `packages/ui/src/styles/tokens.css`, `packages/ui/src/styles/theme.css`, `packages/ui/src/styles/glass.css`, and `packages/ui/src/styles/effects.css` (sources of truth — do not copy lists into docs).
+Token inventory: `packages/ui/src/styles/tokens.css`, `packages/ui/src/styles/theme.css`, `packages/ui/src/styles/glass.css`, and `packages/ui/src/styles/effects.css` (sources of truth — do not copy lists into docs). Freshness alignment with Apple HIG and Material 3 (Verified 2026-07-09, next manual recheck: 2026-08-15).
 
 **Hard rules:**
 
