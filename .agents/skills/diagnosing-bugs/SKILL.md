@@ -17,7 +17,7 @@ apply.
 - Test one hypothesis at a time.
 - Tag temporary debug logs with a unique `[DEBUG-...]` prefix and remove them
   before reporting done.
-- For Supabase/auth/RLS/key issues, use the R2 route and
+- For Supabase/auth/RLS/key issues, see the 'supabase/migrations/' row in the navigation table and
   `docs/conventions/supabase-security.md`.
 - For stale data, cache, query invalidation, or state drift symptoms, read
   `docs/conventions/data-fetching.md` and the relevant Next.js cache rules
