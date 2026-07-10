@@ -29,8 +29,8 @@ the cheapest code is the code you never wrote:
    before editing.
 
 A new dependency or abstraction is a real cost; justify it against the rungs
-above. This is the design-time companion to the simplicity rule in
-`docs/ai/common-mistakes.md` (#11).
+above. This is the design-time companion to the premature-abstraction pair in
+`docs/ai/common-mistakes.md` (honor-system).
 
 ## Vocabulary
 

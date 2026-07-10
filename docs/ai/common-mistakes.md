@@ -69,15 +69,12 @@ Includes: `cacheLife` minimums, parameterized `cacheTag`, `'use cache'` placemen
 
 ❌ Implementing routing or auth check inside App Router `middleware.ts`.
 ✅ Use Node-based auth proxy at `apps/web/src/proxy.ts` (or equivalent).
-
-## 13. Next 16 revalidate tag — merged into #10 (tombstone)
-
-## 14. Server-only leaks (`server-only-in-client`, `server-action-missing-auth`, `server-action-missing-revalidation`)
+## 13. Server-only leaks (`server-only-in-client`, `server-action-missing-auth`, `server-action-missing-revalidation`)
 
 ❌ Importing `"server-only"` in client code, or actions missing auth check / tag updates.
 ✅ Server-only stays on server; authenticate actions via `requireUser()`; run `updateTag(tag)`.
 
-## 15. Premature abstraction (simplicity) (honor-system)
+## 14. Premature abstraction (simplicity) (honor-system)
 
 ❌ A strategy/factory/registry for one case; interface with one impl.
 ✅ Minimum code for today's task; add abstraction when a second caller appears.
