@@ -1,6 +1,7 @@
 // Run behavioral A/B evals against Claude Code headless. Opt-in via
-// `bun run ai:eval:behavioral`. Fail-open: if `claude` is missing or
-// `ANTHROPIC_API_KEY` unset, print advisory and exit 0 (does NOT block gate).
+// `bun run ai:eval:behavioral`. Uses the claude CLI's existing auth — a
+// subscription OAuth login or ANTHROPIC_API_KEY (no paid per-token key needed
+// when logged in). Fail-open: if the CLI is unavailable, exit 0 (never blocks a gate).
 //
 // Mode A (treatment): runs `claude -p "<prompt>"` with the repo as cwd —
 // Claude Code natively reads AGENTS.md + CLAUDE.md + .claude/rules/* + skills.
@@ -48,9 +49,12 @@ Runs behavioral A/B evals against Claude Code headless.
 - 3 trials per task per mode; majority vote (>= 2/3) is a soft-pass.
 - Writes scripts/behavioral-evals/last-run.json for the ai-metrics seam.
 
+Auth: uses the claude CLI login (subscription OAuth) or ANTHROPIC_API_KEY.
+      No paid per-token key is required when the CLI is logged in.
+
 Env:
-  ANTHROPIC_API_KEY   required for non-dry-run; if unset, exits 0 advisory.
-  BEHAVIORAL_TRIALS   override trials per mode (default 3).
+  ANTHROPIC_API_KEY   optional; the CLI's OAuth login is used if it is unset.
+  BEHAVIORAL_TRIALS   override trials per mode (default 3; set 1 to cut cost).
   BEHAVIORAL_MODEL    override --model (default: Claude Code default).
 
 Exit:
@@ -253,18 +257,23 @@ async function main() {
     }
     process.exit(0);
   }
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.warn('[behavioral] ANTHROPIC_API_KEY not set — skipping (fail-open).');
-    process.exit(0);
-  }
-  try {
-    const probe = spawn('claude', ['--version']);
-    await new Promise((resolve) => {
-      probe.on('close', (code) => resolve(code));
-      probe.on('error', () => resolve(-1));
-    });
-  } catch {
-    console.warn('[behavioral] claude executable unavailable — skipping (fail-open).');
+  // Auth: the `claude` CLI runs under whatever credentials it already has — a
+  // subscription OAuth login (~/.claude/.credentials.json) or ANTHROPIC_API_KEY.
+  // We do NOT require the paid per-token key; we only require the CLI to be
+  // present and runnable. If it is not, fail open (advisory, never blocks a gate).
+  const cliOk = await new Promise((resolve) => {
+    try {
+      const probe = spawn('claude', ['--version']);
+      probe.on('close', (code) => resolve(code === 0));
+      probe.on('error', () => resolve(false));
+    } catch {
+      resolve(false);
+    }
+  });
+  if (!cliOk) {
+    console.warn(
+      '[behavioral] claude CLI unavailable — skipping (fail-open). Log in with `claude` (subscription OAuth) or set ANTHROPIC_API_KEY.',
+    );
     process.exit(0);
   }
 
