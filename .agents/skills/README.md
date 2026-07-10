@@ -134,7 +134,7 @@ above). The gate does not parse it; the agent and `skill-creator` do.
 For high-risk or error-prone subsystems, you can add a specialized domain reviewer subagent:
 1. Ensure the corresponding domain skill under `.agents/skills` has a populated `## Known Failure Modes` section.
 2. Create a read-only subagent under `.claude/agents/<domain>-reviewer.md` that *references* the skill and relevant ADRs rather than duplicating them.
-3. Add an optional, path-scoped checklist line recommending the reviewer under `## Verification` in `.agents/workflows/review-gate.md`.
+3. Add an optional, path-scoped checklist line recommending the reviewer under `## Verification` in `.agents/skills/review-gate/SKILL.md`.
 
 ## P0–P4 still win
 

@@ -49,7 +49,7 @@ place as you execute.
 
 ## Integration with review-gate
 
-When closing an ExecPlan, run `review-gate` (`.agents/workflows/review-gate.md`)
+When closing an ExecPlan, run `review-gate` (`.agents/skills/review-gate/SKILL.md`)
 before reporting the task done. The retrospective section is the input for any
 new `common-mistakes.md` entry.
 

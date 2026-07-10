@@ -118,7 +118,7 @@ A bug fix starts with a failing test that goes green.
 
 **Always**
 
-- Run the narrowest gate before reporting done; for any diff beyond pure copy/docs, self-review it against `.agents/workflows/review-gate.md`.
+- Run the narrowest gate before reporting done; for any diff beyond pure copy/docs, self-review it against `.agents/skills/review-gate/SKILL.md`.
 - Update the owning doc/skill in the same change when documented behavior changes.
 - Regenerate generated files via their sync scripts.
 - Surface multiple readings of an ambiguous request — don't choose silently.

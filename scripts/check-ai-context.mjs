@@ -586,7 +586,7 @@ function checkStructuredMarkdown({ dir, kind, validation, isFileEntry }) {
 }
 
 function checkRuleInventory() {
-  const inventoryPath = '.agents/workflows/review-gate.md';
+  const inventoryPath = '.agents/skills/review-gate/SKILL.md';
   const content = readFile(inventoryPath);
   const headingIndex = content.indexOf('## Static Rule Inventory');
   if (headingIndex < 0) {
