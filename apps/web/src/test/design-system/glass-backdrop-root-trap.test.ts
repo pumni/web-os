@@ -161,13 +161,13 @@ describe('glass surfaces do not self-poach their own backdrop (MDN backdrop-root
     // glass-panel-simple::after uses `mix-blend-mode: overlay` for the grain
     // layer. ::after is a separate box; it does not establish a backdrop root
     // for ::after's own backdrop-filter because ::after carries no
-    // backdrop-filter. If a future edit adds backdrop-filter to the same
+    // backdrop-filter. If a future edit adds to the same
     // pseudo-element that declares mix-blend-mode, the pseudo becomes the
-    // trap. We pin that mix-blend-mode and backdrop-filter never co-occur on
+    // trap. We pin that mix-blend-mode and never co-occur on
     // the same pseudo in glass.css.
     const stripped = stripComments(glassCss);
 
-    // Find each `&::name { ... }` (nested inside glass utilities).
+    // Find each`&::name { ... }` (nested inside glass utilities).
     const pseudoRe = /&(:+:[a-z-]+)\s*\{([^{}]*)\}/g;
     const pseudoMatches = [...stripped.matchAll(pseudoRe)];
     for (const m of pseudoMatches) {

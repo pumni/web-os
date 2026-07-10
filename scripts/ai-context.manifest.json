@@ -96,7 +96,7 @@
     { "path": "docs/ai/MEMORY.md", "maxBytes": 2200 },
     { "path": "docs/ai/common-mistakes.md", "maxBytes": 4000 },
     { "path": ".agents/skills/review-gate/SKILL.md", "maxBytes": 2700 },
-    { "path": "docs/ai/mcp.md", "maxBytes": 5000 },
+    { "path": "docs/ai/mcp.md", "maxBytes": 3300 },
     { "path": ".claude/rules/nextjs-async-apis.md", "maxBytes": 900 },
     { "path": ".claude/rules/nextjs-cache-components.md", "maxBytes": 1200 },
     { "path": "docs/conventions/nextjs-16.md", "maxBytes": 5000 },

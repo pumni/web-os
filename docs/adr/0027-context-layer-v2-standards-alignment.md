@@ -66,6 +66,7 @@ headline decisions:
     rules shrunk to `paths:`-scoped pointers; `supabase-migrations` rule added (Q8);
     cache-semantics duplication collapsed; ADR-0003 amended (F15).
   - Plan 3: workflows tier retired; review-gate and skill-health-check converted to skills (19 skills total); exec-plan deleted and decision-log salvaged.
+  - Plan 4: trimmed `mcp.md` to under 40 lines (within reduced size budget); moved rejected candidate history to ADR-0027.
 
 
 ## Alternatives considered
@@ -83,3 +84,7 @@ headline decisions:
 - **One giant plan instead of six sequential per-tier plans** — rejected:
   per-tier plans keep every intermediate state green and reviewable
   (plan-over-code review leverage).
+- **MCP Server Candidates (amended 2026-07-11)** — rejected postgres, git, and supabase MCP servers:
+  - `@modelcontextprotocol/server-postgres`: Removed because the upstream package is deprecated on npm, env connection configuration mismatches positional expectations, and static types/migrations are sufficient for schema introspection.
+  - `mcp-server-git`: Excluded as an npm npx-confusion security-research canary; git operations remain native shell-based.
+  - `@supabase/mcp-server-supabase`: Exposes storage, auth admin, and Edge Functions under one token (over-privileged trust surface); direct read-only Postgres is safer.

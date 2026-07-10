@@ -2,8 +2,8 @@
 
 // fallow-ignore-file css-token-drift -- Intentional: static code snippets containing Tailwind arbitrary template literals
 
-import * as React from 'react';
 import { cn } from '@/shared/lib/utils';
+import * as React from 'react';
 
 import { Badge } from '@pumni/ui/feedback';
 import { Button, Slider } from '@pumni/ui/form';
@@ -20,14 +20,12 @@ import { oklchToSrgb } from '@pumni/ui/lib/oklch';
 import {
   Check,
   Code,
-  Compass,
   Contrast,
   Copy,
   Info,
   Layers,
   Moon,
   Palette,
-  RotateCcw,
   Sliders,
   Sparkles,
   Sunset,
@@ -103,23 +101,20 @@ interface PlaygroundSliderProps {
   hint?: string;
 }
 
-function PlaygroundSlider({
-  label,
-  val,
-  set,
-  min,
-  max,
-  step,
-  fmt,
-  hint,
-}: PlaygroundSliderProps) {
+function PlaygroundSlider({ label, val, set, min, max, step, fmt, hint }: PlaygroundSliderProps) {
   return (
     <div className="space-y-1">
       <div className="flex justify-between font-mono text-xs">
         <span className="text-muted-foreground">{label}</span>
         <span className="font-semibold text-primary">{fmt(val)}</span>
       </div>
-      <Slider min={min} max={max} step={step} value={[val]} onValueChange={(v) => set(v[0] ?? val)} />
+      <Slider
+        min={min}
+        max={max}
+        step={step}
+        value={[val]}
+        onValueChange={(v) => set(v[0] ?? val)}
+      />
       {hint && <p className="text-[10px] text-muted-foreground/70">{hint}</p>}
     </div>
   );
@@ -133,19 +128,50 @@ interface ApcaRec {
 }
 function getApcaRec(Lc: number): ApcaRec {
   const abs = Math.abs(Lc);
-  if (abs >= 90) return { rating: 'Perfect (Lc ≥ 90)', minFont: '≥ 14px (Normal / Weight 400)', useCase: 'Fluent text / Body columns (Highly readable)' };
-  if (abs >= 75) return { rating: 'Excellent (Lc ≥ 75)', minFont: '≥ 16px (Normal) or ≥ 14px (Bold)', useCase: 'Fluent body / standard reading text' };
-  if (abs >= 60) return { rating: 'Good (Lc ≥ 60)', minFont: '≥ 18px (Normal) or ≥ 16px (Bold)', useCase: 'Subheadings, user interface widgets, smaller captions' };
-  if (abs >= 45) return { rating: 'Large Text Only (Lc ≥ 45)', minFont: '≥ 24px (Normal) or ≥ 18px (Bold)', useCase: 'Large titles, headlines, call-to-actions' };
-  if (abs >= 30) return { rating: 'Graphics & UI Elements Only (Lc ≥ 30)', minFont: '≥ 36px (Normal) or heavy graphic elements', useCase: 'Disabled text, placeholder overlays, thick lines' };
-  return { rating: 'Insufficient Contrast (Lc < 30)', minFont: 'Not recommended for any readable text', useCase: 'Decorative lines, spacers, backgrounds only' };
+  if (abs >= 90)
+    return {
+      rating: 'Perfect (Lc ≥ 90)',
+      minFont: '≥ 14px (Normal / Weight 400)',
+      useCase: 'Fluent text / Body columns (Highly readable)',
+    };
+  if (abs >= 75)
+    return {
+      rating: 'Excellent (Lc ≥ 75)',
+      minFont: '≥ 16px (Normal) or ≥ 14px (Bold)',
+      useCase: 'Fluent body / standard reading text',
+    };
+  if (abs >= 60)
+    return {
+      rating: 'Good (Lc ≥ 60)',
+      minFont: '≥ 18px (Normal) or ≥ 16px (Bold)',
+      useCase: 'Subheadings, user interface widgets, smaller captions',
+    };
+  if (abs >= 45)
+    return {
+      rating: 'Large Text Only (Lc ≥ 45)',
+      minFont: '≥ 24px (Normal) or ≥ 18px (Bold)',
+      useCase: 'Large titles, headlines, call-to-actions',
+    };
+  if (abs >= 30)
+    return {
+      rating: 'Graphics & UI Elements Only (Lc ≥ 30)',
+      minFont: '≥ 36px (Normal) or heavy graphic elements',
+      useCase: 'Disabled text, placeholder overlays, thick lines',
+    };
+  return {
+    rating: 'Insufficient Contrast (Lc < 30)',
+    minFont: 'Not recommended for any readable text',
+    useCase: 'Decorative lines, spacers, backgrounds only',
+  };
 }
 
 /* ═══════════ MAIN COMPONENT ═══════════ */
 
 export function GlassPlayground() {
   /* ── Tab & backdrop state ── */
-  const [activeTab, setActiveTab] = React.useState<'surface' | 'text' | 'details' | 'sandbox'>('surface');
+  const [activeTab, setActiveTab] = React.useState<'surface' | 'text' | 'details' | 'sandbox'>(
+    'surface',
+  );
   const [backdropStyle, setBackdropStyle] = React.useState<BackdropStyle>('orbs');
   const [selectedPreset, setSelectedPreset] = React.useState<AmbientPreset>(AMBIENT_PRESETS[0]!);
   const [copiedText, setCopiedText] = React.useState<string | null>(null);
@@ -154,11 +180,11 @@ export function GlassPlayground() {
   const [glassL, setGlassL] = React.useState(0.18);
   const [glassC, setGlassC] = React.useState(0.02);
   const [glassH, setGlassH] = React.useState(240);
-  const [glassA, setGlassA] = React.useState(0.40);
+  const [glassA, setGlassA] = React.useState(0.4);
 
   /* ── Backdrop filter knobs (Lab "Kính Tối" defaults) ── */
   const [blur, setBlur] = React.useState(24);
-  const [saturate, setSaturate] = React.useState(150);   // %
+  const [saturate, setSaturate] = React.useState(150); // %
   const [brightness, setBrightness] = React.useState(85); // %
 
   /* ── Text OKLCH ── */
@@ -179,16 +205,34 @@ export function GlassPlayground() {
 
   /* ── Presets ── */
   function applyLightPreset() {
-    setGlassL(0.96); setGlassC(0.01); setGlassH(250); setGlassA(0.20);
-    setBlur(20); setSaturate(130); setBrightness(110);
-    setTextL(0.12); setTextC(0.01); setTextH(250);
-    setFontWeight('400'); setBorderA(0.35); setRelativeBorder(true);
+    setGlassL(0.96);
+    setGlassC(0.01);
+    setGlassH(250);
+    setGlassA(0.2);
+    setBlur(20);
+    setSaturate(130);
+    setBrightness(110);
+    setTextL(0.12);
+    setTextC(0.01);
+    setTextH(250);
+    setFontWeight('400');
+    setBorderA(0.35);
+    setRelativeBorder(true);
   }
   function applyDarkPreset() {
-    setGlassL(0.18); setGlassC(0.02); setGlassH(240); setGlassA(0.40);
-    setBlur(24); setSaturate(150); setBrightness(85);
-    setTextL(0.95); setTextC(0.01); setTextH(240);
-    setFontWeight('400'); setBorderA(0.15); setRelativeBorder(true);
+    setGlassL(0.18);
+    setGlassC(0.02);
+    setGlassH(240);
+    setGlassA(0.4);
+    setBlur(24);
+    setSaturate(150);
+    setBrightness(85);
+    setTextL(0.95);
+    setTextC(0.01);
+    setTextH(240);
+    setFontWeight('400');
+    setBorderA(0.15);
+    setRelativeBorder(true);
   }
 
   /* ── Copy handler ── */
@@ -226,7 +270,7 @@ export function GlassPlayground() {
   --glass-color: oklch(${glassL.toFixed(3)} ${glassC.toFixed(3)} ${glassH.toFixed(0)});
   --glass-opacity: ${glassA.toFixed(2)};
   
-  /* Relative border color (calculates border contrast relative to the card fill) */
+  /* Relative border color (calculates contrast relative to the card fill) */
   --glass-border: ${borderColorStr};
     
   --text-primary: oklch(${textL.toFixed(3)} ${textC.toFixed(3)} ${textH.toFixed(0)});
@@ -247,7 +291,7 @@ export function GlassPlayground() {
 
 /* Shiny diagonal reflection line (physical glass edge simulation) */
 .liquid-glass-card::after {
-  content: '';
+  content:'';
   position: absolute;
   inset: 0;
   border-radius: inherit;
@@ -267,11 +311,9 @@ export function GlassPlayground() {
   border-[${borderW}px] border-[oklch(${relativeBorder ? borderL.toFixed(2) : '1'}_${glassC.toFixed(3)}_${glassH.toFixed(0)}/_${borderA.toFixed(2)})]
   
   /* Volumetric elevation shadow */
-  shadow-[0_25px_60px_-15px_rgba(0,0,0,${shadowA.toFixed(2)})]
   
   /* Decorative layout rules */
-  rounded-3xl p-6 text-[oklch(${textL.toFixed(2)}_${textC.toFixed(3)}_${textH.toFixed(0)})]
-">
+  rounded-3xl p-6 text-[oklch(${textL.toFixed(2)}_${textC.toFixed(3)}_${textH.toFixed(0)})]">
   <h2 className="font-[${fontWeight}]">Liquid Glass Card</h2>
 </div>`;
 
@@ -294,14 +336,13 @@ export function GlassPlayground() {
   /* ── Render ── */
   return (
     <div className="grid items-start gap-6 lg:grid-cols-12">
-
       {/* ═══════ LEFT — CANVAS VIEWPORT (7 cols) ═══════ */}
-      <section className="lg:col-span-7 flex flex-col gap-6">
+      <section className="flex flex-col gap-6 lg:col-span-7">
         <Card className="overflow-hidden">
           <CardHeader className="border-b bg-muted/20 pb-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <CardTitle className="font-mono text-lg uppercase tracking-wider">
+                <CardTitle className="font-mono text-lg tracking-wider uppercase">
                   Glassmorphism Card Lab
                   <Badge tone="primary" size="sm" className="ml-2 align-middle text-[10px]">
                     OKLCH + APCA 3.0
@@ -311,7 +352,9 @@ export function GlassPlayground() {
                   </Badge>
                 </CardTitle>
                 <CardDescription className="mt-1">
-                  Phòng thí nghiệm tương tác mô phỏng kiến trúc kính Liquid Glass (Lưu ý: viền tương đối và hợp nhất chất lỏng là tính năng thử nghiệm sandbox, sản xuất sử dụng các token viền phản xạ tĩnh trong hệ thống Pumni OS).
+                  Phòng thí nghiệm tương tác mô phỏng kiến trúc kính Liquid Glass (Lưu ý: viền tương
+                  đối và hợp nhất chất lỏng là tính năng thử nghiệm sandbox, sản xuất sử dụng các
+                  token viền phản xạ tĩnh trong hệ thống Pumni OS).
                 </CardDescription>
               </div>
               {/* Background style switcher */}
@@ -331,10 +374,9 @@ export function GlassPlayground() {
             </div>
           </CardHeader>
           <CardContent className="space-y-6 p-6">
-
             {/* RENDERING STAGE */}
             <div
-              className="relative flex min-h-[460px] w-full items-center justify-center overflow-hidden rounded-3xl border border-white/10 p-8 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]"
+              className="relative flex min-h-115 w-full items-center justify-center overflow-hidden rounded-3xl border border-white/10 p-8 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]"
               style={{
                 background: `linear-gradient(135deg, ${selectedPreset.gradientFrom}, ${selectedPreset.gradientVia}, ${selectedPreset.gradientTo})`,
               }}
@@ -349,9 +391,10 @@ export function GlassPlayground() {
                 >
                   {/* Diagonal reflection overlay — Lab: "Shiny diagonal reflection line" */}
                   <div
-                    className="absolute inset-0 pointer-events-none opacity-60"
+                    className="pointer-events-none absolute inset-0 opacity-60"
                     style={{
-                      background: 'linear-gradient(to top right, transparent, rgba(255,255,255,0.05), rgba(255,255,255,0.10))',
+                      background:
+                        'linear-gradient(to top right, transparent, rgba(255,255,255,0.05), rgba(255,255,255,0.10))',
                       borderRadius: 'inherit',
                     }}
                   />
@@ -361,7 +404,7 @@ export function GlassPlayground() {
                     <div className="flex items-center justify-between">
                       <span
                         style={textStyle}
-                        className="font-mono text-xs uppercase tracking-widest opacity-75"
+                        className="font-mono text-xs tracking-widest uppercase opacity-75"
                       >
                         Liquid Glass Specimen
                       </span>
@@ -374,10 +417,12 @@ export function GlassPlayground() {
                         style={{ ...textStyle, fontWeight, fontSize: `${fontSize}px` }}
                         className="text-2xl leading-snug tracking-tight transition-all duration-200"
                       >
-                        Sự tiến hóa của giao diện Web: Không gian màu OKLCH, và Tiêu chuẩn tương phản nhận thức APCA.
+                        Sự tiến hóa của giao diện Web: Không gian màu OKLCH, và Tiêu chuẩn tương
+                        phản nhận thức APCA.
                       </h2>
                       <p style={textStyle} className="text-xs leading-relaxed opacity-80">
-                        Bề mặt kính hiện đại không dùng HEX hay sRGB thô, mà tự động hóa tính toán tỷ lệ tương đối của viền, độ chói võng mạc thực và triệt tiêu lỗi Hue Shift.
+                        Bề mặt kính hiện đại không dùng HEX hay sRGB thô, mà tự động hóa tính toán
+                        tỷ lệ tương đối của viền, độ chói võng mạc thực và triệt tiêu lỗi Hue Shift.
                       </p>
                     </div>
 
@@ -405,9 +450,9 @@ export function GlassPlayground() {
                 </div>
               ) : (
                 /* FUSING SANDBOX — CSS gooey filter simulation */
-                <div className="relative flex w-full max-w-lg flex-col items-center justify-between rounded-3xl border border-white/5 bg-black/50 p-6 h-[360px]">
+                <div className="relative flex h-90 w-full max-w-lg flex-col items-center justify-between rounded-3xl border border-white/5 bg-black/50 p-6">
                   {/* SVG gooey filter */}
-                  <svg className="absolute h-0 w-0 pointer-events-none" aria-hidden>
+                  <svg className="pointer-events-none absolute h-0 w-0" aria-hidden>
                     <defs>
                       <filter id="liquid-glass-goo">
                         <feGaussianBlur in="SourceGraphic" stdDeviation="15" result="blur" />
@@ -422,15 +467,15 @@ export function GlassPlayground() {
                     </defs>
                   </svg>
 
-                  <div className="absolute left-4 top-4 z-10 flex items-center gap-1.5 rounded-full border border-purple-500/20 bg-purple-900/40 px-2 py-1 text-xs text-purple-300">
+                  <div className="absolute top-4 left-4 z-10 flex items-center gap-1.5 rounded-full border border-purple-500/20 bg-purple-900/40 px-2 py-1 text-xs text-purple-300">
                     <Sparkles className="size-3.5" />
                     Mô phỏng &quot;Vũ đạo của kính&quot; (Liquid Glass Merging)
                   </div>
 
-                  <div className="relative flex-1 w-full mt-8 rounded-2xl bg-[#050309] flex items-center justify-center overflow-hidden">
-                    <div className="absolute size-32 rounded-full bg-purple-500/10 blur-2xl pointer-events-none" />
+                  <div className="relative mt-8 flex w-full flex-1 items-center justify-center overflow-hidden rounded-2xl bg-[#050309]">
+                    <div className="pointer-events-none absolute size-32 rounded-full bg-purple-500/10 blur-2xl" />
                     <div
-                      className="relative flex w-full h-full items-center justify-center"
+                      className="relative flex h-full w-full items-center justify-center"
                       style={{ filter: 'url(#liquid-glass-goo)' }}
                     >
                       {/* Fixed cyan bubble */}
@@ -452,7 +497,7 @@ export function GlassPlayground() {
                       />
                     </div>
                     {fusingDistance < 60 && (
-                      <div className="absolute select-none pointer-events-none rounded-full border border-white/10 bg-black/60 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-white text-center">
+                      <div className="pointer-events-none absolute rounded-full border border-white/10 bg-black/60 px-2.5 py-1 text-center font-mono text-[10px] font-bold tracking-widest text-white uppercase select-none">
                         fusing dynamic
                       </div>
                     )}
@@ -464,9 +509,12 @@ export function GlassPlayground() {
                       <span className="font-semibold text-white">{fusingDistance}px</span>
                     </div>
                     <input
-                      type="range" min="0" max="180" value={fusingDistance}
+                      type="range"
+                      min="0"
+                      max="180"
+                      value={fusingDistance}
                       onChange={(e) => setFusingDistance(parseInt(e.target.value))}
-                      className="w-full h-1.5 cursor-pointer rounded-lg bg-white/10 accent-purple-500"
+                      className="h-1.5 w-full cursor-pointer rounded-lg bg-white/10 accent-purple-500"
                     />
                     <p className="mt-1 text-center font-sans text-[10px] text-gray-400">
                       Kéo thanh trượt để mang hai màng kính lại gần nhau.
@@ -511,11 +559,13 @@ export function GlassPlayground() {
             {/* GENERATED CODE EXPORTER */}
             <div className="space-y-3 border-t border-border pt-4">
               <div className="flex items-center justify-between">
-                <h3 className="flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-foreground">
+                <h3 className="flex items-center gap-1.5 font-mono text-xs font-bold tracking-wider text-foreground uppercase">
                   <Code className="size-4 text-primary" />
                   MÃ NGUỒN LIÊN THÔNG (Reactive Exporter)
                 </h3>
-                <span className="font-mono text-[10px] text-muted-foreground">Tailwind v4 + Standard CSS</span>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  Tailwind v4 + Standard CSS
+                </span>
               </div>
 
               <div className="space-y-3">
@@ -528,13 +578,17 @@ export function GlassPlayground() {
                       className="flex items-center gap-1 transition hover:text-foreground"
                     >
                       {copiedText === 'css' ? (
-                        <><Check className="size-3.5 text-emerald-400" /> Copied!</>
+                        <>
+                          <Check className="size-3.5 text-emerald-400" /> Copied!
+                        </>
                       ) : (
-                        <><Copy className="size-3.5" /> Copy Code</>
+                        <>
+                          <Copy className="size-3.5" /> Copy Code
+                        </>
                       )}
                     </button>
                   </div>
-                  <CardWell padding="none" className="rounded-t-none max-h-36 overflow-auto">
+                  <CardWell padding="none" className="max-h-36 overflow-auto rounded-t-none">
                     <pre className="p-4 font-mono text-[10px] leading-relaxed text-primary/80">
                       <code>{cssCode}</code>
                     </pre>
@@ -550,14 +604,18 @@ export function GlassPlayground() {
                       className="flex items-center gap-1 transition hover:text-foreground"
                     >
                       {copiedText === 'tw' ? (
-                        <><Check className="size-3.5 text-emerald-400" /> Copied!</>
+                        <>
+                          <Check className="size-3.5 text-emerald-400" /> Copied!
+                        </>
                       ) : (
-                        <><Copy className="size-3.5" /> Copy classes</>
+                        <>
+                          <Copy className="size-3.5" /> Copy classes
+                        </>
                       )}
                     </button>
                   </div>
-                  <CardWell padding="none" className="rounded-t-none max-h-28 overflow-auto">
-                    <pre className="whitespace-pre-wrap p-4 font-mono text-[10px] leading-relaxed text-primary/80">
+                  <CardWell padding="none" className="max-h-28 overflow-auto rounded-t-none">
+                    <pre className="p-4 font-mono text-[10px] leading-relaxed whitespace-pre-wrap text-primary/80">
                       <code>{twCode}</code>
                     </pre>
                   </CardWell>
@@ -569,11 +627,11 @@ export function GlassPlayground() {
       </section>
 
       {/* ═══════ RIGHT — CONTROLS (5 cols) ═══════ */}
-      <aside className="lg:col-span-5 flex flex-col gap-6">
+      <aside className="flex flex-col gap-6 lg:col-span-5">
         <Card className="overflow-hidden">
           <CardHeader className="border-b bg-muted/20 pb-0">
             {/* 4-tab switcher (matching Lab's tab structure) */}
-            <div className="grid grid-cols-4 text-center text-xs font-mono border-b border-border">
+            <div className="grid grid-cols-4 border-b border-border text-center font-mono text-xs">
               {(
                 [
                   { id: 'surface', label: 'Tấm Kính', icon: Sliders },
@@ -589,7 +647,7 @@ export function GlassPlayground() {
                     'flex flex-col items-center gap-1 border-b-2 py-3.5 transition-all',
                     activeTab === id
                       ? 'border-primary bg-primary/5 font-semibold text-foreground'
-                      : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/20',
+                      : 'border-transparent text-muted-foreground hover:bg-muted/20 hover:text-foreground',
                   )}
                 >
                   <Icon className="size-4" />
@@ -600,7 +658,6 @@ export function GlassPlayground() {
           </CardHeader>
 
           <CardContent className="flex-1 space-y-6 p-6">
-
             {/* Preset reset buttons (all tabs except sandbox) */}
             {activeTab !== 'sandbox' && (
               <div className="flex items-center justify-between rounded-2xl border border-border bg-muted/20 p-3 text-xs">
@@ -630,15 +687,51 @@ export function GlassPlayground() {
               <div className="space-y-6">
                 {/* OKLCH fill sliders */}
                 <div className="space-y-4">
-                  <h3 className="flex items-center gap-2 font-mono text-sm font-semibold uppercase tracking-wider text-foreground">
+                  <h3 className="flex items-center gap-2 font-mono text-sm font-semibold tracking-wider text-foreground uppercase">
                     <span className="h-4 w-1.5 rounded-sm bg-primary" />
                     Độ phân cực OKLCH của Kính
                   </h3>
                   {[
-                    { label: 'Lightness (L — Độ chói cảm nhận)', val: glassL, set: setGlassL, min: 0.01, max: 0.99, step: 0.01, fmt: (v: number) => v.toFixed(3), hint: 'Bảo đảm sự đồng nhất độ sáng tuyệt đối giữa các tông màu khác nhau.' },
-                    { label: 'Chroma (C — Độ rực rỡ màu)', val: glassC, set: setGlassC, min: 0, max: 0.25, step: 0.005, fmt: (v: number) => v.toFixed(3), hint: 'Chroma tối đa của sRGB là ~0.25. Giữ mức thấp để đạt độ trong suốt chân thực.' },
-                    { label: 'Hue (h — Góc màu sắc độ)', val: glassH, set: setGlassH, min: 0, max: 360, step: 1, fmt: (v: number) => `${v.toFixed(0)}°`, hint: '' },
-                    { label: 'Glass Opacity (Độ trong suốt)', val: glassA, set: setGlassA, min: 0.05, max: 0.80, step: 0.01, fmt: (v: number) => `${(v * 100).toFixed(0)}%`, hint: '' },
+                    {
+                      label: 'Lightness (L — Độ chói cảm nhận)',
+                      val: glassL,
+                      set: setGlassL,
+                      min: 0.01,
+                      max: 0.99,
+                      step: 0.01,
+                      fmt: (v: number) => v.toFixed(3),
+                      hint: 'Bảo đảm sự đồng nhất độ sáng tuyệt đối giữa các tông màu khác nhau.',
+                    },
+                    {
+                      label: 'Chroma (C — Độ rực rỡ màu)',
+                      val: glassC,
+                      set: setGlassC,
+                      min: 0,
+                      max: 0.25,
+                      step: 0.005,
+                      fmt: (v: number) => v.toFixed(3),
+                      hint: 'Chroma tối đa của sRGB là ~0.25. Giữ mức thấp để đạt độ trong suốt chân thực.',
+                    },
+                    {
+                      label: 'Hue (h — Góc màu sắc độ)',
+                      val: glassH,
+                      set: setGlassH,
+                      min: 0,
+                      max: 360,
+                      step: 1,
+                      fmt: (v: number) => `${v.toFixed(0)}°`,
+                      hint: '',
+                    },
+                    {
+                      label: 'Glass Opacity (Độ trong suốt)',
+                      val: glassA,
+                      set: setGlassA,
+                      min: 0.05,
+                      max: 0.8,
+                      step: 0.01,
+                      fmt: (v: number) => `${(v * 100).toFixed(0)}%`,
+                      hint: '',
+                    },
                   ].map((item) => (
                     <PlaygroundSlider key={item.label} {...item} />
                   ))}
@@ -646,14 +739,38 @@ export function GlassPlayground() {
 
                 {/* Backdrop filter sliders */}
                 <div className="space-y-4 border-t border-border pt-4">
-                  <h3 className="flex items-center gap-2 font-mono text-sm font-semibold uppercase tracking-wider text-foreground">
+                  <h3 className="flex items-center gap-2 font-mono text-sm font-semibold tracking-wider text-foreground uppercase">
                     <span className="h-4 w-1.5 rounded-sm bg-primary" />
                     Hiệu ứng Thủy tinh Quang học
                   </h3>
                   {[
-                    { label: 'Backdrop Blur (Độ nhòe nền)', val: blur, set: setBlur, min: 0, max: 64, step: 1, fmt: (v: number) => `${v}px` },
-                    { label: 'Backdrop Saturation (Độ bão hòa bồi đắp)', val: saturate, set: setSaturate, min: 100, max: 250, step: 5, fmt: (v: number) => `${v}%` },
-                    { label: 'Backdrop Brightness (Độ sáng bù trừ)', val: brightness, set: setBrightness, min: 60, max: 150, step: 5, fmt: (v: number) => `${v}%` },
+                    {
+                      label: 'Backdrop Blur (Độ nhòe nền)',
+                      val: blur,
+                      set: setBlur,
+                      min: 0,
+                      max: 64,
+                      step: 1,
+                      fmt: (v: number) => `${v}px`,
+                    },
+                    {
+                      label: 'Backdrop Saturation (Độ bão hòa bồi đắp)',
+                      val: saturate,
+                      set: setSaturate,
+                      min: 100,
+                      max: 250,
+                      step: 5,
+                      fmt: (v: number) => `${v}%`,
+                    },
+                    {
+                      label: 'Backdrop Brightness (Độ sáng bù trừ)',
+                      val: brightness,
+                      set: setBrightness,
+                      min: 60,
+                      max: 150,
+                      step: 5,
+                      fmt: (v: number) => `${v}%`,
+                    },
                   ].map((item) => (
                     <PlaygroundSlider key={item.label} {...item} />
                   ))}
@@ -667,16 +784,20 @@ export function GlassPlayground() {
                 {/* Contrast scoreboard */}
                 <div className="space-y-4 rounded-2xl border border-border bg-muted/20 p-5">
                   <div className="flex items-center justify-between">
-                    <h4 className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                    <h4 className="flex items-center gap-1.5 font-mono text-xs tracking-wider text-muted-foreground uppercase">
                       <Contrast className="size-3.5 text-primary" /> Điểm Tương phản Thực tế
                     </h4>
-                    <span className="font-mono text-[10px] text-muted-foreground">Nền: {selectedPreset.name}</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">
+                      Nền: {selectedPreset.name}
+                    </span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     {/* APCA */}
                     <div className="flex flex-col justify-between rounded-xl border border-purple-500/20 bg-purple-950/20 p-3">
-                      <span className="font-mono text-[10px] font-semibold uppercase text-purple-300">APCA Standard (WCAG 3)</span>
+                      <span className="font-mono text-[10px] font-semibold text-purple-300 uppercase">
+                        APCA Standard (WCAG 3)
+                      </span>
                       <div className="my-2 flex items-baseline gap-1.5">
                         <span className="font-mono text-3xl font-extrabold text-foreground">
                           {apcaLc > 0 ? `+${apcaLc}` : apcaLc}
@@ -689,11 +810,20 @@ export function GlassPlayground() {
                     </div>
                     {/* WCAG 2 */}
                     <div className="flex flex-col justify-between rounded-xl border border-border bg-muted/10 p-3">
-                      <span className="font-mono text-[10px] font-semibold uppercase text-muted-foreground">WCAG 2.x Ratio (Tĩnh)</span>
+                      <span className="font-mono text-[10px] font-semibold text-muted-foreground uppercase">
+                        WCAG 2.x Ratio (Tĩnh)
+                      </span>
                       <div className="my-2 flex items-baseline gap-1.5">
-                        <span className="font-mono text-3xl font-extrabold text-foreground">{wcag}:1</span>
+                        <span className="font-mono text-3xl font-extrabold text-foreground">
+                          {wcag}:1
+                        </span>
                       </div>
-                      <span className={cn('font-mono text-[10px] font-semibold', wcag >= 4.5 ? 'text-emerald-400' : 'text-amber-400')}>
+                      <span
+                        className={cn(
+                          'font-mono text-[10px] font-semibold',
+                          wcag >= 4.5 ? 'text-emerald-400' : 'text-amber-400',
+                        )}
+                      >
                         {wcag >= 4.5 ? 'PASS (AA Standard)' : 'FAIL (< 4.5:1)'}
                       </span>
                     </div>
@@ -701,14 +831,17 @@ export function GlassPlayground() {
 
                   {/* APCA recommendation */}
                   <div className="space-y-1 border-t border-border pt-3.5">
-                    <span className="block font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Yêu cầu thiết kế APCA tương ứng:</span>
+                    <span className="block font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+                      Yêu cầu thiết kế APCA tương ứng:
+                    </span>
                     <div className="rounded-xl border border-purple-500/10 bg-purple-950/20 p-3">
                       <div className="flex items-center gap-1 text-[11px] font-semibold text-purple-300">
                         <span className="size-1.5 rounded-full bg-purple-400" />
                         {apcaRec.rating}
                       </div>
                       <p className="mt-1 font-sans text-[11px] leading-relaxed text-muted-foreground">
-                        <strong className="text-foreground">Kích cỡ font tối thiểu:</strong> {apcaRec.minFont}
+                        <strong className="text-foreground">Kích cỡ font tối thiểu:</strong>{' '}
+                        {apcaRec.minFont}
                       </p>
                       <p className="mt-0.5 font-sans text-[11px] text-muted-foreground">
                         <strong className="text-foreground">Ứng dụng:</strong> {apcaRec.useCase}
@@ -719,22 +852,56 @@ export function GlassPlayground() {
 
                 {/* Text OKLCH sliders */}
                 <div className="space-y-4">
-                  <h3 className="flex items-center gap-2 font-mono text-sm font-semibold uppercase tracking-wider text-foreground">
+                  <h3 className="flex items-center gap-2 font-mono text-sm font-semibold tracking-wider text-foreground uppercase">
                     <span className="h-4 w-1.5 rounded-sm bg-primary" />
                     Màu sắc & Kích thước Chữ (OKLCH)
                   </h3>
                   {[
-                    { label: 'Lightness (L — Độ sáng chữ)', val: textL, set: setTextL, min: 0.01, max: 0.99, step: 0.01, fmt: (v: number) => v.toFixed(3) },
-                    { label: 'Chroma (C — Độ rực rỡ màu chữ)', val: textC, set: setTextC, min: 0, max: 0.15, step: 0.005, fmt: (v: number) => v.toFixed(3) },
-                    { label: 'Hue (h — Góc màu chữ)', val: textH, set: setTextH, min: 0, max: 360, step: 1, fmt: (v: number) => `${v.toFixed(0)}°` },
-                    { label: 'Font Size (Kích thước chữ)', val: fontSize, set: setFontSize, min: 12, max: 28, step: 1, fmt: (v: number) => `${v}px` },
+                    {
+                      label: 'Lightness (L — Độ sáng chữ)',
+                      val: textL,
+                      set: setTextL,
+                      min: 0.01,
+                      max: 0.99,
+                      step: 0.01,
+                      fmt: (v: number) => v.toFixed(3),
+                    },
+                    {
+                      label: 'Chroma (C — Độ rực rỡ màu chữ)',
+                      val: textC,
+                      set: setTextC,
+                      min: 0,
+                      max: 0.15,
+                      step: 0.005,
+                      fmt: (v: number) => v.toFixed(3),
+                    },
+                    {
+                      label: 'Hue (h — Góc màu chữ)',
+                      val: textH,
+                      set: setTextH,
+                      min: 0,
+                      max: 360,
+                      step: 1,
+                      fmt: (v: number) => `${v.toFixed(0)}°`,
+                    },
+                    {
+                      label: 'Font Size (Kích thước chữ)',
+                      val: fontSize,
+                      set: setFontSize,
+                      min: 12,
+                      max: 28,
+                      step: 1,
+                      fmt: (v: number) => `${v}px`,
+                    },
                   ].map((item) => (
                     <PlaygroundSlider key={item.label} {...item} />
                   ))}
 
                   {/* Font weight toggles */}
                   <div className="space-y-2">
-                    <span className="block font-mono text-xs text-muted-foreground">Font Weight (Độ mảnh của chữ)</span>
+                    <span className="block font-mono text-xs text-muted-foreground">
+                      Font Weight (Độ mảnh của chữ)
+                    </span>
                     <div className="grid grid-cols-4 gap-2 rounded-xl border border-border bg-muted/20 p-1 text-xs">
                       {(['300', '400', '600', '800'] as const).map((w) => (
                         <button
@@ -747,7 +914,13 @@ export function GlassPlayground() {
                               : 'text-muted-foreground hover:text-foreground',
                           )}
                         >
-                          {w === '300' ? 'Light' : w === '400' ? 'Normal' : w === '600' ? 'Medium' : 'Bold'}
+                          {w === '300'
+                            ? 'Light'
+                            : w === '400'
+                              ? 'Normal'
+                              : w === '600'
+                                ? 'Medium'
+                                : 'Bold'}
                         </button>
                       ))}
                     </div>
@@ -760,7 +933,7 @@ export function GlassPlayground() {
             {activeTab === 'details' && (
               <div className="space-y-6">
                 <div className="space-y-4">
-                  <h3 className="flex items-center gap-2 font-mono text-sm font-semibold uppercase tracking-wider text-foreground">
+                  <h3 className="flex items-center gap-2 font-mono text-sm font-semibold tracking-wider text-foreground uppercase">
                     <span className="h-4 w-1.5 rounded-sm bg-primary" />
                     Thiết lập Đường viền & Bóng đổ
                   </h3>
@@ -776,14 +949,20 @@ export function GlassPlayground() {
                           onChange={(e) => setRelativeBorder(e.target.checked)}
                           className="size-4 rounded border-white/10 bg-black accent-purple-500"
                         />
-                        <label htmlFor="rel-border" className="cursor-pointer select-none text-xs font-semibold text-foreground">
+                        <label
+                          htmlFor="rel-border"
+                          className="cursor-pointer text-xs font-semibold text-foreground select-none"
+                        >
                           Relative OKLCH Border
                         </label>
                       </div>
-                      <Badge tone="primary" size="sm" className="font-mono text-[9px]">Relative syntax</Badge>
+                      <Badge tone="primary" size="sm" className="font-mono text-[9px]">
+                        Relative syntax
+                      </Badge>
                     </div>
                     <p className="font-sans text-xs leading-relaxed text-muted-foreground">
-                      Khi được bật, màu viền của kính sẽ được tính toán trực tiếp từ màu nền của tấm kính qua cú pháp relative màu của CSS:
+                      Khi được bật, màu viền của kính sẽ được tính toán trực tiếp từ màu nền của tấm
+                      kính qua cú pháp relative màu của CSS:
                     </p>
                     <code className="mt-1 block rounded-lg bg-muted/40 p-2 font-mono text-[10px] text-primary">
                       oklch(from var(--glass) calc(l + {lightnessDelta.toFixed(2)}) c h / alpha)
@@ -792,22 +971,49 @@ export function GlassPlayground() {
 
                   {/* Border sliders */}
                   {[
-                    { label: 'Border Width (Độ dày viền)', val: borderW, set: setBorderW, min: 0, max: 4, step: 0.5, fmt: (v: number) => `${v}px` },
-                    { label: 'Border Opacity (Độ mờ của viền)', val: borderA, set: setBorderA, min: 0, max: 1, step: 0.05, fmt: (v: number) => `${(v * 100).toFixed(0)}%` },
-                    { label: 'Drop Shadow Opacity (Bóng đổ 3D)', val: shadowA, set: setShadowA, min: 0, max: 0.6, step: 0.02, fmt: (v: number) => `${(v * 100).toFixed(0)}%` },
+                    {
+                      label: 'Border Width (Độ dày viền)',
+                      val: borderW,
+                      set: setBorderW,
+                      min: 0,
+                      max: 4,
+                      step: 0.5,
+                      fmt: (v: number) => `${v}px`,
+                    },
+                    {
+                      label: 'Border Opacity (Độ mờ của viền)',
+                      val: borderA,
+                      set: setBorderA,
+                      min: 0,
+                      max: 1,
+                      step: 0.05,
+                      fmt: (v: number) => `${(v * 100).toFixed(0)}%`,
+                    },
+                    {
+                      label: 'Drop Shadow Opacity (Bóng đổ 3D)',
+                      val: shadowA,
+                      set: setShadowA,
+                      min: 0,
+                      max: 0.6,
+                      step: 0.02,
+                      fmt: (v: number) => `${(v * 100).toFixed(0)}%`,
+                    },
                   ].map((item) => (
                     <PlaygroundSlider key={item.label} {...item} />
                   ))}
                 </div>
 
                 {/* Educational box */}
-                <div className="rounded-2xl border border-border bg-muted/20 p-4 text-xs text-muted-foreground space-y-2">
-                  <h4 className="flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-foreground">
+                <div className="space-y-2 rounded-2xl border border-border bg-muted/20 p-4 text-xs text-muted-foreground">
+                  <h4 className="flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-wider text-foreground uppercase">
                     <Info className="size-3.5 text-primary" />
                     Cơ chế quang học Apple Liquid Glass
                   </h4>
                   <p className="font-sans text-[11px] leading-relaxed">
-                    Apple quy định trong HIG: vật liệu kính chỉ dùng làm lớp dẫn đường (Navigation/Tab bar) bồng bềnh trên lớp nội dung cuộn bên dưới. Không bọc trực tiếp các khối văn bản chính dài vào kính mờ, nhằm bảo toàn phân cấp thông tin cao nhất.
+                    Apple quy định trong HIG: vật liệu kính chỉ dùng làm lớp dẫn đường
+                    (Navigation/Tab bar) bồng bềnh trên lớp nội dung cuộn bên dưới. Không bọc trực
+                    tiếp các khối văn bản chính dài vào kính mờ, nhằm bảo toàn phân cấp thông tin
+                    cao nhất.
                   </p>
                 </div>
               </div>
@@ -822,17 +1028,22 @@ export function GlassPlayground() {
                     Nguyên lý Sức căng Bề mặt Chất lỏng
                   </h4>
                   <p className="font-sans leading-relaxed text-muted-foreground">
-                    Trong iOS 26 và macOS Tahoe, khi hai thành phần sở hữu vật liệu Liquid Glass di chuyển lại gần nhau, đường biên của chúng sẽ tự động tan chảy, hòa quyện (blend) và biến đổi mượt mà nhờ cơ chế{' '}
+                    Trong iOS 26 và macOS Tahoe, khi hai thành phần sở hữu vật liệu Liquid Glass di
+                    chuyển lại gần nhau, đường biên của chúng sẽ tự động tan chảy, hòa quyện (blend)
+                    và biến đổi mượt mà nhờ cơ chế{' '}
                     <code className="font-mono font-semibold text-purple-300">glassEffectID</code>.
                   </p>
                   <p className="font-sans leading-relaxed text-muted-foreground">
-                    Trên nền tảng web, hiệu ứng hữu cơ này được tái lập nhờ sự kết hợp giữa thuộc tính lọc{' '}
-                    <code className="font-mono text-purple-300">contrast()</code> siêu cao ở lớp chứa, và lớp phủ mờ{' '}
-                    <code className="font-mono text-purple-300">blur()</code> sinh động bên trong các giọt kính.
+                    Trên nền tảng web, hiệu ứng hữu cơ này được tái lập nhờ sự kết hợp giữa thuộc
+                    tính lọc <code className="font-mono text-purple-300">contrast()</code> siêu cao
+                    ở lớp chứa, và lớp phủ mờ{' '}
+                    <code className="font-mono text-purple-300">blur()</code> sinh động bên trong
+                    các giọt kính.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-border bg-muted/20 p-4 text-center font-mono text-xs text-muted-foreground">
-                  Sử dụng thanh trượt bên cạnh cửa sổ Viewport để trải nghiệm sự hòa nhập chất lỏng tức thời!
+                  Sử dụng thanh trượt bên cạnh cửa sổ Viewport để trải nghiệm sự hòa nhập chất lỏng
+                  tức thời!
                 </div>
 
                 {/* Fusing distance control in sidebar too */}
@@ -842,18 +1053,19 @@ export function GlassPlayground() {
                     <span className="font-semibold text-foreground">{fusingDistance}px</span>
                   </div>
                   <input
-                    type="range" min="0" max="180" value={fusingDistance}
+                    type="range"
+                    min="0"
+                    max="180"
+                    value={fusingDistance}
                     onChange={(e) => setFusingDistance(parseInt(e.target.value))}
-                    className="w-full h-1.5 cursor-pointer rounded-lg bg-muted accent-purple-500"
+                    className="h-1.5 w-full cursor-pointer rounded-lg bg-muted accent-purple-500"
                   />
                 </div>
               </div>
             )}
-
           </CardContent>
         </Card>
       </aside>
-
     </div>
   );
 }
