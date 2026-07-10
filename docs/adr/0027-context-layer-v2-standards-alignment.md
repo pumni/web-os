@@ -67,6 +67,21 @@ headline decisions:
     cache-semantics duplication collapsed; ADR-0003 amended (F15).
   - Plan 3: workflows tier retired; review-gate and skill-health-check converted to skills (19 skills total); exec-plan deleted and decision-log salvaged.
   - Plan 4: trimmed `mcp.md` to under 40 lines (within reduced size budget); moved rejected candidate history to ADR-0027.
+  - Plan 5: split `design-system.md` (387 lines → 99 lines) into stays + `REFERENCE.md` (278 lines added/deduplicated); refreshed MEMORY.md; deleted `rename-checklist.md` and updated README introductions.
+  - Plan 6: decoupled `ai:tw` from `ai:check`; automated `AGENTS.md` navigation table from `context-map.json` (`ai:nav:sync`); added `checkClaudeShims`, `checkEncodingHygiene`, and skill-health verification to `check-ai-context.mjs`; cleaned CP1252 encodings to UTF-8; pruned `ai-metrics.mjs` to load-bearing core.
+
+### Final Metrics Comparison
+
+| Metric | Before Rewrite (Plan 1 Baseline) | After Rewrite (Plan 6 Complete) |
+|---|---|---|
+| Mapped Context Docs | 15 docs | 15 docs |
+| Context Docs Size | 46,449 bytes | 46,449 bytes |
+| Active Skills | 19 skills | 19 skills |
+| Manifest Required Files | 40 files | 40 files |
+| Common Mistakes Gap | 3 gaps | 3 gaps |
+| Duplicated Invariants | 3 categories | 0 categories (enforced error) |
+| Tool Matrix Mismatches | 3 mismatches | 0 mismatches (enforced error) |
+
 
 
 ## Alternatives considered

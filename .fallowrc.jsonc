@@ -19,11 +19,13 @@
   // auto-detected by the script-multiplexer analysis). Listed explicitly to
   // avoid false-positive unused-file/export findings on their imports.
   "entry": [
+    "scripts/check-ai-context.mjs",
     "scripts/check-context-drift.mjs",
     "scripts/check-feature-boundary.mjs",
     "scripts/check-review-gate-rules.mjs",
     "scripts/check-secrets.mjs",
-    "scripts/review-gate-rules.mjs"
+    "scripts/review-gate-rules.mjs",
+    "scripts/sync-nav-table.mjs"
   ],
 
   // ─── Public package surface ───────────────────────────────────────────────

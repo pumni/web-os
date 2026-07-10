@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# scaffold.ps1 — Scaffold a new vertical feature slice.
+# scaffold.ps1 â€” Scaffold a new vertical feature slice.
 # Usage: pwsh -File .agents/skills/feature-module/scripts/scaffold.ps1 -FeatureName <name>
 param(
     [Parameter(Mandatory)][string]$FeatureName
@@ -14,9 +14,9 @@ if (Test-Path $base) {
 
 $dirs  = @("$base", "$base/__tests__")
 $files = @{
-    "$base/queries.ts"  = "// Server-side reads — see server-component-read skill`n'use cache'`n`nexport async function get$((Get-Culture).TextInfo.ToTitleCase($FeatureName))() {`n  // TODO`n}`n"
-    "$base/actions.ts"  = "'use server'`n// Server Actions — see server-action skill`n`nexport async function save$((Get-Culture).TextInfo.ToTitleCase($FeatureName))() {`n  // TODO`n}`n"
-    "$base/index.ts"    = "// Public surface — re-export only what features/ consumers need`n"
+    "$base/queries.ts"  = "// Server-side reads â€” see server-component-read skill`n'use cache'`n`nexport async function get$((Get-Culture).TextInfo.ToTitleCase($FeatureName))() {`n  // TODO`n}`n"
+    "$base/actions.ts"  = "'use server'`n// Server Actions â€” see server-action skill`n`nexport async function save$((Get-Culture).TextInfo.ToTitleCase($FeatureName))() {`n  // TODO`n}`n"
+    "$base/index.ts"    = "// Public surface â€” re-export only what features/ consumers need`n"
 }
 
 foreach ($d in $dirs)  { New-Item -ItemType Directory -Force $d | Out-Null }

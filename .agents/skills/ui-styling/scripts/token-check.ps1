@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# token-check.ps1 — Scan for raw CSS values that should use OKLCH design tokens.
+# token-check.ps1 â€” Scan for raw CSS values that should use OKLCH design tokens.
 # Usage: pwsh -File .agents/skills/ui-styling/scripts/token-check.ps1 [path]
 # Default path: apps/web/src and packages/ui/src
 param(
@@ -13,7 +13,7 @@ $searchPaths = @(
 
 Write-Host "`n=== Raw color checks (should use OKLCH tokens) ===" -ForegroundColor Cyan
 
-# Hex colors in TSX/CSS (flag for review — some are legitimate, e.g. brand logos)
+# Hex colors in TSX/CSS (flag for review â€” some are legitimate, e.g. brand logos)
 $hexMatches = rg --glob "*.{tsx,ts,css}" "#[0-9a-fA-F]{3,6}\b" $searchPaths --count-matches 2>$null
 if ($hexMatches) {
     Write-Host "`nHex colors found (verify these use tokens or have a known exception):" -ForegroundColor Yellow

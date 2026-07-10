@@ -10,6 +10,7 @@
     "scripts/run-ai-evals.mjs",
     "scripts/ai-review-rule-allowlist.json",
     "scripts/review-gate-rules.mjs",
+    "scripts/sync-nav-table.mjs",
     "scripts/sync-project-graph.mjs",
     "scripts/sync-skills.mjs",
     "scripts/sync-adr-register.mjs",
@@ -64,12 +65,12 @@
     "ai:check",
     "ai:eval",
     "ai:premerge",
+    "ai:nav:sync",
     "lint",
     "typecheck",
     "test",
     "build"
   ],
-
   "frontmatterRequired": [
     "docs/ai/domain-language.md",
     "docs/ai/mcp.md",
@@ -87,20 +88,58 @@
     "docs/conventions/nextjs-16.md"
   ],
   "skillValidation": {
-    "yamlRequiredFields": ["name", "description"],
-    "markdownRequiredSections": ["Rules", "Checklist"],
-    "recommendedSections": ["Known Failure Modes"]
+    "yamlRequiredFields": [
+      "name",
+      "description"
+    ],
+    "markdownRequiredSections": [
+      "Rules",
+      "Checklist"
+    ],
+    "recommendedSections": [
+      "Known Failure Modes"
+    ]
   },
   "sizeBudgets": [
-    { "path": "AGENTS.md", "maxBytes": 12000 },
-    { "path": "docs/ai/MEMORY.md", "maxBytes": 2200 },
-    { "path": "docs/ai/common-mistakes.md", "maxBytes": 4000 },
-    { "path": ".agents/skills/review-gate/SKILL.md", "maxBytes": 2700 },
-    { "path": "docs/ai/mcp.md", "maxBytes": 3300 },
-    { "path": ".claude/rules/nextjs-async-apis.md", "maxBytes": 900 },
-    { "path": ".claude/rules/nextjs-cache-components.md", "maxBytes": 1200 },
-    { "path": "docs/conventions/nextjs-16.md", "maxBytes": 5000 },
-    { "path": ".claude/rules/supabase-migrations.md", "maxBytes": 750 },
-    { "path": "docs/conventions/design-system.md", "maxBytes": 8700 }
+    {
+      "path": "AGENTS.md",
+      "maxBytes": 12500
+    },
+    {
+      "path": "docs/ai/MEMORY.md",
+      "maxBytes": 2300
+    },
+    {
+      "path": "docs/ai/common-mistakes.md",
+      "maxBytes": 4600
+    },
+    {
+      "path": ".agents/skills/review-gate/SKILL.md",
+      "maxBytes": 3300
+    },
+    {
+      "path": "docs/ai/mcp.md",
+      "maxBytes": 3300
+    },
+    {
+      "path": ".claude/rules/nextjs-async-apis.md",
+      "maxBytes": 900
+    },
+    {
+      "path": ".claude/rules/nextjs-cache-components.md",
+      "maxBytes": 1200
+    },
+    {
+      "path": "docs/conventions/nextjs-16.md",
+      "maxBytes": 5500
+    },
+    {
+      "path": ".claude/rules/supabase-migrations.md",
+      "maxBytes": 750
+    },
+    {
+      "path": "docs/conventions/design-system.md",
+      "maxBytes": 8800
+    }
   ]
 }

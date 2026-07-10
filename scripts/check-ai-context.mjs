@@ -315,6 +315,33 @@ const y = " |  | ";
     }
   }
 
+  // Self test for checkEncodingHygiene / checkClaudeShims:
+  console.log('Running self-test for Claude shims and encoding hygiene checks...');
+  let mockErrors = 0;
+  const originalReportError = reportError;
+  reportError = (msg) => {
+    mockErrors++;
+  };
+  
+  const testCjk = "Hello CJK: 漢字";
+  const cjkRegexTest = /[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u30ff\uac00-\ud7af\u3000-\u303f]/;
+  if (!cjkRegexTest.test(testCjk)) {
+    reportError('CJK regex did not match CJK characters');
+  }
+  
+  const testCorrupt = "Hello corrupt: \uFFFD";
+  if (!testCorrupt.includes('\uFFFD')) {
+    reportError('Corrupt check failed');
+  }
+
+  reportError = originalReportError;
+  if (mockErrors > 0) {
+    console.error('[FAIL] encoding self-test failed');
+    selfTestErrors++;
+  } else {
+    console.log('[PASS] encoding self-test passed');
+  }
+
   if (selfTestErrors > 0) {
     console.error('Self-test failed!');
     process.exit(1);
@@ -744,7 +771,7 @@ function checkInvariantDuplicates() {
 
       if (missingPointer.length > 0) {
         const list = missingPointer.map((p) => `  ${p}`).join('\n');
-        reportWarn(
+        reportError(
           `Invariant "${phraseRegex.source}" appears in ${nonCanonicalHits.length} file(s) beyond canonical home ${canonicalPath}. Convert to a pointer (backtick ref to ${canonicalPath}) or remove:\n${list}`,
         );
       }
@@ -803,6 +830,205 @@ function checkUiPackageBoundaries() {
   }
 }
 
+function checkClaudeShims() {
+  const rootClaudePath = path.join(ROOT, 'CLAUDE.md');
+  if (!fs.existsSync(rootClaudePath)) {
+    reportError('Root CLAUDE.md is missing.');
+  } else {
+    const content = fs.readFileSync(rootClaudePath, 'utf8');
+    if (!content.startsWith('@AGENTS.md')) {
+      reportError('Root CLAUDE.md must start with @AGENTS.md');
+    }
+  }
+
+  function findNestedAgents(dir) {
+    const results = [];
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (['node_modules', '.git', '.gemini', '.claude', '.agents', 'dist', '.turbo'].includes(entry.name)) {
+          continue;
+        }
+        results.push(...findNestedAgents(fullPath));
+      } else if (entry.name === 'AGENTS.md' && dir !== ROOT) {
+        results.push(fullPath);
+      }
+    }
+    return results;
+  }
+
+  const agentsFiles = findNestedAgents(ROOT);
+  for (const file of agentsFiles) {
+    const dir = path.dirname(file);
+    const claudeFile = path.join(dir, 'CLAUDE.md');
+    if (!fs.existsSync(claudeFile)) {
+      reportError(`Missing CLAUDE.md shim next to ${relPath(file)}`);
+    } else {
+      const content = fs.readFileSync(claudeFile, 'utf8');
+      if (content !== '@AGENTS.md\n' && content !== '@AGENTS.md\r\n') {
+        reportError(`CLAUDE.md shim in ${relPath(dir)} does not contain exactly '@AGENTS.md\\n'`);
+      }
+    }
+  }
+
+  function findNestedClaude(dir) {
+    const results = [];
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (['node_modules', '.git', '.gemini', '.claude', '.agents', 'dist', '.turbo'].includes(entry.name)) {
+          continue;
+        }
+        results.push(...findNestedClaude(fullPath));
+      } else if (entry.name === 'CLAUDE.md' && dir !== ROOT) {
+        results.push(fullPath);
+      }
+    }
+    return results;
+  }
+
+  const claudeFiles = findNestedClaude(ROOT);
+  for (const claudeFile of claudeFiles) {
+    const dir = path.dirname(claudeFile);
+    const agentsFile = path.join(dir, 'AGENTS.md');
+    if (!fs.existsSync(agentsFile)) {
+      const content = fs.readFileSync(claudeFile, 'utf8').trim();
+      if (content === '@AGENTS.md') {
+        reportError(`Orphan CLAUDE.md shim at ${relPath(claudeFile)}`);
+      }
+    }
+  }
+}
+
+function checkEncodingHygiene() {
+  const allowedCjkFiles = new Set(['scripts/check-ai-context.mjs']);
+
+  const contextFiles = new Set();
+  for (const rel of REQUIRED_FILES) {
+    contextFiles.add(resolveRel(rel));
+  }
+  
+  function collectAllFiles(dir) {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name === 'node_modules' || entry.name === '.git') continue;
+        collectAllFiles(fullPath);
+      } else if (entry.isFile()) {
+        contextFiles.add(fullPath);
+      }
+    }
+  }
+  collectAllFiles(resolveRel('.agents'));
+
+  function collectAgentsMds(dir) {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (['node_modules', '.git', '.gemini', '.claude', '.agents', 'dist', '.turbo'].includes(entry.name)) {
+          continue;
+        }
+        collectAgentsMds(fullPath);
+      } else if (entry.name === 'AGENTS.md') {
+        contextFiles.add(fullPath);
+      }
+    }
+  }
+  collectAgentsMds(ROOT);
+
+  const cjkRegex = /[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u30ff\uac00-\ud7af\u3000-\u303f]/g;
+
+  for (const filePath of contextFiles) {
+    if (!fs.existsSync(filePath)) continue;
+    const rel = relPath(filePath);
+    const content = fs.readFileSync(filePath, 'utf8');
+
+    if (content.includes('\uFFFD')) {
+      reportError(`File ${rel} contains replacement character U+FFFD (corrupted encoding).`);
+    }
+
+    if (!allowedCjkFiles.has(rel)) {
+      cjkRegex.lastIndex = 0;
+      let match;
+      while ((match = cjkRegex.exec(content)) !== null) {
+        reportError(`File ${rel} contains unexpected CJK character '${match[0]}' at line ${lineNumber(content, match.index)}.`);
+        break;
+      }
+    }
+  }
+}
+
+function checkSkillEvalsAndPaths() {
+  const baseDir = resolveRel('.agents/skills');
+  if (!fs.existsSync(baseDir)) return;
+
+  const entries = fs.readdirSync(baseDir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const skillName = entry.name;
+    const skillPath = path.join(baseDir, skillName);
+
+    let evalsPath = path.join(skillPath, 'evals', 'evals.json');
+    if (!fs.existsSync(evalsPath)) {
+      evalsPath = path.join(skillPath, 'evals.json');
+    }
+
+    if (fs.existsSync(evalsPath)) {
+      const relEvals = relPath(evalsPath);
+      let data;
+      try {
+        data = JSON.parse(fs.readFileSync(evalsPath, 'utf8'));
+      } catch (err) {
+        reportError(`Malformed JSON in skill eval: ${relEvals} -> ${err.message}`);
+        continue;
+      }
+
+      if (data.skill_name !== skillName) {
+        reportError(`Skill name mismatch in ${relEvals}: expected "${skillName}", got "${data.skill_name}"`);
+      }
+
+      if (!Array.isArray(data.evals)) {
+        reportError(`Missing or malformed "evals" array in ${relEvals}`);
+      } else {
+        for (let i = 0; i < data.evals.length; i++) {
+          const ev = data.evals[i];
+          if (ev.id === undefined || !ev.prompt || !ev.expected_output || !Array.isArray(ev.expectations)) {
+            reportError(`Malformed eval case at index ${i} in ${relEvals}`);
+          }
+          if (Array.isArray(ev.files)) {
+            for (const fileRef of ev.files) {
+              if (!fs.existsSync(resolveRel(fileRef))) {
+                reportError(`Referenced file does not exist in ${relEvals}: ${fileRef}`);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+function checkNavMapSync() {
+  const syncScript = path.join(__dirname, 'sync-nav-table.mjs');
+  if (!fs.existsSync(syncScript)) {
+    reportWarn('sync-nav-table.mjs not found — skipping navigation table sync check.');
+    return;
+  }
+  try {
+    execFileSync(process.execPath, [syncScript, '--check'], { stdio: 'inherit', cwd: ROOT });
+  } catch {
+    reportError(
+      'AGENTS.md navigation table is out of sync. Run `bun run ai:nav:sync` and commit.',
+    );
+  }
+}
+
 if (selfTest) {
   runSelfTest();
   process.exit(0);
@@ -835,6 +1061,10 @@ checkInvariantDuplicates();
 checkSkillShimsSync();
 checkProjectGraphSync();
 checkAdrRegisterSync();
+checkClaudeShims();
+checkEncodingHygiene();
+checkSkillEvalsAndPaths();
+checkNavMapSync();
 
 // Advisory metrics snapshot — writes scripts/ai-metrics.json, never blocks the gate.
 try {

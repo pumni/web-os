@@ -1,4 +1,4 @@
-// query-hook.template.ts — Copy to features/<feature>/use-<name>.ts
+// query-hook.template.ts â€” Copy to features/<feature>/use-<name>.ts
 // See .agents/skills/tanstack-query-hook/SKILL.md for full wiring rules.
 'use client'
 

@@ -1,4 +1,4 @@
-// schema.template.ts — Copy to packages/validators/src/<domain>/<name>.ts
+// schema.template.ts â€” Copy to packages/validators/src/<domain>/<name>.ts
 // See .agents/skills/zod-validator/SKILL.md for full authoring rules.
 import { z } from 'zod/v4'
 
@@ -9,7 +9,7 @@ export const __NameSchema = z.object({
   // label: z.string().min(1).max(255),
 })
 
-// -- Inferred types (single source of truth — do NOT duplicate manually) -------
+// -- Inferred types (single source of truth â€” do NOT duplicate manually) -------
 export type __NameInput  = z.input<typeof __NameSchema>
 export type __NameOutput = z.output<typeof __NameSchema>
 

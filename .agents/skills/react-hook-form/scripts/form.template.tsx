@@ -1,4 +1,4 @@
-// form.template.tsx — Copy to features/<feature>/<name>-form.tsx
+// form.template.tsx â€” Copy to features/<feature>/<name>-form.tsx
 // See .agents/skills/react-hook-form/SKILL.md for full wiring rules.
 'use client'
 
@@ -43,7 +43,7 @@ export function __NameForm() {
         )}
 
         <Button type="submit" disabled={isPending}>
-          {isPending ? 'Saving…' : 'Save'}
+          {isPending ? 'Savingâ€¦' : 'Save'}
         </Button>
       </form>
     </Form>

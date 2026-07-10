@@ -1,4 +1,4 @@
-// store.template.ts — Copy to apps/web/src/shared/stores/<name>-store.ts
+// store.template.ts â€” Copy to apps/web/src/shared/stores/<name>-store.ts
 //   OR features/<feature>/<name>-store.ts (feature-local, not promoted).
 // See .agents/skills/zustand-store/SKILL.md for scoping rules.
 //
@@ -10,7 +10,7 @@ import { create } from 'zustand'
 
 // -- State shape ----------------------------------------------------------------
 interface __NameState {
-  // TODO: add UI-only state (open/closed, selected id, draft text…)
+  // TODO: add UI-only state (open/closed, selected id, draft textâ€¦)
   isOpen: boolean
   selectedId: string | null
 }
