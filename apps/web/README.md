@@ -1,7 +1,6 @@
-# Web App
+# Pumni Web OS App
 
-The Next.js delivery app for the starter. It owns routing, layouts, app shell,
-global CSS, route handlers, and feature composition.
+The Next.js delivery app for Pumni Web OS, built with a design-system starter heritage.
 
 ## Commands
 

@@ -12,5 +12,3 @@ Project documentation is split by purpose:
 - `conventions/supabase-security.md` defines migration, RLS, grant, and key
   handling rules.
 - `conventions/testing.md` defines test scope and command ownership.
-- `quality-gates.md` defines the root verification commands.
-- `starter/rename-checklist.md` covers cloning this starter for a new product.

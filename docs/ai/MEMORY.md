@@ -17,8 +17,7 @@ harness-managed primary; this file is the durable log for decisions.
 - Next.js 16 cache API → [data-fetching.md](../conventions/data-fetching.md) and [common-mistakes.md](common-mistakes.md).
 - transpilePackages necessity → [transpile-packages.md](../conventions/transpile-packages.md).
 - MCP runtime role & version pins (never `@latest`) → [mcp.md](mcp.md).
-- Context layer frozen (no new ADR without measured regression) → [adr/README.md](../adr/README.md).
+- Context layer v2 landed — [ADR-0027](../adr/0027-context-layer-v2-standards-alignment.md); maintenance via `context-health` skill.
 - Enforcement = checkCodeReferences (drift) + test-weakening (reward-hacking) + path-existence → `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
-- llms.txt is deleted (ADR-0027 supersedes ADR-0022). Root AGENTS.md is the single entry map.
 - Behavioral eval — keyword grader proven non-discriminating (2026-07-10 run: passRateA=passRateB=0.111). Phase 5 added LLM-as-judge (`--judge` flag): 9 per-task rubrics, constitutional prompt (P0–P4), advisory/fail-open until >80% calibration. ADR-0026. See `scripts/run-behavioral-evals.mjs`.
-- Last upstream-standards checkpoint: 2026-07-10 (MCP, agents.md, anthropics/skills, humanlayer ACE-FCA, langchain context_engineering reviewed → runtime-context doctrine reinstated in agent-behavior.md).
+- Last upstream-standards checkpoint: 2026-07-10 (MCP, agents.md, anthropics/skills, humanlayer ACE-FCA, langchain context_engineering reviewed → runtime-context doctrine integrated in root AGENTS.md).

@@ -1,7 +1,6 @@
-# Web OS Starter
+# Pumni Web OS
 
-A reusable web app starter built with Bun workspaces, Turborepo, Next.js App
-Router, React, Tailwind CSS, and Supabase SSR.
+Pumni Web OS is a reusable web application platform built on a Turborepo monorepo with Next.js 16, React, and Supabase, preserving its design-system starter heritage.
 
 The repo is intentionally small: it provides auth, profile settings, shared
 validation, Supabase client factories, and quality gates so a new app can start
@@ -93,5 +92,3 @@ docs                     Architecture and conventions
 5. Create `apps/web/.env.local` from `apps/web/.env.example`.
 6. Run the quality gates.
 7. Start feature work under `apps/web/src/features`.
-
-See `docs/starter/rename-checklist.md` for the full rename checklist.

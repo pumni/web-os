@@ -100,6 +100,7 @@
     { "path": ".claude/rules/nextjs-async-apis.md", "maxBytes": 900 },
     { "path": ".claude/rules/nextjs-cache-components.md", "maxBytes": 1200 },
     { "path": "docs/conventions/nextjs-16.md", "maxBytes": 5000 },
-    { "path": ".claude/rules/supabase-migrations.md", "maxBytes": 750 }
+    { "path": ".claude/rules/supabase-migrations.md", "maxBytes": 750 },
+    { "path": "docs/conventions/design-system.md", "maxBytes": 8700 }
   ]
 }
