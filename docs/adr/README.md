@@ -12,7 +12,7 @@ that source code and conventions cannot carry on their own.
 | ADR | Title | Status | Date |
 |---|---|---|---|
 | 0002 | Next.js Cache API Static Rules — Scope and Limits | Accepted | 2026-06-18 |
-| 0003 | Cursor `.mdc` and Claude `settings.json` Permission Allow-Deny | Accepted (decision: defer adoption) | 2026-06-19 |
+| 0003 | Cursor `.mdc` and Claude `settings.json` Permission Allow-Deny | Accepted (amended 2026-07 — see Changelog below) | 2026-06-19 |
 | 0010 | Frontend Platform Foundation — `@pumni/ui` as a Reusable OS Skeleton | Accepted (two rejections revised by ADR-0021) | 2026-06-20 |
 | 0011 | Watch Sync as an Explicit State Machine + an Observability Seam | Accepted | 2026-06-20 |
 | 0021 | Revisit ADR-0010 Rejections — Component Catalog + DTCG Token Export | Accepted | 2026-06-30 |

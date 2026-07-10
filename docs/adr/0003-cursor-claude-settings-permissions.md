@@ -1,6 +1,6 @@
 # 0003. Cursor `.mdc` and Claude `settings.json` Permission Allow-Deny
 
-- **Status:** Accepted (decision: defer adoption)
+- **Status:** Accepted (amended 2026-07 — see Changelog below)
 - **Date:** 2026-06-19
 - **Owner:** AI context layer (see root `AGENTS.md`)
 
@@ -22,10 +22,14 @@ current guards miss something they would catch.
 
 What already exists:
 
-- A glob-scoped rule layer at `.claude/rules/` (two files:
-  `.claude/rules/nextjs-async-apis.md` and `.claude/rules/nextjs-cache-components.md`),
-  scoped to App Router and feature query/action globs. This is the same
-  glob-scoped pattern `.mdc` provides, just Claude-flavored and already in place.
+- A glob-scoped rule layer at `.claude/rules/` (three files as of 2026-07:
+  `.claude/rules/nextjs-async-apis.md`, `.claude/rules/nextjs-cache-components.md`,
+  and `.claude/rules/supabase-migrations.md`), scoped via `paths:` frontmatter to
+  app-router, feature query/action, and migration paths respectively. The rule
+  bodies are now thin pointers (~10–15 lines) to canonical convention docs;
+  the full content lives in `docs/conventions/nextjs-16.md` and
+  `docs/conventions/supabase-security.md`. This is the same path-scoped pattern
+  `.mdc` provides, just Claude-flavored and already in place.
 - A static analyzer (`scripts/check-review-gate-rules.mjs`, 16 rules, 16/16
   eval-covered) plus the manifest-enforced plane (`bun run ai:check`) and the
   review-gate workflow (`.agents/workflows/review-gate.md`).
@@ -119,3 +123,10 @@ When re-opened, prefer the option whose guardrail is closest to the observed gap
   — the glob-scoped layer already in place.
 - `scripts/check-review-gate-rules.mjs`, `docs/ai/MEMORY.md`,
   `scripts/ai-metrics.mjs` — the data sources checked for the decision.
+
+## Changelog
+
+- **2026-07-11 (Plan 2):** Rules layer expanded to three files; all switched from
+  `globs:` to `paths:` frontmatter (Claude Code native path-scoping); rule bodies
+  shrunk to ~10–15-line pointers; canonical Next.js 16 content moved to
+  `docs/conventions/nextjs-16.md`. The permissions-defer decision stands unchanged.
