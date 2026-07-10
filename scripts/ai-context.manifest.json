@@ -25,6 +25,7 @@
     "packages/auth/AGENTS.md",
     "docs/ai/index.md",
     "docs/ai/agent-command-policy.md",
+    "docs/ai/agent-behavior.md",
     "docs/ai/domain-language.md",
     "docs/ai/mcp.md",
     "docs/ai/MEMORY.md",
@@ -74,6 +75,7 @@
 
   "frontmatterRequired": [
     "docs/ai/agent-command-policy.md",
+    "docs/ai/agent-behavior.md",
     "docs/ai/domain-language.md",
     "docs/ai/mcp.md",
     "docs/ai/golden-examples.md",
@@ -101,6 +103,7 @@
     "docs/conventions/transpile-packages.md",
     "docs/quality-gates.md",
     "docs/ai/agent-command-policy.md",
+    "docs/ai/agent-behavior.md",
     "docs/ai/domain-language.md",
     "docs/ai/mcp.md",
     "docs/ai/golden-examples.md",
@@ -122,6 +125,7 @@
     { "path": "docs/ai/common-mistakes.md", "maxBytes": 4000 },
     { "path": ".agents/workflows/review-gate.md", "maxBytes": 2600 },
     { "path": "docs/ai/agent-command-policy.md", "maxBytes": 5400 },
+    { "path": "docs/ai/agent-behavior.md", "maxBytes": 3600 },
     { "path": "docs/ai/mcp.md", "maxBytes": 5000 },
     { "path": ".claude/rules/nextjs-async-apis.md", "maxBytes": 1500 },
     { "path": ".claude/rules/nextjs-cache-components.md", "maxBytes": 2900 }

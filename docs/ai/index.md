@@ -32,6 +32,7 @@ need to the canonical doc that owns it.
 | Need | Load |
 | --- | --- |
 | Shell command discipline (PowerShell 7) | `docs/ai/agent-command-policy.md` |
+| Runtime context (budget, isolation, compaction) | `docs/ai/agent-behavior.md` |
 | Domain glossary | `docs/ai/domain-language.md` |
 | Local production patterns to copy | `docs/ai/golden-examples.md` |
 | Known ❌/✅ mistake pairs | `docs/ai/common-mistakes.md` |

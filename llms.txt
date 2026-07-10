@@ -23,6 +23,7 @@
 ## Reference (load on demand)
 
 - [docs/ai/agent-command-policy.md](docs/ai/agent-command-policy.md): PowerShell 7 discipline + validation gates + local hooks.
+- [docs/ai/agent-behavior.md](docs/ai/agent-behavior.md): runtime context discipline — budget, subagent isolation, compaction, refresh triggers.
 - [docs/ai/domain-language.md](docs/ai/domain-language.md): domain glossary.
 - [docs/ai/MEMORY.md](docs/ai/MEMORY.md): durable settled-decision log (harness-managed hybrid memory).
 - [docs/ai/mcp.md](docs/ai/mcp.md): MCP servers.
