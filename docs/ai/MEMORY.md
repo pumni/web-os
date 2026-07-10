@@ -20,5 +20,5 @@ harness-managed primary; this file is the durable log for decisions.
 - Context layer frozen (no new ADR without measured regression) → [adr/README.md](../adr/README.md).
 - Enforcement = checkCodeReferences (drift) + test-weakening (reward-hacking) + path-existence → `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
 - llms.txt is required (ADR-0022) — a curated handshake subset of docs/ai/index.md; its links/paths are gate-checked by `ai:check`, so no manual mirror is needed.
-- Last behavioral eval dry-run: 2026-07-10.
+- Behavioral eval — first real run 2026-07-10 (subscription OAuth, no paid key): the runner's prose keyword-matching does NOT discriminate — a correct RLS refusal scored FAIL while a riskier draft scored PASS (keyword bingo, non-deterministic). Baseline untrustworthy; needs an LLM-judge or tool-call-trace rubric before it can gate. See `scripts/run-behavioral-evals.mjs`.
 - Last upstream-standards checkpoint: 2026-07-10 (MCP, agents.md, anthropics/skills, humanlayer ACE-FCA, langchain context_engineering reviewed → runtime-context doctrine reinstated in agent-behavior.md).
