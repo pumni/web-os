@@ -7,10 +7,12 @@ training-data knowledge for Next.js 16 specifics.
 
 ## Hard rules (SSOT — do not duplicate here)
 
-These are always loaded on Claude Code (other harnesses load them via the globs in frontmatter) — read them:
+Canonical: `docs/conventions/nextjs-16.md` — read before writing any Next.js 16 code.
 
-- `.claude/rules/nextjs-async-apis.md` — `params`/`searchParams`/`cookies()`/`headers()`/`draftMode()` are async; `await` them. Generate `PageProps`/`RouteContext` with `npx next typegen`.
-- `.claude/rules/nextjs-cache-components.md` — `'use cache'` placement, `cacheLife()` minimums, parameterized `cacheTag()`, `updateTag()` (Server Actions only), two-arg `revalidateTag()`, `<Suspense>` boundaries.
+`.claude/rules/nextjs-async-apis.md` and `.claude/rules/nextjs-cache-components.md` are
+Claude Code path-scoped pointers (generated tier): they load only when you touch files under
+`apps/web/src/app/**` or `apps/web/src/features/**/actions.ts|queries.ts`, and each is a
+short reminder with a back-link to the canonical above.
 
 ## App-local layout
 

@@ -53,9 +53,12 @@ are defined in `scripts/review-gate-rules.mjs`. Unlabeled = enforced;
 ❌ `try { await save(); } catch (e) {}` in `actions.ts`/`queries.ts`.
 ✅ Throw, return an explicit failure, or log before continuing.
 
-## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`, `use-cache-placement`, `update-tag-scope`)
+## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`, `use-cache-placement`, `update-tag-scope`, `single-arg-revalidate-tag`)
 
-SSOT: `.claude/rules/nextjs-cache-components.md` (enforced by static check).
+SSOT: `docs/conventions/nextjs-16.md` (enforced by static check).
+
+Includes: `cacheLife` minimums, parameterized `cacheTag`, `'use cache'` placement,
+`updateTag` Server-Action-only scope, and two-arg `revalidateTag(tag, profile)`.
 
 ## 11. Weakening a test to make it pass (`test-weakening`)
 
@@ -67,10 +70,7 @@ SSOT: `.claude/rules/nextjs-cache-components.md` (enforced by static check).
 ❌ Implementing routing or auth check inside App Router `middleware.ts`.
 ✅ Use Node-based auth proxy at `apps/web/src/proxy.ts` (or equivalent).
 
-## 13. Next 16 revalidate tag (`single-arg-revalidate-tag`)
-
-❌ `revalidateTag(tag)` (Next 16 requires two arguments).
-✅ `revalidateTag(tag, profile)`.
+## 13. Next 16 revalidate tag — merged into #10 (tombstone)
 
 ## 14. Server-only leaks (`server-only-in-client`, `server-action-missing-auth`, `server-action-missing-revalidation`)
 

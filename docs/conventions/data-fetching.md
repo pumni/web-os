@@ -12,24 +12,9 @@ Use standard Server Components for initial load screens:
 - Profile/Settings initial values
 - Public page static assets
 
-When data is safe to reuse across requests, prefer Next.js 16 Cache Components:
-
-- Put `"use cache"` inside the cached server function.
-- Tag user-scoped cached reads with `cacheTag(...)`.
-- Set an explicit lifetime with `cacheLife(...)`.
-- After Server Action mutations that must show fresh user data immediately, call
-  `updateTag(...)`.
-- Use `revalidateTag(tag, profile)` only for stale-while-revalidate flows or
-  Route Handlers; the v16 single-argument form is invalid.
-
-`cacheComponents: true` is enabled (`apps/web/next.config.ts`). To make a route
-serve an instant static shell with PPR, mark the cached server function with
-`'use cache'`, give it a parameterized `cacheTag(...)` and a safe `cacheLife(...)`,
-and wrap every dynamic child in `<Suspense>`. Build-time validation flags a
-dynamic read with no cache or Suspense boundary. Protected layouts must keep auth
-checks behind a local Suspense boundary with a static fallback shell that does not
-render protected children before authentication resolves. Canonical mechanics:
-`.claude/rules/nextjs-cache-components.md`.
+When data is safe to reuse across requests, prefer Next.js 16 Cache Components.
+Canonical mechanics (placement, `cacheLife`, `cacheTag`, `updateTag`,
+`revalidateTag`, PPR/Suspense): `docs/conventions/nextjs-16.md`.
 
 ## Client-Side Asynchronous Querying (TanStack Query)
 
