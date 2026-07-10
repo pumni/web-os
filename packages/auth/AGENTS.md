@@ -1,8 +1,6 @@
 # @pumni/auth — package-scoped rules
 
-Path-scoped contract for `packages/auth`. Read when editing this package. Root
-`AGENTS.md` and `docs/conventions/supabase-security.md` still apply; this file
-only adds the package-specific boundary.
+Package delta; root AGENTS.md applies.
 
 ## Summary
 
@@ -12,8 +10,7 @@ resolved before any privileged write.
 
 ## Architecture
 
-- Server-only package. Every entry that touches the service-role or server
-  client must keep `"server-only"` so it cannot leak into a client bundle.
+- Server-only package (P0, see [supabase-security.md](../../docs/conventions/supabase-security.md)). Keep "server-only" declarations.
 - Consumers: `apps/web` Server Components, Server Actions, and route handlers.
   Client components must never import from here.
 - Workspace dep: `@pumni/supabase`.

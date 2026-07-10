@@ -11,7 +11,7 @@ apply.
 
 ## Rules
 
-- Read `docs/ai/index.md` and the relevant task route before code changes.
+- Read the root `AGENTS.md` navigation table and the relevant task route before code changes.
 - Build a red-capable feedback loop before forming a primary fix hypothesis.
 - Confirm the loop matches the user's exact symptom, not a nearby failure.
 - Test one hypothesis at a time.
@@ -32,7 +32,7 @@ Create a red-capable command or harness before guessing at causes. A useful loop
 drives the actual bug path and can fail on the user's exact symptom. Copy
 [scripts/repro-loop.template.ps1](/.agents/skills/diagnosing-bugs/scripts/repro-loop.template.ps1)
 (canonical — PowerShell 7 is the repo shell per `AGENTS.md`) as a starting
-scaffold. Fry `repro-loop.template.sh` 仅 as a cross-platform `bun run` fallback on non-Windows hosts.
+scaffold. Use `repro-loop.template.sh` only as a cross-platform `bun run` fallback on non-Windows hosts.
 
 Prefer, in order:
 

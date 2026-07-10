@@ -18,6 +18,12 @@ These are always loaded on Claude Code (other harnesses load them via the globs 
 - State ownership: server data stays in Server Components or TanStack Query cache; never mirror it to Zustand (see [data-fetching.md](../../docs/conventions/data-fetching.md)).
 - Server-only modules carry `"server-only"`; the service-role key never reaches
   client bundles (`docs/conventions/supabase-security.md`).
+- React Compiler is active monorepo-wide: do not add **new** `useMemo`/`useCallback`
+  for ordinary stability. Optimize manually only for `useTransition`, ref cleanup,
+  or dynamic third-party JSX props.
+- Playground/demo surfaces — `src/features/sky-player`, `src/features/design-trends`,
+  `src/app/(app)/todos` — are exempt from full feature-module requirements, but P0
+  security mandates (RLS/auth) still apply if they touch any server resource.
 
 For repeated procedures see `.agents/skills/*` (e.g. `server-action`,
 `tanstack-query-hook`, `zustand-store`, `ui-styling`).

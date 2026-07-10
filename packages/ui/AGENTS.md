@@ -1,8 +1,6 @@
 # @pumni/ui — package-scoped rules
 
-Path-scoped contract for `packages/ui`. Read when editing this package. The root
-`AGENTS.md` and `docs/conventions/*` still apply; this file only adds the
-package-specific boundary.
+Package delta; root AGENTS.md applies.
 
 ## Summary
 

@@ -1,7 +1,6 @@
 # @pumni/validators — package-scoped rules
 
-Path-scoped contract for `packages/validators`. Read when editing shared input
-schemas. This package is shared across client and server boundaries.
+Package delta; root AGENTS.md applies.
 
 ## Summary
 

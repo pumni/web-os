@@ -1,6 +1,6 @@
 # ExecPlan
 
-A living document for tracking multi-step tasks. **Advisory** — use when work
+A living document for tracking multi-step tasks. **Advisory** - use when work
 spans more than three files, takes more than ~1 hour, or has a compatibility
 risk that needs an explicit decision log.
 
@@ -10,7 +10,7 @@ Create an ExecPlan when the task:
 - Touches 3+ files across different modules or packages.
 - Has multiple sequential phases where earlier phases must be verified before later ones begin.
 - Carries a compatibility risk (changed public API, schema, wire protocol).
-- Has been given back after a stale context — the plan re-orients without re-reading the full transcript.
+- Has been given back after a stale context - the plan re-orients without re-reading the full transcript.
 
 Skip for single-file fixes, pure docs/context edits, or trivial follow-ups.
 
@@ -22,13 +22,13 @@ place as you execute.
 ````markdown
 # ExecPlan: <Task title>
 
-**Goal:** One sentence — what done looks like.
+**Goal:** One sentence - what done looks like.
 **Scope:** Files / packages touched. Explicit do-not-touch list.
-**Gate:** The narrowest `bun run` command that proves the change (from `docs/ai/agent-command-policy.md`).
+**Gate:** The narrowest `bun run` command that proves the change (from the root `AGENTS.md` validation gates).
 
 ## Steps
 
-- [ ] Step 1 — description + completion criterion
+- [ ] Step 1 - description + completion criterion
 - [ ] Step 2
 - [ ] ...
 

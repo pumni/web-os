@@ -10,7 +10,7 @@ skill changes the glossary; merely reading the glossary does not require it.
 
 ## Process
 
-1. Read `docs/ai/index.md`, `docs/ai/domain-language.md`, and the route or
+1. Read the root `AGENTS.md` navigation table, `docs/ai/domain-language.md`, and the route or
    convention docs relevant to the current task.
 2. Challenge overloaded or vague terms. Ask whether the user means the existing
    glossary term or a new concept.

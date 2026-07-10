@@ -2,7 +2,6 @@
   "requiredFiles": [
     "AGENTS.md",
     "CLAUDE.md",
-    "llms.txt",
     ".mcp.json",
     ".github/copilot-instructions.md",
     "scripts/check-ai-context.mjs",
@@ -23,9 +22,6 @@
     "packages/ui/AGENTS.md",
     "packages/supabase/AGENTS.md",
     "packages/auth/AGENTS.md",
-    "docs/ai/index.md",
-    "docs/ai/agent-command-policy.md",
-    "docs/ai/agent-behavior.md",
     "docs/ai/domain-language.md",
     "docs/ai/mcp.md",
     "docs/ai/MEMORY.md",
@@ -41,8 +37,7 @@
     "docs/conventions/design-system.md",
     "docs/conventions/supabase-security.md",
     "docs/conventions/testing.md",
-    "docs/conventions/transpile-packages.md",
-    "docs/quality-gates.md"
+    "docs/conventions/transpile-packages.md"
   ],
   "requiredExistingPaths": [
     "apps/web/src/shared/stores/app-ui-store.ts",
@@ -74,8 +69,6 @@
   ],
 
   "frontmatterRequired": [
-    "docs/ai/agent-command-policy.md",
-    "docs/ai/agent-behavior.md",
     "docs/ai/domain-language.md",
     "docs/ai/mcp.md",
     "docs/ai/golden-examples.md",
@@ -90,42 +83,16 @@
     "docs/conventions/testing.md",
     "docs/conventions/transpile-packages.md"
   ],
-  "indexRequiredReferences": [
-    "AGENTS.md",
-    "docs/architecture/overview.md",
-    "docs/architecture/project-graph.md",
-    "docs/conventions/server-client-boundary.md",
-    "docs/conventions/data-fetching.md",
-    "docs/conventions/feature-module.md",
-    "docs/conventions/design-system.md",
-    "docs/conventions/supabase-security.md",
-    "docs/conventions/testing.md",
-    "docs/conventions/transpile-packages.md",
-    "docs/quality-gates.md",
-    "docs/ai/agent-command-policy.md",
-    "docs/ai/agent-behavior.md",
-    "docs/ai/domain-language.md",
-    "docs/ai/mcp.md",
-    "docs/ai/golden-examples.md",
-    "docs/ai/common-mistakes.md",
-    ".claude/rules/nextjs-async-apis.md",
-    ".claude/rules/nextjs-cache-components.md",
-    ".agents/skills",
-    ".agents/skills/domain-modeling/SKILL.md"
-  ],
   "skillValidation": {
     "yamlRequiredFields": ["name", "description"],
     "markdownRequiredSections": ["Rules", "Checklist"],
     "recommendedSections": ["Known Failure Modes"]
   },
   "sizeBudgets": [
-    { "path": "AGENTS.md", "maxBytes": 5500 },
-    { "path": "docs/ai/index.md", "maxBytes": 4400 },
+    { "path": "AGENTS.md", "maxBytes": 12000 },
     { "path": "docs/ai/MEMORY.md", "maxBytes": 2200 },
     { "path": "docs/ai/common-mistakes.md", "maxBytes": 4000 },
     { "path": ".agents/workflows/review-gate.md", "maxBytes": 2600 },
-    { "path": "docs/ai/agent-command-policy.md", "maxBytes": 5400 },
-    { "path": "docs/ai/agent-behavior.md", "maxBytes": 3600 },
     { "path": "docs/ai/mcp.md", "maxBytes": 5000 },
     { "path": ".claude/rules/nextjs-async-apis.md", "maxBytes": 1500 },
     { "path": ".claude/rules/nextjs-cache-components.md", "maxBytes": 2900 }

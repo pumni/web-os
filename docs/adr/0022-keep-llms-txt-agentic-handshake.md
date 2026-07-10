@@ -1,6 +1,6 @@
 # 0022. Keep llms.txt as the Agentic Handshake Map
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0027](0027-context-layer-v2-standards-alignment.md)
 - **Date:** 2026-07-01
 - **Owner:** AI context layer (see `docs/ai/index.md`)
 - **Supersedes:** ADR-0013 §4 (the `llms.txt` removal half only)

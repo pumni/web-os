@@ -1,6 +1,6 @@
 # apps/catalog — Storybook Component Catalog (nearest-file rules)
 
-This app is the Storybook component catalog established by ADR-0021, used to develop and preview reusable UI components from the `@pumni/ui` package.
+Package delta; root AGENTS.md applies.
 
 ## Development & Build Commands
 
@@ -16,5 +16,3 @@ This app is the Storybook component catalog established by ADR-0021, used to dev
 
 - The catalog acts as an isolated sandbox for testing design system tokens and component layout.
 - Any component changes should be made directly inside `@pumni/ui` (under `packages/ui`) and previewed in the catalog before promotion to `apps/web`.
-
-For general guidelines, security mandates, and routing see the root [AGENTS.md](../../AGENTS.md) and [docs/ai/index.md](../../docs/ai/index.md).

@@ -187,32 +187,23 @@ const adrTotalSize = adrContent.reduce((sum, { path: p }) => sum + fileSizeBytes
 metrics.contextDocsBytes = totalContextSize;
 metrics.adrDocsBytes = adrTotalSize;
 
-// 8. Tool Support Matrix coverage — count capabilities the index documents
+// 8. Navigation map coverage — count capabilities the root AGENTS.md documents
 // vs the real mechanisms that exist on disk. Each required capability that is
-// missing from docs/ai/index.md's Tool Support Matrix (or the section itself)
-// counts as one mismatch. Drives freeze-gate evidence for context-
-// layer edits to the matrix.
+// missing from AGENTS.md counts as one mismatch.
 const REQUIRED_CAPABILITY_KEYWORDS = [
   { capability: 'entry contract', re: /AGENTS\.md/ },
-  { capability: 'handshake map', re: /llms\.txt/ },
-  { capability: 'router', re: /docs\/ai\/index\.md/ },
   { capability: 'long-term memory', re: /MEMORY\.md/ },
   { capability: 'path-scoped rules', re: /\.claude\/rules/ },
   { capability: 'skill discovery', re: /\.agents\/skills/ },
   { capability: 'skill shim (generated)', re: /\.claude\/skills/ },
   { capability: 'subagent reviewers', re: /\.claude\/agents/ },
   { capability: 'lifecycle hooks', re: /\.claude\/hooks/ },
-  { capability: 'MCP servers', re: /\.mcp\.json/ },
   { capability: 'validation gates', re: /ai:check/ },
 ];
-const indexContent = readAny('docs/ai/index.md');
+const agentsContent = readAny('AGENTS.md');
 let toolMatrixMismatches = 0;
-if (!/## Tool Support Matrix/.test(indexContent)) {
-  toolMatrixMismatches = REQUIRED_CAPABILITY_KEYWORDS.length;
-} else {
-  for (const { re } of REQUIRED_CAPABILITY_KEYWORDS) {
-    if (!re.test(indexContent)) toolMatrixMismatches++;
-  }
+for (const { re } of REQUIRED_CAPABILITY_KEYWORDS) {
+  if (!re.test(agentsContent)) toolMatrixMismatches++;
 }
 metrics.toolMatrixMismatches = toolMatrixMismatches;
 

@@ -1,8 +1,6 @@
 # @pumni/config — package-scoped rules
 
-Path-scoped contract for `packages/config`. Read when editing this package. The
-root `AGENTS.md` and canonical docs still apply; this file only adds the
-package-specific boundary.
+Package delta; root AGENTS.md applies.
 
 ## Summary
 

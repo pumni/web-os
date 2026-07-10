@@ -2,7 +2,7 @@
 
 - **Status:** Accepted (decision: defer adoption)
 - **Date:** 2026-06-19
-- **Owner:** AI context layer (see `docs/ai/index.md`)
+- **Owner:** AI context layer (see root `AGENTS.md`)
 
 ## Context
 

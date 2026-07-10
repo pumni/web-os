@@ -69,5 +69,5 @@ load-bearing sections:
 - <falsifiable: "X returns Y for input Z">
 
 ### Verification gate
-- `<exact command>` (see `docs/ai/agent-command-policy.md` altitude table)
+- `<exact command>` (see the root `AGENTS.md` validation gates)
 ```

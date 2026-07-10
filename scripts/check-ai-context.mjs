@@ -87,7 +87,6 @@ function getMarkdownLinkFiles() {
   return [
     'AGENTS.md',
     'CLAUDE.md',
-    'llms.txt',
     ...collectMarkdownFiles('docs'),
     ...collectMarkdownFiles('.agents'),
     ...collectMarkdownFiles('.github'),
@@ -476,46 +475,7 @@ function checkFrontmatter() {
   }
 }
 
-function checkContextIndexCoverage() {
-  const index = readFile('docs/ai/index.md');
-  for (const reference of INDEX_REQUIRED_REFERENCES) {
-    if (!index.includes(reference)) {
-      reportError(`AI context catalog is missing canonical reference: ${reference}`);
-    }
-  }
-}
 
-function checkWorkflowIndexNames() {
-  const relativePath = 'docs/ai/index.md';
-  const content = readFile(relativePath);
-  const workflowsHeading = content.indexOf('## Workflows');
-  if (workflowsHeading < 0) {
-    reportError(`${relativePath} is missing ## Workflows.`);
-    return;
-  }
-
-  const workflowSection = content.slice(workflowsHeading);
-  const workflowNameRegex = /`([a-z0-9-]+)`/g;
-  const allowedNonFileEntries = new Set(['agents']);
-  const checked = new Set();
-  let match;
-
-  while ((match = workflowNameRegex.exec(workflowSection)) !== null) {
-    const workflowName = match[1];
-    if (allowedNonFileEntries.has(workflowName) || checked.has(workflowName)) continue;
-    checked.add(workflowName);
-
-    const workflowPath = `.agents/workflows/${workflowName}.md`;
-    if (!fs.existsSync(resolveRel(workflowPath))) {
-      reportError(
-        `docs/ai/index.md lists missing workflow '${workflowName}' at line ${lineNumber(
-          content,
-          workflowsHeading + match.index,
-        )} -> ${workflowPath}`,
-      );
-    }
-  }
-}
 
 function checkSkillShimsSync() {
   // The .claude/skills/<name>/SKILL.md shims are generated from the canonical
@@ -865,8 +825,7 @@ checkCompactMarkdownTables();
 checkMarkdownLinks();
 checkDocPathReferences();
 checkCodeReferences();
-checkContextIndexCoverage();
-checkWorkflowIndexNames();
+
 checkRuleInventory();
 checkPackageScripts();
 checkDesignTokenBoundaries();

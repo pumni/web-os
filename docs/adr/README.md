@@ -16,7 +16,7 @@ that source code and conventions cannot carry on their own.
 | 0010 | Frontend Platform Foundation — `@pumni/ui` as a Reusable OS Skeleton | Accepted (two rejections revised by ADR-0021) | 2026-06-20 |
 | 0011 | Watch Sync as an Explicit State Machine + an Observability Seam | Accepted | 2026-06-20 |
 | 0021 | Revisit ADR-0010 Rejections — Component Catalog + DTCG Token Export | Accepted | 2026-06-30 |
-| 0022 | Keep llms.txt as the Agentic Handshake Map | Accepted | 2026-07-01 |
+| 0022 | Keep llms.txt as the Agentic Handshake Map | Superseded by [ADR-0027](0027-context-layer-v2-standards-alignment.md) | 2026-07-01 |
 | 0025 | CSS-Native Color Pipeline Modernization | Accepted | 2026-07-04 |
 | 0026 | LLM-as-Judge for Behavioral Eval | Accepted | 2026-07-10 |
 | 0027 | Context Layer v2 — Standards Alignment | Accepted | 2026-07-11 |

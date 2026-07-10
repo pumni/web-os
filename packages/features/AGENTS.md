@@ -1,7 +1,6 @@
 # @pumni/features — package-scoped rules
 
-Path-scoped contract for `packages/features`. Read when extracting reusable
-feature logic from an app into a package.
+Package delta; root AGENTS.md applies.
 
 ## Summary
 

@@ -22,7 +22,7 @@ validation gate (`scripts/check-ai-context.mjs`).
   agents (Cursor, Gemini CLI, OpenHands…) read the same file. The shim is the
   thin adapter that keeps both properties — Claude-native discovery + one source
   of truth — without a hand-maintained copy of every description.
-- List the skill in `docs/ai/index.md` under `## Skills`.
+- List the skill in the root `AGENTS.md` navigation table under `.agents/skills/`.
 
 ## Gate requirements (hard — `bun run ai:check` fails otherwise)
 

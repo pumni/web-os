@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-06-18
-- **Owner:** AI context layer (see `docs/ai/index.md`)
+- **Owner:** AI context layer (see root `AGENTS.md`)
 
 ## Context
 

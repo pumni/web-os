@@ -5,7 +5,7 @@ harness-managed primary; this file is the durable log for decisions.
 
 ## How to use
 
-- Read at start of long task alongside `docs/ai/index.md`.
+- Read at start of long task alongside root `AGENTS.md`.
 - Add only when a decision is settled and not yet canonical.
 - Promote to `docs/conventions/*` or `docs/architecture/*` then remove here.
 
@@ -19,6 +19,6 @@ harness-managed primary; this file is the durable log for decisions.
 - MCP runtime role & version pins (never `@latest`) → [mcp.md](mcp.md).
 - Context layer frozen (no new ADR without measured regression) → [adr/README.md](../adr/README.md).
 - Enforcement = checkCodeReferences (drift) + test-weakening (reward-hacking) + path-existence → `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
-- llms.txt is required (ADR-0022) — a curated handshake subset of docs/ai/index.md; its links/paths are gate-checked by `ai:check`, so no manual mirror is needed.
+- llms.txt is deleted (ADR-0027 supersedes ADR-0022). Root AGENTS.md is the single entry map.
 - Behavioral eval — keyword grader proven non-discriminating (2026-07-10 run: passRateA=passRateB=0.111). Phase 5 added LLM-as-judge (`--judge` flag): 9 per-task rubrics, constitutional prompt (P0–P4), advisory/fail-open until >80% calibration. ADR-0026. See `scripts/run-behavioral-evals.mjs`.
 - Last upstream-standards checkpoint: 2026-07-10 (MCP, agents.md, anthropics/skills, humanlayer ACE-FCA, langchain context_engineering reviewed → runtime-context doctrine reinstated in agent-behavior.md).
