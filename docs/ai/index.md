@@ -80,3 +80,5 @@ gate that matches your change scope.
 | Need | Load |
 |---|---|
 | Self-review your diff before reporting "done" | `review-gate` → `.agents/workflows/review-gate.md` |
+| Track a multi-step task with decision log | `exec-plan` → `.agents/workflows/exec-plan.md` |
+| Audit skills for drift after bulk edits | `skill-health-check` → `.agents/workflows/skill-health-check.md` |

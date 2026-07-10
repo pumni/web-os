@@ -11,6 +11,8 @@ Keep it framework-agnostic so it crosses the client/server boundary cleanly.
 
 ## Rules
 
+**Boilerplate:** Copy `.agents/skills/zod-validator/scripts/schema.template.ts` → `packages/validators/src/<domain>/<name>.ts`, then replace `__` placeholders.
+
 - Read `packages/validators/AGENTS.md` before editing.
 - One feature file per area under `src/` (e.g. `profile.ts`); re-export it from
   `src/index.ts`.

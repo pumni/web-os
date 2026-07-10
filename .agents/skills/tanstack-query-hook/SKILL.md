@@ -10,6 +10,8 @@ mutations in `apps/web/src/features/<feature>`.
 
 ## Rules
 
+**Boilerplate:** Copy `.agents/skills/tanstack-query-hook/scripts/query-hook.template.ts` → `features/<feature>/use-<name>.ts`, then replace `__` placeholders.
+
 - Read `docs/conventions/data-fetching.md` before adding query or mutation
   hooks.
 - Use this skill only for client-driven async. For initial request-scoped server

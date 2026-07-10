@@ -10,6 +10,8 @@ or feature-local UI state.
 
 ## Rules
 
+**Boilerplate:** Copy `.agents/skills/zustand-store/scripts/store.template.ts` → `shared/stores/<name>-store.ts` or `features/<feature>/<name>-store.ts`, then replace `__` placeholders.
+
 - Read `docs/conventions/data-fetching.md` before adding a store.
 - Store only client UI state: panels, dialogs, selected local IDs, draft UI
   controls, optimistic view flags, or toast state.

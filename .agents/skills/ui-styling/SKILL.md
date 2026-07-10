@@ -12,6 +12,9 @@ reference detail.
 
 ## Rules
 
+**Token audit:** `pwsh -File .agents/skills/ui-styling/scripts/token-check.ps1`
+Scans for bare hex/rgb/hsl values and arbitrary Tailwind color classes that should use OKLCH tokens.
+
 - Token tiers: primitive (tokens.css) -> semantic (theme.css) -> component (component-tokens.css).
   Components consume semantic only. Never reference a primitive var or raw OKLCH.
 - Color tokens default to the `light-dark()` function defined at `:root` rather than duplicated `.dark` overrides. `.dark` overrides are reserved for non-color properties (such as shadows, blurs, and font weights).

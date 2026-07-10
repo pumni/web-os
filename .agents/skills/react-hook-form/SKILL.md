@@ -11,6 +11,8 @@ two seams clean so validation, submission, and cache refresh stay predictable.
 
 ## Rules
 
+**Boilerplate:** Copy `.agents/skills/react-hook-form/scripts/form.template.tsx` → `features/<feature>/<name>-form.tsx`, then replace `__` placeholders.
+
 - Read `apps/web/AGENTS.md` and `docs/conventions/feature-module.md` before
   adding a form.
 - The form file is `"use client"` and lives in the owning feature module.

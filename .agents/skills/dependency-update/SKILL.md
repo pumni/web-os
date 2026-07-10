@@ -11,6 +11,9 @@ verify the gate. Never write literal versions into workspace `package.json`s.
 
 ## Process
 
+Quick-start: `pwsh -File .agents/skills/dependency-update/scripts/bump-check.ps1`
+Prints `bun outdated` output + tier reminder in one shot.
+
 1. **See drift:** `bun outdated --filter '*'` (catalog-aware since Bun 1.3).
 2. **Classify each update into a tier** (see Rules) before touching anything.
 3. **Apply:**
