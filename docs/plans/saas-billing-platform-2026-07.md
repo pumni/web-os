@@ -25,12 +25,12 @@ watch-room limits as the first end-to-end paid feature.
 
 ## Decisions locked (grill session 2026-07-10)
 
-| # | Decision | Choice |
-| --- | --- | --- |
-| D1 | Payment provider | **Polar** (Merchant of Record; handles global VAT/tax; supports VN-based merchant). Schema stays **provider-agnostic** (`provider` discriminator column) so PayOS/VN gateway can be added later without migration. |
-| D2 | Packaging | **Three tiers: `free` / `pro` / `max`**, monthly + yearly prices per paid tier. Entitlements are per-feature + per-quota, resolved from tier. |
-| D3 | Tenancy | **Personal — subscription anchors on `user_id`.** No organizations table. Accepted risk: team plans later require a real migration (recorded in ADR, see A8). |
-| D4 | First gated feature | **Watch-room limits**: Free is capped on concurrently active owned rooms and members per room; Pro raises caps; Max is uncapped. Enforced in Postgres (RLS/RPC), not UI. |
+| #   | Decision            | Choice                                                                                                                                                                                                             |
+| --- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| D1  | Payment provider    | **Polar** (Merchant of Record; handles global VAT/tax; supports VN-based merchant). Schema stays **provider-agnostic** (`provider` discriminator column) so PayOS/VN gateway can be added later without migration. |
+| D2  | Packaging           | **Three tiers: `free` / `pro` / `max`**, monthly + yearly prices per paid tier. Entitlements are per-feature + per-quota, resolved from tier.                                                                      |
+| D3  | Tenancy             | **Personal — subscription anchors on `user_id`.** No organizations table. Accepted risk: team plans later require a real migration (recorded in ADR, see A8).                                                      |
+| D4  | First gated feature | **Watch-room limits**: Free is capped on concurrently active owned rooms and members per room; Pro raises caps; Max is uncapped. Enforced in Postgres (RLS/RPC), not UI.                                           |
 
 ---
 
@@ -38,53 +38,53 @@ watch-room limits as the first end-to-end paid feature.
 
 ### In scope
 
-| ID | Item | Phase | Type |
-| --- | --- | --- | --- |
-| **S1** | Error tracking: `@sentry/nextjs` wired for Server Actions, route handlers, and client; replace silent `console.error` swallowing in `features/*/actions.ts`/`queries.ts` with captured + user-safe errors | 0 | Foundation |
-| **S2** | Stop leaking raw Postgres/`error.message` to clients: shared `ActionResult` helper (`apps/web/src/shared/lib/action-result.ts`) that logs the real error and returns a generic/localized message | 0 | Hardening |
-| **S3** | Rate limiting: `@upstash/ratelimit` + Upstash Redis, applied to `/api/watch/[roomId]/join`, all mutating Server Actions (helper wrapper), and later the billing webhook + checkout | 0 | Foundation |
-| **S4** | Activate `audit_events`: server-only `recordAuditEvent()` helper (service-role write) + calls from profile update, room create/host-transfer, and every billing state change | 0 | Foundation |
-| **S5** | Billing schema migration(s) (`022+`): `billing_customers`, `subscriptions`, `webhook_events`, `plans` (tier limits reference table) with RLS + grants in the house style (revoke-all, explicit grants, `private.*` helpers) | 1 | Schema |
-| **S6** | Polar integration: `@polar-sh/sdk` server-only client in `packages/supabase`-style isolation (`apps/web/src/features/billing/polar.ts` or `packages/billing`), env vars validated in `@pumni/env` server schema | 1 | Integration |
-| **S7** | Webhook route `POST /api/webhooks/polar`: raw-body signature verification, idempotent ingest into `webhook_events` (unique `provider_event_id`), subscription upsert via service-role, `updateTag('entitlements:{userId}')`, audit event | 1 | Integration |
-| **S8** | Checkout + portal Server Actions in `features/billing/actions.ts`: `startCheckout(tier, interval)` and `openCustomerPortal()` — Zod-validated (`@pumni/validators`), `requireUser()`-derived identity, redirect to Polar | 1 | Feature |
-| **S9** | Entitlement read layer: `features/billing/queries.ts` `getEntitlements(userId)` with `'use cache'`, `cacheTag('entitlements:{userId}')`, `cacheLife('minutes')`; single source consumed by UI and server code | 2 | Feature |
-| **S10** | Postgres enforcement: `private.current_tier(uuid)` + `private.room_quota(uuid)` reading `plans`; `watch_rooms` INSERT policy (or hardened RPC) rejects rooms beyond the active-room cap; member cap enforced in `ensureRoomMembership` path/RPC | 2 | Security |
-| **S11** | UI gating + upgrade surface: pricing page, tier badge, "limit reached → upgrade" states; UI gating is cosmetic only (RLS is the boundary) | 2 | Feature |
-| **S12** | Background jobs (Inngest): webhook retry-safe processing, nightly Polar↔DB subscription reconciliation (safety net under webhooks), stale-room cleanup | 3 | Ops |
-| **S13** | Transactional email (Resend + react-email): payment success/receipt pointer, payment failed (dunning), subscription canceled/expiring | 3 | Ops |
-| **S14** | Product analytics (PostHog): free→paid funnel events (`checkout_started`, `checkout_completed`, `limit_hit`, `upgraded`, `churned`) | 3 | Ops |
-| **S15** | Docs/context updates: domain-language glossary terms, `supabase-security.md` service-role policy addendum, new ADR for D1–D4, MEMORY entry | 0–3 | Docs |
+| ID      | Item                                                                                                                                                                                                                                            | Phase | Type        |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ----------- |
+| **S1**  | Error tracking: `@sentry/nextjs` wired for Server Actions, route handlers, and client; replace silent `console.error` swallowing in `features/*/actions.ts`/`queries.ts` with captured + user-safe errors                                       | 0     | Foundation  |
+| **S2**  | Stop leaking raw Postgres/`error.message` to clients: shared `ActionResult` helper (`apps/web/src/shared/lib/action-result.ts`) that logs the real error and returns a generic/localized message                                                | 0     | Hardening   |
+| **S3**  | Rate limiting: `@upstash/ratelimit` + Upstash Redis, applied to `/api/watch/[roomId]/join`, all mutating Server Actions (helper wrapper), and later the billing webhook + checkout                                                              | 0     | Foundation  |
+| **S4**  | Activate `audit_events`: server-only `recordAuditEvent()` helper (service-role write) + calls from profile update, room create/host-transfer, and every billing state change                                                                    | 0     | Foundation  |
+| **S5**  | Billing schema migration(s) (`022+`): `billing_customers`, `subscriptions`, `webhook_events`, `plans` (tier limits reference table) with RLS + grants in the house style (revoke-all, explicit grants, `private.*` helpers)                     | 1     | Schema      |
+| **S6**  | Polar integration: `@polar-sh/sdk` server-only client in `packages/supabase`-style isolation (`apps/web/src/features/billing/polar.ts` or `packages/billing`), env vars validated in `@pumni/env` server schema                                 | 1     | Integration |
+| **S7**  | Webhook route `POST /api/webhooks/polar`: raw-body signature verification, idempotent ingest into `webhook_events` (unique `provider_event_id`), subscription upsert via service-role, `updateTag('entitlements:{userId}')`, audit event        | 1     | Integration |
+| **S8**  | Checkout + portal Server Actions in `features/billing/actions.ts`: `startCheckout(tier, interval)` and `openCustomerPortal()` — Zod-validated (`@pumni/validators`), `requireUser()`-derived identity, redirect to Polar                        | 1     | Feature     |
+| **S9**  | Entitlement read layer: `features/billing/queries.ts` `getEntitlements(userId)` with `'use cache'`, `cacheTag('entitlements:{userId}')`, `cacheLife('minutes')`; single source consumed by UI and server code                                   | 2     | Feature     |
+| **S10** | Postgres enforcement: `private.current_tier(uuid)` + `private.room_quota(uuid)` reading `plans`; `watch_rooms` INSERT policy (or hardened RPC) rejects rooms beyond the active-room cap; member cap enforced in `ensureRoomMembership` path/RPC | 2     | Security    |
+| **S11** | UI gating + upgrade surface: pricing page, tier badge, "limit reached → upgrade" states; UI gating is cosmetic only (RLS is the boundary)                                                                                                       | 2     | Feature     |
+| **S12** | Background jobs (Inngest): webhook retry-safe processing, nightly Polar↔DB subscription reconciliation (safety net under webhooks), stale-room cleanup                                                                                          | 3     | Ops         |
+| **S13** | Transactional email (Resend + react-email): payment success/receipt pointer, payment failed (dunning), subscription canceled/expiring                                                                                                           | 3     | Ops         |
+| **S14** | Product analytics (PostHog): free→paid funnel events (`checkout_started`, `checkout_completed`, `limit_hit`, `upgraded`, `churned`)                                                                                                             | 3     | Ops         |
+| **S15** | Docs/context updates: domain-language glossary terms, `supabase-security.md` service-role policy addendum, new ADR for D1–D4, MEMORY entry                                                                                                      | 0–3   | Docs        |
 
 ### Out of scope (hard fence)
 
-| Do not | Why |
-| --- | --- |
-| Organizations / team plans / seats | D3: personal tenancy; revisit via ADR when demanded |
-| PayOS / VNPay / any second provider | Schema is ready (`provider` column) but no code path until Polar is proven |
-| Usage-based / metered billing | Tier + quota only; metering is a different architecture |
-| Stripe direct integration | VN merchant unsupported; Polar is the MoR |
-| ORM adoption (Drizzle/Prisma), tRPC, separate API service | Existing supabase-js + Server Actions architecture is the standard here |
-| Mirroring subscription state into Zustand | Server state stays in Server Components / Query cache (P2 convention) |
-| Client-side entitlement trust | UI checks are cosmetic; Postgres decides (P0) |
-| Refunds/credit-notes UI, invoicing UI | Polar customer portal owns these |
-| Trials, coupons, referral codes | Post-launch; schema tolerates via subscription `status`/metadata |
-| Touching watch sync-machine internals | Gating happens at room create/join boundary, not playback |
+| Do not                                                    | Why                                                                        |
+| --------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Organizations / team plans / seats                        | D3: personal tenancy; revisit via ADR when demanded                        |
+| PayOS / VNPay / any second provider                       | Schema is ready (`provider` column) but no code path until Polar is proven |
+| Usage-based / metered billing                             | Tier + quota only; metering is a different architecture                    |
+| Stripe direct integration                                 | VN merchant unsupported; Polar is the MoR                                  |
+| ORM adoption (Drizzle/Prisma), tRPC, separate API service | Existing supabase-js + Server Actions architecture is the standard here    |
+| Mirroring subscription state into Zustand                 | Server state stays in Server Components / Query cache (P2 convention)      |
+| Client-side entitlement trust                             | UI checks are cosmetic; Postgres decides (P0)                              |
+| Refunds/credit-notes UI, invoicing UI                     | Polar customer portal owns these                                           |
+| Trials, coupons, referral codes                           | Post-launch; schema tolerates via subscription `status`/metadata           |
+| Touching watch sync-machine internals                     | Gating happens at room create/join boundary, not playback                  |
 
 ### Explicit assumptions (confirm or override before the phase that uses them)
 
-| # | Assumption | Default |
-| --- | --- | --- |
-| A1 | Tier quotas (product numbers, editable in `plans` table without code change) | free: **1 active owned room / 5 members**; pro: **10 / 20**; max: **unlimited (`null`)** |
-| A2 | Pricing (set in Polar dashboard, not in code) | pro ~$5/mo, max ~$12/mo; yearly ≈ 2 months free — placeholder, product decision |
-| A3 | "Active room" definition | room whose `last_active_at` is within 24h **or** has members; enforcement counts owned rooms matching this |
-| A4 | Downgrade behavior when over quota | existing rooms are **not deleted**; creating new rooms is blocked until under cap |
-| A5 | Rate-limit backend | Upstash Redis (free tier). If no new external service is wanted, fall back to a Postgres token-bucket in `private.*` — slower but zero new vendors |
-| A6 | Jobs runtime | Inngest (serverless-friendly). Minimal alternative: `pg_cron` + Supabase queues for reconciliation only |
-| A7 | Emails sent from | Resend with a project domain; until domain exists, Polar's own receipt emails suffice (S13 can defer) |
-| A8 | ADR required | One ADR covering D1–D4 (irreversible: provider + tenancy anchor). Cosmetic quota numbers need no ADR |
-| A9 | Environments | Polar sandbox in dev; live token only in production env vars. Webhook secret differs per env |
-| A10 | No commits/pushes without explicit ask; one PR per phase | Yes |
+| #   | Assumption                                                                   | Default                                                                                                                                            |
+| --- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A1  | Tier quotas (product numbers, editable in `plans` table without code change) | free: **1 active owned room / 5 members**; pro: **10 / 20**; max: **unlimited (`null`)**                                                           |
+| A2  | Pricing (set in Polar dashboard, not in code)                                | pro ~$5/mo, max ~$12/mo; yearly ≈ 2 months free — placeholder, product decision                                                                    |
+| A3  | "Active room" definition                                                     | room whose `last_active_at` is within 24h **or** has members; enforcement counts owned rooms matching this                                         |
+| A4  | Downgrade behavior when over quota                                           | existing rooms are **not deleted**; creating new rooms is blocked until under cap                                                                  |
+| A5  | Rate-limit backend                                                           | Upstash Redis (free tier). If no new external service is wanted, fall back to a Postgres token-bucket in `private.*` — slower but zero new vendors |
+| A6  | Jobs runtime                                                                 | Inngest (serverless-friendly). Minimal alternative: `pg_cron` + Supabase queues for reconciliation only                                            |
+| A7  | Emails sent from                                                             | Resend with a project domain; until domain exists, Polar's own receipt emails suffice (S13 can defer)                                              |
+| A8  | ADR required                                                                 | One ADR covering D1–D4 (irreversible: provider + tenancy anchor). Cosmetic quota numbers need no ADR                                               |
+| A9  | Environments                                                                 | Polar sandbox in dev; live token only in production env vars. Webhook secret differs per env                                                       |
+| A10 | No commits/pushes without explicit ask; one PR per phase                     | Yes                                                                                                                                                |
 
 ### Acceptance criteria (falsifiable)
 
@@ -120,13 +120,13 @@ watch-room limits as the first end-to-end paid feature.
 
 ### Verification gate (narrowest → widest)
 
-| Scope | Command |
-| --- | --- |
-| One feature slice (billing actions/queries/webhook) | `bun run --filter web test -- billing` (vitest path filter) |
-| Migrations / RLS | `supabase-rls-reviewer` subagent on the diff + RLS unit tests (pgTAP-style SQL or service/anon-key integration tests if local stack available) |
-| Web app | `bun run --filter web lint typecheck test` |
-| Context/docs edits | `bun run ai:check` |
-| Pre-merge (authoritative) | `bun run ai:premerge` |
+| Scope                                               | Command                                                                                                                                        |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| One feature slice (billing actions/queries/webhook) | `bun run --filter web test -- billing` (vitest path filter)                                                                                    |
+| Migrations / RLS                                    | `supabase-rls-reviewer` subagent on the diff + RLS unit tests (pgTAP-style SQL or service/anon-key integration tests if local stack available) |
+| Web app                                             | `bun run --filter web lint typecheck test`                                                                                                     |
+| Context/docs edits                                  | `bun run ai:check`                                                                                                                             |
+| Pre-merge (authoritative)                           | `bun run ai:premerge`                                                                                                                          |
 
 ---
 
@@ -162,12 +162,12 @@ Catalog additions (root `package.json`, via `dependency-update` flow):
 All tables: `enable row level security`, `revoke all … from anon, authenticated`,
 explicit minimal grants, service_role full — same shape as migration 001/018.
 
-| Table | Key columns | RLS |
-| --- | --- | --- |
-| `plans` | `tier text pk ('free','pro','max')`, `max_active_rooms int null`, `max_room_members int null`, `updated_at` | SELECT for `authenticated` (public reference data); writes service_role only. Seeded in-migration with A1 defaults |
-| `billing_customers` | `user_id uuid pk → auth.users`, `provider text not null default 'polar'`, `provider_customer_id text`, unique `(provider, provider_customer_id)` | SELECT own (`auth.uid() = user_id`); **no** INSERT/UPDATE grants to `authenticated` (service_role writes only) |
-| `subscriptions` | `id uuid pk`, `user_id`, `provider`, `provider_subscription_id unique`, `tier text references plans`, `status text` (`active/trialing/past_due/canceled/revoked`), `current_period_end timestamptz`, `cancel_at_period_end bool`, timestamps | SELECT own; writes service_role only |
-| `webhook_events` | `id uuid pk`, `provider`, `provider_event_id text`, unique `(provider, provider_event_id)`, `event_type`, `payload jsonb`, `received_at`, `processed_at`, `error text` | **No** grants to `authenticated` at all; service_role only |
+| Table               | Key columns                                                                                                                                                                                                                                  | RLS                                                                                                                |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `plans`             | `tier text pk ('free','pro','max')`, `max_active_rooms int null`, `max_room_members int null`, `updated_at`                                                                                                                                  | SELECT for `authenticated` (public reference data); writes service_role only. Seeded in-migration with A1 defaults |
+| `billing_customers` | `user_id uuid pk → auth.users`, `provider text not null default 'polar'`, `provider_customer_id text`, unique `(provider, provider_customer_id)`                                                                                             | SELECT own (`auth.uid() = user_id`); **no** INSERT/UPDATE grants to `authenticated` (service_role writes only)     |
+| `subscriptions`     | `id uuid pk`, `user_id`, `provider`, `provider_subscription_id unique`, `tier text references plans`, `status text` (`active/trialing/past_due/canceled/revoked`), `current_period_end timestamptz`, `cancel_at_period_end bool`, timestamps | SELECT own; writes service_role only                                                                               |
+| `webhook_events`    | `id uuid pk`, `provider`, `provider_event_id text`, unique `(provider, provider_event_id)`, `event_type`, `payload jsonb`, `received_at`, `processed_at`, `error text`                                                                       | **No** grants to `authenticated` at all; service_role only                                                         |
 
 Functions (house style: `private.*` security definer with pinned
 `search_path`, thin `public.*` invoker wrappers only where PostgREST needs
@@ -211,66 +211,66 @@ next. One PR per phase (A10).
 
 ### Phase 0 — Foundations before money (S1–S4)
 
-| Step | Slice | Skill route | Gate |
-| --- | --- | --- | --- |
-| 0.1 | `action-result.ts` helper + refactor `updateProfile` and watch actions off raw `error.message`; unit tests | `codebase-design` + `testing-template` | web test |
-| 0.2 | `@sentry/nextjs` install + instrumentation; capture in the S2 helper | `dependency-update` | build + manual event check |
-| 0.3 | `rate-limit.ts` wrapper + apply to join route; env vars in server schema; 429 test with injected limiter | `server-action` (pattern) + `testing-template` | web test |
-| 0.4 | `audit.ts` (`recordAuditEvent`, service-role, fire-and-forget with capture) + wire into profile update, room create, host transfer | `server-action` | web test |
-| 0.5 | ADR for D1–D4; domain-language additions | `domain-modeling` | `ai:check` |
+| Step | Slice                                                                                                                              | Skill route                                    | Gate                       |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | -------------------------- |
+| 0.1  | `action-result.ts` helper + refactor `updateProfile` and watch actions off raw `error.message`; unit tests                         | `codebase-design` + `testing-template`         | web test                   |
+| 0.2  | `@sentry/nextjs` install + instrumentation; capture in the S2 helper                                                               | `dependency-update`                            | build + manual event check |
+| 0.3  | `rate-limit.ts` wrapper + apply to join route; env vars in server schema; 429 test with injected limiter                           | `server-action` (pattern) + `testing-template` | web test                   |
+| 0.4  | `audit.ts` (`recordAuditEvent`, service-role, fire-and-forget with capture) + wire into profile update, room create, host transfer | `server-action`                                | web test                   |
+| 0.5  | ADR for D1–D4; domain-language additions                                                                                           | `domain-modeling`                              | `ai:check`                 |
 
 ### Phase 1 — Billing core (S5–S8)
 
-| Step | Slice | Skill route | Gate |
-| --- | --- | --- | --- |
-| 1.1 | Migration `022_billing_core.sql` (tables, RLS, grants, `private.current_tier`, seeds). **Ask-first: schema change** | `supabase-migration` | `supabase-rls-reviewer` + RLS tests |
-| 1.2 | Env schema + Polar server-only client + Polar sandbox products (free/pro/max × mo/yr) | manual + `zod-validator` (env) | typecheck + `ai:check` |
-| 1.3 | Webhook route with the S7 invariant list; idempotency + signature tests (fixture payloads, mocked SDK verify) | `testing-template` | web test |
-| 1.4 | `checkoutSchema` in validators; `startCheckout` / `openCustomerPortal` actions (requireUser → customer upsert → session URL redirect); rate-limited | `zod-validator` + `server-action` | web test |
-| 1.5 | Sandbox end-to-end: checkout → webhook → `subscriptions` row → audit event (manual + recorded in PR) | `verify` | manual E2E |
+| Step | Slice                                                                                                                                               | Skill route                       | Gate                                |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------- |
+| 1.1  | Migration `022_billing_core.sql` (tables, RLS, grants, `private.current_tier`, seeds). **Ask-first: schema change**                                 | `supabase-migration`              | `supabase-rls-reviewer` + RLS tests |
+| 1.2  | Env schema + Polar server-only client + Polar sandbox products (free/pro/max × mo/yr)                                                               | manual + `zod-validator` (env)    | typecheck + `ai:check`              |
+| 1.3  | Webhook route with the S7 invariant list; idempotency + signature tests (fixture payloads, mocked SDK verify)                                       | `testing-template`                | web test                            |
+| 1.4  | `checkoutSchema` in validators; `startCheckout` / `openCustomerPortal` actions (requireUser → customer upsert → session URL redirect); rate-limited | `zod-validator` + `server-action` | web test                            |
+| 1.5  | Sandbox end-to-end: checkout → webhook → `subscriptions` row → audit event (manual + recorded in PR)                                                | `verify`                          | manual E2E                          |
 
 ### Phase 2 — Entitlements & first paid feature (S9–S11)
 
-| Step | Slice | Skill route | Gate |
-| --- | --- | --- | --- |
-| 2.1 | `getEntitlements` cached query + `entitlements:{userId}` tag; webhook revalidates it | `server-component-read` | web test |
-| 2.2 | Migration `02x_watch_room_quotas.sql`: `can_create_room` / `can_join_room` + policy changes. **Ask-first: schema change** | `supabase-migration` | RLS tests: criteria 5–6 |
-| 2.3 | Surface quota failures in `createRoom` / `ensureRoomMembership` with localized messages (existing `ActionResult` shape) | `server-action` | web test |
-| 2.4 | Pricing page + tier badge + limit-reached upgrade prompts (cosmetic gating only) | `feature-module` + `ui-styling` | lint/typecheck/test + `ai:tw` |
-| 2.5 | Launch checklist: Polar live products, prod env vars, webhook endpoint registered | — | manual |
+| Step | Slice                                                                                                                     | Skill route                     | Gate                          |
+| ---- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ----------------------------- |
+| 2.1  | `getEntitlements` cached query + `entitlements:{userId}` tag; webhook revalidates it                                      | `server-component-read`         | web test                      |
+| 2.2  | Migration `02x_watch_room_quotas.sql`: `can_create_room` / `can_join_room` + policy changes. **Ask-first: schema change** | `supabase-migration`            | RLS tests: criteria 5–6       |
+| 2.3  | Surface quota failures in `createRoom` / `ensureRoomMembership` with localized messages (existing `ActionResult` shape)   | `server-action`                 | web test                      |
+| 2.4  | Pricing page + tier badge + limit-reached upgrade prompts (cosmetic gating only)                                          | `feature-module` + `ui-styling` | lint/typecheck/test + `ai:tw` |
+| 2.5  | Launch checklist: Polar live products, prod env vars, webhook endpoint registered                                         | —                               | manual                        |
 
 ### Phase 3 — SaaS operations (S12–S14)
 
-| Step | Slice | Skill route | Gate |
-| --- | --- | --- | --- |
-| 3.1 | Inngest setup; move webhook step-3 processing into a durable function (route stays thin ingest); nightly reconciliation job (criterion 10) | `feature-module` (billing/jobs) | web test + job dry-run |
-| 3.2 | Resend + react-email templates (payment failed, canceled, expiring); triggered from job/webhook — defer if A7 domain not ready | `testing-template` | web test |
-| 3.3 | PostHog events at checkout/limit/upgrade points; funnel dashboard | — | manual |
-| 3.4 | Docs sweep: `supabase-security.md` billing addendum, golden example (webhook), MEMORY entry | `domain-modeling` | `ai:check` + `ai:eval` |
+| Step | Slice                                                                                                                                      | Skill route                     | Gate                   |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- | ---------------------- |
+| 3.1  | Inngest setup; move webhook step-3 processing into a durable function (route stays thin ingest); nightly reconciliation job (criterion 10) | `feature-module` (billing/jobs) | web test + job dry-run |
+| 3.2  | Resend + react-email templates (payment failed, canceled, expiring); triggered from job/webhook — defer if A7 domain not ready             | `testing-template`              | web test               |
+| 3.3  | PostHog events at checkout/limit/upgrade points; funnel dashboard                                                                          | —                               | manual                 |
+| 3.4  | Docs sweep: `supabase-security.md` billing addendum, golden example (webhook), MEMORY entry                                                | `domain-modeling`               | `ai:check` + `ai:eval` |
 
 ---
 
 ## Blast radius
 
-| Area | Touched | Risk |
-| --- | --- | --- |
-| `supabase/migrations` | +2–3 migrations; **`watch_rooms`/`room_members` policies change** (2.2) | Highest — a wrong quota policy locks users out of existing rooms. Mitigate: A4 (never delete/block existing rooms), RLS tests before merge, reviewer subagent |
-| `apps/web/src/features/watch` | `actions.ts` error surfaces only; sync-machine untouched | Low |
-| `apps/web/src/features/profile` | 0.1 refactor of return messages | Low |
-| `packages/env` | server schema additions | Low (validated at boot) |
-| `packages/validators` | +billing schemas | Low |
-| New: `features/billing`, `api/webhooks/polar`, shared lib helpers | Additive | Medium (webhook correctness carries the money) |
+| Area                                                              | Touched                                                                 | Risk                                                                                                                                                          |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `supabase/migrations`                                             | +2–3 migrations; **`watch_rooms`/`room_members` policies change** (2.2) | Highest — a wrong quota policy locks users out of existing rooms. Mitigate: A4 (never delete/block existing rooms), RLS tests before merge, reviewer subagent |
+| `apps/web/src/features/watch`                                     | `actions.ts` error surfaces only; sync-machine untouched                | Low                                                                                                                                                           |
+| `apps/web/src/features/profile`                                   | 0.1 refactor of return messages                                         | Low                                                                                                                                                           |
+| `packages/env`                                                    | server schema additions                                                 | Low (validated at boot)                                                                                                                                       |
+| `packages/validators`                                             | +billing schemas                                                        | Low                                                                                                                                                           |
+| New: `features/billing`, `api/webhooks/polar`, shared lib helpers | Additive                                                                | Medium (webhook correctness carries the money)                                                                                                                |
 
 ## Risks & mitigations
 
-| Risk | Mitigation |
-| --- | --- |
-| Webhook and checkout race (user returns before webhook lands) | Success page reads `getEntitlements` with a short client poll/refresh; never fulfills from the redirect itself |
-| Polar outage / missed webhooks | 3.1 nightly reconciliation converges DB to Polar; `webhook_events.error` rows are alertable via Sentry |
-| Service-role sprawl (more bypass-RLS code) | All billing writes concentrated in webhook handler + `audit.ts`; `supabase-security.md` addendum makes this the documented exception list |
-| Quota check performance on room create | `current_tier`/counts are single-index lookups; functions `stable`; acceptable at current scale — no premature caching in Postgres |
-| Tier/product drift between Polar dashboard and `plans` table | Product ids ↔ tier mapping lives in one server module (`polar.ts`); reconciliation job flags unknown product ids |
-| `updateTag` misuse from route handler (runtime throw) | S7 invariant explicitly uses two-arg `revalidateTag` in the webhook; rule file already covers this |
+| Risk                                                          | Mitigation                                                                                                                                |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Webhook and checkout race (user returns before webhook lands) | Success page reads `getEntitlements` with a short client poll/refresh; never fulfills from the redirect itself                            |
+| Polar outage / missed webhooks                                | 3.1 nightly reconciliation converges DB to Polar; `webhook_events.error` rows are alertable via Sentry                                    |
+| Service-role sprawl (more bypass-RLS code)                    | All billing writes concentrated in webhook handler + `audit.ts`; `supabase-security.md` addendum makes this the documented exception list |
+| Quota check performance on room create                        | `current_tier`/counts are single-index lookups; functions `stable`; acceptable at current scale — no premature caching in Postgres        |
+| Tier/product drift between Polar dashboard and `plans` table  | Product ids ↔ tier mapping lives in one server module (`polar.ts`); reconciliation job flags unknown product ids                          |
+| `updateTag` misuse from route handler (runtime throw)         | S7 invariant explicitly uses two-arg `revalidateTag` in the webhook; rule file already covers this                                        |
 
 ## Domain language additions (via `domain-modeling`, step 0.5)
 
