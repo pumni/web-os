@@ -79,13 +79,11 @@ function readUtilityBody(css: string, name: string): string {
 
 const GLASS_UTILITIES = [
   'glass-panel',
-  'glass-panel-simple',
   'glass-window',
   'glass-bar',
   'glass-bar-bordered',
   'glass-bar-edge-r',
   'glass-bar-edge-b',
-  'glass-titlebar',
   'overlay-scrim',
 ] as const;
 

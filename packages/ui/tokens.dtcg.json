@@ -1956,15 +1956,6 @@
           }
         }
       },
-      "grain-opacity": {
-        "$type": "number",
-        "$value": 0.05,
-        "$extensions": {
-          "com.pumni.modes": {
-            "dark": 0.07
-          }
-        }
-      },
       "inset-bezel-top": {
         "$type": "color",
         "$value": "oklch(1 0 0 / 0.2)",
@@ -1973,10 +1964,6 @@
             "dark": "oklch(1 0 0 / 0.08)"
           }
         }
-      },
-      "reflection": {
-        "$type": "other",
-        "$value": "linear-gradient(\n    135deg,\n    oklch(1 0 0 / 0.08) 0%,\n    oklch(1 0 0 / 0) 50%,\n    oklch(0 0 0 / 0.02) 100%\n  )"
       },
       "shadow-edge": {
         "$type": "color",

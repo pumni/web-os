@@ -41,7 +41,7 @@ function parsePercentFactor(value: string | undefined, fallback: number): number
   if (!value) return fallback;
   const match = value.match(/^([\d.]+)%$/);
   if (match) {
-    return parseFloat(match[1]) / 100;
+    return parseFloat(match[1]!) / 100;
   }
   const floatVal = parseFloat(value);
   return isNaN(floatVal) ? fallback : floatVal;

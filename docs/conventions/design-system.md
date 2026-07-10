@@ -110,7 +110,7 @@ single fill source via CSS Color 5 relative syntax:
 
 | Tier | Token | Apple analogue | APCA target | Content policy |
 | --- | --- | --- | --- | --- |
-| Chrome | `--glass-tint-chrome` | Clear-ish shell | Lc 60 short labels | Dock, topbar, titlebar, rails |
+| Chrome | `--glass-tint-chrome` | Clear-ish shell | Lc 60 short labels | Dock, topbar, rails |
 | Readable | `--glass-tint-readable` (`--glass-tint` alias) | Regular material | Lc 60 short UI | Panels, windows, menus, dialog chrome |
 | Solid | `DialogBody` / `CardWell` / `bg-card` | Content layer | Lc 75+ body | Forms, tables, multi-line body |
 
@@ -134,7 +134,8 @@ chrome layer, not content).
 All intensities pass APCA Lc 60 over desktop blobs and high-chroma synthetics (`glass-contrast.test.ts` gates default + soft + strong, both modes). Under accessibility higher-contrast preference (`prefers-contrast: more` or the in-app preview `data-contrast='more'`), both `--glass-tint-chrome` and `--glass-tint-readable` are densified to a near-opaque popover mix, and `--glass-tint` remains aliased to readable.
 
 > Superseded plans (`glassmorphism-2026-alignment.md`, `glassmorphism-2026-remediation.md`,
-> `glass-border-doctrine-and-grain-2026.md`) are archived under `docs/plans/archive/`.
+> `glass-border-doctrine-and-grain-2026.md`, `glass-modern-standard-hardening-2026-07.md`,
+> `glass-unification-modern-system-2026-07.md`) are archived/recorded.
 > Do not read them for design guidance — see this document.
 
 Vibrancy uses `--glass-saturate` (≈1.3× light / 130% light / 150% dark) +
@@ -177,9 +178,9 @@ scrim). On a flat solid background, glass collapses to a grey box and must be
 replaced with `Card variant="solid"`. Dense content (forms, tables, long text)
 always uses solid regardless of backdrop.
 
-Use the closed set from the skill: floating glass, solid card, inset well,
+Use the closed set from the skill: floating glass surface, solid card, inset well,
 control fill, status tint. The card layer is **composition-first** — `Card` is
-the block surface (variants `solid`/`inset`/`glass`/`spotlight`), and three
+the block surface (variants `solid`/`inset`/`spotlight`), and three
 sub-surface primitives keep consumers from hand-rolling surfaces: `CardWell`
 (the recessed `border border-border bg-muted` inset well), `Badge` (the
 status-tint pill, `tone` + optional `pulse` dot), and `IconBadge` (the rounded
@@ -254,7 +255,7 @@ border-contrast threshold.
   - `--border` — dark, builds contrast against the fill. Card solid/inset, `CardWell`. The real delineator for solid surfaces.
   - `--input` — dark, one shade deeper than `--border`. Form controls only. Flat, no specular rim.
 - **Glass-flow** — a specular **light rim**, not a contrast boundary (see the delineation doctrine below):
-  - `--glass-edge` — uniform light rim (white in light mode, near-white neutral in dark), used by `glass-bar-bordered` and `glass-titlebar`.
+  - `--glass-edge` — uniform light rim (white in light mode, near-white neutral in dark), used by `glass-bar-bordered`.
   - `--glass-edge-top` / `--glass-edge-bottom` — bevel pair, painted by the masked 1px **gradient bevel ring** (`&::before`, 135° light-catch top-left → contact-shadow bottom-right) on `glass-panel` / `glass-window`. Per-side border colours were retired: CSS miters differently-coloured borders with a hard diagonal seam, which breaks the rim on rounded corners; the ring follows `border-radius` smoothly. The element keeps a transparent 1px metric border that a11y fallbacks re-colour. Light mode top: `oklch(1 0 0 / 0.65)` (white light-catch) and bottom: `oklch(0.4 0.02 260 / 0.14)` (faint cool shadow); dark mode top: `oklch(0.98 0.005 0 / 0.35)` (near-white neutral rim) and bottom: `oklch(0.2 0.01 250 / 0.15)` (subdued contact shadow). Neither stop is APCA-gated — the edge is a light effect, and the drop shadow is what delineates the panel.
 
 ### Delineation doctrine — the drop shadow separates, the edge catches light
@@ -278,7 +279,7 @@ The real accessibility path for transparency is the system media-query fallbacks
 (`prefers-contrast: more` / `prefers-reduced-transparency`), which recolour the
 edge to a solid `--border`.
 
-**`--surface-rim-top` is for chrome bars, titlebars, and inactive windows.** Active glass panels and windows consume `--glass-inset-bezel-top` as their top rim highlight instead. Inactive glass windows fall back to the bar-style `--surface-rim-top` inset top. Solid cards carry **no rim at all** — `--border` (hairline) + `--shadow-card-raised` (elevation) only. The bottom rim (`--glass-shadow-edge`) stays glass-only by design.
+**`--surface-rim-top` is for chrome bars and inactive windows.** Active glass panels and windows consume `--glass-inset-bezel-top` as their top rim highlight instead. Inactive glass windows fall back to the bar-style `--surface-rim-top` inset top. Solid cards carry **no rim at all** — `--border` (hairline) + `--shadow-card-raised` (elevation) only. The bottom rim (`--glass-shadow-edge`) stays glass-only by design.
 
 | | Solid card (`surface-raised`) | Glass card (`glass-panel`) |
 | --- | --- | --- |
@@ -289,27 +290,20 @@ edge to a solid `--border`.
 | Edge/border APCA gate | none — `--border` is a structural hairline | none — the edge is a light effect; only text-on-readable/chrome tint is gated (Lc 60) |
 | Hero specular | n/a | opt-in via `glass-panel[data-variant="specular"]` (conic shine layered on the SAME `::before` bevel ring — the boundary gradient stays visible underneath) |
 
-**Decision tree** — pick the path that matches the element, never write a border
-or inset rim in TSX:
+**Decision tree** — pick the path that matches the element, never write a border or inset rim in TSX:
 
-```
-GLASS panel/window (floats over a blob/media backdrop)?
-  → Use glass-panel/window. edge = gradient bevel ring (--glass-edge-top →
-    --glass-edge-bottom), rim pair = --glass-inset-bezel-top
-    + --glass-shadow-edge, delineator = --shadow-glass. [glass.css owns this]
-GLASS bar/titlebar (dock, topbar, title)?
-  → Use glass-bar / glass-bar-bordered. hairline = --glass-edge, rim = --surface-rim-top
-    [glass.css owns this]
-SOLID surface (content card, well)?
-  → Card variant="solid" / CardWell. hairline = --border, no top rim
-    (structural-only — surface-raised has no specular rim),
-    no bottom rim. [no inset rim in TSX]
-FORM CONTROL (input, button, select)?
-  → --input. No specular rim. aria-invalid → border-destructive.
-STATUS INDICATOR (badge, error/success card)?
-  → border-{tone}/20 via Badge or Card state — the one valid /20 exception.
-SHELL CHROME (sidebar rail, topbar, dock)?
-  → glass-bar / glass-bar-edge-r/b. vertical rim = --glass-edge-rim. [no 4-sided border]
+```text
+Floating over content/media/blob?
+  NO  → Card solid / page bg. STOP.
+  YES → Multi-line body / form / table?
+          YES → solid surface, OR glass shell + solid inset. STOP.
+          NO  → Shell chrome (topbar, dock, rail, control strip)?
+                  YES → chrome tier (GlassSurface bar*). STOP.
+                  NO  → Overlay / window shell?
+                          YES → readable (component or GlassSurface panel/window). STOP.
+                          NO  → Hero short tile only with blob parent?
+                                  YES → GlassSurface panel, short copy.
+                                  NO  → solid Card.
 ```
 
 ### Extended glass token set (theme.css / tokens.css)
@@ -333,7 +327,7 @@ additional CSS custom properties for chrome, specular effects, and backdrop:
 
 **Tint tiers and fill source**:
 - `--glass-fill` — single opaque L/C/H source (CSS Color 5, no alpha); light/dark via `light-dark()`
-- `--glass-tint-chrome` — shell bars / titlebar (more translucent), derives via `oklch(from var(--glass-fill) l c h / α)`
+- `--glass-tint-chrome` — shell bars (more translucent), derives via `oklch(from var(--glass-fill) l c h / α)`
 - `--glass-tint-readable` — panels / windows / menus (`--glass-tint` alias), derives same fill
 
 **Backdrop filter knobs**:
@@ -356,7 +350,6 @@ additional CSS custom properties for chrome, specular effects, and backdrop:
   gradient bevel ring
 - `--glass-fallback-bg` (`var(--popover)`) — opaque fallback for
   `prefers-reduced-transparency`
-- `--glass-grain-opacity` — mode-dependent grain opacity (light `0.05` / dark `0.07`)
 
 **Golden rules:**
 
@@ -365,7 +358,6 @@ additional CSS custom properties for chrome, specular effects, and backdrop:
    `CardWell`, `Badge`).
 2. Status tint `/20` is reached **only** via `Badge` or `Card state`. No
    hand-rolled `border-{tone}/20`, no `border-2`, no `border-l-4` in features.
-3. Micro-grain noise overlay is simple-only: it must only appear inside the `glass-panel-simple` card variant (for textured cards/lab variants), and is prohibited on general production floating panels or windows (guarded by `packages/ui/src/test/glass-performance.test.ts`).
 
 The solid-vs-glass hairline separation is pinned by the `border-consumption`
 drift guard (`packages/ui/src/test/border-consumption.test.ts`).

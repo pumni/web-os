@@ -17,7 +17,6 @@ const glassSurfaceVariants = cva('', {
       'bar-edge-r': 'glass-bar-edge-r',
       'bar-edge-b': 'glass-bar-edge-b',
       window: 'glass-window',
-      titlebar: 'glass-titlebar',
     },
     radius: {
       none: '',

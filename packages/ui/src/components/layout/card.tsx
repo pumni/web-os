@@ -7,11 +7,10 @@ import { cn } from '../../lib/cn';
 /**
  * Card surface. `solid` (default) is the crisp raised content surface — opaque
  * fill, hairline border, owned `shadow-card` depth. `inset` is the recessed
- * nested well (muted fill, no shadow). `glass` is opt-in for cards that literally
- * float over other content (it carries the translucent glass treatment + a11y
- * fallbacks); most content should stay solid. `spotlight` is opt-in: a
+ * nested well (muted fill, no shadow). `spotlight` is opt-in: a
  * pointer-tracked radial highlight appears on hover (needs the `CardSpotlight`
  * wrapper which is the client component that injects `--spot-x`/`--spot-y`).
+ * Floating glass surfaces should use `GlassSurface` directly instead of a Card variant.
  *
  * `interactive` opts a clickable card into CSS micro-feedback (hover lift +
  * press depress, both `motion-safe`-gated). Leave it off for passive surfaces —
@@ -46,11 +45,6 @@ const cardVariants = cva('flex flex-col gap-(--surface-gap) py-(--surface-paddin
       solid: 'border bg-card surface-raised',
       // Recessed nested well (no shadow, lower contrast fill).
       inset: 'border border-border bg-muted',
-      // Opt-in: floating translucent glass. Use ONLY when the card literally
-      // floats over other content. Most content should NOT use this.
-      glass: 'glass-panel',
-      // Opt-in: simple glass card using background-clip (Glassmorphism Studio style)
-      glassSimple: 'glass-panel-simple',
       // Opt-in: pointer-tracked spotlight highlight on hover.
       // Renders the same opaque raised base as `solid` + adds a ::before radial
       // gradient that follows the cursor (requires CardSpotlight client wrapper).
@@ -102,7 +96,7 @@ const cardVariants = cva('flex flex-col gap-(--surface-gap) py-(--surface-paddin
 
 /**
  * Card Component - Thẻ giao diện chứa nội dung trong Pumni OS.
- * Hỗ trợ các biến thể bề mặt (solid, inset, glass, spotlight), tương tác hover/press,
+ * Hỗ trợ các biến thể bề mặt (solid, inset, spotlight), tương tác hover/press,
  * các mức độ bo góc và trạng thái phản hồi động (idle, loading, error, success).
  */
 function Card({

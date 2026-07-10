@@ -1,6 +1,6 @@
 # Plan: Glass unification — one optical system, one usage flow
 
-- **Status:** Draft — awaiting user confirm before implementation
+- **Status:** Shipped (2026-07-10)
 - **Date:** 2026-07-10
 - **Owner:** `@pumni/ui` + production glass consumers (`apps/web`)
 - **Skills:** `grill-requirements` (spec) → hybrid execution plan (`refactor-plan` step template; **intentional visual/API behavior change**, not structure-only)

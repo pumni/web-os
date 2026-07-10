@@ -86,14 +86,6 @@ export function SurfacesSection() {
                   </span>
                   <span className="font-semibold text-primary">Active</span>
                 </GlassSurface>
-                <Card variant="glass" className="p-4 text-xs gap-1">
-                  <div className="font-semibold text-foreground">
-                    Glass Card (Feature/hero tier — <code>Card variant=&quot;glass&quot;</code>)
-                  </div>
-                  <div className="text-muted-foreground">
-                    Luminous translucent glassmorphism surface.
-                  </div>
-                </Card>
                 <GlassSurface variant="panel" className="space-y-1 p-4 text-xs">
                   <div className="font-semibold text-foreground">
                     Dialog / popover panel role (Readable tier — <code>.glass-panel</code>)
@@ -101,12 +93,11 @@ export function SurfacesSection() {
                   <div className="text-muted-foreground">Maximum readability over gradients.</div>
                 </GlassSurface>
                 <GlassSurface variant="window" className="overflow-hidden rounded-xl p-0">
-                  <GlassSurface
-                    variant="titlebar"
-                    className="flex items-center justify-between border-b px-3 py-2 text-xs"
+                  <div
+                    className="flex items-center justify-between border-b border-border/10 bg-foreground/5 px-3 py-2 text-xs"
                   >
                     <span>
-                      Window Titlebar (Chrome tier — <code>.glass-titlebar</code>)
+                      Window Header (Plain header row — no nested glass)
                     </span>
                     {/* Neutral monochrome controls (de-Appled per ADR-0012) */}
                     <div className="flex gap-1.5 text-muted-foreground">
@@ -114,7 +105,7 @@ export function SurfacesSection() {
                       <span className="size-2 rounded-full bg-current opacity-40" />
                       <span className="size-2 rounded-full bg-current opacity-40" />
                     </div>
-                  </GlassSurface>
+                  </div>
                   <div className="min-h-20 p-4 text-xs">
                     Window container body role (Readable tier — <code>.glass-window</code>)
                   </div>

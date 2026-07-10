@@ -10,6 +10,7 @@ import {
   CardSpotlight,
   CardTitle,
 } from '@pumni/ui/layout';
+import { GlassSurface } from '@pumni/ui/identity';
 import { Skeleton } from '@pumni/ui/feedback';
 import { ShowcaseSection } from './showcase-section';
 
@@ -18,7 +19,7 @@ export function CardsSection() {
     <ShowcaseSection
       id="card-states"
       title="Card States & Spotlight"
-      description="Fundamental variants (Solid vs Glassmorphism), state machine (idle/loading/error/success), and pointer-tracked spotlight variant."
+      description="Fundamental surfaces (Solid Card vs Glassmorphism Surface), state machine (idle/loading/error/success), and pointer-tracked spotlight variant."
     >
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Left 2 columns: Variants comparison over gradient blobs backdrop */}
@@ -29,10 +30,10 @@ export function CardsSection() {
             <div className="absolute inset-0 bg-muted/30" />
           </div>
           <div className="relative grid gap-4 sm:grid-cols-2">
-            <Card variant="glass">
+            <GlassSurface variant="panel" className="flex flex-col gap-(--surface-gap) py-(--surface-padding) rounded-xl">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Glass Card</CardTitle>
+                  <CardTitle>Glass Surface</CardTitle>
                   <CardAction>
                     <Button variant="ghost" size="icon-sm" aria-label="More options">
                       <HelpCircleIcon className="size-4" />
@@ -40,9 +41,8 @@ export function CardsSection() {
                   </CardAction>
                 </div>
                 <CardDescription>
-                  Glassmorphism (opt-in, <code>variant=&quot;glass&quot;</code>): frosted vibrant
-                  fill with a luminous light border and a volumetric rim pair. Float it over a
-                  backdrop.
+                  Glassmorphism (<code>GlassSurface variant=&quot;panel&quot;</code>): frosted vibrant
+                  fill with a light border and a volumetric rim. **Not a Card variant** (floating only).
                 </CardDescription>
               </CardHeader>
               <CardContent className="text-sm text-muted-foreground">
@@ -54,7 +54,7 @@ export function CardsSection() {
                 </Button>
                 <Button size="sm">Action</Button>
               </CardFooter>
-            </Card>
+            </GlassSurface>
 
             <Card variant="solid">
               <CardHeader>

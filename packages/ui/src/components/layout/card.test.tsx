@@ -35,16 +35,6 @@ describe('Card', () => {
     expect(card).toHaveAttribute('data-variant', 'inset');
   });
 
-  it('renders with glass variant', () => {
-    render(
-      <Card variant="glass" data-testid="card">
-        Card Content
-      </Card>,
-    );
-    const card = screen.getByTestId('card');
-    expect(card).toHaveAttribute('data-variant', 'glass');
-  });
-
   it('renders with custom radius variant and sets parent-radius variable', () => {
     render(
       <Card radius="lg" data-testid="card">

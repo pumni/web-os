@@ -11,7 +11,7 @@ import { GlassPlayground, BentoSimulator, DesignTrendsFooter } from '@/features/
 // Gold reference for the glassmorphism surface rule (ADR-0015).
 //
 // This page is the living teaching example for the rule ADR-0015 makes
-// first-class: a glass surface (Card variant="glass" / glass-panel / GlassSurface)
+// first-class: a glass surface (glass-panel / GlassSurface)
 // only reads as glassmorphism when it has a colourful backdrop to refract.
 // Every glass element below is wrapped in the canonical 2-blob backdrop
 // (`--desktop-blob-primary` / `--desktop-blob-secondary`), and the page uses

@@ -45,22 +45,9 @@ describe('glass performance contract', () => {
 });
 
 describe('glass grain policy', () => {
-  it('limits fractalNoise grain to glass-panel-simple only', () => {
+  it('prohibits fractalNoise grain in production glass.css', () => {
     const noiseHits = [...glassCss.matchAll(/feTurbulence|fractalNoise/g)];
-    expect(noiseHits.length).toBeGreaterThan(0);
-
-    // The noise data-URI must appear only inside the glass-panel-simple utility.
-    const simpleIdx = glassCss.indexOf('@utility glass-panel-simple');
-    expect(simpleIdx).toBeGreaterThanOrEqual(0);
-    const afterSimple = glassCss.slice(simpleIdx);
-    const nextUtility = afterSimple.search(/\n@utility |\n\.glass-window/);
-    const simpleBlock = nextUtility === -1 ? afterSimple : afterSimple.slice(0, nextUtility);
-    expect(simpleBlock).toMatch(/fractalNoise/);
-
-    const beforeSimple = glassCss.slice(0, simpleIdx);
-    const afterBlock = nextUtility === -1 ? '' : afterSimple.slice(nextUtility);
-    expect(beforeSimple).not.toMatch(/fractalNoise/);
-    expect(afterBlock).not.toMatch(/fractalNoise/);
+    expect(noiseHits.length).toBe(0);
   });
 });
 
