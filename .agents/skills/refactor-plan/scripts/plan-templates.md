@@ -71,3 +71,10 @@ load-bearing sections:
 ### Verification gate
 - `<exact command>` (see the root `AGENTS.md` validation gates)
 ```
+
+## Decision Log
+
+<!-- Immutable. Date + decision + rationale. Add; never delete. -->
+| Date | Decision | Rationale |
+|---|---|---|
+
