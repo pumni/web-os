@@ -1,7 +1,7 @@
 {
   "docCount": 17,
-  "totalSizeBytes": 73688,
-  "adrActiveCount": 7,
+  "totalSizeBytes": 73609,
+  "adrActiveCount": 8,
   "adrDeprecatedCount": 0,
   "adrMetaRatio": "0%",
   "skillCount": 17,
@@ -9,8 +9,8 @@
   "invariantDuplicateCategories": 3,
   "manifestItemCount": 43,
   "commonMistakesEnforcementGap": 3,
-  "contextDocsBytes": 73688,
-  "adrDocsBytes": 40177,
+  "contextDocsBytes": 73609,
+  "adrDocsBytes": 45374,
   "toolMatrixMismatches": 0,
   "skillNegativeClauseCoverage": "9/9",
   "behavioralBaseline": {
