@@ -189,7 +189,7 @@ them):
 1. Read **raw body**; verify Polar signature with `POLAR_WEBHOOK_SECRET`; 401 on failure (no DB touch).
 2. `insert … on conflict (provider, provider_event_id) do nothing` into `webhook_events`; if no row inserted → already processed → 200 immediately (idempotency).
 3. Switch on event type (`subscription.created|updated|canceled|revoked`, `order.*`): upsert `billing_customers` + `subscriptions` by provider ids (service-role client).
-4. `updateTag('entitlements:{userId}')` — note: `updateTag` is Server-Action-only in Next 16; from a route handler use `revalidateTag('entitlements:{userId}', 'max')` (two-arg form per `.claude/rules/nextjs-cache-components.md`).
+4. `updateTag('entitlements:{userId}')` — note: `updateTag` is Server-Action-only in Next 16; from a route handler use `revalidateTag('entitlements:{userId}', 'max')` (two-arg form per `docs/conventions/nextjs-16.md`).
 5. `recordAuditEvent(...)`, mark `processed_at`; on handler error record `error` and return 500 so Polar retries (retry is safe because of step 2 + upserts).
 6. Never trust redirect/success URLs for fulfillment — webhook is the only writer of subscription state.
 

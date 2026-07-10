@@ -60,8 +60,11 @@ headline decisions:
   reference; tools that consumed `llms.txt` must start from `AGENTS.md`.
 - Neutral: ADR register numbering unaffected; product ADRs (0010, 0011,
   0021, 0025) untouched.
-- Evidence log (amended as plans close): before/after `ai:metrics` snapshots
-  are recorded here at Plan 6 close.
+- Evidence log (amended as plans close):
+  - Plan 1: behavior tier loads on Claude Code; `CLAUDE.md` → `@AGENTS.md`; F1 closed.
+  - Plan 2: `docs/conventions/nextjs-16.md` created as single canonical; both Next.js
+    rules shrunk to `paths:`-scoped pointers; `supabase-migrations` rule added (Q8);
+    cache-semantics duplication collapsed; ADR-0003 amended (F15).
 
 ## Alternatives considered
 
