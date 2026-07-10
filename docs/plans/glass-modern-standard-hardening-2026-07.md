@@ -1,12 +1,15 @@
 # Plan: Glass modern-standard hardening + consumer alignment
 
-- **Status:** Draft — awaiting user confirm before implementation
+- **Status:** Partially shipped / **superseded for remaining work**
+- **Successor:** `docs/plans/glass-unification-modern-system-2026-07.md` (full optical + API + showcase unification)
 - **Date:** 2026-07-10
 - **Owner:** `@pumni/ui` design system + production glass consumers
 - **Skills used:** `grill-requirements` (spec) → hybrid execution plan (`refactor-plan` template; **includes intentional optical/a11y behavior changes**)
 - **Research basis:** Prior session research vs W3C CSS Color 4/5, APCA Nutshell / APC-RC Bronze, MDN/web.dev `backdrop-filter`, Apple HIG Materials (Liquid Glass clear/regular), Material 3 elevation/scrim; repo inventory 2026-07-10
 - **Predecessor (shipped, not re-done):** `docs/plans/glass-modernization-relative-apca-2026-07.md`  
-  (relative `--glass-fill`, soft/strong APCA, doc cleanup — **still open P1/P2 + new P0 bug**)
+  (relative `--glass-fill`, soft/strong APCA, doc cleanup)
+- **Shipped from this plan:** prefers-contrast densifies chrome+readable; glass-a11y-fallbacks; stack notes; inactive window uses readable SSOT.
+- **Do not implement remaining steps here** — use the successor unification plan.
 
 ---
 
