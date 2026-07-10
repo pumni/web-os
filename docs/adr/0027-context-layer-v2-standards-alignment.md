@@ -65,6 +65,8 @@ headline decisions:
   - Plan 2: `docs/conventions/nextjs-16.md` created as single canonical; both Next.js
     rules shrunk to `paths:`-scoped pointers; `supabase-migrations` rule added (Q8);
     cache-semantics duplication collapsed; ADR-0003 amended (F15).
+  - Plan 3: workflows tier retired; review-gate and skill-health-check converted to skills (19 skills total); exec-plan deleted and decision-log salvaged.
+
 
 ## Alternatives considered
 
