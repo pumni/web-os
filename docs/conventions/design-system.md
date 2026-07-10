@@ -15,6 +15,7 @@ Token source of truth lives in `@pumni/ui`:
 - `packages/ui/src/styles/theme.css`
 - `packages/ui/src/styles/component-tokens.css`
 - `packages/ui/src/styles/glass.css`
+- `packages/ui/src/styles/effects.css`
 
 These are imported once in `apps/web/src/app/globals.css`.
 
@@ -78,7 +79,7 @@ Apps consume semantic utilities, not primitives. Color tokens must default to th
 **Glass = floating layers only** (overlays and chrome that sit *above* content):
 Dialog, Sheet, Popover, DropdownMenu, ContextMenu, Command palette, Toast,
 floating topbar/dock/sidebar rail chrome, OS `Window` titlebar, small floating
-pills. Glass must sit over a **colourful / media / blob backdrop** so frost reads.
+pills. Glass must sit over a **colourful / media / blob backdrop** so frost reads. Sticky glass bars (e.g. `AppTopbar` using `glass-bar-edge-b`) must carry the `glass-scroll-edge-b` utility class to separate scrolled content visually from the glass header via a scroll-driven edge line.
 
 **Solid (`surface-raised` / opaque shell) = dense content and flat backgrounds:**
 forms, tables, long reading text, full-page backgrounds, large content cards on
@@ -111,7 +112,7 @@ single fill source via CSS Color 5 relative syntax:
 | Tier | Token | Apple analogue | APCA target | Content policy |
 | --- | --- | --- | --- | --- |
 | Chrome | `--glass-tint-chrome` | Clear-ish shell | Lc 60 short labels | Dock, topbar, rails |
-| Readable | `--glass-tint-readable` (`--glass-tint` alias) | Regular material | Lc 60 short UI | Panels, windows, menus, dialog chrome |
+| Readable | `--glass-tint-readable` | Regular material | Lc 60 short UI | Panels, windows, menus, dialog chrome |
 | Solid | `DialogBody` / `CardWell` / `bg-card` | Content layer | Lc 75+ body | Forms, tables, multi-line body |
 
 **"readable" ≠ "body"** — the name means readable short-UI tier, not body text.
@@ -131,7 +132,10 @@ chrome layer, not content).
 | strong | light | 0.58 | 0.65 |
 | strong | dark | 0.40 | 0.48 |
 
-All intensities pass APCA Lc 60 over desktop blobs and high-chroma synthetics (`glass-contrast.test.ts` gates default + soft + strong, both modes). Under accessibility higher-contrast preference (`prefers-contrast: more` or the in-app preview `data-contrast='more'`), both `--glass-tint-chrome` and `--glass-tint-readable` are densified to a near-opaque popover mix, and `--glass-tint` remains aliased to readable.
+All intensities pass APCA Lc 60 over desktop blobs and high-chroma synthetics (`glass-contrast.test.ts` gates default + soft + strong, both modes). Under accessibility higher-contrast preference (`prefers-contrast: more` or the in-app preview `data-contrast='more'`), both `--glass-tint-chrome` and `--glass-tint-readable` are densified to a near-opaque popover mix.
+
+**Media-floating overlays:** Over arbitrary video or media (e.g. video control panel), glass panels must use the `glass-panel-media` utility class leveraging the `--glass-media-dim` token (`light-dark(oklch(1 0 0 / 0.85), oklch(0 0 0 / 0.40))`) to ensure APCA contrast Lc >= 60 is maintained over both white and black frames.
+
 
 > Superseded plans (`glassmorphism-2026-alignment.md`, `glassmorphism-2026-remediation.md`,
 > `glass-border-doctrine-and-grain-2026.md`, `glass-modern-standard-hardening-2026-07.md`,
@@ -328,7 +332,7 @@ additional CSS custom properties for chrome, specular effects, and backdrop:
 **Tint tiers and fill source**:
 - `--glass-fill` — single opaque L/C/H source (CSS Color 5, no alpha); light/dark via `light-dark()`
 - `--glass-tint-chrome` — shell bars (more translucent), derives via `oklch(from var(--glass-fill) l c h / α)`
-- `--glass-tint-readable` — panels / windows / menus (`--glass-tint` alias), derives same fill
+- `--glass-tint-readable` — panels / windows / menus, derives same fill
 
 **Backdrop filter knobs**:
 - `--glass-saturate` — base `130%` (light) / `150%` (dark)

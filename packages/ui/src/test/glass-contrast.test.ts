@@ -267,6 +267,32 @@ describe('Glass contrast tokens', () => {
     );
     expect(diff).toBeGreaterThan(0.01);
   });
+
+  it.each(['light', 'dark'] as const)(
+    'keeps media-floating glass Lc >= 60 over worst-case white and black frames in %s mode',
+    (mode) => {
+      const tokenMap = buildTokenMap(mode);
+      const foreground = tokenColor('--foreground', tokenMap);
+      const fgSrgb = oklchToSrgb(foreground);
+      const glassBase = tokenColor('--glass-tint-readable', tokenMap);
+      const mediaDim = tokenColor('--glass-media-dim', tokenMap);
+
+      // Media-floating glass resolves to color-mix(in oklch, var(--glass-media-dim), var(--glass-tint-readable))
+      // which is a 50/50 mix since no weights are specified.
+      const glassMedia = mixOklch(mediaDim, glassBase, 0.5);
+
+      const whiteFrame: Color = { l: 0.97, c: 0, h: 0, alpha: 1 };
+      const blackFrame: Color = { l: 0.03, c: 0, h: 0, alpha: 1 };
+
+      for (const frame of [whiteFrame, blackFrame]) {
+        const glassOverFrame = compositeGlass(glassMedia, frame, tokenMap);
+        expect(
+          Math.abs(apcaContrast(fgSrgb, glassOverFrame)),
+          `media-floating glass over frame (L=${frame.l}) text contrast (APCA)`,
+        ).toBeGreaterThanOrEqual(60);
+      }
+    },
+  );
 });
 
 /* ------------------------------------------------------------------ *

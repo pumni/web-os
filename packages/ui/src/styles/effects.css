@@ -1,0 +1,197 @@
+/*
+ * Pumni OS — General UI visual effects & interactive state layer utilities
+ * ------------------------------------------------------------------------
+ */
+
+@property --spot-x {
+  syntax: '<length-percentage>';
+  /* inherits: true is required — the radial-gradient that consumes this var
+   * lives on the element's ::before pseudo-element, which is a separate box.
+   * With `inherits: false` the ::before would only ever see the initial-value,
+   * so the spotlight would be stuck at 50% 50% and never track the cursor. */
+  inherits: true;
+  initial-value: 50%;
+}
+
+@property --spot-y {
+  syntax: '<length-percentage>';
+  /* See --spot-x comment: must inherit so ::before sees the live value. */
+  inherits: true;
+  initial-value: 50%;
+}
+
+/* --- Focus Ring Indicators --- */
+@utility focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  box-shadow:
+    0 0 0 var(--ring-offset) var(--background),
+    0 0 0 calc(var(--ring-offset) + var(--ring-width))
+      color-mix(in oklch, var(--ring) 50%, transparent);
+  border-color: var(--ring);
+}
+
+/*
+ * State-layer utilities (Material-3 / §3 of layering-interaction-2026-upgrade plan).
+ * These produce a transient colour overlay on an interactive fill, NOT a
+ * persistent surface opacity (bg-card/NN is banned; this is not that).
+ * Consumes the `--state-*` intensity tokens from tokens.css.
+ *
+ * Usage: add `state-hover` / `state-pressed` / `state-selected` to interactive
+ * elements that need a unified hover/press/selected dimming layer.
+ */
+@utility state-hover {
+  &:hover,
+  &:focus,
+  &[data-highlighted],
+  &[data-active='true'] {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
+  }
+}
+
+@utility state-pressed {
+  &:active,
+  &[data-state='open'] {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-pressed), transparent);
+  }
+}
+
+@utility state-selected {
+  &,
+  &[data-state='active'],
+  &[data-state='selected'] {
+    background-color: color-mix(in oklch, var(--foreground) var(--state-selected), transparent);
+  }
+}
+
+/* Forced-colors: color-mix overlays are system-color context — safe, no override needed.
+   Reduced-motion: state layers are colour-only (no transform/animation) — no extra handling. */
+
+/*
+ * Skeleton loading placeholder utility (Material-3 / §4 loading pattern).
+ * Use `skeleton` on any placeholder element instead of hand-rolling
+ * `bg-muted animate-pulse` — the utility centralises the token reference and
+ * automatically suppresses the animation for users who prefer reduced motion.
+ *
+ * Usage: <div className="h-9 rounded-md skeleton" />
+ */
+@utility skeleton {
+  background-color: color-mix(in oklch, var(--foreground) 8%, transparent);
+  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* --- Nested Corner Radius --- */
+/* Nested radius utility for concentric rounding */
+@utility rounded-nested {
+  border-radius: calc(var(--parent-radius, var(--radius-xl)) - var(--radius-nest-gap));
+}
+
+/* --- Card Spotlight Highlight ---
+ * Card spotlight utility — pointer-tracked radial highlight.
+ * Consumer: CardSpotlight client wrapper injects --spot-x / --spot-y via
+ * onPointerMove. The gradient uses color-mix with the semantic --primary token
+ * (valid: not a raw color, see design-system.md status-tint rules).
+ *
+ * Only applied when variant="spotlight" is used on Card (adds class `card-spotlight`).
+ * Requires `overflow-hidden` + `rounded-[inherit]` on the highlight layer.
+ */
+@utility card-spotlight {
+  position: relative;
+  overflow: hidden;
+
+  /* Component tokens: customizable locally, defaults provided */
+  --spotlight-size: 200px;
+  --spotlight-color: color-mix(in oklch, var(--primary) 12%, transparent);
+
+  .dark & {
+    /* Deeper spotlight intensity for dark mode since dark surfaces swallow light */
+    --spotlight-color: color-mix(in oklch, var(--primary) 16%, transparent);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      var(--spotlight-size) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      var(--spotlight-color),
+      transparent 70%
+    );
+    transition: opacity var(--duration-base) var(--ease-out);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        opacity var(--duration-base) var(--ease-out),
+        --spot-x var(--duration-fast) var(--ease-out),
+        --spot-y var(--duration-fast) var(--ease-out);
+    }
+  }
+
+  /* Show highlight on hover — gated via hover capability (preventing sticky touch hover). */
+  @media (hover: hover) {
+    &:hover::before {
+      opacity: 1;
+    }
+  }
+}
+
+/* Reduced-motion: hide the spotlight highlight entirely. */
+@media (prefers-reduced-motion: reduce) {
+  .card-spotlight::before {
+    display: none;
+  }
+}
+
+/* --- Brand Gradient Text Headings --- */
+@utility text-gradient-brand {
+  background-image: linear-gradient(
+    110deg,
+    var(--brand-gradient-from),
+    var(--brand-gradient-via) 55%,
+    var(--brand-gradient-to)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* --- Skeleton Loading Shimmer --- */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@utility animate-shimmer {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklch, var(--foreground) 8%, transparent),
+      transparent
+    );
+    content: '';
+    animation: shimmer 2s infinite;
+  }
+}

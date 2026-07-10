@@ -59,7 +59,6 @@ describe('glass accessibility fallbacks', () => {
     // Both tints should be overridden with denser/fallback values
     expect(mediaBlock).toMatch(/--glass-tint-chrome\s*:\s*color-mix/);
     expect(mediaBlock).toMatch(/--glass-tint-readable\s*:\s*color-mix/);
-    expect(mediaBlock).toMatch(/--glass-tint\s*:\s*var\(--glass-tint-readable\)/);
   });
 
   it('densifies both chrome and readable tints in data-contrast=more preview selector', () => {
@@ -68,22 +67,21 @@ describe('glass accessibility fallbacks', () => {
     
     expect(previewBlock).toMatch(/--glass-tint-chrome\s*:\s*color-mix/);
     expect(previewBlock).toMatch(/--glass-tint-readable\s*:\s*color-mix/);
-    expect(previewBlock).toMatch(/--glass-tint\s*:\s*var\(--glass-tint-readable\)/);
   });
 
   it('forces opaque background and drops blur in prefers-reduced-transparency media query', () => {
     const mediaBlock = extractMediaBlock(glassCss, '@media (prefers-reduced-transparency: reduce)');
     expect(mediaBlock, 'prefers-reduced-transparency block exists').not.toBe('');
     
-    expect(mediaBlock).toMatch(/background\s*:\s*var\(--glass-fallback-bg\)/);
-    expect(mediaBlock).toMatch(/backdrop-filter\s*:\s*none/);
+    expect(mediaBlock).toMatch(/--glass-bg-resolved\s*:\s*var\(--glass-fallback-bg\)/);
+    expect(mediaBlock).toMatch(/--glass-backdrop-resolved\s*:\s*none/);
   });
 
   it('forces opaque background and drops blur in data-transparency=reduced preview selector', () => {
     const previewBlock = extractSelectorBlock(glassCss, ".glass-a11y-preview[data-transparency='reduced']");
     expect(previewBlock, 'data-transparency=reduced preview block exists').not.toBe('');
     
-    expect(previewBlock).toMatch(/background\s*:\s*var\(--glass-fallback-bg\)/);
-    expect(previewBlock).toMatch(/backdrop-filter\s*:\s*none/);
+    expect(previewBlock).toMatch(/--glass-bg-resolved\s*:\s*var\(--glass-fallback-bg\)/);
+    expect(previewBlock).toMatch(/--glass-backdrop-resolved\s*:\s*none/);
   });
 });

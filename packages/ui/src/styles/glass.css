@@ -31,22 +31,7 @@
  * Accessibility fallbacks honour user system preferences.
  */
 
-@property --spot-x {
-  syntax: '<length-percentage>';
-  /* inherits: true is required — the radial-gradient that consumes this var
-   * lives on the element's ::before pseudo-element, which is a separate box.
-   * With `inherits: false` the ::before would only ever see the initial-value,
-   * so the spotlight would be stuck at 50% 50% and never track the cursor. */
-  inherits: true;
-  initial-value: 50%;
-}
 
-@property --spot-y {
-  syntax: '<length-percentage>';
-  /* See --spot-x comment: must inherit so ::before sees the live value. */
-  inherits: true;
-  initial-value: 50%;
-}
 
 /* ========================================================================
    SECTION 1: GLASSMORPHISM SURFACES & COMPONENT CHROME
@@ -63,14 +48,14 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: var(--glass-tint-readable);
-  border: 1px solid transparent;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
+  background: var(--glass-bg-resolved, var(--glass-tint-readable));
+  border: 1px solid var(--glass-border-resolved, transparent);
+  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
   box-shadow:
-    var(--shadow-glass),
+    var(--glass-shadow-resolved, var(--shadow-glass),
     inset 0 1px 0 0 var(--glass-inset-bezel-top),
-    inset 0 -1px 0 0 var(--glass-shadow-edge);
+    inset 0 -1px 0 0 var(--glass-shadow-edge));
   transform: translateZ(0);
 
   /* Bevel ring: a 1px gradient ring following border-radius with a smooth
@@ -81,7 +66,7 @@
     content: '';
     display: var(--glass-bevel-ring-display, block);
     position: absolute;
-    inset: -1px;
+    inset: 0;
     border-radius: inherit;
     padding: 1px;
     background: linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom));
@@ -108,21 +93,21 @@
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: var(--glass-tint-readable);
-  border: 1px solid transparent;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
+  background: var(--glass-bg-resolved, var(--glass-tint-readable));
+  border: 1px solid var(--glass-border-resolved, transparent);
+  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
   box-shadow:
-    var(--shadow-glass-glow),
+    var(--glass-shadow-resolved, var(--shadow-glass-glow),
     inset 0 1px 0 0 var(--glass-inset-bezel-top),
-    inset 0 -1px 0 0 var(--glass-shadow-edge);
+    inset 0 -1px 0 0 var(--glass-shadow-edge));
   transform: translateZ(0);
 
   &::before {
     content: '';
     display: var(--glass-bevel-ring-display, block);
     position: absolute;
-    inset: -1px;
+    inset: 0;
     border-radius: inherit;
     padding: 1px;
     background: linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom));
@@ -180,10 +165,10 @@
    border — shell edges that touch the viewport should be seamless. Edge
    separation is handled by directional variants below. */
 @utility glass-bar {
-  background: var(--glass-tint-chrome);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
-  box-shadow: inset 0 1px 0 0 var(--surface-rim-top);
+  background: var(--glass-bg-resolved, var(--glass-tint-chrome));
+  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  box-shadow: var(--glass-shadow-resolved, inset 0 1px 0 0 var(--surface-rim-top));
 }
 
 /* Bordered bar variant for FLOATING elements (docks, floating toolbars).
@@ -194,13 +179,13 @@
    light mode, soft light-violet in dark mode). It is a light-catching effect,
    not an APCA-gated contrast boundary. This is a deliberate uniform edge design. */
 @utility glass-bar-bordered {
-  background: var(--glass-tint-chrome);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
-  border: 1px solid var(--glass-edge);
+  background: var(--glass-bg-resolved, var(--glass-tint-chrome));
+  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  border: 1px solid var(--glass-border-resolved, var(--glass-edge));
   box-shadow:
-    var(--shadow-glass),
-    inset 0 1px 0 0 var(--surface-rim-top);
+    var(--glass-shadow-resolved, var(--shadow-glass),
+    inset 0 1px 0 0 var(--surface-rim-top));
 }
 
 /* Shell chrome variant — glass bar base + right-side glass edge + ambient depth.
@@ -211,25 +196,67 @@
       Reads stronger on light backgrounds, subtler on dark.
    Together they provide consistent shell separation without theme overrides. */
 @utility glass-bar-edge-r {
-  background: var(--glass-tint-chrome);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
+  background: var(--glass-bg-resolved, var(--glass-tint-chrome));
+  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
   box-shadow:
-    var(--shadow-shell-depth),
+    var(--glass-shadow-resolved, var(--shadow-shell-depth),
     var(--glass-edge-rim),
-    inset 0 1px 0 0 var(--surface-rim-top);
+    inset 0 1px 0 0 var(--surface-rim-top));
 }
 
 /* Shell chrome variant — glass bar base + bottom-side glass edge + depth.
    Same unified dual-mechanism approach as `glass-bar-edge-r`. */
 @utility glass-bar-edge-b {
-  background: var(--glass-tint-chrome);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness));
+  background: var(--glass-bg-resolved, var(--glass-tint-chrome));
+  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
   box-shadow:
-    var(--shadow-shell-depth-bottom),
+    var(--glass-shadow-resolved, var(--shadow-shell-depth-bottom),
     var(--glass-edge-rim-bottom),
-    inset 0 1px 0 0 var(--surface-rim-top);
+    inset 0 1px 0 0 var(--surface-rim-top));
+}
+
+/* Media floating panels (e.g. video controls overlay) — carries additional HIG dimming background */
+@utility glass-panel-media {
+  background: var(--glass-bg-resolved, color-mix(in oklch, var(--glass-media-dim), var(--glass-tint-readable)));
+}
+
+/* Scroll edge separation for sticky glass headers — adds bottom edge gradient line that fades in on scroll */
+@utility glass-scroll-edge-b {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border) 20%, var(--border) 80%, transparent);
+    opacity: 1;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      &::after {
+        animation: glass-scroll-edge-fade linear both;
+        animation-timeline: scroll(nearest);
+        animation-range: 0px 40px;
+      }
+    }
+  }
+}
+
+@keyframes glass-scroll-edge-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 
@@ -242,23 +269,17 @@
    Some users (and OS "Reduce transparency" settings) need solid surfaces.
    Fall back to an opaque popover surface and drop the blur entirely. */
 @media (prefers-reduced-transparency: reduce) {
-  .glass-panel,
-  .glass-window,
-  .glass-bar,
-  .glass-bar-bordered,
-  .glass-bar-edge-r,
-  .glass-bar-edge-b {
-    background: var(--glass-fallback-bg);
-    border-color: var(--border);
-    box-shadow: var(--shadow-2);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    will-change: auto;
+  :root {
+    --glass-bg-resolved: var(--glass-fallback-bg);
+    --glass-border-resolved: var(--border);
+    --glass-shadow-resolved: var(--shadow-2);
+    --glass-backdrop-resolved: none;
+    --glass-bevel-ring-display: none;
   }
 
-  .glass-panel::before,
-  .glass-window::before {
-    display: none;
+  .glass-panel,
+  .glass-window {
+    will-change: auto;
   }
 }
 
@@ -266,20 +287,12 @@
    backdrop-filter reached modern baseline recently, so keep glass layers
    readable on older browsers by using the opaque surface path. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass-panel,
-  .glass-window,
-  .glass-bar,
-  .glass-bar-bordered,
-  .glass-bar-edge-r,
-  .glass-bar-edge-b {
-    background: var(--glass-fallback-bg);
-    border-color: var(--border);
-    box-shadow: var(--shadow-2);
-  }
-
-  .glass-panel::before,
-  .glass-window::before {
-    display: none;
+  :root {
+    --glass-bg-resolved: var(--glass-fallback-bg);
+    --glass-border-resolved: var(--border);
+    --glass-shadow-resolved: var(--shadow-2);
+    --glass-backdrop-resolved: none;
+    --glass-bevel-ring-display: none;
   }
 }
 
@@ -288,22 +301,12 @@
    tokens toward the opaque popover surface and use a solid semantic border
    for clearer edges. */
 @media (prefers-contrast: more) {
-  .glass-panel,
-  .glass-window,
-  .glass-bar,
-  .glass-bar-bordered,
-  .glass-bar-edge-r,
-  .glass-bar-edge-b {
+  :root {
     --glass-tint-chrome: color-mix(in oklch, var(--popover) 92%, transparent);
     --glass-tint-readable: color-mix(in oklch, var(--popover) 92%, transparent);
     --glass-tint: var(--glass-tint-readable);
-
-    border-color: var(--border);
-  }
-
-  .glass-panel::before,
-  .glass-window::before {
-    display: none;
+    --glass-border-resolved: var(--border);
+    --glass-bevel-ring-display: none;
   }
 }
 
@@ -338,117 +341,23 @@
 }
 
 /* --- Accessibility — In-App Theme & Transparency Previews --- */
-.glass-a11y-preview[data-transparency='reduced'] .glass-panel,
-.glass-a11y-preview[data-transparency='reduced'] .glass-window,
-.glass-a11y-preview[data-transparency='reduced'] .glass-bar,
-.glass-a11y-preview[data-transparency='reduced'] .glass-bar-bordered,
-.glass-a11y-preview[data-transparency='reduced'] .glass-bar-edge-r,
-.glass-a11y-preview[data-transparency='reduced'] .glass-bar-edge-b {
-  background: var(--glass-fallback-bg);
-  border-color: var(--border);
-  /* Flat elevation mirrors the prefers-reduced-transparency fallback. */
-  box-shadow: var(--shadow-2);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+.glass-a11y-preview[data-transparency='reduced'] {
+  --glass-bg-resolved: var(--glass-fallback-bg);
+  --glass-border-resolved: var(--border);
+  --glass-shadow-resolved: var(--shadow-2);
+  --glass-backdrop-resolved: none;
+  --glass-bevel-ring-display: none;
 }
 
-.glass-a11y-preview[data-transparency='reduced'] .glass-panel::before,
-.glass-a11y-preview[data-transparency='reduced'] .glass-window::before {
-  display: none;
-}
-
-.glass-a11y-preview[data-contrast='more'] .glass-panel,
-.glass-a11y-preview[data-contrast='more'] .glass-window,
-.glass-a11y-preview[data-contrast='more'] .glass-bar,
-.glass-a11y-preview[data-contrast='more'] .glass-bar-bordered,
-.glass-a11y-preview[data-contrast='more'] .glass-bar-edge-r,
-.glass-a11y-preview[data-contrast='more'] .glass-bar-edge-b {
+.glass-a11y-preview[data-contrast='more'] {
   --glass-tint-chrome: color-mix(in oklch, var(--popover) 92%, transparent);
   --glass-tint-readable: color-mix(in oklch, var(--popover) 92%, transparent);
   --glass-tint: var(--glass-tint-readable);
-
-  border-color: var(--border);
+  --glass-border-resolved: var(--border);
+  --glass-bevel-ring-display: none;
 }
 
-.glass-a11y-preview[data-contrast='more'] .glass-panel::before,
-.glass-a11y-preview[data-contrast='more'] .glass-window::before {
-  display: none;
-}
 
-/* ========================================================================
-   SECTION 3: INTERACTIVE STATE LAYERS & AFFORDANCES
-   ======================================================================== */
-
-/* --- Focus Ring Indicators --- */
-@utility focus-ring {
-  outline: none;
-}
-.focus-ring:focus-visible {
-  box-shadow:
-    0 0 0 var(--ring-offset) var(--background),
-    0 0 0 calc(var(--ring-offset) + var(--ring-width))
-      color-mix(in oklch, var(--ring) 50%, transparent);
-  border-color: var(--ring);
-}
-
-/*
- * State-layer utilities (Material-3 / §3 of layering-interaction-2026-upgrade plan).
- * These produce a transient colour overlay on an interactive fill, NOT a
- * persistent surface opacity (bg-card/NN is banned; this is not that).
- * Consumes the `--state-*` intensity tokens from tokens.css.
- *
- * Usage: add `state-hover` / `state-pressed` / `state-selected` to interactive
- * elements that need a unified hover/press/selected dimming layer.
- */
-@utility state-hover {
-  &:hover,
-  &:focus,
-  &[data-highlighted],
-  &[data-active='true'] {
-    background-color: color-mix(in oklch, var(--foreground) var(--state-hover), transparent);
-  }
-}
-
-@utility state-pressed {
-  &:active,
-  &[data-state='open'] {
-    background-color: color-mix(in oklch, var(--foreground) var(--state-pressed), transparent);
-  }
-}
-
-@utility state-selected {
-  &,
-  &[data-state='active'],
-  &[data-state='selected'] {
-    background-color: color-mix(in oklch, var(--foreground) var(--state-selected), transparent);
-  }
-}
-
-/* Forced-colors: color-mix overlays are system-color context — safe, no override needed.
-   Reduced-motion: state layers are colour-only (no transform/animation) — no extra handling. */
-
-/*
- * Skeleton loading placeholder utility (Material-3 / §4 loading pattern).
- * Use `skeleton` on any placeholder element instead of hand-rolling
- * `bg-muted animate-pulse` — the utility centralises the token reference and
- * automatically suppresses the animation for users who prefer reduced motion.
- *
- * Usage: <div className="h-9 rounded-md skeleton" />
- */
-@utility skeleton {
-  background-color: color-mix(in oklch, var(--foreground) 8%, transparent);
-  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes skeleton-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
 
 /* --- Scrim Overlays --- */
 @utility overlay-scrim {
@@ -471,112 +380,5 @@
   }
 }
 
-/* ========================================================================
-   SECTION 4: GEOMETRY, EFFECTS & SHIMMERS
-   ======================================================================== */
 
-/* --- Nested Corner Radius --- */
-/* Nested radius utility for concentric rounding */
-@utility rounded-nested {
-  border-radius: calc(var(--parent-radius, var(--radius-xl)) - var(--radius-nest-gap));
-}
-
-/* --- Card Spotlight Highlight ---
- * Card spotlight utility — pointer-tracked radial highlight.
- * Consumer: CardSpotlight client wrapper injects --spot-x / --spot-y via
- * onPointerMove. The gradient uses color-mix with the semantic --primary token
- * (valid: not a raw color, see design-system.md status-tint rules).
- *
- * Only applied when variant="spotlight" is used on Card (adds class `card-spotlight`).
- * Requires `overflow-hidden` + `rounded-[inherit]` on the highlight layer.
- */
-@utility card-spotlight {
-  position: relative;
-  overflow: hidden;
-
-  /* Component tokens: customizable locally, defaults provided */
-  --spotlight-size: 200px;
-  --spotlight-color: color-mix(in oklch, var(--primary) 12%, transparent);
-
-  .dark & {
-    /* Deeper spotlight intensity for dark mode since dark surfaces swallow light */
-    --spotlight-color: color-mix(in oklch, var(--primary) 16%, transparent);
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0;
-    border-radius: inherit;
-    background: radial-gradient(
-      var(--spotlight-size) circle at var(--spot-x, 50%) var(--spot-y, 50%),
-      var(--spotlight-color),
-      transparent 70%
-    );
-    transition: opacity var(--duration-base) var(--ease-out);
-
-    @media (prefers-reduced-motion: no-preference) {
-      transition:
-        opacity var(--duration-base) var(--ease-out),
-        --spot-x var(--duration-fast) var(--ease-out),
-        --spot-y var(--duration-fast) var(--ease-out);
-    }
-  }
-
-  /* Show highlight on hover — gated via hover capability (preventing sticky touch hover). */
-  @media (hover: hover) {
-    &:hover::before {
-      opacity: 1;
-    }
-  }
-}
-
-/* Reduced-motion: hide the spotlight highlight entirely. */
-@media (prefers-reduced-motion: reduce) {
-  .card-spotlight::before {
-    display: none;
-  }
-}
-
-/* --- Brand Gradient Text Headings --- */
-@utility text-gradient-brand {
-  background-image: linear-gradient(
-    110deg,
-    var(--brand-gradient-from),
-    var(--brand-gradient-via) 55%,
-    var(--brand-gradient-to)
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-/* --- Skeleton Loading Shimmer --- */
-@keyframes shimmer {
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@utility animate-shimmer {
-  position: relative;
-  overflow: hidden;
-
-  &::after {
-    position: absolute;
-    inset: 0;
-    transform: translateX(-100%);
-    background-image: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in oklch, var(--foreground) 8%, transparent),
-      transparent
-    );
-    content: '';
-    animation: shimmer 2s infinite;
-  }
-}
 

@@ -167,7 +167,10 @@
   );
   --glass-tint-chrome:   oklch(from var(--glass-fill) l c h / 0.54);
   --glass-tint-readable: oklch(from var(--glass-fill) l c h / 0.58);
-  --glass-tint: var(--glass-tint-readable);
+  --glass-media-dim: light-dark(
+    oklch(1 0 0 / 0.85),
+    oklch(0 0 0 / 0.40)
+  );
 
 
   /* 2+3+4: Backdrop filter knobs — tokens.css primitives.
@@ -330,8 +333,6 @@
   --color-window-control-icon: var(--window-control-icon);
 
   /* --- Glassmorphism UI Roles --- */
-  --color-glass: var(--glass-tint);
-  --color-glass-border: var(--glass-edge);
   --color-overlay: var(--overlay);
 
   /* --- Corner Radii --- */

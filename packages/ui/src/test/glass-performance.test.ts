@@ -42,6 +42,15 @@ describe('glass performance contract', () => {
     expect(tokensCss).toMatch(/--blur-glass-md:\s*20px/);
     expect(tokensCss).toMatch(/--blur-glass-lg:\s*24px/);
   });
+
+  it('ensures glass-scroll-edge-b has no backdrop-filter or will-change', () => {
+    const code = stripComments(glassCss);
+    const match = code.match(/@utility\s+glass-scroll-edge-b\s*\{([\s\S]*?)\n\}/);
+    expect(match, 'glass-scroll-edge-b utility exists').not.toBeNull();
+    const body = match![1];
+    expect(body).not.toMatch(/backdrop-filter/i);
+    expect(body).not.toMatch(/will-change/i);
+  });
 });
 
 describe('glass grain policy', () => {

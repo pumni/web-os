@@ -115,7 +115,6 @@
     oklch(from var(--glass-fill) l c h / 0.54),
     oklch(from var(--glass-fill) l c h / 0.36)
   );
-  --glass-tint: var(--glass-tint-readable);
 }
 [data-glass='strong'] {
   --glass-blur: var(--blur-glass-lg);
@@ -127,6 +126,5 @@
     oklch(from var(--glass-fill) l c h / 0.65),
     oklch(from var(--glass-fill) l c h / 0.48)
   );
-  --glass-tint: var(--glass-tint-readable);
 }
 

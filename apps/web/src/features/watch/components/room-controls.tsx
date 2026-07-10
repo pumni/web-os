@@ -465,7 +465,7 @@ export function RoomControls({
         onFocus={controlsBind.onFocus}
         onBlur={controlsBind.onBlur}
         className={cn(
-          'absolute right-4 bottom-4 left-4 z-20 flex flex-col gap-2 rounded-nested p-3 transition-all duration-(--duration-base) ease-fluid',
+          'glass-panel-media absolute right-4 bottom-4 left-4 z-20 flex flex-col gap-2 rounded-nested p-3 transition-all duration-(--duration-base) ease-fluid',
           visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0',
         )}
       >
