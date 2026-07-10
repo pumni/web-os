@@ -1,5 +1,5 @@
 /**
- * Static drift guards for glass performance + grain policy (ADR-0012).
+ * Static drift guards for glass performance + grain policy.
  * Read CSS source — no runtime browser required.
  */
 import { describe, expect, it } from 'vitest';

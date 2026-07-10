@@ -11,7 +11,7 @@
  * Optical honesty: engineered frosted glassmorphism (blur + tint + specular),
  * NOT Apple Liquid Glass lensing/refraction (deleted for web GPU + text clarity).
  *
- * 6-element model (ADR-0012 canonical, 2026-07-09 amendment):
+ * 6-element model (canonical design system):
  *   1. Tint — CSS Color 5 relative scale from `--glass-fill`: `--glass-tint-chrome`
  *      (bars) / `--glass-tint-readable` (panels); `--glass-tint` aliases readable
  *   2. Blur (`--glass-blur`) — ladder above
@@ -124,8 +124,7 @@
      `mask-composite` ring — the rim is a `linear-gradient(...) border-box`
      painted from the shared `--glass-edge-top` / `--glass-edge-bottom` stops
      (the same specular rim pair `glass-panel` paints via the masked ::before),
-     and the volumetric shadow is `var(--shadow-glass)` (the real delineator,
-     ADR-0012). The metric border is transparent so the gradient border shows. */
+     and the volumetric shadow is `var(--shadow-glass)` (the real delineator). The metric border is transparent so the gradient border shows. */
   position: relative;
   overflow: hidden;
   background:

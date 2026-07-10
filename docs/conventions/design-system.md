@@ -53,7 +53,7 @@ surface — the APCA dead zone).
 | `rounded-[14px]`, `rounded-2xl` everywhere | Named radius utilities off `--radius-base` | One personalizable knob, not magic px |
 | `ease-out`, `duration-300` | `ease-fluid` / `ease-snappy`; `duration-(--duration-base)` | Brand curves + owned timing (`pumniNoRawTiming` blocks it) |
 | Hand-rolled `whileHover={{ scale: 1.05 }}` | `recipes.hoverLift` / `pressScale` / `staggerItem` from `@pumni/ui` | One motion vocabulary, drift-tested |
-| Glass on hero / page backgrounds, or glass cards on flat surfaces | Glass only on floating layers with a colourful backdrop (ADR-0012); opaque shell + raised solid cards. Dense content (forms/tables) always uses solid | `backdrop-filter` is GPU-heavy; glassmorphism reads only over a backdrop |
+| Glass only on hero / page backgrounds, or glass cards on flat surfaces | Glass only on floating layers with a colourful backdrop (floating-only rule); opaque shell + raised solid cards. Dense content (forms/tables) always uses solid | `backdrop-filter` is GPU-heavy; glassmorphism reads only over a backdrop |
 | Eyeballing contrast on glass/accents | Trust gated tokens; verify APCA Lc 60 (text on fill) | `glass-contrast` test owns the cascade |
 | `backdrop-blur-md` | Glass utility / `GlassSurface` | Reduced-transparency and performance fallbacks |
 | `bg-card/40`, `border-border/20` | Solid surface tokens: opaque, `border-border` | Surfaces are opaque in the unified system |
@@ -73,12 +73,22 @@ Apps consume semantic utilities, not primitives. Color tokens must default to th
 
 ## Surface utilities and overlay roles
 
-Glass is reserved for floating layers: Dialog, Sheet, Popover, DropdownMenu,
-ContextMenu, Command palette, Toast, Topbar, Dock, Sidebar rail, OS
-`Window`/titlebar, and small floating pills/overlays. Large backgrounds and flat
-shell surfaces stay opaque.
+### Glass placement (stable product rule)
 
-**Surface identity = glassmorphism for floating layers (ADR-0012).** Optical
+**Glass = floating layers only** (overlays and chrome that sit *above* content):
+Dialog, Sheet, Popover, DropdownMenu, ContextMenu, Command palette, Toast,
+floating topbar/dock/sidebar rail chrome, OS `Window` titlebar, small floating
+pills. Glass must sit over a **colourful / media / blob backdrop** so frost reads.
+
+**Solid (`surface-raised` / opaque shell) = dense content and flat backgrounds:**
+forms, tables, long reading text, full-page backgrounds, large content cards on
+flat fills.
+
+Do **not** use glass for primary form surfaces or long body text. Optical token
+values may change while glass is under development — follow `theme.css` /
+this document, not historical ADRs or archived plans.
+
+**Surface identity = glassmorphism for floating layers.** Optical
 honesty: this is **engineered frosted glass** (blur + tint + specular), not Apple
 Liquid Glass lensing/refraction (intentionally omitted on the web for GPU cost
 and text clarity).
@@ -96,9 +106,7 @@ single fill source via CSS Color 5 relative syntax:
 --glass-fill: light-dark(oklch(0.96 0.01 250), oklch(0.18 0.02 240));  /* no alpha */
 ```
 
-**Apple HIG tier map** (HIG + Material 3 primary-source verification dates pinned in
-ADR-0012 §B6 amendment; both vendor docs are JS-gated so they cannot be scraped —
-verification is a dated manual checkpoint):
+**Apple HIG / Material 3 tier map** (Verified 2026-07-09, next manual recheck: 2026-08-15):
 
 | Tier | Token | Apple analogue | APCA target | Content policy |
 | --- | --- | --- | --- | --- |
@@ -128,7 +136,7 @@ All intensities pass APCA Lc 60 over desktop blobs and high-chroma synthetics
 
 > Superseded plans (`glassmorphism-2026-alignment.md`, `glassmorphism-2026-remediation.md`,
 > `glass-border-doctrine-and-grain-2026.md`) are archived under `docs/plans/archive/`.
-> Do not read them for design guidance — see ADR-0012 + this document.
+> Do not read them for design guidance — see this document.
 
 Vibrancy uses `--glass-saturate` (≈1.3× light / 130% light / 150% dark) +
 `--glass-brightness` (110% light / 85% dark). Blur ladder (soft / default / strong
@@ -154,13 +162,12 @@ APCA gate**: the glass edge is a light effect, not a readability boundary (WCAG
 forces a separate backdrop render pass — a doc/skill rule).
 Solid cards are NOT glass — they carry real elevation via `surface-raised`
 (`--shadow-card-raised` only); content stays solid, glass is only for floating
-layers (it earns its `backdrop-filter` cost there). Solid surfaces are
-**structural-only** (ADR-0012): `--border` hairline + elevation shadow, no
+layers (it earns its `backdrop-filter` cost there). Solid surfaces are **structural-only** (floating-only rule): `--border` hairline + elevation shadow, no
 specular rim — the luminous top rim (`--surface-rim-top`) is **glass-only**, so a solid card reads crisp and structural
 while glass reads luminous and floating. The OS
 `Window`/Dock are presentational chrome: window controls rest neutral (`bg-border`) and take semantic status colours (`destructive`/`warning`/`success`) only on the active window — no literal macOS palette.
 
-**Backdrop requirement (ADR-0012).** A glass surface only reads as
+**Backdrop requirement (floating-only rule).** A glass surface only reads as
 glassmorphism when it has a colourful backdrop to refract — desktop blobs, media,
 or a scrim overlay. Two valid patterns: (1) *chrome glass* — overlays and system
 shells that sit over whatever is behind them (dialogs, sheets, popovers, topbar,
@@ -232,7 +239,7 @@ border-contrast threshold.
    for the `fontLookupAPCA` per-weight px table surfaced from canonical
    `apca-w3`.
 
-## Border consumption flow (ADR-0012)
+## Border consumption flow
 
 "Border" is three distinct concepts — do not conflate them:
 
@@ -242,7 +249,7 @@ border-contrast threshold.
 | **Specular rim** | `inset 0 1px 0 0 var(--token)` box-shadow — a light effect, NOT a real border | Top/bottom lit edges of raised surfaces |
 | **Status tint** | `border-{tone}/20` — state signalling | Badge, Card `state` |
 
-**Closed set of structural hairline tokens, no others allowed** (ADR-0012):
+**Closed set of structural hairline tokens, no others allowed** (floating-only rule):
 
 - **Solid-flow**:
   - `--border` — dark, builds contrast against the fill. Card solid/inset, `CardWell`. The real delineator for solid surfaces.
@@ -277,7 +284,7 @@ edge to a solid `--border`.
 | | Solid card (`surface-raised`) | Glass card (`glass-panel`) |
 | --- | --- | --- |
 | Structural hairline | `--border` (dark) | Gradient bevel ring (masked `::before`): `--glass-edge-top` (light-catch) → `--glass-edge-bottom` (contact shadow); metric border transparent |
-| Top rim | none (deliberate, ADR-0012) | `--glass-inset-bezel-top` |
+| Top rim | none (deliberate) | `--glass-inset-bezel-top` |
 | Bottom rim | none (deliberate) | `--glass-shadow-edge` |
 | Real delineator | the hairline itself | `--shadow-glass` (drop shadow) |
 | Edge/border APCA gate | none — `--border` is a structural hairline | none — the edge is a light effect; only text-on-readable/chrome tint is gated (Lc 60) |
@@ -296,7 +303,7 @@ GLASS bar/titlebar (dock, topbar, title)?
     [glass.css owns this]
 SOLID surface (content card, well)?
   → Card variant="solid" / CardWell. hairline = --border, no top rim
-    (structural-only, ADR-0012 — surface-raised has no specular rim),
+    (structural-only — surface-raised has no specular rim),
     no bottom rim. [no inset rim in TSX]
 FORM CONTROL (input, button, select)?
   → --input. No specular rim. aria-invalid → border-destructive.

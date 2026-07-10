@@ -11,7 +11,7 @@ harness-managed primary; this file is the durable log for decisions.
 
 ## Settled facts
 
-- Surface identity (glass vs solid) & Glass 2.0 (SSOT fill, contrast, relative alpha scale) → [design-system.md](../conventions/design-system.md), [ADR-0012](../adr/0012-engineered-glass-surface-language.md).
+- Surface identity (glass vs solid) & Glass 2.0 (SSOT fill, contrast, relative alpha scale) → [design-system.md](../conventions/design-system.md).
 - Security boundary (RLS and keys) → [AGENTS.md](../../AGENTS.md) and [supabase-security.md](../conventions/supabase-security.md).
 - State ownership → [data-fetching.md](../conventions/data-fetching.md).
 - Next.js 16 cache API → [data-fetching.md](../conventions/data-fetching.md) and [common-mistakes.md](common-mistakes.md).

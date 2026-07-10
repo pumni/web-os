@@ -11,7 +11,7 @@ import { repoRoot } from './token-test-utils';
  * Two real drifts motivated this guard:
  *  - the accent list in `ui-styling` lagged `personalization.css` (3 vs 5 accents);
  *  - the skill/reference cited ADR numbers (0014–0020) that were consolidated
- *    into ADR-0012 and no longer exist as files.
+ *    and no longer exist as files.
  *
  * `bun run ai:check`'s `checkDocPathReferences` only validates backtick ADR
  * *paths*; inline `ADR-00NN` prose is invisible to it. This test closes that gap.

@@ -11,7 +11,7 @@ import {
 /**
  * WCAG 2.x legal-compliance bridge — NON-GATING report.
  * ------------------------------------------------------------------
- * APCA is the engineering target (ADR-0012 + design-system.md), and WCAG 3
+ * APCA is the engineering target (per design-system.md), and WCAG 3
  * is still a Working Draft at the W3C. In jurisdictions where WCAG 2.1 AA
  * (4.5:1 normal text, 3:1 large/UI) is the enforceable accessibility floor
  * (ADA, EAA, Section 508), automated audits that only run WCAG 2 contrasts

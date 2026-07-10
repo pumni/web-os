@@ -5,7 +5,7 @@
 - **Owner:** Design system / `@pumni/ui`
 
 > Numbering note: ADR numbers 0014–0020 were the same-week glass micro-ADRs
-> consolidated into ADR-0012 and are **burned** (never reused, per
+> consolidated into ADR-0012 (removed from tree 2026-07 — see git) and are **burned** (never reused, per
 > `docs/adr/README.md`). This revision takes the next free number, 0021.
 
 ## Context

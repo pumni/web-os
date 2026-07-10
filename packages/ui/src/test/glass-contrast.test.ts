@@ -98,7 +98,7 @@ describe('Glass contrast tokens', () => {
       const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
       const glass = tokenColor('--glass-tint-readable', tokenMap);
 
-      // ADR-0012: glass requires a colourful backdrop — pure near-black/near-white
+      // Glass placement: glass requires a colourful backdrop — pure near-black/near-white
       // are invalid glass contexts (use solid Card). Stress high-chroma media-like fills.
       const worstCases: Array<{ label: string; bg: Color }> = [
         { label: 'max-chroma-coral', bg: { l: 0.7, c: 0.18, h: 30, alpha: 1 } },
@@ -195,7 +195,7 @@ describe('Glass contrast tokens', () => {
     },
   );
 
-  // The float shadow remains the primary delineator (ADR-0012 unchanged).
+  // The float shadow remains the primary delineator (per design-system.md).
   // Assert presence so it can't be silently zeroed.
   it.each(['light', 'dark'] as const)(
     'delineates glass panels via the float shadow in %s mode',

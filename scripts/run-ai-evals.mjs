@@ -8,7 +8,7 @@
  * These are deterministic and require no LLM API key. Prompt-injection
  * resistance is governed by the Untrusted Content Policy in AGENTS.md plus the
  * secrets/RLS static scan below — there is intentionally no LLM-in-the-loop
- * behavioral eval tier (removed in ADR-0009 as overhead for a solo project).
+ * behavioral eval tier (removed as overhead for a solo project).
  *
  * The RN-specific raw-console.log scanner is intentionally omitted: console
  * logging is acceptable in a Next.js web app.

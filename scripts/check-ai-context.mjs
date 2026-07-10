@@ -743,11 +743,11 @@ const CANONICAL_INVARIANTS = [
   ],
   [
     /\bglass\s+=\s+floating\s+layers\s+only\b/i,
-    'docs/adr/0012-engineered-glass-surface-language.md',
+    'docs/conventions/design-system.md',
   ],
   [
-    /\bsolid\s+\(surface-raised\)\s+=\s+dense\s+content\b/i,
-    'docs/adr/0012-engineered-glass-surface-language.md',
+    /\bsolid\s+\(`?surface-raised`?.*\)\s+=\s+dense\s+content\b/i,
+    'docs/conventions/design-system.md',
   ],
   [
     /\bRLS\b.*\breal\s+data\s+boundary\b/i,
@@ -805,7 +805,7 @@ function checkDocApiDenylist() {
   // Framework/API identifiers known to be phantom or removed. A convention doc
   // (P2) naming a non-existent API outranks real code (P4) and makes agents write
   // code that fails to build (cf. the `unstable_instant` incident, 2026-07).
-  // This is a denylist, NOT a freshness table (ADR-0009/0013 removed version-table
+  // This is a denylist, NOT a freshness table (removed version-table
   // upkeep): add an entry when a phantom API is caught. Verify *real* APIs at edit
   // time against apps/web/node_modules/next, not here.
   const DENY = [

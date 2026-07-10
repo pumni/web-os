@@ -26,17 +26,10 @@ import { repoRoot } from './token-test-utils';
 const read = (rel: string) => readFileSync(path.join(repoRoot, rel), 'utf8');
 
 const designSystem = read('docs/conventions/design-system.md');
-const adr0012 = read('docs/adr/0012-engineered-glass-surface-language.md');
 
-// A dated B6 amendment in ADR-0012 — anchored to a YYYY-MM-DD stamp + the two
-// vendor source labels. Editing the amendment date triggers this guard.
-const ADR_B6_DATE = /B6\s+Apple\s+HIG\s*\/\s*Material\s+3\s+primary-source\s+dating/;
-const ADR_B6_STAMP = /\b2026-07-09\b/;
-const ADR_B6_NEXT_RECHECK = /\b2026-08-15\b/;
-
-// design-system.md must reference the ADR-0012 §B6 amendment at the "Apple HIG
-// tier map" sentence + carry the same two vendor labels.
-const DOC_HIG_POINTER = /Apple\s+HIG.*?Material\s+3.*?verification\s+dates?(?:\s|&\#0*32;|&nbsp;)*pinned(?:\s|&\#0*32;|&nbsp;)*in(?:\s|&\#0*32;|&nbsp;)*ADR-0012/i;
+// Apple HIG / Material 3 primary-source verification dating in design-system.md.
+const DOC_B6_STAMP = /\b2026-07-09\b/;
+const DOC_B6_NEXT_RECHECK = /\b2026-08-15\b/;
 
 const VENDOR_LABELS = [
   { key: 'apple-hig', pattern: /Apple\s+HIG/i, label: 'Apple HIG' },
@@ -44,28 +37,19 @@ const VENDOR_LABELS = [
 ] as const;
 
 describe('Apple HIG / Material 3 primary-source dating (B6)', () => {
-  it('ADR-0012 carries a dated B6 verification amendment', () => {
-    expect(adr0012, 'ADR-0012 missing B6 amendment heading').toMatch(ADR_B6_DATE);
-    expect(adr0012, 'ADR-0012 B6 amendment missing the 2026-07-09 stamp').toMatch(
-      ADR_B6_STAMP,
+  it('design-system.md carries a dated primary-source verification', () => {
+    expect(designSystem, 'design-system.md missing the 2026-07-09 verification stamp').toMatch(
+      DOC_B6_STAMP,
     );
     expect(
-      adr0012,
-      'ADR-0012 B6 amendment missing the next-recheck date',
-    ).toMatch(ADR_B6_NEXT_RECHECK);
-  });
-
-  it('design-system.md pins its Apple HIG / Material 3 references to the ADR-0012 B6 amendment', () => {
-    expect(
       designSystem,
-      'design-system.md Apple HIG tier map sentence must point at ADR-0012 §B6 dating',
-    ).toMatch(DOC_HIG_POINTER);
+      'design-system.md missing the next-recheck date 2026-08-15',
+    ).toMatch(DOC_B6_NEXT_RECHECK);
   });
 
   it.each(VENDOR_LABELS)(
-    'both ADR-0012 and design-system.md name the $label vendor source',
+    'design-system.md names the $label vendor source',
     ({ label, pattern }) => {
-      expect(adr0012, `ADR-0012 missing ${label} reference`).toMatch(pattern);
       expect(designSystem, `design-system.md missing ${label} reference`).toMatch(
         pattern,
       );

@@ -47,7 +47,7 @@ edit on any structural reshuffle (the `refactor-plan` skill owns the procedure):
 - [ ] If regex-catchable, add a rule + self-test to
       `scripts/review-gate-rules.mjs` so the next miss fails the gate.
 
-Real misses become permanent guardrails (ADR-0009).
+Real misses become permanent guardrails.
 
 ## Static Rule Inventory
 

@@ -141,8 +141,8 @@ const INVARIANT_CANONICAL = [
   [/never mirror server (state|data) into Zustand/i, 'docs/conventions/data-fetching.md'],
   [/Zustand (holds|is for|stores? only) client/i, 'docs/conventions/data-fetching.md'],
   [/service-role.*never.*(client|browser|bundle)/i, 'AGENTS.md'],
-  [/glass = floating layers only/i, 'docs/adr/0012-engineered-glass-surface-language.md'],
-  [/solid \(surface-raised\) = dense content/i, 'docs/adr/0012-engineered-glass-surface-language.md'],
+  [/glass = floating layers only/i, 'docs/conventions/design-system.md'],
+  [/solid \(`?surface-raised`?.*\)\s+=\s+dense\s+content/i, 'docs/conventions/design-system.md'],
   [/RLS.*real data boundary/i, 'docs/conventions/supabase-security.md'],
 ];
 const invariantTargets = [
@@ -190,7 +190,7 @@ metrics.adrDocsBytes = adrTotalSize;
 // 8. Tool Support Matrix coverage — count capabilities the index documents
 // vs the real mechanisms that exist on disk. Each required capability that is
 // missing from docs/ai/index.md's Tool Support Matrix (or the section itself)
-// counts as one mismatch. Drives ADR-0009 freeze-gate evidence for context-
+// counts as one mismatch. Drives freeze-gate evidence for context-
 // layer edits to the matrix.
 const REQUIRED_CAPABILITY_KEYWORDS = [
   { capability: 'entry contract', re: /AGENTS\.md/ },
