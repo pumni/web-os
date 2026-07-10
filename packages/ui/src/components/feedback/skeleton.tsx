@@ -10,9 +10,9 @@ import { cn } from '../../lib/cn';
  *
  * ### Variants
  * - `pulse` (default) — gentle opacity breathing, `prefers-reduced-motion`-safe
- *   via the global CSS safety net in `glass.css`.
+ *   via the global CSS safety net in `effects.css`.
  * - `shimmer` — sheen sweep using the `@utility animate-shimmer` defined in
- *   `glass.css`, also gated behind `prefers-reduced-motion`.
+ *   `effects.css`, also gated behind `prefers-reduced-motion`.
  *
  * ### Accessibility
  * The skeleton is `aria-hidden="true"` by default. In the rare case where you
@@ -26,7 +26,7 @@ const skeletonVariants = cva('rounded-md bg-muted', {
       /** Opacity breathing pulse — default, lowest GPU cost. */
       pulse: 'animate-pulse',
       /**
-       * Shimmer sweep — defined in `@utility animate-shimmer` (glass.css).
+       * Shimmer sweep — defined in `@utility animate-shimmer` (effects.css).
        * Uses `::after` pseudo-element; requires `overflow-hidden` (already
        * applied by the utility itself).
        */

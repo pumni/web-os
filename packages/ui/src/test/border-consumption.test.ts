@@ -34,9 +34,11 @@ import { repoRoot } from './token-test-utils';
 
 const GLASS_CSS = 'packages/ui/src/styles/glass.css';
 const THEME_CSS = 'packages/ui/src/styles/theme.css';
+const EFFECTS_CSS = 'packages/ui/src/styles/effects.css';
 
 const glassCss = readFileSync(path.join(repoRoot, GLASS_CSS), 'utf8');
 const themeCss = readFileSync(path.join(repoRoot, THEME_CSS), 'utf8');
+const effectsCss = readFileSync(path.join(repoRoot, EFFECTS_CSS), 'utf8');
 
 function stripComments(css: string): string {
   return css.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -146,7 +148,7 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
     const body = readRuleBody(glassCss, selector);
 
     expect(body, `${_label} must keep the transparent metric border`).toMatch(
-      /border:\s*1px\s+solid\s+transparent/,
+      /border:\s*1px\s+solid\s+var\(--glass-border-resolved,\s*transparent\)/,
     );
     expect(body, `${_label} ring must run edge-top → edge-bottom`).toMatch(
       /linear-gradient\(\s*135deg,\s*var\(--glass-edge-top\),\s*var\(--glass-edge-bottom\)\s*\)/,
@@ -202,8 +204,8 @@ describe('CardSpotlight @property registration', () => {
   // in apps/web/e2e/spotlight-inherits.spec.ts.
 
   function readPropertyBlock(name: string): string {
-    const body = readRuleBody(glassCss, `@property ${name}`);
-    if (!body) throw new Error(`@property ${name} not found in glass.css`);
+    const body = readRuleBody(effectsCss, `@property ${name}`);
+    if (!body) throw new Error(`@property ${name} not found in effects.css`);
     return body;
   }
 

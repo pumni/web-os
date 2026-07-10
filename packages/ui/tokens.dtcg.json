@@ -1965,6 +1965,15 @@
           }
         }
       },
+      "media-dim": {
+        "$type": "color",
+        "$value": "oklch(1 0 0 / 0.85)",
+        "$extensions": {
+          "com.pumni.modes": {
+            "dark": "oklch(0 0 0 / 0.40)"
+          }
+        }
+      },
       "shadow-edge": {
         "$type": "color",
         "$value": "oklch(0 0 0 / 0)",
@@ -1973,10 +1982,6 @@
             "dark": "oklch(0 0 0 / 0.22)"
           }
         }
-      },
-      "tint": {
-        "$type": "color",
-        "$value": "{semantic.glass.tint-readable}"
       },
       "tint-chrome": {
         "$type": "color",

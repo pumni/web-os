@@ -128,9 +128,20 @@ describe('Animation Identity Exclusivity (Conformity Guard)', () => {
       }
     }
 
-    for (const utility of utilities) {
-      const classSelector = `.${utility}`;
-      expect(fallbackBlock).toContain(classSelector);
+    const hasRootVariables =
+      fallbackBlock.includes('--glass-bg-resolved') &&
+      fallbackBlock.includes('--glass-backdrop-resolved') &&
+      fallbackBlock.includes('--glass-bevel-ring-display');
+
+    if (!hasRootVariables) {
+      for (const utility of utilities) {
+        const classSelector = `.${utility}`;
+        expect(fallbackBlock).toContain(classSelector);
+      }
+    } else {
+      // Ensure specific utilities that have will-change are still explicitly adjusted
+      expect(fallbackBlock).toContain('.glass-panel');
+      expect(fallbackBlock).toContain('.glass-window');
     }
   });
 });

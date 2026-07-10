@@ -19,13 +19,13 @@ import type { cardVariants } from './card';
  * 1. `onPointerMove` computes the cursor position relative to the card's
  *    bounding rect, expressed as a percentage.
  * 2. The CSS var pair `--spot-x`/`--spot-y` is injected via inline `style`.
- * 3. `glass.css` `@utility card-spotlight` reads those vars to position a
+ * 3. `effects.css` `@utility card-spotlight` reads those vars to position a
  *    `::before` radial-gradient overlay (compositor-friendly — only `opacity`
  *    and CSS vars animate; no `box-shadow` or layout properties).
  *
  * **Performance:** Only `opacity` transitions + CSS variable updates —
  * compositor-safe, no layout/paint. Reduced-motion: gradient hidden via CSS
- * media query in glass.css.
+ * media query in effects.css.
  *
  * **A11y:** `pointer-events: none` on the `::before` layer ensures clicks pass
  * through. Forced-colors: radial gradient is naturally ignored by the UA.

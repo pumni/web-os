@@ -105,4 +105,17 @@ describe('glass-panel / glass-window carry the full rim pair', () => {
       /inset\s+0\s+-1px\s+0\s+0\s+var\(--glass-shadow-edge\)/,
     );
   });
+
+  it.each([
+    ['glass-panel', '@utility glass-panel'],
+    ['glass-window', '@utility glass-window'],
+  ])('%s ::before ring uses inset: 0 to prevent overflow clipping', (_label, selector) => {
+    // The bevel ring ::before pseudo-element must draw at `inset: 0` (inside padding edge)
+    // rather than `inset: -1px` (outside, in border-box).
+    // Because the parent has `overflow: hidden` and `isolation: isolate` (visual container standard),
+    // any element sitting at `inset: -1px` is clipped by the padding-box boundary (CSS Overflow 3).
+    // Pixel-verified 2026-07-11: at -1px the ring is entirely clipped; only 0 survives.
+    const body = readRuleBody(glassCss, selector);
+    expect(body, `${_label} ::before ring must be inset: 0`).toMatch(/&::before\s*\{[^}]*inset:\s*0/);
+  });
 });

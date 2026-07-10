@@ -33,11 +33,12 @@ Scans for bare hex/rgb/hsl values and arbitrary Tailwind color classes that shou
   [REFERENCE.md](/.agents/skills/ui-styling/REFERENCE.md#deriving-an-accessible-foreground-inverse-apca)
   for the Lc floor table and the inverse-APCA derivation path.
 - Glass tiers: `--glass-fill` is the single opaque L/C/H fill SSOT. `--glass-tint-chrome`
-  (bars/shell) and `--glass-tint-readable` / `--glass-tint` (panels) derive via
+  (bars/shell) and `--glass-tint-readable` (panels) derive via
   `oklch(from var(--glass-fill) l c h / α)` — only alpha varies. Blur ladder soft **12** /
   default light **16** / dark **20** / strong **24**. Personalization soft|strong adjusts blur +
   alpha only (never re-state L/C/H in personalization overrides). Glass edge is **ungated
-  specular**; text-on-glass Lc 60 is the only APCA gate.
+  specular**; text-on-glass Lc 60 is the only APCA gate. Media-floating overlays over video
+  must use `glass-panel-media` to bound contrast (Lc >= 60).
 - Glass performance: never animate `backdrop-filter`; cap stacked glass at 2
   layers (each layer forces a separate backdrop render pass; doc/skill rule);
   `will-change` is reserved for overlay transitions, not static glass.
@@ -70,7 +71,7 @@ not inline its tables here.
 - [ ] No raw `oklch()`, primitive var, or Tailwind built-in palette in component classes.
 - [ ] Surface is one of the closed-set roles; no `bg-{card,background,popover}/NN`.
 - [ ] One `border-border`; status tint is the only `/20` border exception.
-- [ ] Floating layer uses `GlassSurface`/`glass-*`; blur ladder 12/16/20/24 only (no raw `backdrop-blur-*`).
+- [ ] Floating layer uses `GlassSurface`/`glass-*`; blur ladder 12/16/20/24 only (no raw `backdrop-blur-*`). Media-floating panel uses `glass-panel-media`.
 - [ ] Glass backdrop (design-system.md): glass only over colourful backdrop (blobs/media/overlay); dense/multi-line content always solid (`DialogBody` / `CardWell` / `Card variant="solid"`); on flat backgrounds → solid.
 - [ ] Glass perf: no `backdrop-filter` in transitions/animations; ≤2 glass layers stacked.
 - [ ] Radius/z-index use named utilities; no `rounded-[Npx]`, no raw `z-40`/`z-50` for cross-component layers.
