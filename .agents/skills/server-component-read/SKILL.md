@@ -14,7 +14,7 @@ Skeleton: copy [scripts/query.template.ts](/.agents/skills/server-component-read
 
 ## Rules
 
-- Read `.claude/rules/nextjs-cache-components.md` and
+- Read `docs/conventions/nextjs-16.md` and
   `docs/conventions/data-fetching.md` before adding a read.
 - Put the read in `features/<feature>/queries.ts`; call it from a Server
   Component. Do not move database reads into client components to avoid prop
