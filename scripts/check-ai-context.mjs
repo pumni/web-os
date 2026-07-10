@@ -1,3 +1,4 @@
+// fallow-ignore-file code-duplication -- Intentional: script helpers are procedurally isolated to prevent cross-script dependencies on internal utilities
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

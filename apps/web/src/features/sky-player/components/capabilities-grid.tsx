@@ -14,7 +14,7 @@ import { cn } from '@pumni/ui/lib/cn';
 
 import { CAPABILITIES, type Capability } from '../content';
 
-// fallow-ignore-next-line complexity
+// fallow-ignore-next-line complexity -- Intentional: CapabilityCard handles featured/non-featured layout variants and conditional motion; complexity is JSX composition not branching logic
 function CapabilityCard({
   cap,
   isFeatured,

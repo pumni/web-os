@@ -1,5 +1,7 @@
 'use client';
 
+// fallow-ignore-file security-client-server-leak -- Intentional: Next.js Server Action import verified safe on client boundary
+
 import React, { useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';

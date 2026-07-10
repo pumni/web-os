@@ -13,7 +13,7 @@ interface PasswordFieldsProps {
   pendingText: string;
 }
 
-// fallow-ignore-next-line complexity
+// fallow-ignore-next-line complexity -- Intentional: component renders two linked password fields with conditional error/pending state; splitting breaks the co-location of confirm-password logic
 export function PasswordFields({
   pending,
   errors,

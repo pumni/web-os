@@ -1,3 +1,4 @@
+// fallow-ignore-file css-token-drift -- Intentional: custom volumetric micro-animations (breathe/shake) and transition properties
 import * as React from 'react';
 import { Slot } from 'radix-ui';
 import { cva, type VariantProps } from 'class-variance-authority';

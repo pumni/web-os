@@ -16,6 +16,12 @@ validation gate (`scripts/check-ai-context.mjs`).
   the skill. The shim is **generated** from the canonical file by `bun run
   ai:skills:sync` (`name` + `description` + a pointer) — never hand-edit it.
   `bun run ai:check` fails if a shim is missing, stale, or orphaned.
+
+  Why: Claude Code discovers project skills from `.claude/skills/`, but the
+  canonical, tool-agnostic body must stay the single source of truth so other
+  agents (Cursor, Gemini CLI, OpenHands…) read the same file. The shim is the
+  thin adapter that keeps both properties — Claude-native discovery + one source
+  of truth — without a hand-maintained copy of every description.
 - List the skill in `docs/ai/index.md` under `## Skills`.
 
 ## Gate requirements (hard — `bun run ai:check` fails otherwise)
@@ -83,11 +89,45 @@ split a long step sequence only if the criteria stay irreducibly fuzzy.
 - Combat sediment: when a convention moves, update or delete the line; do not
   layer a new one on top.
 
+## Evaluation (eval-first)
+
+Anthropic's authoring guidance is "build evaluations before writing extensive
+documentation," so a skill is only done when the invocation is provable, not
+when the docs feel complete.
+
+- Ship `evals/evals.json` next to the canonical SKILL.md, in the schema
+  documented by Anthropic's `skill-creator` plugin
+  (`anthropics/claude-plugins-official` → `references/schemas.md`):
+  ```json
+  {
+    "skill_name": "<kebab-name matching frontmatter>",
+    "evals": [
+      { "id": 1, "prompt": "...", "expected_output": "...",
+        "files": [], "expectations": ["...checkable..."] }
+    ]
+  }
+  ```
+- `expectations` is an array of **bare strings** — objectively checkable
+  pass/fail. Do not shape them as objects; that is injection drift against the
+  grader (the field name is `expectations`, not `assertions`).
+- 2 cases for a single-purpose skill, 3 for one with a positive path + a reject
+  path + a second reject/edge path. Subjective skills (style, plan quality)
+  may carry `prompt` + `expected_output` only.
+- Write the failing pair (a bad invocation the skill should reject or reshape)
+  before the happy path — that is the case that defends the `description`.
+
 ## Attached scripts
 
 Ship executable helpers in `<skill>/scripts/` and point to them from `SKILL.md`
-(e.g. `diagnosing-bugs/scripts/repro-loop.template.sh`). Templates carry a
-`.template` segment so they are copied, not run in place.
+(e.g. `diagnosing-bugs/scripts/repro-loop.template.ps1`). Templates carry a
+`.template` segment so they are copied, not run in place. A skill's `.ps1`
+template is canonical on Windows (the repo's `AGENTS.md` shell is PowerShell 7);
+ship a `.sh` twin only when cross-platform `bun run` fallback is needed.
+
+## Evaluation files
+
+`<skill>/evals/evals.json` carries the skill's test cases (see Evaluation
+above). The gate does not parse it; the agent and `skill-creator` do.
 
 ## Subagent Extension Pattern
 

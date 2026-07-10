@@ -10,6 +10,8 @@ Use this skill when adding or changing a Next.js Server Action in
 that calls it is `react-hook-form`; the read it invalidates is
 `server-component-read`.
 
+Skeleton: copy [scripts/action.template.ts](/.agents/skills/server-action/scripts/action.template.ts).
+
 ## Rules
 
 - Read `apps/web/AGENTS.md` before changing Next.js app code.

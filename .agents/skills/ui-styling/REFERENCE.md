@@ -4,6 +4,19 @@ On-demand detail for the `ui-styling` skill. Load when you need an exact token,
 surface role, radius/z-index value, or an add-token / add-component recipe. The
 hard rules and completion checklist stay in `SKILL.md`.
 
+## Contents
+
+- [Semantic tokens](#semantic-tokens)
+- [Surface vocabulary](#surface-vocabulary)
+- [Radius scale](#radius-scale)
+- [z-index scale](#z-index-scale)
+- [State-layer tokens](#state-layer-tokens)
+- [Typography, motion, and progressive enhancement](#typography-motion-and-progressive-enhancement)
+- [Personalization](#personalization)
+- [Deriving an accessible foreground (inverse APCA)](#deriving-an-accessible-foreground-inverse-apca)
+- [Adding a token](#adding-a-token)
+- [Adding a component](#adding-a-component)
+
 ## Semantic tokens
 
 | Token | Role |
@@ -111,6 +124,17 @@ must run before first paint. Accent values are `coral`, `cyan`, `indigo`,
 `default`, `strong`; density values are `comfortable`, `compact`.
 
 ## Deriving an accessible foreground (inverse APCA)
+
+The APCA gate lives in `glass-contrast.test.ts` (spec-correct APCA: gamma-encoded
+sRGB into `apcaContrast`). The floor table the gate enforces:
+
+| Surface / target text | Lc floor | Notes |
+|---|---|---|
+| Chrome / short text on surfaces, muted, glass-over-blob | **60** | Both modes; readable + chrome tiers |
+| Long body text | **75+** preferred | On a solid surface — never multi-line body on bare glass (`DialogBody` / `CardWell`) |
+| Accent surfaces | **45** | Pinned floor below 60; explicitly documented |
+| Status tints | per-token | See `packages/ui/src/test/glass-contrast.test.ts` |
+| Glass border (edge) | **not gated** | Specular light rim; delineation is `--shadow-glass`; a11y path is `prefers-contrast` / `prefers-reduced-transparency`; **no WCAG 2.x ratio gate**, never gate the glass border on contrast |
 
 Don't hand-tune contrast for an overridden brand colour — derive it. `apca.ts`
 (`packages/ui/src/lib/apca.ts`) bisects the OKLCH lightness axis with the same

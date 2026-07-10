@@ -7,8 +7,6 @@ globs:
 
 # Next.js 16 Async Request APIs
 
-Always loaded on Claude Code; other harnesses load them via the globs in frontmatter.
-
 ## Mandatory await pattern
 
 Every request-time API requires `await`. The sync form **compiles but throws at runtime**.

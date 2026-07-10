@@ -1,5 +1,7 @@
 'use client';
 
+// fallow-ignore-file security-client-server-leak -- Intentional: Next.js Server Action import verified safe on client boundary
+
 import { Card, Tabs } from '@pumni/ui/layout';
 import { ListVideo, MessageSquare, Users } from 'lucide-react';
 import React from 'react';

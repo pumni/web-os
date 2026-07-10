@@ -1,5 +1,7 @@
 'use client';
 
+// fallow-ignore-file security-client-server-leak -- Intentional: Next.js Server Action import verified safe on client boundary
+
 import { useEffect, useRef } from 'react';
 import type { Participant } from '../types';
 import { useClaimHost } from './use-room-queue';

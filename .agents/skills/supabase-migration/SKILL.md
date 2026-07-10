@@ -7,6 +7,9 @@ description: Author Supabase migrations bundling schema, RLS, policies, grants, 
 
 Use this skill when adding or changing files under `supabase/migrations`.
 
+Skeleton: copy [scripts/migration.template.sql](/.agents/skills/supabase-migration/scripts/migration.template.sql)
+and fill in — schema + RLS + owner `auth.uid()` policies + minimal grants together.
+
 ## Rules
 
 - Read `docs/conventions/supabase-security.md` before writing SQL.

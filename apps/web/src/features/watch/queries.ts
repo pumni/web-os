@@ -78,7 +78,7 @@ async function getCachedQueue(roomId: string): Promise<QueueItem[]> {
 
   const supabase = createSupabaseServiceRoleClient();
 
-  // fallow-ignore-next-line code-duplication
+  // fallow-ignore-next-line code-duplication -- Intentional: this Supabase select/order block intentionally mirrors the room query but belongs to a separate cache-tagged path; sharing a helper would couple two independently cached reads
   const { data, error } = await supabase
     .from('watch_queue_items')
     .select(QUEUE_ITEM_SELECT)

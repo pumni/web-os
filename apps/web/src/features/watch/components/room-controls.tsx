@@ -126,7 +126,7 @@ function PlayPauseButton({ paused, onToggle }: { paused: boolean; onToggle: () =
   );
 }
 
-// fallow-ignore-next-line complexity
+// fallow-ignore-next-line complexity -- Intentional: VolumeControl couples mute-toggle and slider into one accessible unit; conditional icon selection and hover-show slider add branches that cannot be split without breaking keyboard/pointer UX
 function VolumeControl({
   muted,
   volume,
@@ -255,7 +255,7 @@ interface HostActionGroupProps {
   onFullscreenToggle: () => void;
 }
 
-// fallow-ignore-next-line complexity
+// fallow-ignore-next-line complexity -- Intentional: HostActionGroup aggregates source-change, auto-play, advance, speed, and fullscreen actions gated on isHost; splitting into sub-groups would scatter host-only permission checks
 function HostActionGroup({
   isHost,
   playbackRate,
@@ -345,7 +345,7 @@ function HostActionGroup({
 // RoomControls
 // ---------------------------------------------------------------------------
 
-// fallow-ignore-next-line complexity
+// fallow-ignore-next-line complexity -- Intentional: RoomControls is the top-level player control bar wiring refs, host/follower roles, and volume preference persistence; complexity is orchestration, not avoidable branching
 export function RoomControls({
   isHost,
   playerRef,

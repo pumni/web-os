@@ -9,8 +9,6 @@ globs:
 
 # Next.js 16 Cache Components
 
-Always loaded on Claude Code; other harnesses load them via the globs in frontmatter.
-
 ## Placement — where to put `'use cache'`
 
 ```ts

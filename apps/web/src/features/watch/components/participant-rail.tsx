@@ -25,7 +25,7 @@ interface ParticipantPanelProps {
   isPending?: boolean;
 }
 
-// fallow-ignore-next-line complexity
+// fallow-ignore-next-line complexity -- Intentional: pure helper with multiple display-name fallback branches (username → current-user label → truncated id) and parallel initials derivation; cannot simplify without losing readability
 function getParticipantDisplay(
   p: Participant,
   profile: ParticipantProfile | undefined,
@@ -48,7 +48,7 @@ interface ParticipantRowProps {
   shouldReduceMotion: boolean | null;
 }
 
-// fallow-ignore-next-line complexity
+// fallow-ignore-next-line complexity -- Intentional: ParticipantRow renders conditional host badge, transfer-host dropdown, and motion wrapper all in one leaf component; splitting would require prop-drilling across thin wrappers
 function ParticipantRow({
   participant: p,
   profile,

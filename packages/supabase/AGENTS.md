@@ -15,7 +15,7 @@ database types. This package owns the app↔DB contract.
 - `./browser` uses the `NEXT_PUBLIC_*` publishable key.
 - `./server` and `./service-role` are server-only and must not be imported by
   any `"use client"` file.
-- `src/types.ts` is generated; it is in `.fallowrc.json` ignore lists — do not
+- `src/types.ts` is generated; it is in `.fallowrc.jsonc` ignore lists — do not
   hand-edit. Regenerate after schema changes, then `bun run typecheck`.
 - Workspace dep: `@pumni/env`.
 

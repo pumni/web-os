@@ -5,6 +5,12 @@ description: Maintain the watch-together playback-sync architecture — a pure f
 
 # Watch Sync
 
+**Why this shape:** the pure core (reducer + math) is unit-testable without
+React, a player, or the network; the thin executor is the only place side
+effects and player I/O happen. Adding behavior in a controller branch breaks
+that isolation, and ad-hoc `track()` calls drift from transitions — so both are
+banned. The boundary is mandated by ADR-0011.
+
 Playback sync for watch-together rooms (ADR-0011). The design splits a
 **pure decision core** from a **thin side-effecting executor** so the whole
 follower lifecycle is unit-testable without React, a player, or the network.

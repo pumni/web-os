@@ -1,5 +1,7 @@
 'use client';
 
+// fallow-ignore-file css-token-drift -- Intentional: static code snippets containing Tailwind arbitrary template literals
+
 import * as React from 'react';
 import { cn } from '@/shared/lib/utils';
 
@@ -88,6 +90,39 @@ function from255(rgb: { r: number; g: number; b: number }): [number, number, num
 function copyToClipboard(text: string, label: string) {
   navigator.clipboard.writeText(text);
   toast.success(`Đã sao chép ${label}!`);
+}
+
+interface PlaygroundSliderProps {
+  label: string;
+  val: number;
+  set: (v: number) => void;
+  min: number;
+  max: number;
+  step: number;
+  fmt: (v: number) => string;
+  hint?: string;
+}
+
+function PlaygroundSlider({
+  label,
+  val,
+  set,
+  min,
+  max,
+  step,
+  fmt,
+  hint,
+}: PlaygroundSliderProps) {
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between font-mono text-xs">
+        <span className="text-muted-foreground">{label}</span>
+        <span className="font-semibold text-primary">{fmt(val)}</span>
+      </div>
+      <Slider min={min} max={max} step={step} value={[val]} onValueChange={(v) => set(v[0] ?? val)} />
+      {hint && <p className="text-[10px] text-muted-foreground/70">{hint}</p>}
+    </div>
+  );
 }
 
 /* ───── APCA recommendation (matching Lab's getApcaRecommendation) ───── */
@@ -604,15 +639,8 @@ export function GlassPlayground() {
                     { label: 'Chroma (C — Độ rực rỡ màu)', val: glassC, set: setGlassC, min: 0, max: 0.25, step: 0.005, fmt: (v: number) => v.toFixed(3), hint: 'Chroma tối đa của sRGB là ~0.25. Giữ mức thấp để đạt độ trong suốt chân thực.' },
                     { label: 'Hue (h — Góc màu sắc độ)', val: glassH, set: setGlassH, min: 0, max: 360, step: 1, fmt: (v: number) => `${v.toFixed(0)}°`, hint: '' },
                     { label: 'Glass Opacity (Độ trong suốt)', val: glassA, set: setGlassA, min: 0.05, max: 0.80, step: 0.01, fmt: (v: number) => `${(v * 100).toFixed(0)}%`, hint: '' },
-                  ].map(({ label, val, set, min, max, step, fmt, hint }) => (
-                    <div key={label} className="space-y-1">
-                      <div className="flex justify-between font-mono text-xs">
-                        <span className="text-muted-foreground">{label}</span>
-                        <span className="font-semibold text-primary">{fmt(val)}</span>
-                      </div>
-                      <Slider min={min} max={max} step={step} value={[val]} onValueChange={(v) => set(v[0] ?? val)} />
-                      {hint && <p className="text-[10px] text-muted-foreground/70">{hint}</p>}
-                    </div>
+                  ].map((item) => (
+                    <PlaygroundSlider key={item.label} {...item} />
                   ))}
                 </div>
 
@@ -626,14 +654,8 @@ export function GlassPlayground() {
                     { label: 'Backdrop Blur (Độ nhòe nền)', val: blur, set: setBlur, min: 0, max: 64, step: 1, fmt: (v: number) => `${v}px` },
                     { label: 'Backdrop Saturation (Độ bão hòa bồi đắp)', val: saturate, set: setSaturate, min: 100, max: 250, step: 5, fmt: (v: number) => `${v}%` },
                     { label: 'Backdrop Brightness (Độ sáng bù trừ)', val: brightness, set: setBrightness, min: 60, max: 150, step: 5, fmt: (v: number) => `${v}%` },
-                  ].map(({ label, val, set, min, max, step, fmt }) => (
-                    <div key={label} className="space-y-1">
-                      <div className="flex justify-between font-mono text-xs">
-                        <span className="text-muted-foreground">{label}</span>
-                        <span className="font-semibold text-primary">{fmt(val)}</span>
-                      </div>
-                      <Slider min={min} max={max} step={step} value={[val]} onValueChange={(v) => set(v[0] ?? val)} />
-                    </div>
+                  ].map((item) => (
+                    <PlaygroundSlider key={item.label} {...item} />
                   ))}
                 </div>
               </div>
@@ -706,14 +728,8 @@ export function GlassPlayground() {
                     { label: 'Chroma (C — Độ rực rỡ màu chữ)', val: textC, set: setTextC, min: 0, max: 0.15, step: 0.005, fmt: (v: number) => v.toFixed(3) },
                     { label: 'Hue (h — Góc màu chữ)', val: textH, set: setTextH, min: 0, max: 360, step: 1, fmt: (v: number) => `${v.toFixed(0)}°` },
                     { label: 'Font Size (Kích thước chữ)', val: fontSize, set: setFontSize, min: 12, max: 28, step: 1, fmt: (v: number) => `${v}px` },
-                  ].map(({ label, val, set, min, max, step, fmt }) => (
-                    <div key={label} className="space-y-1">
-                      <div className="flex justify-between font-mono text-xs">
-                        <span className="text-muted-foreground">{label}</span>
-                        <span className="font-semibold text-primary">{fmt(val)}</span>
-                      </div>
-                      <Slider min={min} max={max} step={step} value={[val]} onValueChange={(v) => set(v[0] ?? val)} />
-                    </div>
+                  ].map((item) => (
+                    <PlaygroundSlider key={item.label} {...item} />
                   ))}
 
                   {/* Font weight toggles */}
@@ -779,14 +795,8 @@ export function GlassPlayground() {
                     { label: 'Border Width (Độ dày viền)', val: borderW, set: setBorderW, min: 0, max: 4, step: 0.5, fmt: (v: number) => `${v}px` },
                     { label: 'Border Opacity (Độ mờ của viền)', val: borderA, set: setBorderA, min: 0, max: 1, step: 0.05, fmt: (v: number) => `${(v * 100).toFixed(0)}%` },
                     { label: 'Drop Shadow Opacity (Bóng đổ 3D)', val: shadowA, set: setShadowA, min: 0, max: 0.6, step: 0.02, fmt: (v: number) => `${(v * 100).toFixed(0)}%` },
-                  ].map(({ label, val, set, min, max, step, fmt }) => (
-                    <div key={label} className="space-y-1">
-                      <div className="flex justify-between font-mono text-xs">
-                        <span className="text-muted-foreground">{label}</span>
-                        <span className="font-semibold text-primary">{fmt(val)}</span>
-                      </div>
-                      <Slider min={min} max={max} step={step} value={[val]} onValueChange={(v) => set(v[0] ?? val)} />
-                    </div>
+                  ].map((item) => (
+                    <PlaygroundSlider key={item.label} {...item} />
                   ))}
                 </div>
 

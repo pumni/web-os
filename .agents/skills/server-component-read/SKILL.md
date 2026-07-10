@@ -10,6 +10,8 @@ server **read** seam: `server-action` owns writes, `tanstack-query-hook` owns
 client-driven async. Use Next 16 Cache Components so reads are cacheable and
 invalidated by tag, not refetched on every render.
 
+Skeleton: copy [scripts/query.template.ts](/.agents/skills/server-component-read/scripts/query.template.ts).
+
 ## Rules
 
 - Read `.claude/rules/nextjs-cache-components.md` and

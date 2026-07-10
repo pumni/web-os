@@ -34,6 +34,17 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Fallow code quality audit
+        # gate: new-only (set in .fallowrc.json audit.gate) — only new findings block CI.
+        # --format compact: stable parseable output in v3.3.0.
+        # NOTE: --format github-annotations is in [Unreleased]; switch when fallow >= next release.
+        run: bun run fallow:audit --format compact --quiet
+
+      - name: Fallow health score
+        # Advisory — always exits 0; surfaces complexity hotspots in CI log.
+        run: bun run fallow:health --format compact --quiet
+        continue-on-error: true
+
       - name: AI context check
         run: bun run ai:check
 

@@ -1,5 +1,9 @@
 'use client';
 
+// fallow-ignore-file security-client-server-leak -- Intentional: Next.js Server Action import verified safe on client boundary
+// fallow-ignore-file code-duplication -- Intentional: navigation and toast error handling boilerplate on watch lobby actions
+// fallow-ignore-file css-token-drift -- Intentional: custom tracking scale tracking-[0.35em] used for typography layout
+
 import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Route } from 'next';

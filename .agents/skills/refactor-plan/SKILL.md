@@ -97,51 +97,12 @@ graduate into one step, several, or none once the frontier reaches it. Do **not*
 pre-slice the fog into step-sized pieces. If a question is already sharp enough
 to ticket — even if blocked — make it a step.
 
-## Step template
+## Templates
 
-```markdown
-### Step N: <short verb-phrase>
-
-- **File(s):** <path:line-range>
-- **Action:** <precise change — not "clean up"; name the extraction/move/rename
-  and the signature that must stay identical>
-- **Verification:** `<exact command>`
-- **Rollback:** `git checkout -- <file>` or `git revert <sha>`
-- **Depends on:** <Step id, or `none`>
-```
-
-### Parallel branches
-
-Declare branches up front with this notation:
-
-```markdown
-### Step 3a: <action> (independent of 3b)
-### Step 3b: <action> (independent of 3a)
-### Step 4: <action> (depends on 3a AND 3b)
-```
-
-Steps without a letter suffix are linear.
-
-Step rules:
-
-| Principle | Why |
-|---|---|
-| Atomic | One logical change per step; independently verifiable |
-| Explicit | Name file, function, line range — never "improve module X" |
-| Verifiable | Every step carries a concrete command, not "check it works" |
-| Ordered | Linear, or branches declared up front |
-| Small diff | Smaller diff = faster review = easier revert |
-| Idempotent (when possible) | Re-running a step must not double-apply |
-
-## Risks template
-
-```markdown
-### Risks & edge cases
-
-| Risk | Severity | Mitigation |
-|---|---|---|
-| <what could go wrong> | High/Med/Low | <how the plan handles it> |
-```
+Fill-in shapes for steps, parallel branches, risks, and the grill spec live in
+[scripts/plan-templates.md](/.agents/skills/refactor-plan/scripts/plan-templates.md).
+Copy them into the plan; this skill body owns the process, that file owns the
+shapes.
 
 ## Rules
 

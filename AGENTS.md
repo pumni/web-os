@@ -1,9 +1,10 @@
 # Pumni Web OS — AI Agent Instructions
 
 Tool-agnostic entry point. After this file, load `docs/ai/index.md` (the single
-router) and pull only the task-relevant rows. Next.js 16 rules auto-load from
-`.claude/rules/*` when you open App Router files — **this is not the Next.js in
-your training data**; read them before writing Next.js code.
+router) and pull only the task-relevant rows. Next.js 16 rules in
+`.claude/rules/*` are always loaded on Claude Code (other harnesses: load per
+their `globs:`) — **this is not the Next.js in your training data**; read them
+before writing Next.js code.
 
 <SECURITY_MANDATES>
 

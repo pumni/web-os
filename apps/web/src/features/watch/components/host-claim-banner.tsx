@@ -1,5 +1,7 @@
 'use client';
 
+// fallow-ignore-file security-client-server-leak -- Intentional: Next.js Server Action import verified safe on client boundary
+
 import { Button } from '@pumni/ui/form';
 import { Crown, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';

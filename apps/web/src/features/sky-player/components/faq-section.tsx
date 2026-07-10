@@ -10,7 +10,7 @@ import { recipes } from '@pumni/ui/lib/motion';
 
 import { FAQ_ITEMS, type FaqItem as FaqItemType } from '../content';
 
-// fallow-ignore-next-line complexity
+// fallow-ignore-next-line complexity -- Intentional: FaqCard is an accordion item with open/close animation state and reduce-motion conditional; complexity comes from animation class branching, not business logic
 function FaqCard({
   faq,
   idx,

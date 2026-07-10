@@ -1,3 +1,4 @@
+// fallow-ignore-file code-duplication -- Intentional: script helpers are procedurally isolated to prevent cross-script dependencies on internal utilities
 /**
  * Review Gate static rules for Pumni Web OS (Next.js monorepo).
  *

@@ -43,6 +43,13 @@ verify the gate. Never write literal versions into workspace `package.json`s.
 - Never change a dependency to solve an unrelated task; version bumps are their
   own change (AGENTS.md: ask first before changing a core dependency).
 
+## Notes
+
+- `bun outdated --filter '*'` catalog-awareness is a Bun 1.3+ behavior; the
+  catalog rewriting bug (`oven-sh/bun#21852`) is historical. If a newer Bun
+  resolves the rewriting, drop the workspace-`catalog:` reassert step — the
+  intent is "workspace files stay on `catalog:`," not "rewrap that line."
+
 ## Known Failure Modes
 
 | Symptom | Cause | Fix |

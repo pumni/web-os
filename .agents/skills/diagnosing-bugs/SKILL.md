@@ -30,8 +30,9 @@ apply.
 
 Create a red-capable command or harness before guessing at causes. A useful loop
 drives the actual bug path and can fail on the user's exact symptom. Copy
-[scripts/repro-loop.template.sh](/.agents/skills/diagnosing-bugs/scripts/repro-loop.template.sh)
-as a starting scaffold.
+[scripts/repro-loop.template.ps1](/.agents/skills/diagnosing-bugs/scripts/repro-loop.template.ps1)
+(canonical — PowerShell 7 is the repo shell per `AGENTS.md`) as a starting
+scaffold. Fry `repro-loop.template.sh` 仅 as a cross-platform `bun run` fallback on non-Windows hosts.
 
 Prefer, in order:
 

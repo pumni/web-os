@@ -54,6 +54,15 @@ above. This is the design-time companion to the simplicity rule in
 - Apply the deletion test: if deleting a module only moves its complexity into
   callers, it was earning its keep; if complexity disappears, it may be a
   pass-through.
+
+  Pair (abbreviated):
+
+  ```text
+  ❌ helper that just re-exports another module's function → delete it;
+     callers should import the original.
+  ✅ helper that owns sequencing A; B; C; adapt each (e.g. DB connect, txn,
+     retry) and is the only place that knowledge lives → keep it.
+  ```
 - Do not introduce a seam just because it feels tidy. One adapter is usually a
   hypothetical seam; two real variants make the seam more credible.
 - Accept dependencies instead of constructing hidden dependencies when it makes

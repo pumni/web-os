@@ -15,7 +15,7 @@ Keep it framework-agnostic so it crosses the client/server boundary cleanly.
 - One feature file per area under `src/` (e.g. `profile.ts`); re-export it from
   `src/index.ts`.
 - Use Zod 4 top-level format validators (`z.url()`, `z.email()`, `z.uuid()`)
-  rather than the chained `z.string().url()` forms.
+  rather than the chained `z.string().url()` forms — see Notes for version drift.
 - Export the schema **and** its inferred input type:
   `export type ProfileInput = z.infer<typeof profileSchema>`.
 - Schemas are deterministic and side-effect free: no database reads, auth checks,
@@ -35,6 +35,13 @@ Keep it framework-agnostic so it crosses the client/server boundary cleanly.
 - [ ] No authorization logic embedded in the schema.
 - [ ] All consumers updated when an exported name or inferred type changed.
 - [ ] `bun --filter @pumni/validators typecheck` and `bun run typecheck` pass.
+
+## Notes
+
+- The `z.url()` / `z.email()` / `z.uuid()` top-level forms are the Zod 4 shape.
+  If the catalog moves to Zod 5 and the top-level helpers are renamed, re-read
+  the installed `zod` package exports before editing — this rule names the
+  intended API, not a pin.
 
 ## Known Failure Modes
 

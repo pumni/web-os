@@ -1,3 +1,5 @@
+/* fallow-ignore-file code-duplication -- Intentional: glass-panel and glass-window utilities are intentionally kept self-contained for clean CSS generation without complex utility compilation/dependency chains */
+
 /*
  * Pumni OS — Glassmorphism surface utilities
  * ------------------------------------------

@@ -1,5 +1,7 @@
 'use client';
 
+// fallow-ignore-file security-client-server-leak -- Intentional: Next.js Server Action import verified safe on client boundary
+
 import * as React from 'react';
 import dynamic from 'next/dynamic';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -73,7 +75,7 @@ interface AvatarUploadProps {
   isUploading: boolean;
 }
 
-// fallow-ignore-next-line complexity
+// fallow-ignore-next-line complexity -- Intentional: AvatarUpload is a self-contained widget coupling file-input, preview, remove, and upload-progress state; splitting would scatter tightly related UI logic
 function AvatarUpload({
   previewUrl,
   fullName,

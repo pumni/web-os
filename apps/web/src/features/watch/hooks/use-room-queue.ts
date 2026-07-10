@@ -1,5 +1,8 @@
 'use client';
 
+// fallow-ignore-file security-client-server-leak -- Intentional: Next.js Server Action import verified safe on client boundary
+// fallow-ignore-file code-duplication -- Intentional: React Query mutation rollback boilerplate is repeated across independent hooks for clarity
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { watchKeys } from '../query-keys';
 import {

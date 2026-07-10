@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-# repro-loop.template.sh — copy into a scratch location, fill in REPRO_CMD, run.
+# repro-loop.template.sh — cross-platform fallback (non-Windows / `bun run`).
+# On Windows prefer repro-loop.template.ps1 — PowerShell 7 is the repo's
+# canonical shell (AGENTS.md). Copy into a scratch location, fill in REPRO_CMD,
+# run.
 #
 # A red-capable feedback loop for diagnosing-bugs phase 1. It must fail on the
 # user's exact symptom before you form a primary hypothesis. Re-run after each

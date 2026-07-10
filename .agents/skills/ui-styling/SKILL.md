@@ -24,7 +24,11 @@ reference detail.
   chip) are the sub-surface primitives. Never hand-roll `border bg-muted` wells,
   inline status pills, or icon chips — `pumniNoAdHocSurface` blocks the well.
   `BentoGridItem` is layout-only and renders through these primitives.
-- Contrast is APCA-gated per surface pair in `glass-contrast.test.ts` (spec-correct APCA: gamma-encoded sRGB into `apcaContrast`) — **Lc 60 chrome/short-text** target for surfaces, muted, and glass-over-blob (readable + chrome tiers) in both modes, with documented pinned floors below it only for accent surfaces (45) and status tints (per-token table in `packages/ui/src/test/glass-contrast.test.ts`). Long body → solid surface (Lc 75+ preferred); never multi-line body on bare glass (`DialogBody` / `CardWell`). The **glass edge is NOT contrast-gated** — specular light rim; delineation is `--shadow-glass`; a11y path is `prefers-contrast` / `prefers-reduced-transparency`. No WCAG 2.x ratio gate; never gate the glass border on contrast.
+- Contrast is APCA-gated per surface pair in `glass-contrast.test.ts` — Lc 60
+  chrome/short-text, Lc 75+ preferred for long body on solid surfaces. Glass
+  edge is NOT contrast-gated (specular rim). See
+  [REFERENCE.md](/.agents/skills/ui-styling/REFERENCE.md#deriving-an-accessible-foreground-inverse-apca)
+  for the Lc floor table and the inverse-APCA derivation path.
 - Glass tiers: `--glass-fill` is the single opaque L/C/H fill SSOT. `--glass-tint-chrome`
   (bars/shell) and `--glass-tint-readable` / `--glass-tint` (panels) derive via
   `oklch(from var(--glass-fill) l c h / α)` — only alpha varies. Blur ladder soft **12** /

@@ -35,6 +35,16 @@ Scaffold one behavior at a time from
 - Prefer tests that survive internal refactors. If renaming or extracting a
   private helper breaks the test while behavior is unchanged, the test is too
   coupled.
+
+  Pair (concrete, abbreviated):
+
+  ```text
+  ❌ expect(wrapper.find('Button').props().onClick).toBe(onClick);
+  ✅ await user.click(screen.getByRole('button', { name: /submit/i }));
+  ```
+
+  The first test breaks when the `Button` element is renamed or moved; the
+  second asserts the user-observable behavior.
 - Cover the happy path and at least one failure or boundary path for meaningful
   logic changes.
 - Mock Server Actions, Supabase clients, and network boundaries at the module
