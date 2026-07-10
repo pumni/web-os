@@ -7,8 +7,8 @@
  *
  * These are deterministic and require no LLM API key. Prompt-injection
  * resistance is governed by the Untrusted Content Policy in AGENTS.md plus the
- * secrets/RLS static scan below — there is intentionally no LLM-in-the-loop
- * behavioral eval tier (removed as overhead for a solo project).
+ * secrets/RLS static scan below. The `ai:eval:behavioral` task is an opt-in,
+ * fail-open-without-API-key behavioral eval tier.
  *
  * The RN-specific raw-console.log scanner is intentionally omitted: console
  * logging is acceptable in a Next.js web app.

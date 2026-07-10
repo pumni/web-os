@@ -20,7 +20,7 @@ need to the canonical doc that owns it.
 | transpilePackages (monorepo Next.js) | `docs/conventions/transpile-packages.md` |
 | Quality gates | `docs/quality-gates.md` |
 
-## Next.js 16 (auto-loaded by glob; read directly when editing app code)
+## Next.js 16 (always-loaded on Claude Code; read directly when editing app code)
 
 | Need | Load |
 | --- | --- |
@@ -54,7 +54,7 @@ Non-Claude agents read `AGENTS.md` + canonical skills declaratively
 | Handshake map | `llms.txt` | fetched | fetched |
 | Need→doc router | `docs/ai/index.md` | on demand | on demand |
 | Long-term memory | `docs/ai/MEMORY.md` | manual | manual |
-| Path-scoped rules | `.claude/rules/*.md` (`globs:`) | auto by path | — |
+| Path-scoped rules | `.claude/rules/*.md` (`globs:`) | always loaded | — |
 | Skill discovery | `.agents/skills/*/SKILL.md` | fires by desc | per spec |
 | Skill shim | `.claude/skills/<name>/SKILL.md` | generated, do not hand-edit | — |
 | Subagent reviewers | `.claude/agents/*-reviewer.md` | dispatched from `review-gate.md` | — |

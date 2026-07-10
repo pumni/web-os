@@ -122,6 +122,8 @@
     { "path": "docs/ai/common-mistakes.md", "maxBytes": 4000 },
     { "path": ".agents/workflows/review-gate.md", "maxBytes": 2600 },
     { "path": "docs/ai/agent-command-policy.md", "maxBytes": 5400 },
-    { "path": "docs/ai/mcp.md", "maxBytes": 5000 }
+    { "path": "docs/ai/mcp.md", "maxBytes": 5000 },
+    { "path": ".claude/rules/nextjs-async-apis.md", "maxBytes": 1500 },
+    { "path": ".claude/rules/nextjs-cache-components.md", "maxBytes": 2900 }
   ]
 }

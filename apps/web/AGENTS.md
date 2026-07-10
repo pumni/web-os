@@ -5,10 +5,9 @@ structure differ. Before writing app code, look up the API in
 `node_modules/next/dist/docs/` (or the `nextjs_docs` MCP) — never rely on
 training-data knowledge for Next.js 16 specifics.
 
-## Hard rules live in glob-auto-loaded files (SSOT — do not duplicate here)
+## Hard rules (SSOT — do not duplicate here)
 
-When you open App Router pages, layouts, route handlers, or feature
-query/action files, these load automatically — read them:
+These are always loaded on Claude Code (other harnesses load them via the globs in frontmatter) — read them:
 
 - `.claude/rules/nextjs-async-apis.md` — `params`/`searchParams`/`cookies()`/`headers()`/`draftMode()` are async; `await` them. Generate `PageProps`/`RouteContext` with `npx next typegen`.
 - `.claude/rules/nextjs-cache-components.md` — `'use cache'` placement, `cacheLife()` minimums, parameterized `cacheTag()`, `updateTag()` (Server Actions only), two-arg `revalidateTag()`, `<Suspense>` boundaries.

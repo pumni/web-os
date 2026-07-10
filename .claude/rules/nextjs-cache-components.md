@@ -1,5 +1,5 @@
 ---
-description: Next.js 16 Cache Components rules — loaded automatically when reading/writing server data functions or files with 'use cache'.
+description: Next.js 16 Cache Components rules — always loaded on Claude Code; other harnesses load them via the globs in frontmatter.
 globs:
   - "apps/web/src/features/**/queries.ts"
   - "apps/web/src/features/**/actions.ts"
@@ -9,7 +9,7 @@ globs:
 
 # Next.js 16 Cache Components
 
-Loaded automatically when you open feature query/action files or App Router segments.
+Always loaded on Claude Code; other harnesses load them via the globs in frontmatter.
 
 ## Placement — where to put `'use cache'`
 
@@ -38,7 +38,7 @@ function withRetry(fn: () => Promise<unknown>) {
 ## `cacheLife()` — minimum profiles
 
 | Profile | Safe? | Notes |
-|---------|-------|-------|
+|---|---|---|
 | `'seconds'` | ❌ | Silently breaks PPR static shell |
 | `'minutes'` | ✅ | Minimum safe value |
 | `'hours'` | ✅ | Recommended for stable reference data |

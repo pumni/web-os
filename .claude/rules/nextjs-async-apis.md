@@ -1,5 +1,5 @@
 ---
-description: Next.js 16 async request API rules — loaded automatically when reading/writing App Router page and layout files.
+description: Next.js 16 async request API rules — always loaded on Claude Code; other harnesses load them via the globs in frontmatter.
 globs:
   - "apps/web/src/app/**/*.tsx"
   - "apps/web/src/app/**/*.ts"
@@ -7,14 +7,14 @@ globs:
 
 # Next.js 16 Async Request APIs
 
-Loaded automatically when you open App Router page, layout, or route files.
+Always loaded on Claude Code; other harnesses load them via the globs in frontmatter.
 
 ## Mandatory await pattern
 
 Every request-time API requires `await`. The sync form **compiles but throws at runtime**.
 
 | API | Correct |
-|-----|---------|
+|---|---|
 | `params` | `const { id } = await params;` |
 | `searchParams` | `const q = (await searchParams).q;` |
 | `cookies()` | `const jar = await cookies();` |

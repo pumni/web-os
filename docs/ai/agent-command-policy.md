@@ -27,38 +27,23 @@ Keep these two separate:
 
 ### Shell portability
 
-- Prefer `bun run <script>` for anything multi-step; it works identically across
-  shells, so your commands stay portable between harnesses.
-- Use the shell directly only for simple, portable commands (`git`, `bun`,
-  `bunx`, `bunx playwright test`).
-- New multi-step repo logic belongs in a `scripts/*.mjs` file wired into
-  `package.json`, **not** in ad-hoc inline command chains. One-shot chains
-  (`git status && bun run typecheck`) are fine.
+- Prefer `bun run <script>` for multi-step tasks to stay portable.
+- Use the shell directly only for simple commands (`git`, `bun`, `bunx playwright test`).
+- New multi-step logic belongs in `scripts/*.mjs` wired into `package.json`, not in ad-hoc inline chains. One-shot chains (`git status && bun run typecheck`) are fine.
 
 ### PowerShell `$env:` / `$null` hazard
 
-When a harness spawns `pwsh -Command "<string>"`, an outer host (cmd or
-PowerShell 5.1) may pre-evaluate `$` tokens before `pwsh` sees them. If you must
-run a PowerShell script with such tokens, invoke it via `pwsh -File`; for inline
-commands avoid `$env:NAME` / `$null` (`bun run` scripts are unaffected).
+Outer hosts (cmd/PS 5.1) may pre-evaluate `$` tokens when invoking `pwsh -Command "<string>"`. To avoid this, use `pwsh -File` or run via `bun run` scripts; avoid inline `$env:NAME` or `$null` tokens.
 
 ## Tool Discipline
 
-Favor structured tools over raw shell — results stay parseable and auditable.
+Favor structured tools over raw shell to keep transcripts parseable.
 
-- **Use dedicated tools over shell equivalents.** Read/search/edit/write files
-  with your harness's file tools, do not use `cat` / `grep` / `sed` / `find` / `echo`.
-  Reserve the shell for git, builds, tests, and running scripts. Harness has no
-  file tools? Fall back to `rg` (`rg --files -g '…'` covers `fd`); never `bat` —
-  ANSI decoration is transcript noise.
-- **Batch independent calls.** If your harness allows parallel tool calls, issue
-  independent reads/searches in one turn instead of serially. Only serialize when
-  a later call depends on an earlier result.
+- **Use harness file tools over shell** (`cat`/`grep`/`sed`/`find`/`echo`). Reserve shell for git, builds, tests, and running scripts. Fall back to `rg` if no file tools exist; avoid `bat` (ANSI noise).
+- **Batch independent calls.** Issue parallel reads/searches in one turn if the harness supports it.
 - **Absolute paths, no `cd`.** Working directory is already the repo root.
 - **Read before you edit.** Don't re-read to "verify".
-- **Keep output lean.** Cap large output at source (`--quiet`, `| Select-Object -Last N`, fail-only flags).
-  Do not paste full build traces, `node_modules` paths, or multi-thousand-line SQL dumps into the transcript — summarize paths + first error.
-  Prefer re-running a targeted gate over re-reading megabyte logs.
+- **Keep output lean.** Cap output at source (`--quiet`, `| Select-Object -Last N`). Summarize errors and paths; do not dump massive build/SQL traces. Prefer targeted gates over giant logs.
 - **Diagnose failures.** Read errors, fix, then re-run. No sleep-loop polling.
 - **Background long commands.** Run builds and watchers in background.
 - **Destructive commands need fresh evidence.** Re-check `git status` before reset/delete.
@@ -67,14 +52,9 @@ Favor structured tools over raw shell — results stay parseable and auditable.
 
 ## Minimum path (any harness)
 
-Always: read `AGENTS.md` → `docs/ai/index.md` → only task-relevant rows.
-Claude Code: hooks may run `ai:check` on context edits; glob rules auto-load.
-Other harnesses (Cursor, Copilot, Codex, …): no hooks/globs/subagents — you must:
-1. Load path-relevant `.claude/rules/*` yourself when editing App Router / cache code.
-2. Before "done" on code: run the narrowest gate (`typecheck` / `lint` / `test`).
-3. Before "done" on context/security/arch touch: `bun run ai:check` and `bun run ai:eval`.
-4. High-risk diffs (`supabase/migrations`, `features/watch` sync): follow
-   `.agents/workflows/review-gate.md` domain reviewer notes manually if no subagent dispatch.
+Always read `AGENTS.md` → `docs/ai/index.md` → only task-relevant rows.
+- **Claude Code**: Hooks run `ai:check` on context edits; rules auto-load.
+- **Other harnesses**: Manually load rules in `.claude/rules/`. Before done, run the narrowest gate (below); for context/security/arch touch, run `bun run ai:check` and `ai:eval`; follow `review-gate.md` for high-risk migrations/sync.
 
 ## Validation Gates
 
