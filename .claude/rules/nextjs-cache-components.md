@@ -1,97 +1,19 @@
 ---
-description: Next.js 16 Cache Components rules — always loaded on Claude Code; other harnesses load them via the globs in frontmatter.
-globs:
-  - "apps/web/src/features/**/queries.ts"
-  - "apps/web/src/features/**/actions.ts"
+description: Next.js 16 Cache Components rules — path-scoped pointer; loaded only when touching app or feature query/action files.
+paths:
   - "apps/web/src/app/**/*.ts"
   - "apps/web/src/app/**/*.tsx"
+  - "apps/web/src/features/**/actions.ts"
+  - "apps/web/src/features/**/queries.ts"
 ---
 
-# Next.js 16 Cache Components
+# Next.js 16 Cache Components (pointer)
 
-## Placement — where to put `'use cache'`
+Canonical: `docs/conventions/nextjs-16.md` — read before writing Next.js 16 code.
 
-```ts
-// ✅ File-level directive
-'use cache';
-export async function getProfile(userId: string) {
-  return supabase.from('profiles').select('id, display_name').eq('id', userId);
-}
-
-// ✅ Inside the function body that directly fetches
-export async function getProfile(userId: string) {
-  'use cache';
-  return supabase.from('profiles').select('id, display_name').eq('id', userId);
-}
-
-// ❌ Inside a wrapper — silently becomes dynamic, cache is ignored
-function withRetry(fn: () => Promise<unknown>) {
-  return async () => {
-    'use cache'; // ← WRONG PLACEMENT
-    return fn();
-  };
-}
-```
-
-## `cacheLife()` — minimum profiles
-
-| Profile | Safe? | Notes |
-|---|---|---|
-| `'seconds'` | ❌ | Silently breaks PPR static shell |
-| `'minutes'` | ✅ | Minimum safe value |
-| `'hours'` | ✅ | Recommended for stable reference data |
-| `'days'` | ✅ | Long-lived content |
-
-## `cacheTag()` — always parameterize
-
-```ts
-// ✅ User-scoped tags prevent cross-user cache collisions
-cacheTag(`profile:${userId}`);
-cacheTag(`post:${postId}`);
-
-// ❌ Generic tags collide across users
-cacheTag('profile');
-```
-
-## `updateTag()` — Server Actions only
-
-```ts
-// ✅ Server Action
-'use server';
-export async function updateProfile(data: FormData) {
-  const user = await requireUser();
-  await supabase.from('profiles').update({ ... }).eq('id', user.id);
-  updateTag(`profile:${user.id}`);
-}
-
-// ❌ Route Handler — runtime throw
-export async function PUT(req: Request) {
-  updateTag('profile'); // ← throws at runtime
-}
-```
-
-## `revalidateTag()` — two parameters
-
-```ts
-// ✅ SWR lifecycle config required
-revalidateTag('posts', 'max');
-
-// ❌ Single-param form uses legacy invalidation, no type error
-revalidateTag('posts');
-```
-
-## Suspense boundaries
-
-Every dynamic component must be wrapped in `<Suspense>`. Never render protected content in the fallback shell.
-
-```tsx
-// ✅
-<Suspense fallback={<Skeleton />}>
-  <UserFeed userId={userId} />
-</Suspense>
-
-// ❌ Protected content visible before auth resolves
-<Suspense fallback={<PrivateUserName />}>
-  ...
-</Suspense>
-```
+- `'use cache'` must be placed in the function body that directly fetches — never inside a wrapper/HOF.
+- `cacheLife` minimum is `'minutes'`; `'seconds'` silently breaks PPR.
+- `cacheTag(...)` must always be parameterized (e.g. `cacheTag(\`profile:${userId}\`)`).
+- `updateTag(...)` is Server Actions only — throws in a Route Handler.
+- `revalidateTag(tag, profile)` requires two arguments; single-arg form is invalid in Next 16.
+- Wrap every dynamic component in `<Suspense>`; never render protected content in the fallback.

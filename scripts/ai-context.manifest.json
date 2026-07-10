@@ -37,7 +37,9 @@
     "docs/conventions/design-system.md",
     "docs/conventions/supabase-security.md",
     "docs/conventions/testing.md",
-    "docs/conventions/transpile-packages.md"
+    "docs/conventions/transpile-packages.md",
+    "docs/conventions/nextjs-16.md",
+    ".claude/rules/supabase-migrations.md"
   ],
   "requiredExistingPaths": [
     "apps/web/src/shared/stores/app-ui-store.ts",
@@ -81,7 +83,8 @@
     "docs/conventions/design-system.md",
     "docs/conventions/supabase-security.md",
     "docs/conventions/testing.md",
-    "docs/conventions/transpile-packages.md"
+    "docs/conventions/transpile-packages.md",
+    "docs/conventions/nextjs-16.md"
   ],
   "skillValidation": {
     "yamlRequiredFields": ["name", "description"],
@@ -94,7 +97,9 @@
     { "path": "docs/ai/common-mistakes.md", "maxBytes": 4000 },
     { "path": ".agents/workflows/review-gate.md", "maxBytes": 2600 },
     { "path": "docs/ai/mcp.md", "maxBytes": 5000 },
-    { "path": ".claude/rules/nextjs-async-apis.md", "maxBytes": 1500 },
-    { "path": ".claude/rules/nextjs-cache-components.md", "maxBytes": 2900 }
+    { "path": ".claude/rules/nextjs-async-apis.md", "maxBytes": 900 },
+    { "path": ".claude/rules/nextjs-cache-components.md", "maxBytes": 1200 },
+    { "path": "docs/conventions/nextjs-16.md", "maxBytes": 5000 },
+    { "path": ".claude/rules/supabase-migrations.md", "maxBytes": 750 }
   ]
 }
