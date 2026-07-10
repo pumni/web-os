@@ -12,6 +12,18 @@ when a task needs the runtime bridge. If the server is not
 enabled or not running, fall back to `bun run typecheck`, `bun run build`, and
 direct code reads. P0–P4 in `AGENTS.md` always win. Never edit `.mcp.json` to bypass a gate or disable validation.
 
+## Strategic position
+
+MCP here is a **local dev runtime aid, not a data-provisioning layer.** The repo
+deliberately does not expose its code, git, or database through MCP: the agent
+already has native filesystem + shell access, so a filesystem/git server adds
+trust surface without capability, and a database server would broaden the
+token/trust surface (see Rejected Candidates). The data plane is native file
+reads + `packages/supabase/src/types.ts` + `supabase/migrations`. Revisit only if
+a target harness lacks native FS/shell, or a least-privilege read-only server
+earns its keep for an external agent — then add it opt-in, pinned, and
+disabled-by-default, per the rules below.
+
 ## Version pin policy
 
 Versions in `.mcp.json` are **pinned to exact releases** (no `@latest`). Bump
