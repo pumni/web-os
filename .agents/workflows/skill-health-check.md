@@ -54,8 +54,21 @@ codebase. Flag any that reference:
 
 Update the description + run `bun run ai:skills:sync` to regenerate shims.
 
+### 5. Upstream-standards checkpoint (quarterly)
+The context layer is frozen against internal churn — not against the evolution of
+the standards it implements. Once a quarter, re-read the current upstream specs
+and note any divergence worth an ADR (attach `bun run ai:metrics` evidence):
+- MCP — `modelcontextprotocol.io`, `modelcontextprotocol/modelcontextprotocol`
+- AGENTS.md — `agents.md`
+- Agent Skills — `anthropics/skills`
+- Coding-agent context engineering — `humanlayer/advanced-context-engineering-for-coding-agents`, `langchain-ai/context_engineering`
+
+Record the check date in `docs/ai/MEMORY.md`. Freeze protects the content, not the
+comparison against a moving standard.
+
 ## Done when
 - `bun run ai:check` passes.
 - No path-existence warnings.
 - No evals schema warnings.
 - Description review complete (or drift items logged for follow-up).
+- Upstream-standards checkpoint date recorded (when running the quarterly review).
