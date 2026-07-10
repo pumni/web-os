@@ -96,10 +96,12 @@ function getMarkdownLinkFiles() {
     (relativePath) =>
       !/(^|\/)PLAN_[^/]*\.md$/.test(relativePath) &&
       !relativePath.startsWith('docs/plans/') &&
+      !relativePath.startsWith('docs/research/') &&
       !relativePath.startsWith('docs/adr/'),
   );
-  // PLAN_*.md, docs/plans/, and docs/adr/ are historical/append-only records that
-  // intentionally reference example or since-removed paths; exclude them from link-rot checks.
+  // PLAN_*.md, docs/plans/, docs/research/, and docs/adr/ are historical/append-only
+  // records that intentionally reference example, proposed, or since-removed paths;
+  // exclude them from link-rot checks.
 }
 
 function checkRequiredFiles() {
@@ -734,26 +736,14 @@ const CANONICAL_INVARIANTS = [
     /\bnever\s+mirror\s+server\s+(state|data)\s+into\s+Zustand\b/i,
     'docs/conventions/data-fetching.md',
   ],
-  [
-    /\bZustand\s+(holds|is\s+for|stores?\s+only)\s+client\b/i,
-    'docs/conventions/data-fetching.md',
-  ],
-  [
-    /\bservice-?role\b.*\bnever\b.*\b(client|browser|bundle)\b/i,
-    'AGENTS.md',
-  ],
-  [
-    /\bglass\s+=\s+floating\s+layers\s+only\b/i,
-    'docs/conventions/design-system.md',
-  ],
+  [/\bZustand\s+(holds|is\s+for|stores?\s+only)\s+client\b/i, 'docs/conventions/data-fetching.md'],
+  [/\bservice-?role\b.*\bnever\b.*\b(client|browser|bundle)\b/i, 'AGENTS.md'],
+  [/\bglass\s+=\s+floating\s+layers\s+only\b/i, 'docs/conventions/design-system.md'],
   [
     /\bsolid\s+\(`?surface-raised`?.*\)\s+=\s+dense\s+content\b/i,
     'docs/conventions/design-system.md',
   ],
-  [
-    /\bRLS\b.*\breal\s+data\s+boundary\b/i,
-    'docs/conventions/supabase-security.md',
-  ],
+  [/\bRLS\b.*\breal\s+data\s+boundary\b/i, 'docs/conventions/supabase-security.md'],
 ];
 
 function checkInvariantDuplicates() {
