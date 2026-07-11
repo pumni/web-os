@@ -144,7 +144,6 @@
        5. Bevel ring — masked conic ring ::before (symmetric specular: top light-catch,
           faint sides, softer bottom light — Fresnel dual light-catch)
        6. Volumetric drop shadow — --shadow-glass (primary delineator)
-     Plus: default frosted grain overlay via ::after (--glass-grain-opacity)
   */
 
   /* 1. TINT — two-tier glass (chrome vs readable) via single fill source
@@ -189,37 +188,37 @@
      unchanged — only the default mapping moved along the ladder. */
   --glass-blur: var(--blur-glass-md);
 
-  /* 5. BEVEL RING — masked conic ring stops (symmetric specular model)
+  /* 5. BEVEL RING — masked conic ring stops (symmetric specular model, 2026-07 crisp refresh)
      Border doctrine (unchanged): the glass edge is a specular LIGHT rim, NOT a
-     contrast boundary. It is deliberately low-contrast and carries NO APCA gate
-     (WCAG 1.4.11 scopes contrast to interactive controls; --input holds that
-     duty). The real delineator is --shadow-glass. The real a11y path is the
-     prefers-contrast / prefers-reduced-transparency fallbacks.
+     contrast boundary — every stop stays a LIGHT stroke (white / near-white),
+     subordinated by ALPHA, never a dark outline. (An earlier dark-rim revision
+     read like a solid-card border — the opposite of glass; glass-contrast.test
+     pins L >= 0.85 on the top rim so it can't drift back there.) It carries NO
+     APCA gate (WCAG 1.4.11 scopes contrast to interactive controls; --input
+     holds that duty). The real delineator is --shadow-glass; the real a11y path
+     is the prefers-contrast / prefers-reduced-transparency fallbacks.
 
-     The ring is a conic sweep, NOT the old one-corner 135° diagonal (F1). Real
-     glass catches light on the top edge AND — weaker — the bottom edge (Fresnel),
-     with the vertical sides nearly dark. Bottom is no longer a contact shadow; it
-     is a secondary light-catch. Alpha ordering is pinned by glass-contrast.test:
-     top > bottom > side, so the two bright rims can never read equal.
+     The ring is a conic sweep, NOT the old one-corner 135° diagonal (F1): light
+     catches the top edge and — weaker — the bottom (Fresnel dual catch), sides
+     faint. This refresh RAISED every alpha and widened the arc transitions
+     (70/110 · 250/290, in glass.css) so the rim reads crisp and continuous
+     instead of vanishing at the sides (the "mờ" report on dark glass). Dark was
+     the calibration target (top/bottom/side 0.28/0.15/0.05 → 0.44/0.24/0.14);
+     light kept its white rim (doctrine) with a matching alpha lift.
+     Alpha ordering (top > bottom > side) stays pinned by glass-contrast.test.
 
-     Light top:    white light-catch      (alpha 0.45 — bright but calmer; completes E2)
-     Light side:   near-nil light          (alpha 0.07)
-     Light bottom: white secondary catch   (alpha 0.25 — weaker than top)
-     Dark top:     near-white neutral rim  (L=0.98, alpha 0.28 — restrained)
-     Dark side:    faint neutral           (alpha 0.05)
-     Dark bottom:  near-white neutral      (alpha 0.15) */
-  --glass-edge-top: light-dark(oklch(1 0 0 / 0.45), oklch(0.98 0.005 0 / 0.28));
-  --glass-edge-side: light-dark(oklch(1 0 0 / 0.07), oklch(0.98 0.005 0 / 0.05));
-  --glass-edge-bottom: light-dark(oklch(1 0 0 / 0.25), oklch(0.98 0.005 0 / 0.15));
+     Light top:    white light-catch           (alpha 0.55)
+     Light side:   faint white                 (alpha 0.14)
+     Light bottom: white secondary catch       (alpha 0.34)
+     Dark top:     near-white light-catch       (L=0.98, alpha 0.44)
+     Dark side:    faint near-white             (L=0.98, alpha 0.14)
+     Dark bottom:  near-white secondary catch   (L=0.98, alpha 0.24) */
+  --glass-edge-top: light-dark(oklch(1 0 0 / 0.55), oklch(0.98 0.005 0 / 0.44));
+  --glass-edge-side: light-dark(oklch(1 0 0 / 0.14), oklch(0.98 0.005 0 / 0.14));
+  --glass-edge-bottom: light-dark(oklch(1 0 0 / 0.34), oklch(0.98 0.005 0 / 0.24));
 
   /* Uniform edge for glass bars / titlebars (single-stop, not a gradient ring) */
   --glass-edge: light-dark(oklch(1 0 0 / 0.55), oklch(0.98 0.005 0 / 0.24));
-
-  /* Default frosted grain overlay opacity (::after on glass-panel / glass-window).
-     Non-color knob → .dark override, not light-dark(). Disabled in every
-     degradation branch via --glass-grain-display (grain over an opaque fallback
-     reads as film dirt). */
-  --glass-grain-opacity: 0.05;
 
   /* Inset bezel pair — top highlight + bottom shadow-edge on glass-panel/window.
      Pins glass inset rim consumption (border-consumption / glass-contrast). */
@@ -289,8 +288,6 @@
   --glass-blur: var(--blur-glass-md);
   --glass-saturate: 150%;
   --glass-brightness: 85%;
-  /* Grain reads slightly stronger over the darker fill (non-color knob). */
-  --glass-grain-opacity: 0.07;
 
   /* Shadows overrides (non-color) */
   --shadow-glass-glow:

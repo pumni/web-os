@@ -1798,10 +1798,10 @@
       },
       "edge-bottom": {
         "$type": "color",
-        "$value": "oklch(1 0 0 / 0.25)",
+        "$value": "oklch(1 0 0 / 0.34)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.98 0.005 0 / 0.15)"
+            "dark": "oklch(0.98 0.005 0 / 0.24)"
           }
         }
       },
@@ -1909,19 +1909,19 @@
       },
       "edge-side": {
         "$type": "color",
-        "$value": "oklch(1 0 0 / 0.07)",
+        "$value": "oklch(1 0 0 / 0.14)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.98 0.005 0 / 0.05)"
+            "dark": "oklch(0.98 0.005 0 / 0.14)"
           }
         }
       },
       "edge-top": {
         "$type": "color",
-        "$value": "oklch(1 0 0 / 0.45)",
+        "$value": "oklch(1 0 0 / 0.55)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.98 0.005 0 / 0.28)"
+            "dark": "oklch(0.98 0.005 0 / 0.44)"
           }
         }
       },
@@ -1935,15 +1935,6 @@
         "$extensions": {
           "com.pumni.modes": {
             "dark": "oklch(0.18 0.02 240)"
-          }
-        }
-      },
-      "grain-opacity": {
-        "$type": "number",
-        "$value": 0.05,
-        "$extensions": {
-          "com.pumni.modes": {
-            "dark": 0.07
           }
         }
       },

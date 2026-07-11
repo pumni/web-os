@@ -135,7 +135,7 @@ describe('surface-raised (solid) stays on the solid hairline flow', () => {
 describe('glass-panel / glass-window stay on the glass hairline flow', () => {
   // The floating-glass utilities. Their visible edge is the masked 1px gradient
   // bevel ring (&::before) running --glass-edge-top (a light specular light-catch)
-  // → --glass-edge-bottom (a faint contact shadow). The rim is a light effect,
+  // → --glass-edge-bottom (a softer secondary light-catch). The rim is a light effect,
   // not an APCA-gated contrast boundary. Per-side border colours are retired:
   // they paint hard diagonal colour seams on rounded corners. The element keeps
   // a TRANSPARENT metric border so box metrics are stable and a11y fallbacks can
@@ -151,7 +151,7 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
       /border:\s*1px\s+solid\s+var\(--glass-border-resolved,\s*transparent\)/,
     );
     expect(body, `${_label} ring must run conic-gradient symmetric model`).toMatch(
-      /conic-gradient\(\s*from\s+0deg,\s*var\(--glass-edge-top\)\s+0deg,\s*var\(--glass-edge-side\)\s+80deg,\s*var\(--glass-edge-side\)\s+100deg,\s*var\(--glass-edge-bottom\)\s+180deg,\s*var\(--glass-edge-side\)\s+260deg,\s*var\(--glass-edge-side\)\s+280deg,\s*var\(--glass-edge-top\)\s+360deg\s*\)/,
+      /conic-gradient\(\s*from\s+0deg,\s*var\(--glass-edge-top\)\s+0deg,\s*var\(--glass-edge-side\)\s+70deg,\s*var\(--glass-edge-side\)\s+110deg,\s*var\(--glass-edge-bottom\)\s+180deg,\s*var\(--glass-edge-side\)\s+250deg,\s*var\(--glass-edge-side\)\s+290deg,\s*var\(--glass-edge-top\)\s+360deg\s*\)/,
     );
     expect(body, `${_label} ring must be masked to a 1px hairline`).toMatch(
       /mask-composite:\s*exclude/,

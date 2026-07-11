@@ -22,7 +22,6 @@
  *   5. Bevel ring — masked conic ring ::before (symmetric specular: top light-catch,
  *      faint sides, softer bottom light — replaces the old one-corner 135° diagonal)
  *   6. Volumetric drop shadow (`--shadow-glass`) — real delineator.
- *   Plus: default frosted grain overlay via ::after (`--glass-grain-opacity`).
  *
  * Performance discipline (unchanged):
  * - `will-change` is NOT set on static glass; scoped to overlays actively
@@ -80,11 +79,11 @@
     background: conic-gradient(
       from 0deg,
       var(--glass-edge-top) 0deg,
-      var(--glass-edge-side) 80deg,
-      var(--glass-edge-side) 100deg,
+      var(--glass-edge-side) 70deg,
+      var(--glass-edge-side) 110deg,
       var(--glass-edge-bottom) 180deg,
-      var(--glass-edge-side) 260deg,
-      var(--glass-edge-side) 280deg,
+      var(--glass-edge-side) 250deg,
+      var(--glass-edge-side) 290deg,
       var(--glass-edge-top) 360deg
     );
     /* Mask layers use a fully-opaque fill: the colour value is irrelevant
@@ -101,30 +100,11 @@
     pointer-events: none;
     z-index: 1;
   }
-
-  /* Frosted grain: a fixed-size fractalNoise texture blended over the glass so
-     the surface reads as real frost, not flat plastic (F4). Overlay blend keeps
-     mid-grey neutral — it modulates light rather than greying the content.
-     Disabled in every degradation branch via --glass-grain-display. No
-     backdrop-filter / will-change / animation here (static-layer perf budget). */
-  &::after {
-    content: '';
-    display: var(--glass-grain-display, block);
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 128px 128px;
-    mix-blend-mode: overlay;
-    opacity: var(--glass-grain-opacity);
-    pointer-events: none;
-    z-index: 0;
-  }
 }
 
 @utility glass-window {
   /* Same 6-element glassmorphism as glass-panel (conic bevel ring + bezel +
-     grain + brightness); windows carry the deeper active/glow drop shadow
+     brightness); windows carry the deeper active/glow drop shadow
      (--shadow-glass-glow). Own GPU composite layer. */
   position: relative;
   overflow: hidden;
@@ -157,11 +137,11 @@
     background: conic-gradient(
       from 0deg,
       var(--glass-edge-top) 0deg,
-      var(--glass-edge-side) 80deg,
-      var(--glass-edge-side) 100deg,
+      var(--glass-edge-side) 70deg,
+      var(--glass-edge-side) 110deg,
       var(--glass-edge-bottom) 180deg,
-      var(--glass-edge-side) 260deg,
-      var(--glass-edge-side) 280deg,
+      var(--glass-edge-side) 250deg,
+      var(--glass-edge-side) 290deg,
       var(--glass-edge-top) 360deg
     );
     /* Mask layers use a fully-opaque fill (see glass-panel for rationale). */
@@ -175,22 +155,6 @@
     mask-composite: exclude;
     pointer-events: none;
     z-index: 1;
-  }
-
-  /* Frosted grain — see glass-panel::after for rationale. Same fixed-size
-     fractalNoise, overlay-blended, disabled in degradation branches. */
-  &::after {
-    content: '';
-    display: var(--glass-grain-display, block);
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 128px 128px;
-    mix-blend-mode: overlay;
-    opacity: var(--glass-grain-opacity);
-    pointer-events: none;
-    z-index: 0;
   }
 }
 
@@ -379,7 +343,6 @@
     --glass-shadow-resolved: var(--shadow-2);
     --glass-backdrop-resolved: none;
     --glass-bevel-ring-display: none;
-    --glass-grain-display: none;
   }
 
   .glass-panel,
@@ -398,7 +361,6 @@
     --glass-shadow-resolved: var(--shadow-2);
     --glass-backdrop-resolved: none;
     --glass-bevel-ring-display: none;
-    --glass-grain-display: none;
   }
 }
 
@@ -413,7 +375,6 @@
     --glass-tint: var(--glass-tint-readable);
     --glass-border-resolved: var(--border);
     --glass-bevel-ring-display: none;
-    --glass-grain-display: none;
   }
 }
 
@@ -436,9 +397,7 @@
   }
 
   .glass-panel::before,
-  .glass-window::before,
-  .glass-panel::after,
-  .glass-window::after {
+  .glass-window::before {
     display: none;
   }
 
@@ -456,7 +415,6 @@
   --glass-shadow-resolved: var(--shadow-2);
   --glass-backdrop-resolved: none;
   --glass-bevel-ring-display: none;
-  --glass-grain-display: none;
 }
 
 .glass-a11y-preview[data-contrast='more'] {
@@ -465,7 +423,6 @@
   --glass-tint: var(--glass-tint-readable);
   --glass-border-resolved: var(--border);
   --glass-bevel-ring-display: none;
-  --glass-grain-display: none;
 }
 
 /* --- Scrim Overlays --- */

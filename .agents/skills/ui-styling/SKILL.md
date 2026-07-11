@@ -37,8 +37,8 @@ Scans for bare hex/rgb/hsl values and arbitrary Tailwind color classes that shou
   `oklch(from var(--glass-fill) l c h / α)` — only alpha varies. Blur ladder rungs
   **12 / 16 / 20 / 24**; default maps to **20** (both themes), soft **12**, strong **24**.
   Default readable-tint alpha light **0.56** / dark **0.36** (F3 spike — dark is airier,
-  light is APCA-gate-bound so blur carries the frost; chrome stays strictly clearer). Default grain opacity overlay is **0.05**
-  in light and **0.07** in dark mode (disabled in fallback queries). Personalization soft|strong adjusts blur +
+  light is APCA-gate-bound so blur carries the frost; chrome stays strictly clearer). The glass
+  surface is **clean** (blur + tint + specular rim) — no grain/noise overlay. Personalization soft|strong adjusts blur +
   alpha only (never re-state L/C/H in personalization overrides). Glass edge is **ungated
   specular**; text-on-glass Lc 60 is the only APCA gate. Media-floating overlays over video
   must use `glass-panel-media` to bound contrast (Lc >= 60).
