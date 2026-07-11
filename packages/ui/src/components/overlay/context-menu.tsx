@@ -201,16 +201,18 @@ function ContextMenuSubContent({
 }: React.ComponentProps<typeof ContextMenuPrimitive.SubContent>) {
   const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-popover)', ...style };
   return (
-    <ContextMenuPrimitive.SubContent
-      data-slot="context-menu-sub-content"
-      style={mergedStyle}
-      className={cn(
-        'max-h-(--radix-context-menu-content-available-height) min-w-32 origin-(--radix-context-menu-content-transform-origin) glass-panel overflow-x-hidden overflow-y-auto rounded-lg p-1 text-popover-foreground motion-safe:will-change-[opacity,transform]',
-        OVERLAY_PANEL_MOTION,
-        className,
-      )}
-      {...props}
-    />
+    <ContextMenuPrimitive.Portal>
+      <ContextMenuPrimitive.SubContent
+        data-slot="context-menu-sub-content"
+        style={mergedStyle}
+        className={cn(
+          'max-h-(--radix-context-menu-content-available-height) min-w-32 origin-(--radix-context-menu-content-transform-origin) glass-panel overflow-x-hidden overflow-y-auto rounded-lg p-1 text-popover-foreground motion-safe:will-change-[opacity,transform]',
+          OVERLAY_PANEL_MOTION,
+          className,
+        )}
+        {...props}
+      />
+    </ContextMenuPrimitive.Portal>
   );
 }
 

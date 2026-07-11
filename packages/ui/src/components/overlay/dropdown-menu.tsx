@@ -228,17 +228,19 @@ function DropdownMenuSubContent({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
   const mergedStyle: React.CSSProperties = { zIndex: 'var(--z-popover)', ...style };
   return (
-    <DropdownMenuPrimitive.SubContent
-      ref={ref}
-      data-slot="dropdown-menu-sub-content"
-      style={mergedStyle}
-      className={cn(
-        'max-h-(--radix-dropdown-menu-content-available-height) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) glass-panel overflow-x-hidden overflow-y-auto rounded-lg p-1 text-popover-foreground motion-safe:will-change-[opacity,transform]',
-        OVERLAY_PANEL_MOTION,
-        className,
-      )}
-      {...props}
-    />
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.SubContent
+        ref={ref}
+        data-slot="dropdown-menu-sub-content"
+        style={mergedStyle}
+        className={cn(
+          'max-h-(--radix-dropdown-menu-content-available-height) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) glass-panel overflow-x-hidden overflow-y-auto rounded-lg p-1 text-popover-foreground motion-safe:will-change-[opacity,transform]',
+          OVERLAY_PANEL_MOTION,
+          className,
+        )}
+        {...props}
+      />
+    </DropdownMenuPrimitive.Portal>
   );
 }
 
