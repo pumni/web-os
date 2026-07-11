@@ -47,11 +47,7 @@ function parsePercentFactor(value: string | undefined, fallback: number): number
   return isNaN(floatVal) ? fallback : floatVal;
 }
 
-function compositeGlass(
-  foreground: Color,
-  background: Color,
-  tokenMap: Map<string, string>,
-): Rgb {
+function compositeGlass(foreground: Color, background: Color, tokenMap: Map<string, string>): Rgb {
   const brightnessVal = tokenMap.get('--glass-brightness');
   const saturateVal = tokenMap.get('--glass-saturate');
 
@@ -161,29 +157,32 @@ describe('Glass contrast tokens', () => {
     },
   );
 
-  it.each(['light', 'dark'] as const)(
-    'pins frosted blur ladder primitives in %s mode',
-    (mode) => {
-      const tokenMap = buildTokenMap(mode);
-      expect(tokenMap.get('--blur-glass-sm')).toBe('12px');
-      expect(tokenMap.get('--blur-glass')).toBe('16px');
-      expect(tokenMap.get('--blur-glass-md')).toBe('20px');
-      expect(tokenMap.get('--blur-glass-lg')).toBe('24px');
-      // Semantic blur points at the ladder (raw map keeps var() — no dimension resolver).
-      expect(tokenMap.get('--glass-blur')).toBe(
-        mode === 'dark' ? 'var(--blur-glass-md)' : 'var(--blur-glass)',
-      );
-    },
-  );
+  it.each(['light', 'dark'] as const)('pins frosted blur ladder primitives in %s mode', (mode) => {
+    const tokenMap = buildTokenMap(mode);
+    expect(tokenMap.get('--blur-glass-sm')).toBe('12px');
+    expect(tokenMap.get('--blur-glass')).toBe('16px');
+    expect(tokenMap.get('--blur-glass-md')).toBe('20px');
+    expect(tokenMap.get('--blur-glass-lg')).toBe('24px');
+    // Semantic blur default maps to the 20px rung in BOTH themes (F3 spike —
+    // blur is gate-free, so it is the safe "frost" lever). Ladder primitives
+    // above are unchanged; only the default mapping moved along the ladder.
+    expect(tokenMap.get('--glass-blur')).toBe('var(--blur-glass-md)');
+  });
 
   it.each(['light', 'dark'] as const)(
-    'keeps chrome tint more translucent than readable in %s mode',
+    'keeps chrome strictly more translucent than readable, above the F3 readable floor, in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
       const chrome = tokenColor('--glass-tint-chrome', tokenMap);
       const readable = tokenColor('--glass-tint-readable', tokenMap);
-      expect(chrome.alpha, `${mode} chrome alpha`).toBeLessThan(readable.alpha);
-      expect(readable.alpha, `${mode} readable alpha floor`).toBeGreaterThanOrEqual(0.4);
+      // Chrome (shell) stays strictly clearer than readable (panels) — the two
+      // tiers must never collapse. F3 kept dark readable at 0.36 (> dark chrome
+      // 0.34) precisely to preserve this, rather than dropping to 0.34.
+      expect(chrome.alpha, `${mode} chrome clearer than readable`).toBeLessThan(readable.alpha);
+      // Readable floor lowered 0.40 → 0.34 for the F3 dark transparency spike.
+      // The real safety guard is the APCA Lc 60 gate above (dark 0.36 → Lc 78);
+      // this floor just stops readable drifting to an illegibly thin fill.
+      expect(readable.alpha, `${mode} readable alpha floor`).toBeGreaterThanOrEqual(0.34);
     },
   );
 
@@ -223,19 +222,25 @@ describe('Glass contrast tokens', () => {
   );
 
   it.each(['light', 'dark'] as const)(
-    'keeps --glass-edge-bottom a shadow bevel subordinate to the top rim in %s mode',
+    'orders the conic rim stops top > bottom > side by alpha (symmetric but subordinate) in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
-      const bottomEdge = tokenColor('--glass-edge-bottom', tokenMap);
       const topEdge = tokenColor('--glass-edge-top', tokenMap);
+      const bottomEdge = tokenColor('--glass-edge-bottom', tokenMap);
+      const sideEdge = tokenColor('--glass-edge-side', tokenMap);
 
-      // Visible enough to contribute to the bevel...
-      expect(bottomEdge.alpha, `${mode} bottom edge stays visible`).toBeGreaterThan(0.1);
-      // ...but darker than the light-catching top rim: it is contact shading,
-      // not a second rim. Guards against the "two bright rims" regression.
-      expect(bottomEdge.l, `${mode} bottom edge is a shadow, darker than the top rim`).toBeLessThan(
-        topEdge.l,
+      // The rim is now a SYMMETRIC conic light-catch (top + a softer bottom
+      // Fresnel catch, near-nil sides), not the old one-corner diagonal. Every
+      // stop is a LIGHT rim, so subordination is pinned by ALPHA, not lightness:
+      //   top (brightest) > bottom (secondary catch) > side (faintest).
+      // This still guards the "two equal bright rims" regression — the strict
+      // ordering forbids a bottom rim as bright as the top — while allowing the
+      // bottom to be a light catch rather than a dark contact shadow.
+      expect(bottomEdge.alpha, `${mode} bottom stays visible`).toBeGreaterThan(0.1);
+      expect(bottomEdge.alpha, `${mode} bottom is subordinate to the top rim`).toBeLessThan(
+        topEdge.alpha,
       );
+      expect(sideEdge.alpha, `${mode} sides are the faintest stop`).toBeLessThan(bottomEdge.alpha);
     },
   );
 
@@ -263,7 +268,7 @@ describe('Glass contrast tokens', () => {
     const diff = Math.max(
       Math.abs(raw[0] - proxy[0]),
       Math.abs(raw[1] - proxy[1]),
-      Math.abs(raw[2] - proxy[2])
+      Math.abs(raw[2] - proxy[2]),
     );
     expect(diff).toBeGreaterThan(0.01);
   });
@@ -305,10 +310,7 @@ describe('Glass contrast tokens', () => {
  * Keep this helper in sync with personalization.css selector names.
  * ------------------------------------------------------------------ */
 
-function buildGlassIntensityMap(
-  mode: Mode,
-  intensity: 'soft' | 'strong',
-): Map<string, string> {
+function buildGlassIntensityMap(mode: Mode, intensity: 'soft' | 'strong'): Map<string, string> {
   const map = buildTokenMap(mode);
   // Merge [data-glass='soft'|'strong'] block — simulate CSS attribute override
   for (const [name, value] of readBlock(css.personalization, `[data-glass='${intensity}']`)) {
@@ -347,45 +349,39 @@ describe('Glass intensity — soft/strong APCA gate', () => {
     intensities.flatMap((intensity) =>
       (['light', 'dark'] as const).map((mode) => [intensity, mode] as const),
     ),
-  )(
-    'keeps readable glass Lc 60 over high-chroma synthetics in %s %s',
-    (intensity, mode) => {
-      const tokenMap = buildGlassIntensityMap(mode, intensity);
-      const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
-      const glass = tokenColor('--glass-tint-readable', tokenMap);
+  )('keeps readable glass Lc 60 over high-chroma synthetics in %s %s', (intensity, mode) => {
+    const tokenMap = buildGlassIntensityMap(mode, intensity);
+    const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
+    const glass = tokenColor('--glass-tint-readable', tokenMap);
 
-      const worstCases: Array<{ label: string; bg: Color }> = [
-        { label: 'max-chroma-coral', bg: { l: 0.7, c: 0.18, h: 30, alpha: 1 } },
-        { label: 'max-chroma-amber', bg: { l: 0.75, c: 0.16, h: 75, alpha: 1 } },
-        { label: 'max-chroma-blue', bg: { l: 0.55, c: 0.18, h: 250, alpha: 1 } },
-        { label: 'max-chroma-violet', bg: { l: 0.55, c: 0.18, h: 300, alpha: 1 } },
-      ];
+    const worstCases: Array<{ label: string; bg: Color }> = [
+      { label: 'max-chroma-coral', bg: { l: 0.7, c: 0.18, h: 30, alpha: 1 } },
+      { label: 'max-chroma-amber', bg: { l: 0.75, c: 0.16, h: 75, alpha: 1 } },
+      { label: 'max-chroma-blue', bg: { l: 0.55, c: 0.18, h: 250, alpha: 1 } },
+      { label: 'max-chroma-violet', bg: { l: 0.55, c: 0.18, h: 300, alpha: 1 } },
+    ];
 
-      for (const { label, bg } of worstCases) {
-        const glassOverBg = compositeGlass(glass, bg, tokenMap);
-        expect(
-          Math.abs(apcaContrast(foreground, glassOverBg)),
-          `${intensity} ${mode} ${label} readable-glass text contrast (APCA)`,
-        ).toBeGreaterThanOrEqual(60);
-      }
-    },
-  );
+    for (const { label, bg } of worstCases) {
+      const glassOverBg = compositeGlass(glass, bg, tokenMap);
+      expect(
+        Math.abs(apcaContrast(foreground, glassOverBg)),
+        `${intensity} ${mode} ${label} readable-glass text contrast (APCA)`,
+      ).toBeGreaterThanOrEqual(60);
+    }
+  });
 
   it.each(
     intensities.flatMap((intensity) =>
       (['light', 'dark'] as const).map((mode) => [intensity, mode] as const),
     ),
-  )(
-    'keeps chrome tint more translucent than readable in %s %s',
-    (intensity, mode) => {
-      const tokenMap = buildGlassIntensityMap(mode, intensity);
-      const chrome = tokenColor('--glass-tint-chrome', tokenMap);
-      const readable = tokenColor('--glass-tint-readable', tokenMap);
-      expect(chrome.alpha, `${intensity} ${mode} chrome alpha < readable alpha`).toBeLessThan(
-        readable.alpha,
-      );
-    },
-  );
+  )('keeps chrome tint more translucent than readable in %s %s', (intensity, mode) => {
+    const tokenMap = buildGlassIntensityMap(mode, intensity);
+    const chrome = tokenColor('--glass-tint-chrome', tokenMap);
+    const readable = tokenColor('--glass-tint-readable', tokenMap);
+    expect(chrome.alpha, `${intensity} ${mode} chrome alpha < readable alpha`).toBeLessThan(
+      readable.alpha,
+    );
+  });
 });
 
 /* ------------------------------------------------------------------ *

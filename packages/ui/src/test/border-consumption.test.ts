@@ -150,8 +150,8 @@ describe('glass-panel / glass-window stay on the glass hairline flow', () => {
     expect(body, `${_label} must keep the transparent metric border`).toMatch(
       /border:\s*1px\s+solid\s+var\(--glass-border-resolved,\s*transparent\)/,
     );
-    expect(body, `${_label} ring must run edge-top → edge-bottom`).toMatch(
-      /linear-gradient\(\s*135deg,\s*var\(--glass-edge-top\),\s*var\(--glass-edge-bottom\)\s*\)/,
+    expect(body, `${_label} ring must run conic-gradient symmetric model`).toMatch(
+      /conic-gradient\(\s*from\s+0deg,\s*var\(--glass-edge-top\)\s+0deg,\s*var\(--glass-edge-side\)\s+80deg,\s*var\(--glass-edge-side\)\s+100deg,\s*var\(--glass-edge-bottom\)\s+180deg,\s*var\(--glass-edge-side\)\s+260deg,\s*var\(--glass-edge-side\)\s+280deg,\s*var\(--glass-edge-top\)\s+360deg\s*\)/,
     );
     expect(body, `${_label} ring must be masked to a 1px hairline`).toMatch(
       /mask-composite:\s*exclude/,

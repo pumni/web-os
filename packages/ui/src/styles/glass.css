@@ -19,9 +19,10 @@
  *   2. Blur (`--glass-blur`) — ladder above
  *   3. Saturation (`--glass-saturate`) — 130% light / 150% dark
  *   4. Brightness (`--glass-brightness`) — 110% light / 85% dark
- *   5. Bevel ring — gradient mask ring ::before (light-catch TL → contact shadow BR)
+ *   5. Bevel ring — masked conic ring ::before (symmetric specular: top light-catch,
+ *      faint sides, softer bottom light — replaces the old one-corner 135° diagonal)
  *   6. Volumetric drop shadow (`--shadow-glass`) — real delineator.
- *   Plus: diagonal reflection overlay via ::after on panels/windows.
+ *   Plus: default frosted grain overlay via ::after (`--glass-grain-opacity`).
  *
  * Performance discipline (unchanged):
  * - `will-change` is NOT set on static glass; scoped to overlays actively
@@ -30,8 +31,6 @@
  * - Stacked glass capped at 2 layers (doc/skill rule).
  * Accessibility fallbacks honour user system preferences.
  */
-
-
 
 /* ========================================================================
    SECTION 1: GLASSMORPHISM SURFACES & COMPONENT CHROME
@@ -50,18 +49,27 @@
   isolation: isolate;
   background: var(--glass-bg-resolved, var(--glass-tint-readable));
   border: 1px solid var(--glass-border-resolved, transparent);
-  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  box-shadow:
-    var(--glass-shadow-resolved, var(--shadow-glass),
+  -webkit-backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  box-shadow: var(
+    --glass-shadow-resolved,
+    var(--shadow-glass),
     inset 0 1px 0 0 var(--glass-inset-bezel-top),
-    inset 0 -1px 0 0 var(--glass-shadow-edge));
+    inset 0 -1px 0 0 var(--glass-shadow-edge)
+  );
   transform: translateZ(0);
 
-  /* Bevel ring: a 1px gradient ring following border-radius with a smooth
-     light→shadow transition (Apple Liquid Glass / Liquid Glass lab idiom).
-     Per-side border colours were retired (hard diagonal seam on rounded corners).
-     The masked gradient ring follows border-radius with a smooth transition. */
+  /* Bevel ring: a 1px masked conic ring following border-radius. Symmetric
+     specular model — top light-catch, near-dark sides, softer bottom light
+     (Fresnel), replacing the old one-corner 135° diagonal (Apple Liquid Glass
+     / Liquid Glass lab idiom). Per-side border colours were retired (hard
+     diagonal seam on rounded corners); the masked ring follows border-radius. */
   &::before {
     content: '';
     display: var(--glass-bevel-ring-display, block);
@@ -69,7 +77,16 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom));
+    background: conic-gradient(
+      from 0deg,
+      var(--glass-edge-top) 0deg,
+      var(--glass-edge-side) 80deg,
+      var(--glass-edge-side) 100deg,
+      var(--glass-edge-bottom) 180deg,
+      var(--glass-edge-side) 260deg,
+      var(--glass-edge-side) 280deg,
+      var(--glass-edge-top) 360deg
+    );
     /* Mask layers use a fully-opaque fill: the colour value is irrelevant
        (only the alpha channel matters for `mask-composite: exclude`), but we
        use `oklch(1 0 0)` to keep the token tier free of hex literals. */
@@ -84,23 +101,50 @@
     pointer-events: none;
     z-index: 1;
   }
+
+  /* Frosted grain: a fixed-size fractalNoise texture blended over the glass so
+     the surface reads as real frost, not flat plastic (F4). Overlay blend keeps
+     mid-grey neutral — it modulates light rather than greying the content.
+     Disabled in every degradation branch via --glass-grain-display. No
+     backdrop-filter / will-change / animation here (static-layer perf budget). */
+  &::after {
+    content: '';
+    display: var(--glass-grain-display, block);
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 128px 128px;
+    mix-blend-mode: overlay;
+    opacity: var(--glass-grain-opacity);
+    pointer-events: none;
+    z-index: 0;
+  }
 }
 
 @utility glass-window {
-  /* Same 6-element glassmorphism as glass-panel (gradient bevel ring + bezel +
-     brightness); windows carry the deeper active/glow drop shadow
+  /* Same 6-element glassmorphism as glass-panel (conic bevel ring + bezel +
+     grain + brightness); windows carry the deeper active/glow drop shadow
      (--shadow-glass-glow). Own GPU composite layer. */
   position: relative;
   overflow: hidden;
   isolation: isolate;
   background: var(--glass-bg-resolved, var(--glass-tint-readable));
   border: 1px solid var(--glass-border-resolved, transparent);
-  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  box-shadow:
-    var(--glass-shadow-resolved, var(--shadow-glass-glow),
+  -webkit-backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  box-shadow: var(
+    --glass-shadow-resolved,
+    var(--shadow-glass-glow),
     inset 0 1px 0 0 var(--glass-inset-bezel-top),
-    inset 0 -1px 0 0 var(--glass-shadow-edge));
+    inset 0 -1px 0 0 var(--glass-shadow-edge)
+  );
   transform: translateZ(0);
 
   &::before {
@@ -110,7 +154,16 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, var(--glass-edge-top), var(--glass-edge-bottom));
+    background: conic-gradient(
+      from 0deg,
+      var(--glass-edge-top) 0deg,
+      var(--glass-edge-side) 80deg,
+      var(--glass-edge-side) 100deg,
+      var(--glass-edge-bottom) 180deg,
+      var(--glass-edge-side) 260deg,
+      var(--glass-edge-side) 280deg,
+      var(--glass-edge-top) 360deg
+    );
     /* Mask layers use a fully-opaque fill (see glass-panel for rationale). */
     -webkit-mask:
       linear-gradient(oklch(1 0 0) 0 0) content-box,
@@ -122,6 +175,22 @@
     mask-composite: exclude;
     pointer-events: none;
     z-index: 1;
+  }
+
+  /* Frosted grain — see glass-panel::after for rationale. Same fixed-size
+     fractalNoise, overlay-blended, disabled in degradation branches. */
+  &::after {
+    content: '';
+    display: var(--glass-grain-display, block);
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 128px 128px;
+    mix-blend-mode: overlay;
+    opacity: var(--glass-grain-opacity);
+    pointer-events: none;
+    z-index: 0;
   }
 }
 
@@ -157,8 +226,6 @@
     inset 0 1px 0 0 var(--surface-rim-top);
 }
 
-
-
 /* --- Viewport-Docked Shell Chrome Bars --- */
 
 /* Bar variant for shell chrome (sidebar rails, topbars): glass look, NO
@@ -166,8 +233,14 @@
    separation is handled by directional variants below. */
 @utility glass-bar {
   background: var(--glass-bg-resolved, var(--glass-tint-chrome));
-  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  -webkit-backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
   box-shadow: var(--glass-shadow-resolved, inset 0 1px 0 0 var(--surface-rim-top));
 }
 
@@ -180,12 +253,20 @@
    not an APCA-gated contrast boundary. This is a deliberate uniform edge design. */
 @utility glass-bar-bordered {
   background: var(--glass-bg-resolved, var(--glass-tint-chrome));
-  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
+  -webkit-backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
   border: 1px solid var(--glass-border-resolved, var(--glass-edge));
-  box-shadow:
-    var(--glass-shadow-resolved, var(--shadow-glass),
-    inset 0 1px 0 0 var(--surface-rim-top));
+  box-shadow: var(
+    --glass-shadow-resolved,
+    var(--shadow-glass),
+    inset 0 1px 0 0 var(--surface-rim-top)
+  );
 }
 
 /* Shell chrome variant — glass bar base + right-side glass edge + ambient depth.
@@ -197,35 +278,54 @@
    Together they provide consistent shell separation without theme overrides. */
 @utility glass-bar-edge-r {
   background: var(--glass-bg-resolved, var(--glass-tint-chrome));
-  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  box-shadow:
-    var(--glass-shadow-resolved, var(--shadow-shell-depth),
+  -webkit-backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  box-shadow: var(
+    --glass-shadow-resolved,
+    var(--shadow-shell-depth),
     var(--glass-edge-rim),
-    inset 0 1px 0 0 var(--surface-rim-top));
+    inset 0 1px 0 0 var(--surface-rim-top)
+  );
 }
 
 /* Shell chrome variant — glass bar base + bottom-side glass edge + depth.
    Same unified dual-mechanism approach as `glass-bar-edge-r`. */
 @utility glass-bar-edge-b {
   background: var(--glass-bg-resolved, var(--glass-tint-chrome));
-  -webkit-backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  backdrop-filter: var(--glass-backdrop-resolved, blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness)));
-  box-shadow:
-    var(--glass-shadow-resolved, var(--shadow-shell-depth-bottom),
+  -webkit-backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  box-shadow: var(
+    --glass-shadow-resolved,
+    var(--shadow-shell-depth-bottom),
     var(--glass-edge-rim-bottom),
-    inset 0 1px 0 0 var(--surface-rim-top));
+    inset 0 1px 0 0 var(--surface-rim-top)
+  );
 }
 
 /* Media floating panels (e.g. video controls overlay) — carries additional HIG dimming background */
 @utility glass-panel-media {
-  background: var(--glass-bg-resolved, color-mix(in oklch, var(--glass-media-dim), var(--glass-tint-readable)));
+  background: var(
+    --glass-bg-resolved,
+    color-mix(in oklch, var(--glass-media-dim), var(--glass-tint-readable))
+  );
 }
 
 /* Scroll edge separation for sticky glass headers — adds bottom edge gradient line that fades in on scroll */
 @utility glass-scroll-edge-b {
   position: relative;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -233,7 +333,13 @@
     right: 0;
     bottom: -1px;
     height: 1px;
-    background: linear-gradient(to right, transparent, var(--border) 20%, var(--border) 80%, transparent);
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--border) 20%,
+      var(--border) 80%,
+      transparent
+    );
     opacity: 1;
     pointer-events: none;
     z-index: 10;
@@ -259,8 +365,6 @@
   }
 }
 
-
-
 /* ========================================================================
    SECTION 2: ACCESSIBILITY & COMPATIBILITY FALLBACKS
    ======================================================================== */
@@ -275,6 +379,7 @@
     --glass-shadow-resolved: var(--shadow-2);
     --glass-backdrop-resolved: none;
     --glass-bevel-ring-display: none;
+    --glass-grain-display: none;
   }
 
   .glass-panel,
@@ -293,6 +398,7 @@
     --glass-shadow-resolved: var(--shadow-2);
     --glass-backdrop-resolved: none;
     --glass-bevel-ring-display: none;
+    --glass-grain-display: none;
   }
 }
 
@@ -307,6 +413,7 @@
     --glass-tint: var(--glass-tint-readable);
     --glass-border-resolved: var(--border);
     --glass-bevel-ring-display: none;
+    --glass-grain-display: none;
   }
 }
 
@@ -329,7 +436,9 @@
   }
 
   .glass-panel::before,
-  .glass-window::before {
+  .glass-window::before,
+  .glass-panel::after,
+  .glass-window::after {
     display: none;
   }
 
@@ -347,6 +456,7 @@
   --glass-shadow-resolved: var(--shadow-2);
   --glass-backdrop-resolved: none;
   --glass-bevel-ring-display: none;
+  --glass-grain-display: none;
 }
 
 .glass-a11y-preview[data-contrast='more'] {
@@ -355,9 +465,8 @@
   --glass-tint: var(--glass-tint-readable);
   --glass-border-resolved: var(--border);
   --glass-bevel-ring-display: none;
+  --glass-grain-display: none;
 }
-
-
 
 /* --- Scrim Overlays --- */
 @utility overlay-scrim {
@@ -379,6 +488,3 @@
     backdrop-filter: none;
   }
 }
-
-
-
