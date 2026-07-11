@@ -36,8 +36,9 @@ Scans for bare hex/rgb/hsl values and arbitrary Tailwind color classes that shou
   (bars/shell) and `--glass-tint-readable` (panels) derive via
   `oklch(from var(--glass-fill) l c h / α)` — only alpha varies. Blur ladder rungs
   **12 / 16 / 20 / 24**; default maps to **20** (both themes), soft **12**, strong **24**.
-  Default readable-tint alpha light **0.56** / dark **0.36** (F3 spike — dark is airier,
-  light is APCA-gate-bound so blur carries the frost; chrome stays strictly clearer). The glass
+  Default readable-tint alpha light **0.56** / dark **0.44** (2026-07 deepened dark from
+  0.36 toward the premium-dark-glass look; dark fill L **0.15**, brightness **100%**; light is
+  APCA-gate-bound so blur carries its frost; chrome stays strictly clearer). The glass
   surface is **clean** (blur + tint + specular rim) — no grain/noise overlay. Personalization soft|strong adjusts blur +
   alpha only (never re-state L/C/H in personalization overrides). Glass edge is **ungated
   specular**; text-on-glass Lc 60 is the only APCA gate. Media-floating overlays over video

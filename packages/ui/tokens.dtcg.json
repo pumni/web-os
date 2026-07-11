@@ -1798,10 +1798,10 @@
       },
       "edge-bottom": {
         "$type": "color",
-        "$value": "oklch(1 0 0 / 0.34)",
+        "$value": "oklch(from {semantic.glass.fill} calc(l - 0.68) c h / 0.4)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.98 0.005 0 / 0.24)"
+            "dark": "oklch(from {semantic.glass.fill} calc(l + 0.28) c h / 0.28)"
           }
         }
       },
@@ -1909,19 +1909,19 @@
       },
       "edge-side": {
         "$type": "color",
-        "$value": "oklch(1 0 0 / 0.14)",
+        "$value": "oklch(from {semantic.glass.fill} calc(l - 0.6) c h / 0.24)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.98 0.005 0 / 0.14)"
+            "dark": "oklch(from {semantic.glass.fill} calc(l + 0.14) c h / 0.16)"
           }
         }
       },
       "edge-top": {
         "$type": "color",
-        "$value": "oklch(1 0 0 / 0.55)",
+        "$value": "oklch(from {semantic.glass.fill} calc(l + 0.03) c h / 0.58)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.98 0.005 0 / 0.44)"
+            "dark": "oklch(from {semantic.glass.fill} calc(l + 0.5) c h / 0.56)"
           }
         }
       },
@@ -1934,7 +1934,7 @@
         "$value": "oklch(0.96 0.01 250)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.18 0.02 240)"
+            "dark": "oklch(0.15 0.02 240)"
           }
         }
       },
@@ -1970,7 +1970,7 @@
         "$value": "oklch(from {semantic.glass.fill} l c h / 0.54)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(from {semantic.glass.fill} l c h / 0.34)"
+            "dark": "oklch(from {semantic.glass.fill} l c h / 0.38)"
           }
         }
       },
@@ -1979,7 +1979,7 @@
         "$value": "oklch(from {semantic.glass.fill} l c h / 0.56)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(from {semantic.glass.fill} l c h / 0.36)"
+            "dark": "oklch(from {semantic.glass.fill} l c h / 0.44)"
           }
         }
       }

@@ -188,34 +188,42 @@ describe('Glass contrast tokens', () => {
 
   // Glass edge doctrine (2026 border rescope — completes
   // glass-border-doctrine-and-grain-2026):
-  // The glass edge is a SPECULAR LIGHT RIM, not a contrast boundary. It is a
-  // thin translucent light stroke that catches light along the top-left and
-  // fades to a faint shadow at the bottom-right (Apple Liquid Glass / 2026
-  // glassmorphism consensus). It is deliberately low-contrast and is NOT
-  // APCA-gated: no accessibility standard asks a container border to hit a
-  // contrast ratio (WCAG 1.4.11 scopes contrast to interactive controls — that
-  // duty lives on --input). The real delineator is the drop shadow
-  // (--shadow-glass); the real a11y path is the prefers-contrast /
-  // prefers-reduced-transparency fallbacks that recolour the edge to solid
-  // --border. An earlier revision gated the "dominant" edge at APCA Lc 25,
-  // which forced the light-mode rim to a dark navy stroke that read like a
-  // solid-card outline — the opposite of glass. These guards pin the corrected
-  // aesthetic so the edge can't drift back to that high-contrast stroke.
+  // The glass edge is a SPECULAR LIGHT-CATCH, not a contrast boundary. The
+  // "Rim B" model derives each stop from --glass-fill via relative Color 5
+  // (calc(l ± Δ)) so the rim is a tint of the glass. It is deliberately
+  // low-contrast and is NOT APCA-gated: no accessibility standard asks a
+  // container border to hit a contrast ratio (WCAG 1.4.11 scopes contrast to
+  // interactive controls — that duty lives on --input). The real delineator is
+  // the drop shadow (--shadow-glass); the real a11y path is the prefers-contrast
+  // / prefers-reduced-transparency fallbacks that recolour the edge to solid
+  // --border. The historic regression was a rim DARKER than the fill (a navy
+  // stroke that read like a solid-card outline). The doctrine guard is therefore
+  // "top rim brighter than the fill" — a light-catch — which the tinted dark rim
+  // (L≈0.65 over fill 0.15) meets, and which the old fixed l>=0.85 floor could
+  // not accommodate without forcing a flat white stroke.
   it.each(['light', 'dark'] as const)(
-    'keeps the glass top rim a light specular stroke (not a contrast outline) in %s mode',
+    'keeps the glass top rim a light-catch (brighter than the fill, never a dark outline) in %s mode',
     (mode) => {
       const tokenMap = buildTokenMap(mode);
 
+      // The uniform bar edge (--glass-edge) stays an absolute white/near-white
+      // stroke — a clean specular line on shell chrome (dock/topbar/titlebar).
+      const barEdge = tokenColor('--glass-edge', tokenMap);
+      expect(barEdge.l, `${mode} --glass-edge must be a LIGHT rim`).toBeGreaterThanOrEqual(0.85);
+
+      // The panel conic TOP rim is a light-catch: brighter than the glass
+      // surface, never a dark contrast outline.
+      const fill = tokenColor('--glass-fill', tokenMap);
+      const topEdge = tokenColor('--glass-edge-top', tokenMap);
+      expect(
+        topEdge.l,
+        `${mode} --glass-edge-top must be a light-catch (brighter than fill)`,
+      ).toBeGreaterThan(fill.l);
+
+      // Restrained — visible but never an opaque hard outline.
       for (const edgeToken of ['--glass-edge', '--glass-edge-top'] as const) {
         const edge = tokenColor(edgeToken, tokenMap);
-
-        // A light-catching rim: high lightness (white in light mode, softened
-        // light neutral-violet in dark). Never a dark high-contrast stroke.
-        expect(edge.l, `${mode} ${edgeToken} must be a LIGHT rim`).toBeGreaterThanOrEqual(0.85);
-
-        // Visible enough to define the shape...
         expect(edge.alpha, `${mode} ${edgeToken} stays visible`).toBeGreaterThan(0.1);
-        // ...but restrained — never an opaque hard outline.
         expect(edge.alpha, `${mode} ${edgeToken} stays restrained`).toBeLessThanOrEqual(0.7);
       }
     },
@@ -229,13 +237,13 @@ describe('Glass contrast tokens', () => {
       const bottomEdge = tokenColor('--glass-edge-bottom', tokenMap);
       const sideEdge = tokenColor('--glass-edge-side', tokenMap);
 
-      // The rim is now a SYMMETRIC conic light-catch (top + a softer bottom
-      // Fresnel catch, near-nil sides), not the old one-corner diagonal. Every
-      // stop is a LIGHT rim, so subordination is pinned by ALPHA, not lightness:
-      //   top (brightest) > bottom (secondary catch) > side (faintest).
-      // This still guards the "two equal bright rims" regression — the strict
-      // ordering forbids a bottom rim as bright as the top — while allowing the
-      // bottom to be a light catch rather than a dark contact shadow.
+      // The rim is a conic Fresnel sweep (top light-catch > softer bottom >
+      // faint sides), not the old one-corner diagonal. Stops derive from
+      // --glass-fill (Rim B): on DARK glass every stop lifts above the fill
+      // (subordinated by lightness AND alpha); on LIGHT glass the top is a bloom
+      // and sides/bottom are shadow stops below the fill. Across both, the ALPHA
+      // ordering top > bottom > side is the invariant pinned here — it forbids
+      // the "two equal bright rims" regression (a bottom as strong as the top).
       expect(bottomEdge.alpha, `${mode} bottom stays visible`).toBeGreaterThan(0.1);
       expect(bottomEdge.alpha, `${mode} bottom is subordinate to the top rim`).toBeLessThan(
         topEdge.alpha,

@@ -159,63 +159,81 @@
        --glass-tint          → alias of readable (backward-compat for consumers)
      "readable" ≠ "body" — the name signals the readable short-UI tier, not body text.
      Alpha matrix (default intensity; see personalization.css for soft/strong):
-       Light chrome 0.54 / readable 0.56 · Dark chrome 0.34 / readable 0.36
-     F2 first restored the dark ladder (was flat at the light alphas, which made
-     dark default denser than dark "strong"). F3 then spiked transparency: dark
-     readable 0.40→0.36 (much airier, still APCA Lc 78 over blobs) and light
-     readable 0.58→0.56 (small gain — light is gate-bound, blur carries the
-     frost). Chrome stays put, so readable stays denser than chrome (shell always
-     the clearer tier). Dark soft readable drops to 0.32 (personalization.css) to
-     stay under the 0.36 default.
+       Light chrome 0.54 / readable 0.56 · Dark chrome 0.38 / readable 0.44
+     History: F2 restored the dark ladder; F3 spiked transparency (dark readable
+     →0.36). The 2026-07 refresh then DEEPENED dark glass back toward the reference
+     "premium dark glass" look (it read too see-through / airy vs the sandbox):
+     fill dark L 0.18→0.15, readable 0.36→0.44, chrome 0.34→0.38, and brightness
+     85→100% (.dark) — denser & more solid, yet still APCA Lc ≥ 60 over blobs
+     (glass-contrast.test pins it; deeper fill + higher alpha net RAISE contrast,
+     offsetting the brighter backdrop). Chrome stays < readable (shell is the
+     clearer tier). Dark soft readable 0.32 stays under the 0.44 default; strong
+     0.48 stays above. Light tier unchanged (gate-bound; blur carries its frost).
      Relative Color 5 grammar keeps L/C/H in one place; soft/strong only override alpha. */
-  --glass-fill: light-dark(oklch(0.96 0.01 250), oklch(0.18 0.02 240));
+  --glass-fill: light-dark(oklch(0.96 0.01 250), oklch(0.15 0.02 240));
   --glass-tint-chrome: light-dark(
     oklch(from var(--glass-fill) l c h / 0.54),
-    oklch(from var(--glass-fill) l c h / 0.34)
+    oklch(from var(--glass-fill) l c h / 0.38)
   );
   --glass-tint-readable: light-dark(
     oklch(from var(--glass-fill) l c h / 0.56),
-    oklch(from var(--glass-fill) l c h / 0.36)
+    oklch(from var(--glass-fill) l c h / 0.44)
   );
   --glass-media-dim: light-dark(oklch(1 0 0 / 0.85), oklch(0 0 0 / 0.4));
 
   /* 2+3+4: Backdrop filter knobs — tokens.css primitives.
      Light: saturate 130%, brightness 110% (defaults).
-     Dark: saturate 150%, brightness 85% (.dark block below).
+     Dark: saturate 150%, brightness 100% (.dark block below — 2026-07 raised
+     85→100% so the deeper dark fill stays vivid, not dimmed/muddy).
      Blur default maps to the 20px rung (--blur-glass-md) in both themes (F3):
      blur is free of the APCA gate, so it is the safe lever that makes light
      glass read as frost, not milky plastic. Ladder values (12/16/20/24) are
      unchanged — only the default mapping moved along the ladder. */
   --glass-blur: var(--blur-glass-md);
 
-  /* 5. BEVEL RING — masked conic ring stops (symmetric specular model, 2026-07 crisp refresh)
-     Border doctrine (unchanged): the glass edge is a specular LIGHT rim, NOT a
-     contrast boundary — every stop stays a LIGHT stroke (white / near-white),
-     subordinated by ALPHA, never a dark outline. (An earlier dark-rim revision
-     read like a solid-card border — the opposite of glass; glass-contrast.test
-     pins L >= 0.85 on the top rim so it can't drift back there.) It carries NO
-     APCA gate (WCAG 1.4.11 scopes contrast to interactive controls; --input
-     holds that duty). The real delineator is --shadow-glass; the real a11y path
-     is the prefers-contrast / prefers-reduced-transparency fallbacks.
+  /* 5. BEVEL RING — masked conic ring stops (Fresnel specular, lift-from-fill = "Rim B")
+     Border doctrine: the glass edge is a specular light-catch, NOT a contrast
+     boundary. It carries NO APCA gate (WCAG 1.4.11 scopes contrast to
+     interactive controls; --input holds that duty). The real delineator is
+     --shadow-glass; the real a11y path is the prefers-contrast /
+     prefers-reduced-transparency fallbacks.
 
-     The ring is a conic sweep, NOT the old one-corner 135° diagonal (F1): light
-     catches the top edge and — weaker — the bottom (Fresnel dual catch), sides
-     faint. This refresh RAISED every alpha and widened the arc transitions
-     (70/110 · 250/290, in glass.css) so the rim reads crisp and continuous
-     instead of vanishing at the sides (the "mờ" report on dark glass). Dark was
-     the calibration target (top/bottom/side 0.28/0.15/0.05 → 0.44/0.24/0.14);
-     light kept its white rim (doctrine) with a matching alpha lift.
-     Alpha ordering (top > bottom > side) stays pinned by glass-contrast.test.
+     Each stop is DERIVED from --glass-fill via relative Color 5 (calc(l ± Δ)) so
+     the rim is a true TINT of the glass, not a flat white stroke — this is the
+     "Rim B" the design review picked over a uniform bright border. (An earlier
+     ship used a near-white alpha-only rim to satisfy an l>=0.85 guard; it read
+     too white/hard vs the approved Rim B, so the guard was rescoped to the real
+     doctrine below.) Model differs per theme because the physics do:
+       • DARK glass — every edge is a light-catch (Δ > 0): the rim lifts ABOVE the
+         dark fill, brightest on top, softer bottom, faint sides. Subordinated by
+         BOTH lightness and alpha.
+       • LIGHT glass — Fresnel on a lit-from-above surface: the TOP is a faint
+         bright bloom (fill already near-white, Δ≈0) while sides/bottom drop BELOW
+         the fill (Δ < 0) into a shadow hairline, so the edge reads on bright
+         backdrops instead of white-on-white "milky plastic".
+     Anti-regression guard (glass-contrast.test): the TOP rim must be brighter
+     than the fill (a light-catch, never a dark outline) + alpha ordering
+     top > bottom > side. Conic arc widths (70/110 · 250/290) live in glass.css.
 
-     Light top:    white light-catch           (alpha 0.55)
-     Light side:   faint white                 (alpha 0.14)
-     Light bottom: white secondary catch       (alpha 0.34)
-     Dark top:     near-white light-catch       (L=0.98, alpha 0.44)
-     Dark side:    faint near-white             (L=0.98, alpha 0.14)
-     Dark bottom:  near-white secondary catch   (L=0.98, alpha 0.24) */
-  --glass-edge-top: light-dark(oklch(1 0 0 / 0.55), oklch(0.98 0.005 0 / 0.44));
-  --glass-edge-side: light-dark(oklch(1 0 0 / 0.14), oklch(0.98 0.005 0 / 0.14));
-  --glass-edge-bottom: light-dark(oklch(1 0 0 / 0.34), oklch(0.98 0.005 0 / 0.24));
+     Δ / alpha (relative to --glass-fill):
+       Light top:    l+0.03  / 0.58   (bright bloom)
+       Light side:   l−0.60  / 0.24   (shadow hairline)
+       Light bottom: l−0.68  / 0.40   (deepest shadow)
+       Dark top:     l+0.50  / 0.56   (strong light-catch)
+       Dark side:    l+0.14  / 0.16   (faint lift)
+       Dark bottom:  l+0.28  / 0.28   (secondary catch) */
+  --glass-edge-top: light-dark(
+    oklch(from var(--glass-fill) calc(l + 0.03) c h / 0.58),
+    oklch(from var(--glass-fill) calc(l + 0.5) c h / 0.56)
+  );
+  --glass-edge-side: light-dark(
+    oklch(from var(--glass-fill) calc(l - 0.6) c h / 0.24),
+    oklch(from var(--glass-fill) calc(l + 0.14) c h / 0.16)
+  );
+  --glass-edge-bottom: light-dark(
+    oklch(from var(--glass-fill) calc(l - 0.68) c h / 0.4),
+    oklch(from var(--glass-fill) calc(l + 0.28) c h / 0.28)
+  );
 
   /* Uniform edge for glass bars / titlebars (single-stop, not a gradient ring) */
   --glass-edge: light-dark(oklch(1 0 0 / 0.55), oklch(0.98 0.005 0 / 0.24));
@@ -284,10 +302,12 @@
   --tracking-body: var(--tracking-body-dark); /* 0.01em */
 
   /* Glassmorphism Properties overrides (non-color)
-     Lab "Kính Tối" (Dark): saturate 150%, brightness 85%, blur md (20px). */
+     Dark: saturate 150%, brightness 100% (2026-07: was 85% — raised so the
+     deepened dark fill L0.15/α0.44 reads as vivid premium glass, not dimmed),
+     blur md (20px). */
   --glass-blur: var(--blur-glass-md);
   --glass-saturate: 150%;
-  --glass-brightness: 85%;
+  --glass-brightness: 100%;
 
   /* Shadows overrides (non-color) */
   --shadow-glass-glow:
