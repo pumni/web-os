@@ -84,6 +84,7 @@ const GLASS_UTILITIES = [
   'glass-bar-bordered',
   'glass-bar-edge-r',
   'glass-bar-edge-b',
+  'glass-bar-scroll-b',
   'overlay-scrim',
 ] as const;
 

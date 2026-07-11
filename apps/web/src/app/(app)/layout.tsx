@@ -46,27 +46,27 @@ function ProtectedShellFallback() {
     <div className="min-h-dvh bg-background">
       <aside className="fixed inset-y-0 left-0 z-sidebar hidden w-64 bg-card lg:block">
         <div className="flex h-16 items-center px-6">
-          <div className="h-5 w-32 rounded skeleton" />
+          <div className="h-5 w-32 skeleton rounded" />
         </div>
         <div
           aria-hidden
-          className="mx-auto h-px bg-linear-to-r from-transparent via-glass-border/20 to-transparent"
+          className="via-glass-border/20 mx-auto h-px bg-linear-to-r from-transparent to-transparent"
         />
         <div className="space-y-2 p-4">
-          <div className="h-9 rounded-md skeleton" />
-          <div className="h-9 rounded-md skeleton" />
-          <div className="h-9 rounded-md skeleton" />
+          <div className="h-9 skeleton rounded-md" />
+          <div className="h-9 skeleton rounded-md" />
+          <div className="h-9 skeleton rounded-md" />
         </div>
       </aside>
       <div className="flex min-h-dvh flex-col lg:pl-64">
-        <header className="sticky top-0 z-topbar flex h-16 shrink-0 items-center justify-between glass-bar-edge-b px-4 sm:px-6 lg:px-8">
-          <div className="h-5 w-32 rounded skeleton lg:hidden" />
-          <div className="h-8 w-8 rounded-full skeleton" />
+        <header className="glass-scroll-edge-b sticky top-0 z-topbar flex h-16 shrink-0 glass-bar-scroll-b items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="h-5 w-32 skeleton rounded lg:hidden" />
+          <div className="h-8 w-8 skeleton rounded-full" />
         </header>
         <main className="mx-auto w-full max-w-7xl flex-1 space-y-4 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="h-8 w-48 rounded skeleton" />
-          <div className="h-4 w-72 rounded skeleton" />
-          <div className="h-32 rounded-lg border border-border skeleton" />
+          <div className="h-8 w-48 skeleton rounded" />
+          <div className="h-4 w-72 skeleton rounded" />
+          <div className="h-32 skeleton rounded-lg border border-border" />
         </main>
       </div>
     </div>

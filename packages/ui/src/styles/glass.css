@@ -278,6 +278,50 @@
   );
 }
 
+/* Shell chrome variant — SCROLL-REACTIVE sticky header (modern web pattern).
+   At the top the bar reads as the page background: the tint is transparent, and
+   the STATIC backdrop-filter blurring the solid page background behind it is a
+   visual no-op — so the bar sits flush with the page. As content scrolls beneath
+   it, the chrome tint fades in and the bar frosts into glass.
+   backdrop-filter stays STATIC (never animated — glass-performance perf rule);
+   only the tint fades on scroll. Compose with `glass-scroll-edge-b` for the
+   separator line. Fallback (no scroll-driven animation / reduced-motion /
+   reduced-transparency): the always-on glass tint below (same surface as
+   glass-bar-edge-b). The scroll fade starts from the tint at alpha 0 (relative
+   colour) rather than `transparent`, so the fade holds the glass hue instead of
+   dipping through grey. */
+@utility glass-bar-scroll-b {
+  background: var(--glass-bg-resolved, var(--glass-tint-chrome));
+  -webkit-backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  backdrop-filter: var(
+    --glass-backdrop-resolved,
+    blur(var(--glass-blur)) saturate(var(--glass-saturate)) brightness(var(--glass-brightness))
+  );
+  box-shadow: var(--glass-shadow-resolved, inset 0 1px 0 0 var(--surface-rim-top));
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) and (prefers-reduced-transparency: no-preference) {
+      background-color: oklch(from var(--glass-fill) l c h / 0);
+      box-shadow: none;
+      animation: glass-bar-scroll-frost linear both;
+      animation-timeline: scroll(nearest);
+      animation-range: 0px 56px;
+    }
+  }
+}
+
+@keyframes glass-bar-scroll-frost {
+  from {
+    background-color: oklch(from var(--glass-fill) l c h / 0);
+  }
+  to {
+    background-color: var(--glass-tint-chrome);
+  }
+}
+
 /* Media floating panels (e.g. video controls overlay) — carries additional HIG dimming background */
 @utility glass-panel-media {
   background: var(
@@ -387,13 +431,17 @@
   .glass-bar,
   .glass-bar-bordered,
   .glass-bar-edge-r,
-  .glass-bar-edge-b {
+  .glass-bar-edge-b,
+  .glass-bar-scroll-b {
     background: Canvas;
     border-color: CanvasText;
     color: CanvasText;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
+    /* Disable the scroll-fade animation so Canvas is not overridden by the
+       running keyframe (glass-bar-scroll-b). Harmless for the static bars. */
+    animation: none;
   }
 
   .glass-panel::before,
