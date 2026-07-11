@@ -164,7 +164,7 @@ APCA contrast is gated per surface pair in `glass-contrast.test.ts` (spec-correc
   - `--input` — dark, one shade deeper than `--border`. Form controls only. Flat, no specular rim.
 - **Glass-flow** — a specular **light rim**, not a contrast boundary:
   - `--glass-edge` — uniform light rim (white in light mode, near-white neutral in dark), used by `glass-bar-bordered`.
-  - `--glass-edge-top` / `--glass-edge-bottom` — bevel pair, painted by the masked 1px **gradient bevel ring** (`&::before`, 135° light-catch top-left → contact-shadow bottom-right) on `glass-panel` / `glass-window`. Per-side border colours were retired: CSS miters differently-coloured borders with a hard diagonal seam, which breaks the rim on rounded corners; the ring follows `border-radius` smoothly. The element keeps a transparent 1px metric border that a11y fallbacks re-colour. Light mode top: `oklch(1 0 0 / 0.65)` (white light-catch) and bottom: `oklch(0.4 0.02 260 / 0.14)` (faint cool shadow); dark mode top: `oklch(0.98 0.005 0 / 0.35)` (near-white neutral rim) and bottom: `oklch(0.2 0.01 250 / 0.15)` (subdued contact shadow). Neither stop is APCA-gated — the edge is a light effect, and the drop shadow is what delineates the panel.
+  - `--glass-edge-top` / `--glass-edge-side` / `--glass-edge-bottom` — bevel stops, painted by the masked 1px **conic bevel ring** (`&::before`, symmetric conic specular model) on `glass-panel` / `glass-window`. Per-side border colours were retired: CSS miters differently-coloured borders with a hard diagonal seam, which breaks the rim on rounded corners; the ring follows `border-radius` smoothly. The element keeps a transparent 1px metric border that a11y fallbacks re-colour. Light mode: top `oklch(1 0 0 / 0.45)` (white light-catch), side `oklch(1 0 0 / 0.07)` (faint light), bottom `oklch(1 0 0 / 0.25)` (Fresnel catch); dark mode: top `oklch(0.98 0.005 0 / 0.28)`, side `oklch(0.98 0.005 0 / 0.05)`, bottom `oklch(0.98 0.005 0 / 0.15)`. Neither stop is APCA-gated — the edge is a light effect, and the drop shadow is what delineates the panel.
 
 ### Delineation doctrine
 A glass surface is separated from its backdrop by the **drop shadow** (`--shadow-glass`), never by border contrast. The edge (`--glass-edge`, and `--glass-edge-top` → `--glass-edge-bottom` on panels) is a **specular light rim** — a thin translucent light stroke that catches light along the panel edge, "visible enough to define the shape but light enough not to draw attention" (2026 glassmorphism / Apple Liquid Glass consensus). It is deliberately low-contrast, light in both modes (white in light, near-white neutral in dark).
@@ -177,12 +177,11 @@ A glass surface is separated from its backdrop by the **drop shadow** (`--shadow
 
 | | Solid card (`surface-raised`) | Glass card (`glass-panel`) |
 | --- | --- | --- |
-| Structural hairline | `--border` (dark) | Gradient bevel ring (masked `::before`): `--glass-edge-top` (light-catch) → `--glass-edge-bottom` (contact shadow); metric border transparent |
+| Structural hairline | `--border` (dark) | Conic bevel ring (masked `::before`): symmetric conic specular model with top / side / bottom catches; metric border transparent |
 | Top rim | none (deliberate) | `--glass-inset-bezel-top` |
 | Bottom rim | none (deliberate) | `--shadow-glass-glow` / `--glass-shadow-edge` |
 | Real delineator | the hairline itself | `--shadow-glass` (drop shadow) |
 | Edge/border APCA gate | none — `--border` is a structural hairline | none — the edge is a light effect; only text-on-readable/chrome tint is gated (Lc 60) |
-| Hero specular | n/a | opt-in via `glass-panel[data-variant="specular"]` (conic shine layered on the SAME `::before` bevel ring — the boundary gradient stays visible underneath) |
 
 
 ## Typography, motion, and progressive enhancement

@@ -141,9 +141,10 @@
        2. Blur — ladder 12/16/20/24px (tokens.css primitives)
        3. Saturation — 130% light / 150% dark (--glass-saturate)
        4. Brightness — 110% light / 85% dark (--glass-brightness)
-       5. Bevel ring — gradient mask ring ::before (light-catch TL → contact shadow BR)
+       5. Bevel ring — masked conic ring ::before (symmetric specular: top light-catch,
+          faint sides, softer bottom light — Fresnel dual light-catch)
        6. Volumetric drop shadow — --shadow-glass (primary delineator)
-     Plus: diagonal reflection overlay via ::after
+     Plus: default frosted grain overlay via ::after (--glass-grain-opacity)
   */
 
   /* 1. TINT — two-tier glass (chrome vs readable) via single fill source
@@ -159,46 +160,66 @@
        --glass-tint          → alias of readable (backward-compat for consumers)
      "readable" ≠ "body" — the name signals the readable short-UI tier, not body text.
      Alpha matrix (default intensity; see personalization.css for soft/strong):
-       Light chrome 0.52 / readable 0.58 · Dark chrome 0.34 / readable 0.40
+       Light chrome 0.54 / readable 0.56 · Dark chrome 0.34 / readable 0.36
+     F2 first restored the dark ladder (was flat at the light alphas, which made
+     dark default denser than dark "strong"). F3 then spiked transparency: dark
+     readable 0.40→0.36 (much airier, still APCA Lc 78 over blobs) and light
+     readable 0.58→0.56 (small gain — light is gate-bound, blur carries the
+     frost). Chrome stays put, so readable stays denser than chrome (shell always
+     the clearer tier). Dark soft readable drops to 0.32 (personalization.css) to
+     stay under the 0.36 default.
      Relative Color 5 grammar keeps L/C/H in one place; soft/strong only override alpha. */
-  --glass-fill: light-dark(
-    oklch(0.96 0.01 250),
-    oklch(0.18 0.02 240)
+  --glass-fill: light-dark(oklch(0.96 0.01 250), oklch(0.18 0.02 240));
+  --glass-tint-chrome: light-dark(
+    oklch(from var(--glass-fill) l c h / 0.54),
+    oklch(from var(--glass-fill) l c h / 0.34)
   );
-  --glass-tint-chrome:   oklch(from var(--glass-fill) l c h / 0.54);
-  --glass-tint-readable: oklch(from var(--glass-fill) l c h / 0.58);
-  --glass-media-dim: light-dark(
-    oklch(1 0 0 / 0.85),
-    oklch(0 0 0 / 0.40)
+  --glass-tint-readable: light-dark(
+    oklch(from var(--glass-fill) l c h / 0.56),
+    oklch(from var(--glass-fill) l c h / 0.36)
   );
-
+  --glass-media-dim: light-dark(oklch(1 0 0 / 0.85), oklch(0 0 0 / 0.4));
 
   /* 2+3+4: Backdrop filter knobs — tokens.css primitives.
      Light: saturate 130%, brightness 110% (defaults).
-     Dark: saturate 150%, brightness 85% (.dark block below). */
-  --glass-blur: var(--blur-glass);
+     Dark: saturate 150%, brightness 85% (.dark block below).
+     Blur default maps to the 20px rung (--blur-glass-md) in both themes (F3):
+     blur is free of the APCA gate, so it is the safe lever that makes light
+     glass read as frost, not milky plastic. Ladder values (12/16/20/24) are
+     unchanged — only the default mapping moved along the ladder. */
+  --glass-blur: var(--blur-glass-md);
 
-  /* 5. BEVEL RING — gradient mask ring stops
+  /* 5. BEVEL RING — masked conic ring stops (symmetric specular model)
      Border doctrine (unchanged): the glass edge is a specular LIGHT rim, NOT a
      contrast boundary. It is deliberately low-contrast and carries NO APCA gate
      (WCAG 1.4.11 scopes contrast to interactive controls; --input holds that
      duty). The real delineator is --shadow-glass. The real a11y path is the
      prefers-contrast / prefers-reduced-transparency fallbacks.
 
-     Light top:  pure white light-catch  (alpha 0.65 — bright specular)
-     Light bottom: faint cool contact shadow (alpha 0.14)
-     Dark top:   near-white neutral rim  (L=0.98, alpha 0.35 — restrained, not harsh)
-     Dark bottom: dark neutral contact shadow (alpha 0.15) */
-  --glass-edge-top: light-dark(oklch(1 0 0 / 0.65), oklch(0.98 0.005 0 / 0.35));
-  --glass-edge-bottom: light-dark(oklch(0.4 0.02 260 / 0.14), oklch(0.2 0.01 250 / 0.15));
+     The ring is a conic sweep, NOT the old one-corner 135° diagonal (F1). Real
+     glass catches light on the top edge AND — weaker — the bottom edge (Fresnel),
+     with the vertical sides nearly dark. Bottom is no longer a contact shadow; it
+     is a secondary light-catch. Alpha ordering is pinned by glass-contrast.test:
+     top > bottom > side, so the two bright rims can never read equal.
+
+     Light top:    white light-catch      (alpha 0.45 — bright but calmer; completes E2)
+     Light side:   near-nil light          (alpha 0.07)
+     Light bottom: white secondary catch   (alpha 0.25 — weaker than top)
+     Dark top:     near-white neutral rim  (L=0.98, alpha 0.28 — restrained)
+     Dark side:    faint neutral           (alpha 0.05)
+     Dark bottom:  near-white neutral      (alpha 0.15) */
+  --glass-edge-top: light-dark(oklch(1 0 0 / 0.45), oklch(0.98 0.005 0 / 0.28));
+  --glass-edge-side: light-dark(oklch(1 0 0 / 0.07), oklch(0.98 0.005 0 / 0.05));
+  --glass-edge-bottom: light-dark(oklch(1 0 0 / 0.25), oklch(0.98 0.005 0 / 0.15));
 
   /* Uniform edge for glass bars / titlebars (single-stop, not a gradient ring) */
   --glass-edge: light-dark(oklch(1 0 0 / 0.55), oklch(0.98 0.005 0 / 0.24));
 
-  /* Specular rim gradient stops — consumed by glass-panel[data-variant="specular"]. */
-  --specular-rim-start: light-dark(oklch(1 0 0 / 0.6), oklch(0.98 0.005 0 / 0.20));
-  --specular-rim-mid: light-dark(oklch(1 0 0 / 0.1), oklch(0.98 0.005 0 / 0.05));
-  --specular-rim-end: transparent;
+  /* Default frosted grain overlay opacity (::after on glass-panel / glass-window).
+     Non-color knob → .dark override, not light-dark(). Disabled in every
+     degradation branch via --glass-grain-display (grain over an opaque fallback
+     reads as film dirt). */
+  --glass-grain-opacity: 0.05;
 
   /* Inset bezel pair — top highlight + bottom shadow-edge on glass-panel/window.
      Pins glass inset rim consumption (border-consumption / glass-contrast). */
@@ -268,6 +289,8 @@
   --glass-blur: var(--blur-glass-md);
   --glass-saturate: 150%;
   --glass-brightness: 85%;
+  /* Grain reads slightly stronger over the darker fill (non-color knob). */
+  --glass-grain-opacity: 0.07;
 
   /* Shadows overrides (non-color) */
   --shadow-glass-glow:
