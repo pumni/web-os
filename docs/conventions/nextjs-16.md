@@ -127,6 +127,11 @@ export async function PUT(req: Request) {
 // ✅ SWR lifecycle config required
 revalidateTag('posts', 'max');
 
+// ✅ Route Handlers (such as Webhooks) use revalidateTag to invalidate cache
+export async function POST(req: Request) {
+  revalidateTag(`entitlements:${userId}`, 'max');
+}
+
 // ❌ Single-param form uses legacy invalidation, no type error
 revalidateTag('posts');
 ```

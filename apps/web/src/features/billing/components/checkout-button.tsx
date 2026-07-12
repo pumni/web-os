@@ -20,7 +20,7 @@ export function CheckoutButton({ tier, interval, currentTier }: CheckoutButtonPr
     if (isCurrent) return;
     setIsPending(true);
     try {
-      const res = await createCheckoutSession(tier, interval);
+      const res = await createCheckoutSession({ tier, interval });
       if (res.ok) {
         window.location.href = res.data.url;
       } else {

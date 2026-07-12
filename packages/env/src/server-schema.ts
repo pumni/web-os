@@ -11,4 +11,6 @@ export const serverEnvSchema = clientEnvSchema.extend({
   POLAR_PRODUCT_PRO_YEARLY: z.string().min(1).optional(),
   POLAR_PRODUCT_MAX_MONTHLY: z.string().min(1).optional(),
   POLAR_PRODUCT_MAX_YEARLY: z.string().min(1).optional(),
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
 });

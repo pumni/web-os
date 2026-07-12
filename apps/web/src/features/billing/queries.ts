@@ -3,8 +3,7 @@ import { requireUser } from '@pumni/auth';
 import { createSupabaseServiceRoleClient } from '@pumni/supabase/service-role';
 import { cacheLife, cacheTag } from 'next/cache';
 import type { Entitlements, Tier } from './types';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { BillingDatabase } from './db-types';
+
 
 export async function getEntitlements(): Promise<Entitlements> {
   const user = await requireUser();
@@ -17,7 +16,7 @@ export async function getEntitlementsForUser(userId: string): Promise<Entitlemen
   cacheLife('minutes');
 
   try {
-    const supabase = createSupabaseServiceRoleClient() as unknown as SupabaseClient<BillingDatabase>;
+    const supabase = createSupabaseServiceRoleClient();
     const { data, error } = await supabase
       .rpc('get_user_entitlements', { p_user: userId });
 
@@ -56,7 +55,7 @@ export async function getEntitlementsForUser(userId: string): Promise<Entitlemen
 }
 
 export async function getPlans() {
-  const supabase = createSupabaseServiceRoleClient() as unknown as SupabaseClient<BillingDatabase>;
+  const supabase = createSupabaseServiceRoleClient();
   const { data, error } = await supabase
     .from('plans')
     .select('tier, max_active_rooms, max_room_members')

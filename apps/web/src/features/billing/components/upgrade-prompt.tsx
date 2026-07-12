@@ -22,7 +22,7 @@ export function UpgradePrompt({
   const handleUpgrade = async () => {
     setIsPending(true);
     try {
-      const res = await createCheckoutSession(tier as 'pro' | 'max', 'monthly');
+      const res = await createCheckoutSession({ tier: tier as 'pro' | 'max', interval: 'monthly' });
       if (res.ok) {
         window.location.href = res.data.url;
       } else {

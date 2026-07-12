@@ -1,7 +1,6 @@
 import 'server-only';
 import { createSupabaseServiceRoleClient } from '@pumni/supabase/service-role';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { BillingDatabase } from './db-types';
+
 import { revalidateTag } from 'next/cache';
 import { recordAuditEvent } from '@/shared/lib/audit';
 import { tierForProductId } from './polar';
@@ -32,7 +31,7 @@ export async function processWebhookEvent(
   rawEvent: unknown
 ): Promise<{ status: number; message: string }> {
   const event = rawEvent as PolarWebhookPayload;
-  const supabase = createSupabaseServiceRoleClient() as unknown as SupabaseClient<BillingDatabase>;
+  const supabase = createSupabaseServiceRoleClient();
 
   // 1. Idempotency Check & Insert
   const { data: existingEvent } = await supabase
@@ -220,7 +219,11 @@ export async function processWebhookEvent(
 
     return { status: 200, message: 'Webhook processed successfully' };
   } catch (err) {
-    const errMsg = err instanceof Error ? err.message : String(err);
+    const errMsg = err instanceof Error
+      ? err.message
+      : err && typeof err === 'object' && 'message' in err
+        ? String((err as Record<string, unknown>).message)
+        : String(err);
     console.error('Error processing webhook event:', err);
     Sentry.captureException(err);
 

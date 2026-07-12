@@ -42,6 +42,10 @@ For every table in an exposed schema:
 
 Regenerate `packages/supabase/src/types.ts` after schema changes and run:
 
-```pwsh
-bun run typecheck
-```
+## Service-Role Key Exceptions
+
+The Supabase service-role/secret key must only be used in designated server-only modules that require bypassing Row Level Security (RLS) for system-level operations. The approved modules are:
+- `apps/web/src/app/api/webhooks/polar/route.ts` & `apps/web/src/features/billing/webhook-handlers.ts` (for processing webhook events)
+- `apps/web/src/shared/lib/audit.ts` (for recording system audit events)
+- `apps/web/src/features/billing/queries.ts` (`getEntitlements` for resolving user billing status)
+

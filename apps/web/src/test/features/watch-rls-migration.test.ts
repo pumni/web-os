@@ -37,13 +37,6 @@ function readMigration23() {
   );
 }
 
-function readMigration24() {
-  return readFileSync(
-    resolve(process.cwd(), '../../supabase/migrations/024_watch_room_members_limit.sql'),
-    'utf8',
-  );
-}
-
 describe('watch queue RLS hardening migration (017)', () => {
   it('keeps queue reads scoped to room membership', () => {
     const sql = readMigration17();
@@ -197,10 +190,6 @@ describe('watch room limit RLS migration (023)', () => {
     expect(sql).toContain('revoke all on function private.can_create_room(uuid) from public, anon, authenticated;');
     expect(sql).toContain('grant execute on function private.can_create_room(uuid) to authenticated, service_role;');
   });
-});
-
-describe('watch room members limit RLS migration (024)', () => {
-  const sql = readMigration24();
 
   it('defines private.can_join_room helper function', () => {
     expect(sql).toContain('create or replace function private.can_join_room');

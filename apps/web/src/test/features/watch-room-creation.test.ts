@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createRoom } from '../../features/watch/actions';
 import { requireUser } from '@pumni/auth';
 import { createSupabaseServerClient } from '@pumni/supabase/server';
-import { getEntitlementsForUser } from '../../features/billing/queries';
 
 vi.mock('@pumni/auth', () => ({
   requireUser: vi.fn(),
@@ -10,10 +9,6 @@ vi.mock('@pumni/auth', () => ({
 
 vi.mock('@pumni/supabase/server', () => ({
   createSupabaseServerClient: vi.fn(),
-}));
-
-vi.mock('../../features/billing/queries', () => ({
-  getEntitlementsForUser: vi.fn(),
 }));
 
 vi.mock('next/cache', () => ({
@@ -31,63 +26,32 @@ vi.mock('../../shared/lib/audit', () => ({
 
 vi.mock('server-only', () => ({}));
 
-describe('Watch Room Creation Entitlements', () => {
-  let mockSupabase: unknown;
-  let mockCount = 0;
+describe('Watch Room Creation Quota Enforcement', () => {
+  let mockInsertResult: { data: unknown; error: { code: string; message: string } | null };
 
   beforeEach(() => {
     vi.resetAllMocks();
-    mockCount = 0;
-
-    const mockQueryBuilder: {
-      select: ReturnType<typeof vi.fn>;
-      insert: ReturnType<typeof vi.fn>;
-      order: ReturnType<typeof vi.fn>;
-      limit: ReturnType<typeof vi.fn>;
-      eq: ReturnType<typeof vi.fn>;
-      maybeSingle: ReturnType<typeof vi.fn>;
-      then: (onfulfilled: (value: unknown) => unknown) => Promise<unknown>;
-    } = {
-      select: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockReturnThis(),
-      eq: vi.fn(),
-      maybeSingle: vi.fn(),
-      then: (onfulfilled) => {
-        return Promise.resolve({ data: null, error: null }).then(onfulfilled);
-      },
+    mockInsertResult = {
+      data: { id: 'room-123', code: 'ABCD12' },
+      error: null,
     };
 
-    mockQueryBuilder.eq.mockImplementation(() => {
-      return {
-        then: (onfulfilled: (value: unknown) => unknown) =>
-          Promise.resolve({ count: mockCount, error: null }).then(onfulfilled),
-      };
-    });
+    const mockQueryBuilder = {
+      insert: vi.fn().mockReturnThis(),
+      select: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockImplementation(() => Promise.resolve(mockInsertResult)),
+    };
 
-    mockQueryBuilder.maybeSingle.mockImplementation(() => {
-      return {
-        then: (onfulfilled: (value: unknown) => unknown) =>
-          Promise.resolve({ data: { id: 'room-123', code: 'ABCD12' }, error: null }).then(onfulfilled),
-      };
-    });
-
-    mockSupabase = {
+    const mockSupabase = {
       from: vi.fn().mockReturnValue(mockQueryBuilder),
     };
 
     vi.mocked(createSupabaseServerClient).mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createSupabaseServerClient>>);
   });
 
-  it('allows creation when maxActiveRooms is null', async () => {
+  it('allows room creation on success', async () => {
     const mockUser = { id: 'user-123', email: 'user@example.com' };
     vi.mocked(requireUser).mockResolvedValue(mockUser as unknown as Awaited<ReturnType<typeof requireUser>>);
-    vi.mocked(getEntitlementsForUser).mockResolvedValue({
-      tier: 'max',
-      maxActiveRooms: null,
-      maxRoomMembers: null,
-    });
 
     const result = await createRoom({
       sourceType: 'youtube',
@@ -97,38 +61,18 @@ describe('Watch Room Creation Entitlements', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.data.roomId).toBe('room-123');
+      expect(result.data.code).toBe('ABCD12');
     }
   });
 
-  it('allows creation when user has fewer rooms than maxActiveRooms limit', async () => {
+  it('blocks room creation when quota limit is reached (RLS error 42501)', async () => {
     const mockUser = { id: 'user-123', email: 'user@example.com' };
     vi.mocked(requireUser).mockResolvedValue(mockUser as unknown as Awaited<ReturnType<typeof requireUser>>);
-    vi.mocked(getEntitlementsForUser).mockResolvedValue({
-      tier: 'free',
-      maxActiveRooms: 1,
-      maxRoomMembers: 5,
-    });
 
-    mockCount = 0;
-
-    const result = await createRoom({
-      sourceType: 'youtube',
-      sourceRef: 'dQw4w9WgXcQ',
-    });
-
-    expect(result.ok).toBe(true);
-  });
-
-  it('blocks creation when user is at the maxActiveRooms limit', async () => {
-    const mockUser = { id: 'user-123', email: 'user@example.com' };
-    vi.mocked(requireUser).mockResolvedValue(mockUser as unknown as Awaited<ReturnType<typeof requireUser>>);
-    vi.mocked(getEntitlementsForUser).mockResolvedValue({
-      tier: 'free',
-      maxActiveRooms: 1,
-      maxRoomMembers: 5,
-    });
-
-    mockCount = 1;
+    mockInsertResult = {
+      data: null,
+      error: { code: '42501', message: 'new row violates row-level security policy' },
+    };
 
     const result = await createRoom({
       sourceType: 'youtube',
@@ -136,6 +80,28 @@ describe('Watch Room Creation Entitlements', () => {
     });
 
     expect(result.ok).toBe(false);
-    expect((result as { ok: false; message: string }).message).toBe('Bạn đã đạt giới hạn tối đa 1 phòng hoạt động. Vui lòng nâng cấp gói dịch vụ để tạo thêm.');
+    expect((result as { ok: false; message: string }).message).toBe(
+      'Bạn đã đạt giới hạn phòng đang hoạt động của gói hiện tại. Nâng cấp để tạo thêm phòng.'
+    );
+  });
+
+  it('returns generic error on other database failures', async () => {
+    const mockUser = { id: 'user-123', email: 'user@example.com' };
+    vi.mocked(requireUser).mockResolvedValue(mockUser as unknown as Awaited<ReturnType<typeof requireUser>>);
+
+    mockInsertResult = {
+      data: null,
+      error: { code: 'some_other_code', message: 'DB connection reset' },
+    };
+
+    const result = await createRoom({
+      sourceType: 'youtube',
+      sourceRef: 'dQw4w9WgXcQ',
+    });
+
+    expect(result.ok).toBe(false);
+    expect((result as { ok: false; message: string }).message).toBe(
+      'Không thể tạo phòng lúc này. Vui lòng thử lại sau.'
+    );
   });
 });

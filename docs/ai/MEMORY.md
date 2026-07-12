@@ -20,4 +20,4 @@ harness-managed primary; this file is the durable log for decisions.
 - Enforcement checks (drift, shims, encoding, skills, nav, testing) in `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
 - Behavioral eval LLM-as-judge (ADR-0026) in `scripts/run-behavioral-evals.mjs`.
 - Upstream standards checkpoint: 2026-07-10 (runtime-context integrated in root AGENTS.md).
-- SaaS billing platform Phase 0-2 landed: Sentry, Upstash rate limit, audit log, ADR-0028, Polar SDK, webhooks, DB types, Next.js 16 entitlements cache, watch room/member quota RLS, pricing tables, tier badges, UpgradePrompt with 0 any usage (2026-07-12).
+- SaaS billing platform Phase 0-2 corrective remediation (R1–R11) completed: added Upstash env var validation, centralized checkout validation schema, corrected watch room RLS quota logic to count active rooms only, consolidated migration 024 into 023, regenerated DB types, hardened Server Actions with rate limiting and Sentry instrumentation, and updated conventions and documentation (2026-07-12).

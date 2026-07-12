@@ -24,6 +24,8 @@ export const serverEnv = new Proxy({} as ServerEnv, {
         POLAR_PRODUCT_PRO_YEARLY: process.env.POLAR_PRODUCT_PRO_YEARLY,
         POLAR_PRODUCT_MAX_MONTHLY: process.env.POLAR_PRODUCT_MAX_MONTHLY,
         POLAR_PRODUCT_MAX_YEARLY: process.env.POLAR_PRODUCT_MAX_YEARLY,
+        UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+        UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
       });
     }
     return Reflect.get(parsedEnv, prop);

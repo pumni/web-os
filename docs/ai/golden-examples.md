@@ -13,6 +13,7 @@ verify against the canonical convention docs.
 - `apps/web/src/features/profile/use-profile-mutation.ts`: Client mutation orchestration with TanStack Query `useMutation` that manages avatar storage uploads (browser Storage API) and Server Action mutations, followed by `router.refresh()` and toast triggers on success.
 - `apps/web/src/features/profile/profile-form.tsx`: Client form utilizing React Hook Form and `@pumni/ui` Form primitives, delegating submission orchestration to the custom mutation hook (`use-profile-mutation.ts`).
 - `apps/web/src/features/profile/queries.ts`: Cached server reads with explicit projection, parameterized `cacheTag`, and a warning regarding using the service-role client ONLY when using server-derived user IDs.
+- `apps/web/src/app/api/webhooks/polar/route.ts` & `apps/web/src/features/billing/webhook-handlers.ts`: Idempotent Polar webhook receiver and handler pattern with signature validation, database logging, audit trail registration, and cache revalidation.
 
 ## Watch Sync (Realtime)
 

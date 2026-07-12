@@ -148,4 +148,32 @@ describe('processWebhookEvent', () => {
       })
     );
   });
+
+  it('returns 500 and updates webhook_event error if handler dependency fails', async () => {
+    vi.mocked(tierForProductId).mockReturnValue('pro');
+    mockUpsert.mockResolvedValue({ error: { code: 'some_db_err', message: 'DB connection error' } });
+
+    const event = {
+      type: 'subscription.created',
+      data: {
+        id: 'sub_123',
+        productId: 'prod_pro_monthly',
+        status: 'active',
+        customer: {
+          externalId: 'user_123',
+        },
+      },
+    };
+
+    const result = await processWebhookEvent('evt_123', event);
+    expect(result.status).toBe(500);
+    expect(result.message).toContain('DB connection error');
+
+    // Should update the webhook event with the error message
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: expect.stringContaining('DB connection error'),
+      })
+    );
+  });
 });

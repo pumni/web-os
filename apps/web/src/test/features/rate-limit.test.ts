@@ -15,11 +15,26 @@ vi.mock('@/features/watch', () => ({
   ensureRoomMembership: vi.fn(),
 }));
 
+const { mockEnv } = vi.hoisted(() => ({
+  mockEnv: {
+    UPSTASH_REDIS_REST_URL: undefined as string | undefined,
+    UPSTASH_REDIS_REST_TOKEN: undefined as string | undefined,
+  },
+}));
+
+vi.mock('@pumni/env/server', () => ({
+  serverEnv: mockEnv,
+}));
+
 vi.mock('server-only', () => ({}));
+
+import { getLimiter } from '../../shared/lib/rate-limit';
 
 describe('Rate limiting tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockEnv.UPSTASH_REDIS_REST_URL = undefined;
+    mockEnv.UPSTASH_REDIS_REST_TOKEN = undefined;
   });
 
   afterEach(() => {
@@ -69,5 +84,23 @@ describe('Rate limiting tests', () => {
       ok: false,
       message: 'Vượt quá giới hạn thao tác, vui lòng thử lại sau.',
     });
+  });
+
+  it('fails open and warns when Upstash Redis env vars are missing', async () => {
+    mockEnv.UPSTASH_REDIS_REST_URL = undefined;
+    mockEnv.UPSTASH_REDIS_REST_TOKEN = undefined;
+
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const limiter = getLimiter();
+    expect(limiter).toBeDefined();
+
+    const res = await limiter.limit('test-key');
+    expect(res.success).toBe(true);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Rate limiting disabled: UPSTASH_REDIS_REST_URL or UPSTASH_REDIS_REST_TOKEN is missing')
+    );
+
+    consoleWarnSpy.mockRestore();
   });
 });

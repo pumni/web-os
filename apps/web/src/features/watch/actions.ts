@@ -1,7 +1,6 @@
 'use server';
 
 import { requireUser } from '@pumni/auth';
-import { getEntitlementsForUser } from '../billing';
 import { createSupabaseServerClient } from '@pumni/supabase/server';
 import { parseActionInput, actionFailure } from '../../shared/lib/action-result';
 import { withRateLimit } from '../../shared/lib/rate-limit';
@@ -143,25 +142,6 @@ export async function createRoom(
 
     const supabase = await createSupabaseServerClient();
 
-    const entitlements = await getEntitlementsForUser(user.id);
-    if (entitlements.maxActiveRooms !== null) {
-      const { count, error: countError } = await supabase
-        .from('watch_rooms')
-        .select('id', { count: 'exact', head: true })
-        .eq('host_id', user.id);
-
-      if (countError) {
-        return actionFailure(countError, 'Không thể kiểm tra giới hạn phòng. Vui lòng thử lại sau.');
-      }
-
-      if (count !== null && count >= entitlements.maxActiveRooms) {
-        return {
-          ok: false,
-          message: `Bạn đã đạt giới hạn tối đa ${entitlements.maxActiveRooms} phòng hoạt động. Vui lòng nâng cấp gói dịch vụ để tạo thêm.`,
-        };
-      }
-    }
-
     // Retry logic for generating unique code
     let attempts = 0;
     while (attempts < 3) {
@@ -205,9 +185,18 @@ export async function createRoom(
         return { ok: true, data: { roomId: data.id, code: data.code } };
       }
 
-      if (error && error.code !== '23505') {
-        // 23505 is unique violation code in Postgres
-        return actionFailure(error, 'Không thể tạo phòng lúc này. Vui lòng thử lại sau.');
+      if (error) {
+        if (error.code === '42501') {
+          // Limit hit analytics hook point for Phase 3.3
+          return {
+            ok: false,
+            message: 'Bạn đã đạt giới hạn phòng đang hoạt động của gói hiện tại. Nâng cấp để tạo thêm phòng.',
+          };
+        }
+        if (error.code !== '23505') {
+          // 23505 is unique violation code in Postgres
+          return actionFailure(error, 'Không thể tạo phòng lúc này. Vui lòng thử lại sau.');
+        }
       }
 
       attempts++;

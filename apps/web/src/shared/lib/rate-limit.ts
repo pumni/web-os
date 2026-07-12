@@ -1,6 +1,7 @@
 import 'server-only';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+import { serverEnv } from '@pumni/env/server';
 
 export type Limiter = { limit(key: string): Promise<{ success: boolean; reset: number }> };
 
@@ -12,8 +13,8 @@ export function getLimiter(): Limiter {
     return activeLimiter;
   }
 
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = serverEnv.UPSTASH_REDIS_REST_URL;
+  const token = serverEnv.UPSTASH_REDIS_REST_TOKEN;
 
   if (!url || !token) {
     if (!hasWarned) {

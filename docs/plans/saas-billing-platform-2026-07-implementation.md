@@ -314,7 +314,7 @@ dashboard and record their ids in `.env.local` (values never committed).
    - `subscription.canceled|revoked` → flip `status`, keep row.
    - `customer.created|updated|state_changed` → upsert `billing_customers`.
    - `order.paid` → audit event only. Unknown types → mark processed, 200.
-5. Per affected user: `revalidateTag(\`entitlements:${userId}\`, { expire: 0 })`
+5. Per affected user: `revalidateTag(\`entitlements:${userId}\`, 'max')`
    — two-arg form, `updateTag` is illegal here (Route Handler).
 6. `recordAuditEvent({ actorId: null, action: 'subscription.<verb>', entityType: 'subscription', … })`.
 7. Set `webhook_events.processed_at = now()`.
@@ -350,18 +350,17 @@ export const checkoutSchema = z.object({ tier: z.enum(['pro','max']), interval: 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 
 // actions.ts
-export async function startCheckout(input: CheckoutInput): Promise<ActionResult<never>>; // redirects on success
-export async function openCustomerPortal(): Promise<ActionResult<never>>;                // redirects on success
+export async function createCheckoutSession(input: CheckoutInput): Promise<ActionResult<{ url: string }>>; // returns checkout URL on success (K2)
+export async function createPortalSession(): Promise<ActionResult<{ url: string }>>;                       // returns portal URL on success (K2)
 ```
 
-- Both: `requireUser()` → `parseActionInput` → `withRateLimit(\`billing:${user.id}\`, …)`
+- Both: `requireUser()` → `parseActionInput` (checkout only) → `withRateLimit(\`billing:${user.id}\`, …)`
   → wrap body in `Sentry.withServerActionInstrumentation` (research §2.3).
-- `startCheckout`: `polar.checkouts.create({ products: [productIdFor(tier, interval)], externalCustomerId: user.id, customerIpAddress, successUrl })`
-  → `redirect(checkout.url)`. `customerIpAddress` from `(await headers()).get('x-forwarded-for')` split (research §1.8) — read headers before any cache scope.
-  **`redirect()` throws `NEXT_REDIRECT` — call it OUTSIDE any try/catch**, or rethrow when `isRedirectError`.
-- `openCustomerPortal`: look up own `billing_customers.provider_customer_id`
+- `createCheckoutSession`: `polar.checkouts.create({ products: [productIdFor(tier, interval)], externalCustomerId: user.id, customerIpAddress, successUrl })`
+  → returns `{ ok: true, data: { url: checkout.url } }` (redirect handled on client via window.location.href per K2). `customerIpAddress` from `(await headers()).get('x-forwarded-for')` split (research §1.8) — read headers before any cache scope.
+- `createPortalSession`: look up own `billing_customers.provider_customer_id`
   (user-scoped client — RLS SELECT-own applies); none → localized "chưa có gói
-  trả phí" failure. Else `polar.customerSessions.create({ customerId })` → redirect to portal URL.
+  trả phí" failure. Else `polar.customerSessions.create({ customerId })` → returns `{ ok: true, data: { url: session.customerPortalUrl } }`.
 - Fulfillment NEVER happens here — the webhook is the only writer of
   subscription state (plan risk: checkout/webhook race).
 
