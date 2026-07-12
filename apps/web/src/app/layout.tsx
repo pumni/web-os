@@ -7,6 +7,7 @@ import { RootTooltipProvider } from '@/shared/components/providers/tooltip-provi
 import { PersonalizationProvider, PersonalizationScript } from '@pumni/ui/identity';
 import { Toaster } from '@pumni/ui/feedback';
 import { TelemetryProvider } from '@/shared/lib/observability';
+import { PostHogProvider } from '@/shared/providers/posthog-provider';
 
 import './globals.css';
 
@@ -75,12 +76,14 @@ export default function RootLayout({
               {/* Vendor-neutral observability seam (ADR-0011). No-op by default;
                   a consuming project injects a real sink via the `telemetry` prop. */}
               <TelemetryProvider>
-                <QueryProvider>
-                  <RootTooltipProvider>
-                    {children}
-                    <Toaster />
-                  </RootTooltipProvider>
-                </QueryProvider>
+                <PostHogProvider>
+                  <QueryProvider>
+                    <RootTooltipProvider>
+                      {children}
+                      <Toaster />
+                    </RootTooltipProvider>
+                  </QueryProvider>
+                </PostHogProvider>
               </TelemetryProvider>
             </PersonalizationProvider>
           </ThemeProvider>

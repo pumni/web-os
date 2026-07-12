@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from '@pumni/supabase/server';
 import { parseActionInput, actionFailure } from '../../shared/lib/action-result';
 import { withRateLimit } from '../../shared/lib/rate-limit';
 import { recordAuditEvent } from '../../shared/lib/audit';
+import { captureServerEvent } from '../../shared/lib/analytics';
 import {
   createRoomSchema,
   setSourceSchema,
@@ -187,7 +188,7 @@ export async function createRoom(
 
       if (error) {
         if (error.code === '42501') {
-          // Limit hit analytics hook point for Phase 3.3
+          await captureServerEvent(user.id, 'limit_hit', { limitType: 'active_rooms' });
           return {
             ok: false,
             message: 'Bạn đã đạt giới hạn phòng đang hoạt động của gói hiện tại. Nâng cấp để tạo thêm phòng.',

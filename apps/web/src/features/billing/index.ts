@@ -8,6 +8,9 @@ export { TierBadge } from './components/tier-badge';
 export { UpgradePrompt } from './components/upgrade-prompt';
 export { CheckoutButton } from './components/checkout-button';
 export { PortalButton } from './components/portal-button';
+export { inngest } from './jobs/client';
+export { processPolarWebhook, nightlySubscriptionReconcile, cleanupStaleRooms } from './jobs/functions';
+
 
 
 

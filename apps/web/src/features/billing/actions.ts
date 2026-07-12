@@ -10,6 +10,7 @@ import { withRateLimit } from '../../shared/lib/rate-limit';
 import { checkoutSchema, type CheckoutInput } from '@pumni/validators';
 import * as Sentry from '@sentry/nextjs';
 import { headers } from 'next/headers';
+import { captureServerEvent } from '../../shared/lib/analytics';
 
 export async function createCheckoutSession(
   input: CheckoutInput
@@ -46,6 +47,11 @@ export async function createCheckoutSession(
 
           const polar = getPolarClient();
           const appUrl = serverEnv.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
+          await captureServerEvent(userId, 'checkout_started', {
+            tier,
+            interval,
+          });
 
           const checkout = await polar.checkouts.create({
             products: [productIdFor(tier, interval)],

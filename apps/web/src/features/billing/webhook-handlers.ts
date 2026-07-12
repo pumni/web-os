@@ -3,6 +3,7 @@ import { createSupabaseServiceRoleClient } from '@pumni/supabase/service-role';
 
 import { revalidateTag } from 'next/cache';
 import { recordAuditEvent } from '@/shared/lib/audit';
+import { captureServerEvent } from '@/shared/lib/analytics';
 import { tierForProductId } from './polar';
 import * as Sentry from '@sentry/nextjs';
 import type { Json } from '@pumni/supabase';
@@ -132,6 +133,18 @@ export async function processWebhookEvent(
           throw subError;
         }
 
+        if (event.type === 'subscription.created' || event.type === 'subscription.active') {
+          await captureServerEvent(affectedUserId, 'upgraded', {
+            subscriptionId: sub.id,
+            tier,
+          });
+        } else if (event.type === 'subscription.updated' || event.type === 'subscription.uncanceled') {
+          await captureServerEvent(affectedUserId, 'subscription_renewed', {
+            subscriptionId: sub.id,
+            tier,
+          });
+        }
+
         auditAction = `subscription.${event.type.split('.')[1]}`;
       } else if (event.type === 'subscription.canceled' || event.type === 'subscription.revoked') {
         if (!sub.status) {
@@ -152,6 +165,10 @@ export async function processWebhookEvent(
         if (subError) {
           throw subError;
         }
+
+        await captureServerEvent(affectedUserId, 'subscription_canceled', {
+          subscriptionId: sub.id,
+        });
 
         auditAction = `subscription.${event.type.split('.')[1]}`;
       }
@@ -188,6 +205,12 @@ export async function processWebhookEvent(
       affectedUserId = order.customer?.externalId || null;
       entityId = order.id;
       auditAction = 'order.paid';
+
+      if (affectedUserId) {
+        await captureServerEvent(affectedUserId, 'checkout_completed', {
+          orderId: order.id,
+        });
+      }
     }
 
     if (affectedUserId) {

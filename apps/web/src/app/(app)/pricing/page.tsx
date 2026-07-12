@@ -3,6 +3,7 @@ import { PricingTable } from '@/features/billing';
 import { Button } from '@pumni/ui/form';
 import Link from 'next/link';
 import type { Route } from 'next';
+import { PostHogPageTracker } from '@/shared/components/posthog-page-tracker';
 
 export const metadata = {
   title: 'Bảng giá - Pumni Web OS',
@@ -20,6 +21,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 md:py-16 space-y-8">
+      <PostHogPageTracker eventName="pricing_page_viewed" />
       <div className="text-center space-y-4">
         <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground">
           Bảng giá dịch vụ Pumni
