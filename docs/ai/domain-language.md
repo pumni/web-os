@@ -54,3 +54,13 @@ file is a glossary, not a feature spec.
 - **Adapter**: a concrete implementation that satisfies an interface at a seam.
 - **Feedback loop**: the command, test, script, or harness that proves a bug,
   feature, or regression is red-capable and then green.
+
+## Billing And SaaS
+
+- **Tier**: the subscription level a user is on (free, pro, or max).
+- **Entitlement**: the resolved capabilities and quotas a user holds, derived from subscription state, cached under `entitlements:{userId}`.
+- **Billing Customer**: the user↔provider identity link mapping a Pumni user to a Polar customer.
+- **Webhook Event**: idempotent provider notification, tracked uniquely per `provider_event_id` to prevent duplicate processing.
+- **Quota**: a numeric limit defined in `plans` and enforced in Postgres.
+- **Reconciliation**: a periodic provider↔DB convergence job that aligns internal DB state to the provider's source of truth.
+

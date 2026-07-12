@@ -20,6 +20,7 @@ that source code and conventions cannot carry on their own.
 | 0025 | CSS-Native Color Pipeline Modernization | Accepted | 2026-07-04 |
 | 0026 | LLM-as-Judge for Behavioral Eval | Accepted | 2026-07-10 |
 | 0027 | Context Layer v2 — Standards Alignment | Accepted | 2026-07-11 |
+| 0028 | Polar Billing and Personal Tenancy for SaaS Platform | Accepted | 2026-07-12 |
 
 > Number gaps are intentional: 0005–0007 squashed into 0009; 0014–0020 are
 > retired draft numbers. A gap never implies a missing decision.

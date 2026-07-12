@@ -33,4 +33,25 @@ describe('useRoomMembership', () => {
     expect(result.current.joinError).toBeNull();
     expect(result.current.isJoining).toBe(false);
   });
+
+  it('sets joinError and triggers toast when join fails with 403 (Room Full)', async () => {
+    const queryClient = new QueryClient();
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 403,
+      json: async () => ({ message: 'Phòng đã đầy theo giới hạn gói của chủ phòng.' }),
+    } as Response);
+
+    const { toast } = await import('sonner');
+
+    const { result } = renderHook(() => useRoomMembership('room-1', queryClient));
+
+    await waitFor(() => expect(result.current.isJoining).toBe(false));
+
+    expect(result.current.isMemberReady).toBe(false);
+    expect(result.current.joinError?.message).toBe('Phòng đã đầy theo giới hạn gói của chủ phòng.');
+    expect(toast.error).toHaveBeenCalledWith('Phòng đã đầy theo giới hạn gói của chủ phòng.');
+    // Ensure no retries: fetch should have been called only once
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

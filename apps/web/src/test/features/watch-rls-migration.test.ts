@@ -30,6 +30,20 @@ function readMigration20() {
   );
 }
 
+function readMigration23() {
+  return readFileSync(
+    resolve(process.cwd(), '../../supabase/migrations/023_watch_rooms_limit_rls.sql'),
+    'utf8',
+  );
+}
+
+function readMigration24() {
+  return readFileSync(
+    resolve(process.cwd(), '../../supabase/migrations/024_watch_room_members_limit.sql'),
+    'utf8',
+  );
+}
+
 describe('watch queue RLS hardening migration (017)', () => {
   it('keeps queue reads scoped to room membership', () => {
     const sql = readMigration17();
@@ -161,5 +175,47 @@ describe('watch room heartbeats migration (020)', () => {
     expect(sql).toMatch(
       /update\s+public\.watch_rooms\s+r[\s\S]+?where[\s\S]+?not\s+exists\s*\(\s*select\s+1\s+from\s+public\.watch_room_heartbeats/i,
     );
+  });
+});
+
+describe('watch room limit RLS migration (023)', () => {
+  const sql = readMigration23();
+
+  it('defines private.can_create_room helper function', () => {
+    expect(sql).toContain('create or replace function private.can_create_room');
+    expect(sql).toContain('security definer');
+    expect(sql).toContain('set search_path = public, private');
+  });
+
+  it('drops watch_rooms_insert_own policy and recreates with limit checks', () => {
+    expect(sql).toContain('drop policy if exists "watch_rooms_insert_own" on public.watch_rooms;');
+    expect(sql).toContain('create policy "watch_rooms_insert_own"');
+    expect(sql).toContain('and private.can_create_room(host_id)');
+  });
+
+  it('grants execute on private.can_create_room to authenticated and service_role', () => {
+    expect(sql).toContain('revoke all on function private.can_create_room(uuid) from public, anon, authenticated;');
+    expect(sql).toContain('grant execute on function private.can_create_room(uuid) to authenticated, service_role;');
+  });
+});
+
+describe('watch room members limit RLS migration (024)', () => {
+  const sql = readMigration24();
+
+  it('defines private.can_join_room helper function', () => {
+    expect(sql).toContain('create or replace function private.can_join_room');
+    expect(sql).toContain('security definer');
+    expect(sql).toContain('set search_path = public, private');
+  });
+
+  it('drops room_members_insert_self policy and recreates with limit checks', () => {
+    expect(sql).toContain('drop policy if exists "room_members_insert_self" on public.room_members;');
+    expect(sql).toContain('create policy "room_members_insert_self" on public.room_members');
+    expect(sql).toContain('and private.can_join_room(room_id)');
+  });
+
+  it('grants execute on private.can_join_room to authenticated and service_role', () => {
+    expect(sql).toContain('revoke all on function private.can_join_room(uuid) from public, anon, authenticated;');
+    expect(sql).toContain('grant execute on function private.can_join_room(uuid) to authenticated, service_role;');
   });
 });

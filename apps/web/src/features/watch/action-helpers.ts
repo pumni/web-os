@@ -6,8 +6,8 @@ import type { Database } from '@pumni/supabase';
 import { createSupabaseServerClient } from '@pumni/supabase/server';
 import { extractYouTubeId, isValidHttpUrl } from './sync-math';
 
-/** Discriminated result returned by every watch server action. */
-export type ActionResult<T = void> = { ok: true; data: T } | { ok: false; message: string };
+import type { ActionResult } from '../../shared/lib/action-result';
+export type { ActionResult };
 
 /**
  * Normalize a user-supplied source reference depending on its type:

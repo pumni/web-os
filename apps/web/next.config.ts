@@ -130,4 +130,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+import { withSentryConfig } from '@sentry/nextjs';
+
+export default withSentryConfig(nextConfig, {
+  org: 'pumni',
+  project: 'web-os',
+  tunnelRoute: '/sentry-tunnel',
+  silent: !process.env.CI,
+});

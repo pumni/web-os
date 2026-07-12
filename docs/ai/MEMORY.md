@@ -11,13 +11,13 @@ harness-managed primary; this file is the durable log for decisions.
 
 ## Settled facts
 
-- Surface identity (glass vs solid) & Glass 2.0 (SSOT fill, contrast, relative alpha scale) → [design-system.md](../conventions/design-system.md).
+- Surface identity (glass vs solid) & Glass 2.0 (SSOT fill, contrast, alpha scale) → [design-system.md](../conventions/design-system.md).
 - Security boundary (RLS and keys) → [AGENTS.md](../../AGENTS.md) and [supabase-security.md](../conventions/supabase-security.md).
-- State ownership → [data-fetching.md](../conventions/data-fetching.md).
-- Next.js 16 cache API → [data-fetching.md](../conventions/data-fetching.md) and [common-mistakes.md](common-mistakes.md).
+- State ownership & Next.js 16 cache API → [data-fetching.md](../conventions/data-fetching.md), [common-mistakes.md](common-mistakes.md).
 - transpilePackages necessity → [transpile-packages.md](../conventions/transpile-packages.md).
 - MCP runtime role & version pins (never `@latest`) → [mcp.md](mcp.md).
-- Context layer v2 landed — [ADR-0027](../adr/0027-context-layer-v2-standards-alignment.md); maintenance via `context-health` skill.
-- Enforcement = checkCodeReferences (drift) + checkClaudeShims + checkEncodingHygiene + checkSkillEvalsAndPaths + checkNavMapSync + test-weakening (reward-hacking) + path-existence → `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
-- Behavioral eval — keyword grader proven non-discriminating (2026-07-10 run: passRateA=passRateB=0.111). Phase 5 added LLM-as-judge (`--judge` flag): 9 per-task rubrics, constitutional prompt (P0–P4), advisory/fail-open until >80% calibration. ADR-0026. See `scripts/run-behavioral-evals.mjs`.
-- Last upstream-standards checkpoint: 2026-07-10 (MCP, agents.md, anthropics/skills, humanlayer ACE-FCA, langchain context_engineering reviewed → runtime-context doctrine integrated in root AGENTS.md).
+- Context layer v2 landed — [ADR-0027](../adr/0027-context-layer-v2-standards-alignment.md); maintenance via `context-health`.
+- Enforcement checks (drift, shims, encoding, skills, nav, testing) in `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
+- Behavioral eval LLM-as-judge (ADR-0026) in `scripts/run-behavioral-evals.mjs`.
+- Upstream standards checkpoint: 2026-07-10 (runtime-context integrated in root AGENTS.md).
+- SaaS billing platform Phase 0-2 landed: Sentry, Upstash rate limit, audit log, ADR-0028, Polar SDK, webhooks, DB types, Next.js 16 entitlements cache, watch room/member quota RLS, pricing tables, tier badges, UpgradePrompt with 0 any usage (2026-07-12).

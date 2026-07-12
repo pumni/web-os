@@ -38,7 +38,13 @@ export function useRoomMembership(roomId: string, queryClient: QueryClient): Roo
     async function join(attempt = 0) {
       try {
         const res = await fetch(`/api/watch/${roomId}/join`, { method: 'POST' });
-        if (!res.ok) throw new Error(`join failed: ${res.status}`);
+        if (!res.ok) {
+          if (res.status === 403) {
+            const body = (await res.json()) as { message?: string };
+            throw new Error(body.message || 'Phòng đã đầy theo giới hạn gói của chủ phòng.');
+          }
+          throw new Error(`join failed: ${res.status}`);
+        }
         if (cancelled) return;
         await queryClient.invalidateQueries({ queryKey: watchKeys.queue(roomId) });
         await queryClient.invalidateQueries({ queryKey: watchKeys.room(roomId) });
@@ -47,7 +53,10 @@ export function useRoomMembership(roomId: string, queryClient: QueryClient): Roo
         }
       } catch (err) {
         if (cancelled) return;
-        if (attempt < 3) {
+        const joinError = err instanceof Error ? err : new Error('join failed');
+        const isRoomFull = joinError.message.includes('Phòng đã đầy');
+
+        if (attempt < 3 && !isRoomFull) {
           const id = setTimeout(() => {
             retryTimers.delete(id);
             void join(attempt + 1);
@@ -56,10 +65,11 @@ export function useRoomMembership(roomId: string, queryClient: QueryClient): Roo
           return;
         }
 
-        const joinError = err instanceof Error ? err : new Error('join failed');
-        console.error('Failed to join room after retries', joinError);
+        console.error('Failed to join room', joinError);
         toast.error(
-          'Không thể tham gia phòng. Một số thao tác có thể bị hạn chế — hãy tải lại trang.',
+          isRoomFull
+            ? joinError.message
+            : 'Không thể tham gia phòng. Một số thao tác có thể bị hạn chế — hãy tải lại trang.',
         );
         setState({ roomId, isJoining: false, isMemberReady: false, joinError });
       }

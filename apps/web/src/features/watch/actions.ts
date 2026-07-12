@@ -1,7 +1,11 @@
 'use server';
 
 import { requireUser } from '@pumni/auth';
+import { getEntitlementsForUser } from '../billing';
 import { createSupabaseServerClient } from '@pumni/supabase/server';
+import { parseActionInput, actionFailure } from '../../shared/lib/action-result';
+import { withRateLimit } from '../../shared/lib/rate-limit';
+import { recordAuditEvent } from '../../shared/lib/audit';
 import {
   createRoomSchema,
   setSourceSchema,
@@ -50,7 +54,7 @@ async function startPlayingItem(
   roomId: string,
   source: { source_type: 'youtube' | 'url'; source_ref: string },
   currentQueueItemId: string | null,
-): Promise<{ error: string | null }> {
+): Promise<{ error: unknown | null }> {
   const now = new Date().toISOString();
   const { error } = await supabase
     .from('watch_rooms')
@@ -66,7 +70,7 @@ async function startPlayingItem(
       updated_at: now,
     })
     .eq('id', roomId);
-  return { error: error ? error.message : null };
+  return { error: error || null };
 }
 
 /**
@@ -75,17 +79,7 @@ async function startPlayingItem(
  * directly. Removes the repeated `safeParse`/`early-return` block from every
  * validator-driven action.
  */
-function parseActionInput<T>(
-  schema: { safeParse: (input: unknown) => { success: true; data: T } | { success: false } },
-  input: unknown,
-  errorMessage: string,
-): { ok: true; data: T } | { ok: false; message: string } {
-  const parsed = schema.safeParse(input);
-  if (!parsed.success) {
-    return { ok: false, message: errorMessage };
-  }
-  return { ok: true, data: parsed.data };
-}
+// Local parseActionInput has been promoted to shared lib.
 
 /** Invalidate the cache tags that every successful watch-room action
  *  bumps: the per-room queue tag and the user's recent-rooms tag. */
@@ -136,58 +130,91 @@ export async function createRoom(
   input: CreateRoomInput,
 ): Promise<ActionResult<{ roomId: string; code: string }>> {
   const user = await requireUser();
-  const parsed = parseActionInput(
-    createRoomSchema,
-    input,
-    'Dữ liệu tạo phòng không hợp lệ.',
-  );
-  if (!parsed.ok) return parsed;
+  return withRateLimit(`createRoom:${user.id}`, async () => {
+    const parsed = parseActionInput(
+      createRoomSchema,
+      input,
+      'Dữ liệu tạo phòng không hợp lệ.',
+    );
+    if (!parsed.ok) return parsed;
 
-  const sanitized = sanitizeSourceRef(parsed.data.sourceType, parsed.data.sourceRef);
-  if (!sanitized.ok) return sanitized;
+    const sanitized = sanitizeSourceRef(parsed.data.sourceType, parsed.data.sourceRef);
+    if (!sanitized.ok) return sanitized;
 
-  const supabase = await createSupabaseServerClient();
+    const supabase = await createSupabaseServerClient();
 
-  // Retry logic for generating unique code
-  let attempts = 0;
-  while (attempts < 3) {
-    const code = generateJoinCode();
-    const { data, error } = await supabase
-      .from('watch_rooms')
-      .insert({
-        code,
-        host_id: user.id,
-        source_type: parsed.data.sourceType,
-        source_ref: sanitized.ref,
-        is_playing: false,
-        anchor_position: 0,
-        playback_rate: 1,
-        anchor_server_ts: new Date().toISOString(),
-        last_active_at: new Date().toISOString(),
-      })
-      .select('id, code')
-      .maybeSingle();
+    const entitlements = await getEntitlementsForUser(user.id);
+    if (entitlements.maxActiveRooms !== null) {
+      const { count, error: countError } = await supabase
+        .from('watch_rooms')
+        .select('id', { count: 'exact', head: true })
+        .eq('host_id', user.id);
 
-    if (!error && data) {
-      // Add host as the first member of the room
-      await supabase.from('room_members').insert({
-        room_id: data.id,
-        user_id: user.id,
-      });
+      if (countError) {
+        return actionFailure(countError, 'Không thể kiểm tra giới hạn phòng. Vui lòng thử lại sau.');
+      }
 
-      updateTag(`recent_rooms:${user.id}`);
-      return { ok: true, data: { roomId: data.id, code: data.code } };
+      if (count !== null && count >= entitlements.maxActiveRooms) {
+        return {
+          ok: false,
+          message: `Bạn đã đạt giới hạn tối đa ${entitlements.maxActiveRooms} phòng hoạt động. Vui lòng nâng cấp gói dịch vụ để tạo thêm.`,
+        };
+      }
     }
 
-    if (error && error.code !== '23505') {
-      // 23505 is unique violation code in Postgres
-      return { ok: false, message: error.message };
+    // Retry logic for generating unique code
+    let attempts = 0;
+    while (attempts < 3) {
+      const code = generateJoinCode();
+      const { data, error } = await supabase
+        .from('watch_rooms')
+        .insert({
+          code,
+          host_id: user.id,
+          source_type: parsed.data.sourceType,
+          source_ref: sanitized.ref,
+          is_playing: false,
+          anchor_position: 0,
+          playback_rate: 1,
+          anchor_server_ts: new Date().toISOString(),
+          last_active_at: new Date().toISOString(),
+        })
+        .select('id, code')
+        .maybeSingle();
+
+      if (!error && data) {
+        // Add host as the first member of the room
+        await supabase.from('room_members').insert({
+          room_id: data.id,
+          user_id: user.id,
+        });
+
+        updateTag(`recent_rooms:${user.id}`);
+
+        await recordAuditEvent({
+          actorId: user.id,
+          action: 'watch_room.created',
+          entityType: 'watch_room',
+          entityId: data.id,
+          metadata: {
+            code: data.code,
+            sourceType: parsed.data.sourceType,
+          },
+        });
+
+        return { ok: true, data: { roomId: data.id, code: data.code } };
+      }
+
+      if (error && error.code !== '23505') {
+        // 23505 is unique violation code in Postgres
+        return actionFailure(error, 'Không thể tạo phòng lúc này. Vui lòng thử lại sau.');
+      }
+
+      attempts++;
     }
 
-    attempts++;
-  }
-
-  return { ok: false, message: 'Không thể khởi tạo mã phòng độc nhất. Vui lòng thử lại.' };
+    return { ok: false, message: 'Không thể khởi tạo mã phòng độc nhất. Vui lòng thử lại.' };
+  });
 }
 
 export async function setRoomSource(input: SetSourceInput): Promise<ActionResult> {
@@ -216,7 +243,7 @@ export async function setRoomSource(input: SetSourceInput): Promise<ActionResult
   );
 
   if (error) {
-    return { ok: false, message: error };
+    return actionFailure(error, 'Không thể cập nhật nguồn phát lúc này. Vui lòng thử lại sau.');
   }
 
   updateTag(`recent_rooms:${user.id}`);
@@ -235,7 +262,7 @@ export async function joinByCode(code: string): Promise<ActionResult<{ roomId: s
     .maybeSingle();
 
   if (error) {
-    return { ok: false, message: error.message };
+    return actionFailure(error, 'Lỗi khi tìm phòng. Vui lòng thử lại sau.');
   }
 
   if (!data) {
@@ -287,7 +314,7 @@ export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResu
     .maybeSingle();
 
   if (maxError) {
-    return { ok: false, message: maxError.message };
+    return actionFailure(maxError, 'Không thể lấy thông tin hàng chờ. Vui lòng thử lại sau.');
   }
 
   const newPosition = maxItem ? fractionalPosition(maxItem.position, null) : 0.0;
@@ -308,7 +335,7 @@ export async function addQueueItem(input: AddQueueItemInput): Promise<ActionResu
   });
 
   if (insertError) {
-    return { ok: false, message: insertError.message };
+    return actionFailure(insertError, 'Không thể thêm video vào hàng chờ. Vui lòng thử lại sau.');
   }
 
   updateTag(`room_queue:${parsed.data.roomId}`);
@@ -349,14 +376,20 @@ export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResu
   const [beforeResult, afterResult] = await Promise.all([beforePromise, afterPromise]);
 
   if (parsed.data.beforeId) {
-    if (beforeResult.error || !beforeResult.data) {
+    if (beforeResult.error) {
+      return actionFailure(beforeResult.error, 'Lỗi khi tìm item trong hàng chờ. Vui lòng thử lại sau.');
+    }
+    if (!beforeResult.data) {
       return { ok: false, message: 'Không tìm thấy item đứng trước.' };
     }
     beforePosition = beforeResult.data.position;
   }
 
   if (parsed.data.afterId) {
-    if (afterResult.error || !afterResult.data) {
+    if (afterResult.error) {
+      return actionFailure(afterResult.error, 'Lỗi khi tìm item trong hàng chờ. Vui lòng thử lại sau.');
+    }
+    if (!afterResult.data) {
       return { ok: false, message: 'Không tìm thấy item đứng sau.' };
     }
     afterPosition = afterResult.data.position;
@@ -371,7 +404,7 @@ export async function reorderQueue(input: ReorderQueueInput): Promise<ActionResu
     .eq('room_id', parsed.data.roomId);
 
   if (updateError) {
-    return { ok: false, message: updateError.message };
+    return actionFailure(updateError, 'Không thể thay đổi thứ tự hàng chờ. Vui lòng thử lại sau.');
   }
 
   updateTag(`room_queue:${parsed.data.roomId}`);
@@ -390,7 +423,7 @@ export async function removeQueueItem(roomId: string, itemId: string): Promise<A
     .eq('room_id', roomId);
 
   if (deleteError) {
-    return { ok: false, message: deleteError.message };
+    return actionFailure(deleteError, 'Không thể xóa video khỏi hàng chờ. Vui lòng thử lại sau.');
   }
 
   // Postgres ON DELETE SET NULL on watch_rooms.current_queue_item_id automatically handles
@@ -431,7 +464,7 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
     .maybeSingle();
 
   if (nextError) {
-    return { ok: false, message: nextError.message };
+    return actionFailure(nextError, 'Không thể lấy bài tiếp theo. Vui lòng thử lại sau.');
   }
 
   if (!nextItem) {
@@ -446,7 +479,7 @@ export async function advanceQueue(roomId: string): Promise<ActionResult> {
   );
 
   if (updateError) {
-    return { ok: false, message: updateError };
+    return actionFailure(updateError, 'Không thể chuyển bài lúc này. Vui lòng thử lại sau.');
   }
 
   // Delete the just-played item so it won't linger in the queue
@@ -487,6 +520,18 @@ export async function transferHost(input: TransferHostInput): Promise<ActionResu
 
   updateTag(`recent_rooms:${user.id}`);
   updateTag(`recent_rooms:${parsed.data.newHostId}`);
+
+  await recordAuditEvent({
+    actorId: user.id,
+    action: 'watch_room.host_transferred',
+    entityType: 'watch_room',
+    entityId: parsed.data.roomId,
+    metadata: {
+      oldHostId: user.id,
+      newHostId: parsed.data.newHostId,
+    },
+  });
+
   return { ok: true, data: undefined };
 }
 
@@ -517,7 +562,10 @@ export async function playQueueItem(roomId: string, itemId: string): Promise<Act
     .eq('room_id', roomId)
     .maybeSingle();
 
-  if (targetError || !targetItem) {
+  if (targetError) {
+    return actionFailure(targetError, 'Lỗi khi tìm bài hát trong hàng chờ. Vui lòng thử lại sau.');
+  }
+  if (!targetItem) {
     return { ok: false, message: 'Không tìm thấy bài hát trong hàng chờ.' };
   }
 
@@ -530,7 +578,7 @@ export async function playQueueItem(roomId: string, itemId: string): Promise<Act
   );
 
   if (updateError) {
-    return { ok: false, message: updateError };
+    return actionFailure(updateError, 'Không thể phát bài hát này. Vui lòng thử lại sau.');
   }
 
   // Delete the previously playing item if it is different from the target item

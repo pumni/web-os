@@ -6,6 +6,13 @@ import { createSupabaseServiceRoleClient } from '@pumni/supabase/service-role';
 import { type Room, type QueueItem, QUEUE_ITEM_SELECT } from './types';
 import { cacheLife, cacheTag } from 'next/cache';
 
+export class RoomFullError extends Error {
+  constructor() {
+    super('Phòng đã đầy theo giới hạn gói của chủ phòng.');
+    this.name = 'RoomFullError';
+  }
+}
+
 /**
  * Idempotently register the caller as a member of the room so RLS lets them
  * read and edit the queue. Called during the room page's (dynamic) render, so
@@ -21,6 +28,9 @@ export async function ensureRoomMembership(roomId: string): Promise<void> {
     .from('room_members')
     .insert({ room_id: roomId, user_id: user.id });
   if (error && error.code !== '23505') {
+    if (error.code === '42501') {
+      throw new RoomFullError();
+    }
     console.error('Failed to ensure room membership:', error.message);
     throw new Error(error.message);
   }

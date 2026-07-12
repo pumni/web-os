@@ -12,17 +12,28 @@ import { Button, Input, Label } from '@pumni/ui/form';
 import { motion, useReducedMotion } from '@pumni/ui/lib/motion-primitives';
 import { recipes } from '@pumni/ui/lib/motion';
 import { createRoom, joinByCode } from '../actions';
+import { UpgradePrompt } from '../../billing/components/upgrade-prompt';
+import type { Entitlements } from '../../billing/types';
 import { toast } from 'sonner';
 import { Clapperboard, LogIn, Sparkles } from 'lucide-react';
 import { VideoSourceTabs } from './source-tabs';
 
 interface WatchLobbyProps {
   initialRoomCode?: string;
+  entitlements?: Entitlements;
+  activeRoomsCount?: number;
 }
 
-export function WatchLobby({ initialRoomCode }: WatchLobbyProps) {
+export function WatchLobby({
+  initialRoomCode,
+  entitlements = { tier: 'free', maxActiveRooms: 1, maxRoomMembers: 5 },
+  activeRoomsCount = 0,
+}: WatchLobbyProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const isLimitReached =
+    entitlements.maxActiveRooms !== null &&
+    activeRoomsCount >= entitlements.maxActiveRooms;
 
   // Tab state for controlled view transitions
   const [activeTab, setActiveTab] = useState<string>(initialRoomCode ? 'join' : 'create');
@@ -193,7 +204,14 @@ export function WatchLobby({ initialRoomCode }: WatchLobbyProps) {
                     </p>
                   </div>
 
-                  <Button type="submit" disabled={isPending} className="mt-1 w-full">
+                  {isLimitReached && (
+                    <UpgradePrompt
+                      title="Đạt giới hạn tạo phòng"
+                      message={`Bạn đang sử dụng gói ${entitlements.tier === 'free' ? 'Miễn phí' : entitlements.tier.toUpperCase()} và đã tạo tối đa ${entitlements.maxActiveRooms} phòng hoạt động. Vui lòng nâng cấp để tạo thêm.`}
+                    />
+                  )}
+
+                  <Button type="submit" disabled={isPending || isLimitReached} className="mt-1 w-full">
                     {isPending ? 'Đang xử lý...' : 'Khởi tạo phòng'}
                   </Button>
                 </form>
