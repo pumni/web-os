@@ -12,5 +12,5 @@ paths:
 Canonical: `docs/conventions/nextjs-16.md` — read before writing Next.js 16 code.
 
 - Every request-time API (`params`, `searchParams`, `cookies()`, `headers()`, `draftMode()`) must be `await`ed — sync form throws at runtime.
-- Generate `PageProps`/`RouteContext` types with `npx next typegen`; never hand-write them.
+- Generate `PageProps`/`RouteContext` types with `bunx next typegen`; never hand-write them.
 - Use the async function signature: `params: Promise<{ slug: string }>`.

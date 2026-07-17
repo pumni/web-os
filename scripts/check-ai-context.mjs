@@ -731,6 +731,8 @@ const CANONICAL_INVARIANTS = [
     'docs/conventions/design-system.md',
   ],
   [/\bRLS\b.*\breal\s+data\s+boundary\b/i, 'docs/conventions/supabase-security.md'],
+  [/\bPageProps<[\s\S]*LayoutProps</i, 'docs/conventions/nextjs-16.md'],
+  [/route segment config exports\b[\s\S]*\buse cache\b/i, 'docs/conventions/nextjs-16.md'],
 ];
 
 function checkInvariantDuplicates() {
@@ -790,6 +792,10 @@ function checkDocApiDenylist() {
     {
       token: 'unstable_instant',
       reason: 'not exported by the installed Next.js (phantom route-segment API)',
+    },
+    {
+      token: 'npx',
+      reason: 'banned package runner (root AGENTS.md Never: npm in any form) — use bunx',
     },
   ];
   const targets = [

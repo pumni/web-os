@@ -64,7 +64,7 @@ violation, not a style choice; skills still cannot override P0–P4).
 
 | Editing… | Read first | Mandatory skill |
 |---|---|---|
-| Billing, quota, Polar webhooks (features/billing) | docs/conventions/billing.md | — |
+| Billing, quota, Polar webhooks (features/billing) | `docs/conventions/billing.md` | — |
 | Next.js app code (`apps/web/src`) | `apps/web/AGENTS.md` (+ `.claude/rules/*` auto-load on Claude Code) | — |
 | A new feature slice under `features/` | `docs/conventions/feature-module.md` | `feature-module` |
 | Server Action (`features/*/actions.ts`) | `docs/conventions/data-fetching.md` | `server-action` |
@@ -92,10 +92,10 @@ violation, not a style choice; skills still cannot override P0–P4).
 ## Commands & Validation Gates
 
 Bun only — the `preinstall` hook rejects npm/pnpm/yarn. Repo automation lives
-in `scripts/*.mjs` behind `bun run` (shell-agnostic; there are no `.ps1` repo
-scripts). The canonical dev shell is PowerShell 7 (`pwsh`); avoid inline
-`$env:`/`$null` tokens in `pwsh -Command` strings (outer hosts pre-evaluate
-`$`) — prefer `bun run` scripts or `pwsh -File`.
+in `scripts/*.mjs` behind `bun run`. Skill helpers under `.agents/skills/*/scripts/`
+may be `.ps1` (PowerShell 7 is the canonical shell) with `.sh` twins only for
+cross-platform fallback. Avoid inline `$env:`/`$null` tokens in `pwsh -Command`
+strings (outer hosts pre-evaluate `$`) — prefer `bun run` scripts or `pwsh -File`.
 
 - Install / develop: `bun install` · `bun run dev`
 - Generated files are regenerated, never hand-edited: `bun run ai:skills:sync` (skill shims), `bun run ai:graph:sync` (dependency graph), `bun run ai:adr:sync` (ADR register), `bun run ai:nav:sync` (navigation map), `bun --filter @pumni/ui generate-exports` (UI exports map).

@@ -1,14 +1,8 @@
 # Docs
 
-AI agents start at `ai/index.md` (linked from the root `AGENTS.md`).
+AI agents start at the root `AGENTS.md` navigation table (per ADR-0027).
 
 Project documentation is split by purpose:
 
 - `architecture/overview.md` explains the repo layout and package boundaries.
-- `conventions/server-client-boundary.md` defines server/client import rules.
-- `conventions/data-fetching.md` defines Server Components, TanStack Query, and
-  Zustand usage.
-- `conventions/feature-module.md` defines where feature code should live.
-- `conventions/supabase-security.md` defines migration, RLS, grant, and key
-  handling rules.
-- `conventions/testing.md` defines test scope and command ownership.
+- `conventions/` defines project mechanics and rules; see the root `AGENTS.md` navigation table for the canonical pointer to each convention doc.

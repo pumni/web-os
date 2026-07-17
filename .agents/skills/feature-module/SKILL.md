@@ -12,7 +12,7 @@ piece and routes the detail to the matching implementation skill.
 ## Rules
 
 **Scaffold a new feature:** `pwsh -File .agents/skills/feature-module/scripts/scaffold.ps1 -FeatureName <name>`
-Creates the directory skeleton (`queries.ts`, `actions.ts`, `index.ts`, `__tests__/`).
+Creates the directory skeleton (`queries.ts`, `actions.ts`, `index.ts`).
 
 - Read `docs/conventions/feature-module.md` and `apps/web/AGENTS.md` first.
 - Default shape: `features/<feature>/{queries.ts, actions.ts, <feature>-form.tsx

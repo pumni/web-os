@@ -65,9 +65,7 @@ react-hook-form, sonner. Peer deps: React 19 (React Compiler enabled). Workspace
 
 ## Pitfalls
 
-- **Never import** `@/`, `server-only`, or any `@pumni/` server package
-  (`auth`, `supabase`, `env`, `features`, `validators`, `config` is allowed).
-  `checkUiPackageBoundaries` blocks these and they break the "pure UI" contract.
+- **Never import** `@/`, `server-only`, or **any** `@pumni/*` package from `packages/ui/src/**` — `checkUiPackageBoundaries` blocks them all, including `@pumni/config`. `@pumni/config` is a build-time dependency (ESLint flat config) consumed **outside** `src/`, which is why it appears in `package.json` but may never appear in a src import.
 - Do not add Server Actions, route handlers, or Supabase calls here.
 - Do not introduce a new raw color or token; add it to the token files first.
 - Consumers **must** use subpath imports — barrel imports (`@pumni/ui`) are

@@ -12,7 +12,7 @@ if (Test-Path $base) {
     exit 1
 }
 
-$dirs  = @("$base", "$base/__tests__")
+$dirs  = @("$base")
 $files = @{
     "$base/queries.ts"  = "// Server-side reads — see server-component-read skill`n'use cache'`n`nexport async function get$((Get-Culture).TextInfo.ToTitleCase($FeatureName))() {`n  // TODO`n}`n"
     "$base/actions.ts"  = "'use server'`n// Server Actions — see server-action skill`n`nexport async function save$((Get-Culture).TextInfo.ToTitleCase($FeatureName))() {`n  // TODO`n}`n"
@@ -26,3 +26,4 @@ foreach ($kv in $files.GetEnumerator()) {
 
 Write-Host "Scaffolded feature '$FeatureName' at $base" -ForegroundColor Green
 Write-Host "Next: read .agents/skills/feature-module/SKILL.md for layout rules." -ForegroundColor Yellow
+Write-Host "Add tests under apps/web/src/test/features/${FeatureName}.test.ts (see docs/conventions/testing.md)" -ForegroundColor Yellow

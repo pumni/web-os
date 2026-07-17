@@ -12,7 +12,7 @@
       ],
       "nav": {
         "editing": "Billing, quota, Polar webhooks (features/billing)",
-        "read_first": "docs/conventions/billing.md",
+        "read_first": "`docs/conventions/billing.md`",
         "skill": "—"
       }
     },

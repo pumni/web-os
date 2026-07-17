@@ -4,7 +4,13 @@ description: Test scope (unit vs e2e), determinism rules, and which command owns
 
 # Testing Convention
 
-Keep tests focused on behavior that protects the starter contract.
+Keep tests focused on core behavior.
+
+## Test Locations & Imports
+
+- **Web tests**: Unit and component tests for Next.js app code live in `apps/web/src/test/`, mirroring the feature structure (e.g. `src/test/features/watch-sync-machine.test.ts`).
+- **Package tests**: Tests for packages live in `packages/<pkg>/src/test/`.
+- **Deep imports**: Test files under `apps/web/src/test/` are the **only** code allowed to deep-import feature internals. See `docs/conventions/feature-module.md` Firewall exception.
 
 ## Unit Tests
 

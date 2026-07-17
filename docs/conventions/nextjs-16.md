@@ -26,7 +26,7 @@ runtime**.
 Before handcrafting `PageProps` or `RouteContext` types, run:
 
 ```bash
-npx next typegen
+bunx next typegen
 ```
 
 This generates correct types from your actual route tree. Do not hand-write
