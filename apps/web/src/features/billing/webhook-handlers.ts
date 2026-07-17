@@ -29,7 +29,7 @@ interface PolarWebhookPayload {
 
 export async function processWebhookEvent(
   webhookEventId: string,
-  rawEvent: unknown
+  rawEvent: unknown,
 ): Promise<{ status: number; message: string }> {
   const event = rawEvent as PolarWebhookPayload;
   const supabase = createSupabaseServiceRoleClient();
@@ -47,14 +47,12 @@ export async function processWebhookEvent(
       return { status: 200, message: 'Event already processed' };
     }
   } else {
-    const { error: insertError } = await supabase
-      .from('webhook_events')
-      .insert({
-        provider: 'polar',
-        provider_event_id: webhookEventId,
-        event_type: event.type,
-        payload: event as unknown as Json,
-      });
+    const { error: insertError } = await supabase.from('webhook_events').insert({
+      provider: 'polar',
+      provider_event_id: webhookEventId,
+      event_type: event.type,
+      payload: event as unknown as Json,
+    });
 
     if (insertError) {
       if (insertError.code === '23505') {
@@ -88,10 +86,10 @@ export async function processWebhookEvent(
         event.type === 'subscription.past_due'
       ) {
         if (!sub.productId) {
-        throw new Error(`Subscription event missing productId: ${sub.id}`);
-      }
+          throw new Error(`Subscription event missing productId: ${sub.id}`);
+        }
 
-      const tier = tierForProductId(sub.productId);
+        const tier = tierForProductId(sub.productId);
         if (!tier) {
           const errorMsg = `Unknown Polar product ID: ${sub.productId} for subscription ${sub.id}`;
           console.error(errorMsg);
@@ -113,21 +111,24 @@ export async function processWebhookEvent(
           throw new Error(`Subscription event missing status: ${sub.id}`);
         }
 
-        const { error: subError } = await supabase
-          .from('subscriptions')
-          .upsert({
+        const { error: subError } = await supabase.from('subscriptions').upsert(
+          {
             user_id: affectedUserId,
             provider: 'polar',
             provider_subscription_id: sub.id,
             tier,
             status: sub.status,
-            current_period_end: sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd).toISOString() : null,
+            current_period_end: sub.currentPeriodEnd
+              ? new Date(sub.currentPeriodEnd).toISOString()
+              : null,
             cancel_at_period_end: sub.cancelAtPeriodEnd || false,
             metadata: (sub.metadata as unknown as Json) || {},
             updated_at: new Date().toISOString(),
-          }, {
+          },
+          {
             onConflict: 'provider,provider_subscription_id',
-          });
+          },
+        );
 
         if (subError) {
           throw subError;
@@ -138,7 +139,10 @@ export async function processWebhookEvent(
             subscriptionId: sub.id,
             tier,
           });
-        } else if (event.type === 'subscription.updated' || event.type === 'subscription.uncanceled') {
+        } else if (
+          event.type === 'subscription.updated' ||
+          event.type === 'subscription.uncanceled'
+        ) {
           await captureServerEvent(affectedUserId, 'subscription_renewed', {
             subscriptionId: sub.id,
             tier,
@@ -155,7 +159,9 @@ export async function processWebhookEvent(
           .from('subscriptions')
           .update({
             status: sub.status,
-            current_period_end: sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd).toISOString() : null,
+            current_period_end: sub.currentPeriodEnd
+              ? new Date(sub.currentPeriodEnd).toISOString()
+              : null,
             cancel_at_period_end: sub.cancelAtPeriodEnd || false,
             updated_at: new Date().toISOString(),
           })
@@ -182,17 +188,18 @@ export async function processWebhookEvent(
       entityId = customer.id;
 
       if (affectedUserId) {
-        const { error: customerError } = await supabase
-          .from('billing_customers')
-          .upsert({
+        const { error: customerError } = await supabase.from('billing_customers').upsert(
+          {
             user_id: affectedUserId,
             provider: 'polar',
             provider_customer_id: customer.id,
             email: customer.email || null,
             updated_at: new Date().toISOString(),
-          }, {
+          },
+          {
             onConflict: 'provider,provider_customer_id',
-          });
+          },
+        );
 
         if (customerError) {
           throw customerError;
@@ -242,11 +249,12 @@ export async function processWebhookEvent(
 
     return { status: 200, message: 'Webhook processed successfully' };
   } catch (err) {
-    const errMsg = err instanceof Error
-      ? err.message
-      : err && typeof err === 'object' && 'message' in err
-        ? String((err as Record<string, unknown>).message)
-        : String(err);
+    const errMsg =
+      err instanceof Error
+        ? err.message
+        : err && typeof err === 'object' && 'message' in err
+          ? String((err as Record<string, unknown>).message)
+          : String(err);
     console.error('Error processing webhook event:', err);
     Sentry.captureException(err);
 
