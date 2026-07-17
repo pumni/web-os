@@ -12,7 +12,7 @@
       ],
       "nav": {
         "editing": "Billing, quota, Polar webhooks (features/billing)",
-        "read_first": "docs/conventions/billing.md",
+        "read_first": "`docs/conventions/billing.md`",
         "skill": "—"
       }
     },
@@ -214,7 +214,12 @@
     {
       "name": "server-client-boundary",
       "code": ["packages/supabase/src/**", "packages/env/src/**"],
-      "owners": ["docs/conventions/server-client-boundary.md", ".agents/skills/server-action/SKILL.md"]
+      "owners": ["docs/conventions/server-client-boundary.md", ".agents/skills/server-action/SKILL.md"],
+      "nav": {
+        "editing": "Server/client boundary (`\"use client\"`, `\"server-only\"`)",
+        "read_first": "`docs/conventions/server-client-boundary.md`",
+        "skill": "—"
+      }
     }
   ]
 }

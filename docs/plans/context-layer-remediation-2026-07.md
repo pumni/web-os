@@ -1,6 +1,6 @@
 # Context-Layer Remediation — 2026-07
 
-- **Status:** Draft — awaiting user approval (refactor-plan approval gate).
+- **Status:** Executed 2026-07-17 on `chore/context-layer-remediation`; merged to `main`.
 - **Date:** 2026-07-17
 - **Source:** Independent context-layer review (session 2026-07-17). Findings
   ranked A1–A3 (severe), B4–B8 (medium), C (minor).

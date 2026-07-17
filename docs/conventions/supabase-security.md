@@ -42,10 +42,13 @@ For every table in an exposed schema:
 
 Regenerate `packages/supabase/src/types.ts` after schema changes and run:
 
+```pwsh
+bunx supabase gen types typescript --local > packages/supabase/src/types.ts
+bun run typecheck
+```
+
+Never hand-edit the output. See `packages/supabase/AGENTS.md` for generation rules.
+
 ## Service-Role Key Exceptions
 
-The Supabase service-role/secret key must only be used in designated server-only modules that require bypassing Row Level Security (RLS) for system-level operations. The approved modules are:
-- `apps/web/src/app/api/webhooks/polar/route.ts` & `apps/web/src/features/billing/webhook-handlers.ts` (for processing webhook events)
-- `apps/web/src/shared/lib/audit.ts` (for recording system audit events)
-- `apps/web/src/features/billing/queries.ts` (`getEntitlements` for resolving user billing status)
-
+The Supabase service-role/secret key must only be used in designated server-only modules that require bypassing Row Level Security (RLS) for system-level operations. The approved module list is machine-enforced as `service-role-import-allowlist` (`ALLOWED_SERVICE_ROLE_MODULES` in `scripts/review-gate-rules.mjs`) — that constant is the single source of truth; extending it is an ask-first change.

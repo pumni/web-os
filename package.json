@@ -87,7 +87,6 @@
     "ai:tw": "tailwind-lint --config apps/web/src/app/globals.css \"apps/web/**/*.{ts,tsx}\" \"packages/ui/src/**/*.{ts,tsx}\"",
     "ai:nav:sync": "bun scripts/sync-nav-table.mjs",
     "ai:eval": "bun scripts/run-ai-evals.mjs",
-    "ai:eval:behavioral": "bun scripts/run-behavioral-evals.mjs",
     "ai:metrics": "bun scripts/ai-metrics.mjs",
     "ai:graph:sync": "bun scripts/sync-project-graph.mjs",
     "ai:adr:sync": "bun scripts/sync-adr-register.mjs",

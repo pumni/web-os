@@ -30,6 +30,7 @@ two seams clean so validation, submission, and cache refresh stay predictable.
 - Report outcome with `sonner` `toast`; after a mutation that changed
   server-rendered data call `router.refresh()` (the action's `updateTag`/
   `revalidateTag` handles cache, `refresh` re-pulls the RSC tree).
+  Canonical mechanics: `docs/conventions/nextjs-16.md`.
 - Disable inputs and `SubmitButton` while pending; never submit twice.
 
 ## Checklist

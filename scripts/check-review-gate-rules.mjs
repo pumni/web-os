@@ -39,7 +39,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { RULES, RULE_INFO } from './review-gate-rules.mjs';
+import { RULES, RULE_INFO, ALLOWED_SERVICE_ROLE_MODULES } from './review-gate-rules.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1025,6 +1025,55 @@ function analyzeTestWeakening(files, findings) {
   }
 }
 
+function analyzeServiceRoleImportAllowlist(files, findings) {
+  const re = /['"`]@pumni\/supabase\/service-role['"`]/g;
+  for (const file of files) {
+    const rel = relPath(file);
+    if (rel.includes('/test/') || rel.endsWith('.test.ts') || rel.endsWith('.test.tsx')) continue;
+    const content = readText(file);
+    let m = content.match(re);
+    if (m) {
+      if (!ALLOWED_SERVICE_ROLE_MODULES.includes(rel)) {
+        addFinding(
+          findings,
+          RULES.SERVICE_ROLE_IMPORT_ALLOWLIST,
+          rel,
+          content,
+          content.indexOf('@pumni/supabase/service-role'),
+          '@pumni/supabase/service-role',
+          'This module imports @pumni/supabase/service-role but is not on the ALLOWED_SERVICE_ROLE_MODULES allowlist.',
+        );
+      }
+    }
+  }
+}
+
+function analyzeQuotaPrecheckNotAtomic(sqlFiles, findings) {
+  for (const file of sqlFiles) {
+    const rel = relPath(file);
+    const content = readText(file);
+    for (const fn of findSqlStatements(content, /create\s+(?:or\s+replace\s+)?function\b/gi)) {
+      const hasCount = /count\s*\(/i.test(fn.text);
+      const hasComparison = /[<>=]/.test(fn.text);
+      if (hasCount && hasComparison) {
+        const isVolatile = /\bvolatile\b/i.test(fn.text);
+        const hasAdvisoryLock = /\bpg_advisory_xact_lock\b/i.test(fn.text);
+        if (!isVolatile || !hasAdvisoryLock) {
+          addFinding(
+            findings,
+            RULES.QUOTA_PRECHECK_NOT_ATOMIC,
+            rel,
+            content,
+            fn.start,
+            fn.text.slice(0, 160),
+            'Function performs a count check but lacks volatile qualifier and/or transaction-scoped pg_advisory_xact_lock.',
+          );
+        }
+      }
+    }
+  }
+}
+
 // -- driver -------------------------------------------------------------------
 
 function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
@@ -1050,6 +1099,8 @@ function runAnalysis({ files, sqlFiles, sqlEvidence, allowlist }) {
   analyzeImagePriority(files, findings);
   analyzeSingleArgRevalidateTag(files, findings);
   analyzeTestWeakening(files, findings);
+  analyzeServiceRoleImportAllowlist(files, findings);
+  analyzeQuotaPrecheckNotAtomic(sqlFiles, findings);
   return findings.filter((f) => !isAllowlisted(allowlist, f));
 }
 
@@ -1076,6 +1127,7 @@ function runSelfTest() {
     "use server";
     import 'server-only';
     import { createSupabaseServerClient } from '@pumni/supabase/server';
+    import { createSupabaseServiceRoleClient } from '@pumni/supabase/service-role';
     export async function listAll() {
       const supabase = createSupabaseServerClient();
       return supabase.from('profiles').select('*').eq('user_id', 'ok');
@@ -1158,6 +1210,13 @@ function runSelfTest() {
     create or replace function public.unsafe_rpc(p_user_id uuid) returns jsonb
       language plpgsql as $$
       begin return jsonb_build_object('user_id', p_user_id); end; $$;
+    create or replace function public.bad_quota_precheck(p_user_id uuid) returns boolean
+      language plpgsql stable as $$
+      declare v_count int;
+      begin
+        select count(*) into v_count from public.watch_rooms;
+        return v_count < 10;
+      end; $$;
   `;
 
   const testFixture = `

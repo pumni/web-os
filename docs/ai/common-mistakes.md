@@ -21,7 +21,7 @@ are defined in `scripts/review-gate-rules.mjs`. Unlabeled = enforced;
 ## 3. Service-role in client code (`service-role-client`, P0)
 
 ❌ Importing admin/service-role client into a `"use client"` component.
-✅ Admin client lives in server-only code. Browser uses publishable keys only.
+✅ Admin client lives in server-only code. Browser uses publishable keys only. Server modules importing service-role must be on the `service-role-import-allowlist`.
 
 ## 4. RLS not enforced (`missing-auth-uid-policy`, P0)
 

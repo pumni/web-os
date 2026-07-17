@@ -80,33 +80,11 @@ const enforcementGap = (cmContent.match(/\(honor-system\)/g) ?? []).length +
   (cmContent.match(/\(partial\)/g) ?? []).length;
 metrics.commonMistakesEnforcementGap = enforcementGap;
 
-// 5. Behavioral baseline (judge eval)
-let behavioralBaseline = null;
-try {
-  const lastRunPath = path.join(__dirname, 'behavioral-evals', 'last-run.json');
-  if (fs.existsSync(lastRunPath)) {
-    const lr = JSON.parse(fs.readFileSync(lastRunPath, 'utf8'));
-    const isStale = !lr.ranAt || new Date(lr.ranAt) < new Date('2026-07-17');
-    if (isStale || lr.trialsPerMode < 3) {
-      behavioralBaseline = {
-        status: 'invalid',
-        reason: 'grader non-functional 2026-07-10 run; see docs/plans/context-layer-remediation-2026-07.md'
-      };
-    } else {
-      behavioralBaseline = {
-        ranAt: lr.ranAt,
-        taskCount: lr.taskCount,
-        trialsPerMode: lr.trialsPerMode,
-        passRateA_avg: lr.passRateA_avg ?? null,
-        passRateB_avg: lr.passRateB_avg ?? null,
-        regressions: lr.regressions ?? null,
-      };
-    }
-  }
-} catch {
-  // fail-open
-}
-metrics.behavioralBaseline = behavioralBaseline;
+// 5. Behavioral baseline (retired)
+metrics.behavioralBaseline = {
+  status: 'retired',
+  reason: 'Behavioral eval system retired 2026-07-18; see docs/plans/context-layer-r3-overhaul-2026-07.md'
+};
 
 const outputPath = path.join(__dirname, 'ai-metrics.json');
 fs.writeFileSync(outputPath, JSON.stringify(metrics, null, 2) + '\n');

@@ -18,7 +18,7 @@ that source code and conventions cannot carry on their own.
 | 0021 | Revisit ADR-0010 Rejections — Component Catalog + DTCG Token Export | Accepted | 2026-06-30 |
 | 0022 | Keep llms.txt as the Agentic Handshake Map | Superseded by [ADR-0027](0027-context-layer-v2-standards-alignment.md) | 2026-07-01 |
 | 0025 | CSS-Native Color Pipeline Modernization | Accepted | 2026-07-04 |
-| 0026 | LLM-as-Judge for Behavioral Eval | Accepted | 2026-07-10 |
+| 0026 | LLM-as-Judge for Behavioral Eval | Deprecated (2026-07-18 — grader structurally unreliable; instrument retired without calibration; see docs/plans/context-layer-r3-overhaul-2026-07.md) | 2026-07-10 |
 | 0027 | Context Layer v2 — Standards Alignment | Accepted | 2026-07-11 |
 | 0028 | Polar Billing and Personal Tenancy for SaaS Platform | Accepted | 2026-07-12 |
 | 0029 | Inngest Durable Webhook Processing and Reconciliation | Accepted | 2026-07-12 |
@@ -67,8 +67,7 @@ Do **not** write one for:
   edit. Only write one if there is a *measured* regression (e.g. meta-vs-rule size
   inversion, or a gate that demonstrably missed real drift). Seven context-layer
   ADRs in June 2026 (all now deprecated) was the over-tuning this prevents.
-  **Before opening a context-layer ADR:** run `bun run ai:metrics` and cite at
-  least one metric from `scripts/ai-metrics.json` as regression evidence.
+  **Before opening a context-layer ADR:** cite a concrete recorded incident as evidence — a gate that demonstrably missed real drift, or an agent failure traceable to context, logged in `docs/ai/MEMORY.md` with date and pointer. (`bun run ai:metrics` output may supplement but no longer suffices: its behavioral baseline was retired 2026-07.)
 
 ## Format (MADR-lite)
 
@@ -120,7 +119,7 @@ are monotonic and never reused. Gaps are expected: 0001, 0004, 0008, 0009, 0013,
 
 ADRs are **not** in `scripts/ai-context.manifest.json`'s `requiredFiles` — they
 have a different lifecycle (status transitions, never deleted) from the enforced
-`docs/ai/*` set. However, any backtick reference to an existing ADR path (e.g.
-`docs/adr/0001-structured-prompting-and-model-routing.md`) from an enforced doc
+`docs/ai/*` set. However,  any backtick reference to an existing ADR path (e.g.
+  `docs/adr/0011-watch-sync-state-machine-and-observability-seam.md`) from an enforced doc
 is validated by `checkDocPathReferences` in `bun run ai:check`, so a broken ADR
 link still fails the gate.
