@@ -56,7 +56,9 @@ describe('processWebhookEvent', () => {
       from: vi.fn().mockReturnValue(chain),
     };
 
-    vi.mocked(createSupabaseServiceRoleClient).mockReturnValue(mockSupabase as ReturnType<typeof createSupabaseServiceRoleClient>);
+    vi.mocked(createSupabaseServiceRoleClient).mockReturnValue(
+      mockSupabase as ReturnType<typeof createSupabaseServiceRoleClient>,
+    );
   });
 
   it('handles duplicate event insertion gracefully by returning 200', async () => {
@@ -111,7 +113,7 @@ describe('processWebhookEvent', () => {
         status: 'active',
         cancel_at_period_end: false,
       }),
-      { onConflict: 'provider,provider_subscription_id' }
+      { onConflict: 'provider,provider_subscription_id' },
     );
 
     expect(revalidateTag).toHaveBeenCalledWith('entitlements:user_123', 'max');
@@ -120,7 +122,34 @@ describe('processWebhookEvent', () => {
         action: 'subscription.created',
         entityType: 'subscription',
         entityId: 'sub_123',
-      })
+      }),
+    );
+  });
+
+  it('processes customer.created: upserts the billing customer keyed by user', async () => {
+    const event = {
+      type: 'customer.created',
+      data: {
+        id: 'cus_new',
+        externalId: 'user_123',
+        email: 'user@example.com',
+      },
+    };
+
+    const result = await processWebhookEvent('evt_123', event);
+    expect(result.status).toBe(200);
+    expect(result.message).toBe('Webhook processed successfully');
+
+    // A user has exactly one billing_customers row (user_id is the primary key),
+    // so a re-created Polar customer must update that row rather than collide.
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user_id: 'user_123',
+        provider: 'polar',
+        provider_customer_id: 'cus_new',
+        email: 'user@example.com',
+      }),
+      { onConflict: 'user_id' },
     );
   });
 
@@ -145,13 +174,15 @@ describe('processWebhookEvent', () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         error: 'Unknown Polar product ID: unknown_prod for subscription sub_123',
-      })
+      }),
     );
   });
 
   it('returns 500 and updates webhook_event error if handler dependency fails', async () => {
     vi.mocked(tierForProductId).mockReturnValue('pro');
-    mockUpsert.mockResolvedValue({ error: { code: 'some_db_err', message: 'DB connection error' } });
+    mockUpsert.mockResolvedValue({
+      error: { code: 'some_db_err', message: 'DB connection error' },
+    });
 
     const event = {
       type: 'subscription.created',
@@ -173,7 +204,7 @@ describe('processWebhookEvent', () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         error: expect.stringContaining('DB connection error'),
-      })
+      }),
     );
   });
 });

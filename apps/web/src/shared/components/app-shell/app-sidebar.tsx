@@ -80,7 +80,7 @@ export function AppSidebar({ defaultCollapsed }: AppSidebarProps) {
       </div>
       <div
         aria-hidden
-        className="mx-auto h-px bg-linear-to-r from-transparent via-glass-border/20 to-transparent"
+        className="mx-auto h-px bg-linear-to-r from-transparent via-border to-transparent"
       />
 
       <nav className={cn('space-y-1', collapsed ? 'p-1.5' : 'p-2')}>

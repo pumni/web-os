@@ -34,7 +34,11 @@ export async function processPolarWebhookHandler({
 }: {
   event: { data: { webhookEventId: string; payload: PolarWebhookPayload } };
   step: { run: <T>(name: string, cb: () => Promise<T>) => Promise<T> };
-  logger: { info: (msg: string) => void; error: (msg: string, err?: unknown) => void; warn: (msg: string) => void };
+  logger: {
+    info: (msg: string) => void;
+    error: (msg: string, err?: unknown) => void;
+    warn: (msg: string) => void;
+  };
 }) {
   const { webhookEventId, payload } = event.data;
   const supabase = createSupabaseServiceRoleClient();
@@ -111,21 +115,24 @@ export async function processPolarWebhookHandler({
       }
 
       await step.run('upsert-subscription', async () => {
-        const { error } = await supabase
-          .from('subscriptions')
-          .upsert({
+        const { error } = await supabase.from('subscriptions').upsert(
+          {
             user_id: affectedUserId!,
             provider: 'polar',
             provider_subscription_id: sub.id,
             tier,
             status: sub.status!,
-            current_period_end: sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd).toISOString() : null,
+            current_period_end: sub.currentPeriodEnd
+              ? new Date(sub.currentPeriodEnd).toISOString()
+              : null,
             cancel_at_period_end: sub.cancelAtPeriodEnd || false,
             metadata: (sub.metadata as unknown as Json) || {},
             updated_at: new Date().toISOString(),
-          }, {
+          },
+          {
             onConflict: 'provider,provider_subscription_id',
-          });
+          },
+        );
 
         if (error) throw error;
       });
@@ -137,7 +144,10 @@ export async function processPolarWebhookHandler({
             tier,
           });
         });
-      } else if (payload.type === 'subscription.updated' || payload.type === 'subscription.uncanceled') {
+      } else if (
+        payload.type === 'subscription.updated' ||
+        payload.type === 'subscription.uncanceled'
+      ) {
         await step.run('capture-renewed', async () => {
           await captureServerEvent(affectedUserId!, 'subscription_renewed', {
             subscriptionId: sub.id,
@@ -147,7 +157,10 @@ export async function processPolarWebhookHandler({
       }
 
       auditAction = `subscription.${payload.type.split('.')[1]}`;
-    } else if (payload.type === 'subscription.canceled' || payload.type === 'subscription.revoked') {
+    } else if (
+      payload.type === 'subscription.canceled' ||
+      payload.type === 'subscription.revoked'
+    ) {
       if (!sub.status) {
         throw new Error(`Subscription event missing status: ${sub.id}`);
       }
@@ -157,7 +170,9 @@ export async function processPolarWebhookHandler({
           .from('subscriptions')
           .update({
             status: sub.status!,
-            current_period_end: sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd).toISOString() : null,
+            current_period_end: sub.currentPeriodEnd
+              ? new Date(sub.currentPeriodEnd).toISOString()
+              : null,
             cancel_at_period_end: sub.cancelAtPeriodEnd || false,
             updated_at: new Date().toISOString(),
           })
@@ -186,17 +201,18 @@ export async function processPolarWebhookHandler({
 
     if (affectedUserId) {
       await step.run('upsert-customer', async () => {
-        const { error } = await supabase
-          .from('billing_customers')
-          .upsert({
+        const { error } = await supabase.from('billing_customers').upsert(
+          {
             user_id: affectedUserId!,
             provider: 'polar',
             provider_customer_id: customer.id,
             email: customer.email || null,
             updated_at: new Date().toISOString(),
-          }, {
-            onConflict: 'provider,provider_customer_id',
-          });
+          },
+          {
+            onConflict: 'user_id',
+          },
+        );
 
         if (error) throw error;
       });
@@ -270,7 +286,11 @@ export async function nightlySubscriptionReconcileHandler({
   logger,
 }: {
   step: { run: <T>(name: string, cb: () => Promise<T>) => Promise<T> };
-  logger: { info: (msg: string) => void; error: (msg: string, err?: unknown) => void; warn: (msg: string) => void };
+  logger: {
+    info: (msg: string) => void;
+    error: (msg: string, err?: unknown) => void;
+    warn: (msg: string) => void;
+  };
 }) {
   // 1. Fetch all subscriptions from Polar
   const polarSubs = await step.run('fetch-polar-subs', async () => {
@@ -292,7 +312,9 @@ export async function nightlySubscriptionReconcileHandler({
   const dbSubs = await step.run('fetch-db-subs', async () => {
     const { data, error } = await supabase
       .from('subscriptions')
-      .select('id, user_id, provider, provider_subscription_id, tier, status, current_period_end, cancel_at_period_end, metadata, updated_at')
+      .select(
+        'id, user_id, provider, provider_subscription_id, tier, status, current_period_end, cancel_at_period_end, metadata, updated_at',
+      )
       .eq('provider', 'polar');
 
     if (error) throw error;
@@ -323,19 +345,19 @@ export async function nightlySubscriptionReconcileHandler({
     if (!existingDbSub) {
       // Missing subscription in DB -> Insert it
       await step.run(`reconcile-create-${polarSub.id}`, async () => {
-        const { error } = await supabase
-          .from('subscriptions')
-          .insert({
-            user_id: userId,
-            provider: 'polar',
-            provider_subscription_id: polarSub.id,
-            tier,
-            status: polarSub.status,
-            current_period_end: polarSub.currentPeriodEnd ? new Date(polarSub.currentPeriodEnd).toISOString() : null,
-            cancel_at_period_end: polarSub.cancelAtPeriodEnd || false,
-            metadata: (polarSub.metadata as unknown as Json) || {},
-            updated_at: new Date().toISOString(),
-          });
+        const { error } = await supabase.from('subscriptions').insert({
+          user_id: userId,
+          provider: 'polar',
+          provider_subscription_id: polarSub.id,
+          tier,
+          status: polarSub.status,
+          current_period_end: polarSub.currentPeriodEnd
+            ? new Date(polarSub.currentPeriodEnd).toISOString()
+            : null,
+          cancel_at_period_end: polarSub.cancelAtPeriodEnd || false,
+          metadata: (polarSub.metadata as unknown as Json) || {},
+          updated_at: new Date().toISOString(),
+        });
 
         if (error) throw error;
 
@@ -351,8 +373,12 @@ export async function nightlySubscriptionReconcileHandler({
       });
     } else {
       // Exists in DB -> check for drift
-      const currentPeriodEndStr = polarSub.currentPeriodEnd ? new Date(polarSub.currentPeriodEnd).toISOString() : null;
-      const dbPeriodEndStr = existingDbSub.current_period_end ? new Date(existingDbSub.current_period_end).toISOString() : null;
+      const currentPeriodEndStr = polarSub.currentPeriodEnd
+        ? new Date(polarSub.currentPeriodEnd).toISOString()
+        : null;
+      const dbPeriodEndStr = existingDbSub.current_period_end
+        ? new Date(existingDbSub.current_period_end).toISOString()
+        : null;
 
       const hasDrift =
         existingDbSub.status !== polarSub.status ||
@@ -403,7 +429,11 @@ export async function cleanupStaleRoomsHandler({
   logger,
 }: {
   step: { run: <T>(name: string, cb: () => Promise<T>) => Promise<T> };
-  logger: { info: (msg: string) => void; error: (msg: string, err?: unknown) => void; warn: (msg: string) => void };
+  logger: {
+    info: (msg: string) => void;
+    error: (msg: string, err?: unknown) => void;
+    warn: (msg: string) => void;
+  };
 }) {
   const supabase = createSupabaseServiceRoleClient();
   const threshold = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -443,10 +473,7 @@ export async function cleanupStaleRoomsHandler({
 
   if (roomsToDelete.length > 0) {
     await step.run('delete-rooms', async () => {
-      const { error } = await supabase
-        .from('watch_rooms')
-        .delete()
-        .in('id', roomsToDelete);
+      const { error } = await supabase.from('watch_rooms').delete().in('id', roomsToDelete);
 
       if (error) {
         logger.error('Failed to delete stale rooms', error);
@@ -463,15 +490,15 @@ export async function cleanupStaleRoomsHandler({
 
 export const processPolarWebhook = inngest.createFunction(
   { id: 'process-polar-webhook', retries: 3, triggers: [{ event: 'polar/webhook.received' }] },
-  processPolarWebhookHandler
+  processPolarWebhookHandler,
 );
 
 export const nightlySubscriptionReconcile = inngest.createFunction(
   { id: 'nightly-subscription-reconcile', retries: 2, triggers: [{ cron: '0 2 * * *' }] },
-  nightlySubscriptionReconcileHandler
+  nightlySubscriptionReconcileHandler,
 );
 
 export const cleanupStaleRooms = inngest.createFunction(
   { id: 'cleanup-stale-rooms', retries: 1, triggers: [{ cron: '0 3 * * *' }] },
-  cleanupStaleRoomsHandler
+  cleanupStaleRoomsHandler,
 );

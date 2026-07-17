@@ -36,7 +36,7 @@ import {
    Kept in sync with `--glass-fill` dark + `--glass-tint-readable` dark. Used to
    compute contrast of text over the real glass surface the specimen renders. */
 const PROD_GLASS = {
-  fill: { l: 0.15, c: 0.02, h: 240 },
+  fill: { l: 0.15, c: 0.005, h: 70 },
   readableAlpha: 0.44,
   blur: 20,
   saturate: 150,
@@ -635,9 +635,9 @@ export function GlassPlayground() {
                     phản. Thứ tách panel khỏi nền là drop shadow. Alpha giảm dần theo Fresnel:
                   </p>
                   <div className="space-y-2 border-t border-border/60 pt-3">
-                    <TokenRow label="Top (bắt sáng mạnh)" value="l+0.50 / α0.56 (dark)" />
-                    <TokenRow label="Bottom (bắt sáng phụ)" value="l+0.28 / α0.28" />
-                    <TokenRow label="Side (mờ nhất)" value="l+0.14 / α0.16" />
+                    <TokenRow label="Top (bắt sáng mạnh)" value="l+0.40 / α0.40 (dark)" />
+                    <TokenRow label="Bottom (bắt sáng phụ)" value="l+0.24 / α0.22" />
+                    <TokenRow label="Side (mờ nhất)" value="l+0.12 / α0.12" />
                     <TokenRow label="Model" value="tint lift-from-fill (Rim B)" />
                     <TokenRow label="Grain / noise" value="đã gỡ (clean)" />
                   </div>

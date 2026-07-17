@@ -157,6 +157,30 @@ describe('Glass contrast tokens', () => {
     },
   );
 
+  it.each(['light', 'dark'] as const)(
+    'keeps chrome/short text at APCA Lc 60 over glass on the flat shell background in %s mode',
+    (mode) => {
+      // The production shell no longer renders desktop blobs (removed in
+      // f998d3f): the topbar / sidebar / windows frost `--background` plus a
+      // couple of faint brand glows (≤9% color-mix — the flat background is
+      // the dominant term). Gate both glass tiers over that real backdrop so
+      // the blob gates above stop being the only modelled environment.
+      const tokenMap = buildTokenMap(mode);
+      const foreground = oklchToSrgb(tokenColor('--foreground', tokenMap));
+      const background = tokenColor('--background', tokenMap);
+
+      for (const tier of ['--glass-tint-readable', '--glass-tint-chrome'] as const) {
+        const glass = tokenColor(tier, tokenMap);
+        const glassOverShell = compositeGlass(glass, background, tokenMap);
+
+        expect(
+          Math.abs(apcaContrast(foreground, glassOverShell)),
+          `${mode} ${tier} text contrast over flat shell background (APCA)`,
+        ).toBeGreaterThanOrEqual(60);
+      }
+    },
+  );
+
   it.each(['light', 'dark'] as const)('pins frosted blur ladder primitives in %s mode', (mode) => {
     const tokenMap = buildTokenMap(mode);
     expect(tokenMap.get('--blur-glass-sm')).toBe('12px');

@@ -79,3 +79,13 @@ Includes: `cacheLife` minimums, parameterized `cacheTag`, `'use cache'` placemen
 ❌ A strategy/factory/registry for one case; interface with one impl.
 ✅ Minimum code for today's task; add abstraction when a second caller appears.
 
+## 15. Upsert conflict target is not the row identity (honor-system)
+
+❌ `onConflict: 'provider,provider_customer_id'` when the PK is `user_id` — a changed provider id hits the PK, not the declared target, so Postgres raises 23505 instead of updating.
+✅ Conflict on the column that identifies the row (`onConflict: 'user_id'`).
+
+## 16. Quota counted in a separate precheck (honor-system)
+
+❌ `stable` fn counts rows, returns `count < limit`; RLS inserts after — racing requests all pass.
+✅ `pg_advisory_xact_lock` on the contended key + `volatile`, so the recount sees committed rows. `stable` reuses the caller's snapshot, so the lock alone is not enough (migration `024`).
+

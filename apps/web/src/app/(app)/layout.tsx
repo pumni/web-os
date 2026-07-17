@@ -50,7 +50,7 @@ function ProtectedShellFallback() {
         </div>
         <div
           aria-hidden
-          className="via-glass-border/20 mx-auto h-px bg-linear-to-r from-transparent to-transparent"
+          className="mx-auto h-px bg-linear-to-r from-transparent via-border to-transparent"
         />
         <div className="space-y-2 p-4">
           <div className="h-9 skeleton rounded-md" />

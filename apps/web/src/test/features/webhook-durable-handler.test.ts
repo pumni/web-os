@@ -71,7 +71,9 @@ describe('Durable Webhook Handler (processPolarWebhookHandler)', () => {
       from: vi.fn().mockReturnValue(chain),
     };
 
-    vi.mocked(createSupabaseServiceRoleClient).mockReturnValue(mockSupabase as unknown as ReturnType<typeof createSupabaseServiceRoleClient>);
+    vi.mocked(createSupabaseServiceRoleClient).mockReturnValue(
+      mockSupabase as unknown as ReturnType<typeof createSupabaseServiceRoleClient>,
+    );
 
     mockStep = {
       run: vi.fn().mockImplementation((name, cb) => cb()),
@@ -147,7 +149,7 @@ describe('Durable Webhook Handler (processPolarWebhookHandler)', () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         error: 'Unknown Polar product ID: unknown_product_id for subscription sub_123',
-      })
+      }),
     );
   });
 
@@ -189,7 +191,7 @@ describe('Durable Webhook Handler (processPolarWebhookHandler)', () => {
         tier: 'pro',
         status: 'active',
       }),
-      { onConflict: 'provider,provider_subscription_id' }
+      { onConflict: 'provider,provider_subscription_id' },
     );
     expect(captureServerEvent).toHaveBeenCalledWith('user_123', 'upgraded', {
       subscriptionId: 'sub_123',
@@ -229,11 +231,51 @@ describe('Durable Webhook Handler (processPolarWebhookHandler)', () => {
     expect(mockUpdate).toHaveBeenCalledWith(
       expect.objectContaining({
         status: 'canceled',
-      })
+      }),
     );
     expect(captureServerEvent).toHaveBeenCalledWith('user_123', 'subscription_canceled', {
       subscriptionId: 'sub_123',
     });
+  });
+
+  it('upserts the billing customer keyed by user', async () => {
+    mockSelect.mockResolvedValue({
+      data: null,
+      error: null,
+    });
+
+    const event = {
+      data: {
+        webhookEventId: 'evt_123',
+        payload: {
+          type: 'customer.created',
+          data: {
+            id: 'cus_new',
+            externalId: 'user_123',
+            email: 'user@example.com',
+          },
+        },
+      },
+    };
+
+    const result = await processPolarWebhookHandler({
+      event: event as unknown as Parameters<typeof processPolarWebhookHandler>[0]['event'],
+      step: mockStep,
+      logger: mockLogger,
+    });
+
+    expect(result.status).toBe(200);
+    // A user has exactly one billing_customers row (user_id is the primary key),
+    // so a re-created Polar customer must update that row rather than collide.
+    expect(mockUpsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        user_id: 'user_123',
+        provider: 'polar',
+        provider_customer_id: 'cus_new',
+        email: 'user@example.com',
+      }),
+      { onConflict: 'user_id' },
+    );
   });
 
   it('processes order paid successfully and triggers analytics checkout_completed event', async () => {
