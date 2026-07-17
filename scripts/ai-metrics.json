@@ -1,8 +1,8 @@
 {
-  "totalSizeBytes": 49386,
+  "totalSizeBytes": 50072,
   "skillCount": 19,
   "manifestItemCount": 41,
-  "commonMistakesEnforcementGap": 3,
+  "commonMistakesEnforcementGap": 5,
   "behavioralBaseline": {
     "ranAt": "2026-07-10T12:38:30.043Z",
     "taskCount": 9,

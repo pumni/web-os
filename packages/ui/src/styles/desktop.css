@@ -19,6 +19,39 @@
   background-color: var(--background);
 }
 
+/* The faint static brand glows the file header promises. Glassmorphism needs
+   a backdrop with colour to refract — over a perfectly flat background the
+   frosted shell degrades to a tinted grey box (the failure mode documented in
+   design-system.md). Two soft radial washes near the top edge give the topbar,
+   sidebar and floating windows something to frost, Linear/Stripe style: STATIC
+   (no animation, no parallax — that was deliberately removed), pure paint
+   (no extra element, no backdrop-root risk), decorative only. */
+.os-desktop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Dark runs a stronger mix: the same 9%/7% wash that reads on the cream
+     background is nearly imperceptible over the L0.19 dark background, and
+     dark glass needs the extra backdrop luminance/chroma most. */
+  background:
+    radial-gradient(
+      52rem 30rem at 18% -8%,
+      light-dark(
+        color-mix(in oklch, var(--desktop-blob-primary) 9%, transparent),
+        color-mix(in oklch, var(--desktop-blob-primary) 14%, transparent)
+      ),
+      transparent 70%
+    ),
+    radial-gradient(
+      60rem 34rem at 85% -12%,
+      light-dark(
+        color-mix(in oklch, var(--desktop-blob-secondary) 7%, transparent),
+        color-mix(in oklch, var(--desktop-blob-secondary) 11%, transparent)
+      ),
+      transparent 70%
+    );
+}
+
 /*
  * Dock magnification — macOS-style. The hovered item grows; immediate
  * neighbours grow a little (via :has + sibling). CSS-only, no JS.

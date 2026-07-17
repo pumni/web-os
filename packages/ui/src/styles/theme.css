@@ -149,7 +149,7 @@
   /* 1. TINT — two-tier glass (chrome vs readable) via single fill source
      Single opaque L/C/H recipe (CSS Color 5 "fill" pattern — ADR-0025):
        --glass-fill holds the base colour, NO alpha; chrome/readable derive alpha only.
-       Light: L=0.96 C=0.01 H=250 · Dark: L=0.18 C=0.02 H=240
+       Light: L=0.96 C=0.006 H=75 · Dark: L=0.15 C=0.005 H=70
      Apple HIG map (two-tier naming, content policy):
        --glass-tint-chrome   → Clear-ish shell: dock / topbar / titlebar / rails
                                APCA Lc ≥ 60 over blobs (chrome/short labels)
@@ -169,8 +169,14 @@
      offsetting the brighter backdrop). Chrome stays < readable (shell is the
      clearer tier). Dark soft readable 0.32 stays under the 0.44 default; strong
      0.48 stays above. Light tier unchanged (gate-bound; blur carries its frost).
+     The 2026-07-17 audit then rotated the fill HUE from the legacy cool blue
+     (H250/H240 — a leftover of the indigo/cyan era) to the Warm Sand neutral
+     axis (H75/H70, chroma matched to the neutral scale): the whole system is
+     warm (neutrals H70–75, coral brand, amber blobs), so a cool veil composited
+     to a dirty grey cast next to warm surfaces. L and the alpha ladder are
+     unchanged — hue-only, so every APCA gate and rim guard carries over.
      Relative Color 5 grammar keeps L/C/H in one place; soft/strong only override alpha. */
-  --glass-fill: light-dark(oklch(0.96 0.01 250), oklch(0.15 0.02 240));
+  --glass-fill: light-dark(oklch(0.96 0.006 75), oklch(0.15 0.005 70));
   --glass-tint-chrome: light-dark(
     oklch(from var(--glass-fill) l c h / 0.54),
     oklch(from var(--glass-fill) l c h / 0.38)
@@ -219,20 +225,25 @@
        Light top:    l+0.03  / 0.58   (bright bloom)
        Light side:   l−0.60  / 0.24   (shadow hairline)
        Light bottom: l−0.68  / 0.40   (deepest shadow)
-       Dark top:     l+0.50  / 0.56   (strong light-catch)
-       Dark side:    l+0.14  / 0.16   (faint lift)
-       Dark bottom:  l+0.28  / 0.28   (secondary catch) */
+       Dark top:     l+0.40  / 0.40   (light-catch)
+       Dark side:    l+0.12  / 0.12   (faint lift)
+       Dark bottom:  l+0.24  / 0.22   (secondary catch)
+     Dark ladder toned down 2026-07-17 (was top l+0.50/α0.56, bottom l+0.28/α0.28,
+     side l+0.14/α0.16): once the scrim fix let dark glass actually frost, the
+     top rim read as a bright wire on real screenshots — out of step with the
+     subtle dark-glass edges of the 2026 idiom (macOS/Linear ≈ α0.1–0.2). The
+     whole ladder shrank proportionally so the Fresnel hierarchy is preserved. */
   --glass-edge-top: light-dark(
     oklch(from var(--glass-fill) calc(l + 0.03) c h / 0.58),
-    oklch(from var(--glass-fill) calc(l + 0.5) c h / 0.56)
+    oklch(from var(--glass-fill) calc(l + 0.4) c h / 0.4)
   );
   --glass-edge-side: light-dark(
     oklch(from var(--glass-fill) calc(l - 0.6) c h / 0.24),
-    oklch(from var(--glass-fill) calc(l + 0.14) c h / 0.16)
+    oklch(from var(--glass-fill) calc(l + 0.12) c h / 0.12)
   );
   --glass-edge-bottom: light-dark(
     oklch(from var(--glass-fill) calc(l - 0.68) c h / 0.4),
-    oklch(from var(--glass-fill) calc(l + 0.28) c h / 0.28)
+    oklch(from var(--glass-fill) calc(l + 0.24) c h / 0.22)
   );
 
   /* Uniform edge for glass bars / titlebars (single-stop, not a gradient ring) */
@@ -254,8 +265,16 @@
   --desktop-blob-accent: var(--brand-gradient-to);
   --desktop-blob-cyan: var(--coral-400);
 
-  /* --- Scrim Overlay --- */
-  --overlay: light-dark(oklch(0 0 0 / 0.4), oklch(0 0 0 / 0.6));
+  /* --- Scrim Overlay ---
+     Dark alpha 0.45 (was 0.60): the page behind an overlay is already
+     low-luminance in dark mode, and a 60% black scrim crushed both luminance
+     AND chroma — glass panels floating above it had nothing left to frost
+     (verified against real command-palette screenshots 2026-07-17: the panel
+     read as a solid card in dark while light frosted beautifully at 0.40).
+     0.45 keeps dark strictly dimmer than light (focus intent preserved,
+     darker composite even RAISES light-text APCA over the panel) while
+     letting enough backdrop colour through for the frost to register. */
+  --overlay: light-dark(oklch(0 0 0 / 0.4), oklch(0 0 0 / 0.45));
 
   /* --- Shell Chrome Depth ---
      Shell chrome — unified glass edge + ambient depth.

@@ -1671,7 +1671,7 @@
         "$value": "oklch(0 0 0 / 0.4)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0 0 0 / 0.6)"
+            "dark": "oklch(0 0 0 / 0.45)"
           }
         }
       },
@@ -1801,7 +1801,7 @@
         "$value": "oklch(from {semantic.glass.fill} calc(l - 0.68) c h / 0.4)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(from {semantic.glass.fill} calc(l + 0.28) c h / 0.28)"
+            "dark": "oklch(from {semantic.glass.fill} calc(l + 0.24) c h / 0.22)"
           }
         }
       },
@@ -1912,7 +1912,7 @@
         "$value": "oklch(from {semantic.glass.fill} calc(l - 0.6) c h / 0.24)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(from {semantic.glass.fill} calc(l + 0.14) c h / 0.16)"
+            "dark": "oklch(from {semantic.glass.fill} calc(l + 0.12) c h / 0.12)"
           }
         }
       },
@@ -1921,7 +1921,7 @@
         "$value": "oklch(from {semantic.glass.fill} calc(l + 0.03) c h / 0.58)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(from {semantic.glass.fill} calc(l + 0.5) c h / 0.56)"
+            "dark": "oklch(from {semantic.glass.fill} calc(l + 0.4) c h / 0.4)"
           }
         }
       },
@@ -1931,10 +1931,10 @@
       },
       "fill": {
         "$type": "color",
-        "$value": "oklch(0.96 0.01 250)",
+        "$value": "oklch(0.96 0.006 75)",
         "$extensions": {
           "com.pumni.modes": {
-            "dark": "oklch(0.15 0.02 240)"
+            "dark": "oklch(0.15 0.005 70)"
           }
         }
       },

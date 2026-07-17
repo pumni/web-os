@@ -8,7 +8,7 @@
  * toast. Never apply to large background areas — `backdrop-filter` is
  * GPU-intensive (each glass element forces a separate backdrop render pass,
  * see WebKit/Web-perf guidance). Blur ladder via `--glass-blur`:
- * soft 12 / default 16 light · 20 dark / strong 24 (production cap).
+ * soft 12 / default 20 (both themes) / strong 24 (production cap).
  *
  * Optical honesty: engineered frosted glassmorphism (blur + tint + specular),
  * NOT Apple Liquid Glass lensing/refraction (deleted for web GPU + text clarity).
@@ -213,7 +213,7 @@
    reads as a distinct floating surface against the background. Uses
    --shadow-glass as the real delineator (same directional drop shadow as
    glass-panel / glass-window) — the border is a light specular rim (white in
-   light mode, soft light-violet in dark mode). It is a light-catching effect,
+   light mode, near-white in dark mode). It is a light-catching effect,
    not an APCA-gated contrast boundary. This is a deliberate uniform edge design. */
 @utility glass-bar-bordered {
   background: var(--glass-bg-resolved, var(--glass-tint-chrome));
