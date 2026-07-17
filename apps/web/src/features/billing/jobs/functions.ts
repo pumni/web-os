@@ -210,7 +210,7 @@ export async function processPolarWebhookHandler({
             updated_at: new Date().toISOString(),
           },
           {
-            onConflict: 'provider,provider_customer_id',
+            onConflict: 'user_id',
           },
         );
 

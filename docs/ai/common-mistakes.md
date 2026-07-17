@@ -79,3 +79,8 @@ Includes: `cacheLife` minimums, parameterized `cacheTag`, `'use cache'` placemen
 ❌ A strategy/factory/registry for one case; interface with one impl.
 ✅ Minimum code for today's task; add abstraction when a second caller appears.
 
+## 15. Upsert conflict target is not the row identity (honor-system)
+
+❌ `onConflict: 'provider,provider_customer_id'` when the PK is `user_id` — a changed provider id hits the PK, not the declared target, so Postgres raises 23505 instead of updating.
+✅ Conflict on the column that identifies the row (`onConflict: 'user_id'`).
+

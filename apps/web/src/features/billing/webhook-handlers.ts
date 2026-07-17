@@ -197,7 +197,7 @@ export async function processWebhookEvent(
             updated_at: new Date().toISOString(),
           },
           {
-            onConflict: 'provider,provider_customer_id',
+            onConflict: 'user_id',
           },
         );
 
