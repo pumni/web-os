@@ -57,7 +57,7 @@ radius — treat edits here as R1+ and verify the dependents:
 These have **no** workspace dependencies — they are leaves, safe to change in
 isolation (still run the matching gate):
 
-- `@pumni/validators`, `@pumni/features`, `@pumni/test-utils`.
+- `@pumni/validators`, `@pumni/test-utils`.
 
 ## Bottlenecks
 

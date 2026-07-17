@@ -733,6 +733,26 @@ const CANONICAL_INVARIANTS = [
   [/\bRLS\b.*\breal\s+data\s+boundary\b/i, 'docs/conventions/supabase-security.md'],
   [/\bPageProps<[\s\S]*LayoutProps</i, 'docs/conventions/nextjs-16.md'],
   [/route segment config exports\b[\s\S]*\buse cache\b/i, 'docs/conventions/nextjs-16.md'],
+  [
+    /'seconds'[^\n]{0,80}(?:PPR|static shell)|cacheLife[^\n]{0,40}minimum/i,
+    'docs/conventions/nextjs-16.md',
+  ],
+  [
+    /cacheTag[^\n]{0,60}parameteriz/i,
+    'docs/conventions/nextjs-16.md',
+  ],
+  [
+    /'use cache'[^\n]{0,80}(?:wrapper|HOF)/i,
+    'docs/conventions/nextjs-16.md',
+  ],
+  [
+    /updateTag[^\n]{0,80}(?:Server Action|Route Handler)/i,
+    'docs/conventions/nextjs-16.md',
+  ],
+  [
+    /revalidateTag\(tag,\s*(?:profile|'max')\)|revalidateTag[^\n]{0,60}two[- ]arg/i,
+    'docs/conventions/nextjs-16.md',
+  ],
 ];
 
 function checkInvariantDuplicates() {

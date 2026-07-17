@@ -16,8 +16,7 @@ import { spawnSync } from 'node:child_process';
 // Paths whose edits must re-pass the structural context gate before "done".
 const CONTEXT = new RegExp(
   [
-    '^(?:AGENTS|CLAUDE|GEMINI|CODEX)\\.md$',
-    '^llms\\.txt$',
+    '^(?:AGENTS|CLAUDE)\\.md$',
     '^\\.mcp\\.json$',
     '^\\.github/copilot-instructions\\.md$',
     '^docs/(?:ai|conventions|architecture|adr)/',

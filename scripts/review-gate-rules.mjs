@@ -21,6 +21,8 @@ export const RULES = {
   IMAGE_PRIORITY_DEPRECATED: 'image-priority-deprecated',
   SINGLE_ARG_REVALIDATE_TAG: 'single-arg-revalidate-tag',
   TEST_WEAKENING: 'test-weakening',
+  SERVICE_ROLE_IMPORT_ALLOWLIST: 'service-role-import-allowlist',
+  QUOTA_PRECHECK_NOT_ATOMIC: 'quota-precheck-not-atomic',
 };
 
 export const RULE_INFO = {
@@ -135,4 +137,24 @@ export const RULE_INFO = {
       'Test files must not be silently weakened (.only / .skip / empty catch that swallows a failing assertion).',
     fix: 'Remove `.only`/`.skip` and the empty catch; assert the error with expect(...).toThrow(). For an intentional skip, allowlist it with a tracked reason.',
   },
+  [RULES.SERVICE_ROLE_IMPORT_ALLOWLIST]: {
+    severity: 'P0',
+    summary: 'Service-role Supabase client imports must be on the allowlist.',
+    fix: 'Remove service-role import or request permission to add to the allowlist in scripts/review-gate-rules.mjs.',
+  },
+  [RULES.QUOTA_PRECHECK_NOT_ATOMIC]: {
+    severity: 'B1',
+    summary: 'Quota precheck functions must perform atomic checks using locks and volatile stability.',
+    fix: 'Mark the function volatile and acquire a transaction-scoped pg_advisory_xact_lock on the owner/room ID.',
+  },
 };
+
+export const ALLOWED_SERVICE_ROLE_MODULES = [
+  'apps/web/src/app/api/webhooks/polar/route.ts',
+  'apps/web/src/features/billing/webhook-handlers.ts',
+  'apps/web/src/shared/lib/audit.ts',
+  'apps/web/src/features/billing/queries.ts',
+  'apps/web/src/features/watch/queries.ts',
+  'apps/web/src/features/billing/jobs/functions.ts',
+  'apps/web/src/features/profile/queries.ts',
+];

@@ -28,7 +28,7 @@ Skeleton: copy [scripts/action.template.ts](/.agents/skills/server-action/script
 - After mutations, use `updateTag(tag)` for fresh read-your-writes behavior or
   `revalidateTag(tag, 'max')` for stale-while-revalidate flows. The tag string
   must match the read's `cacheTag` exactly. Both are Server Action/Component
-  only — they throw in a Route Handler.
+  only — they throw in a Route Handler. Canonical mechanics: `docs/conventions/nextjs-16.md`.
 
 ## Known Failure Modes
 

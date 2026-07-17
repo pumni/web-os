@@ -15,7 +15,7 @@ try {
   // fail-open (no stdin / not JSON)
 }
 try {
-  const res = spawnSync('bun', ['scripts/check-context-drift.mjs', '--since=HEAD~1'], {
+  const res = spawnSync('bun', ['scripts/check-context-drift.mjs', '--since=HEAD~5'], {
     cwd,
     encoding: 'utf8',
     timeout: 20_000,

@@ -1,6 +1,6 @@
 # Context-Layer Content Remediation — 2026-07 (round 2)
 
-- **Status:** Draft — awaiting user approval (refactor-plan approval gate).
+- **Status:** Executed 2026-07-18 on `chore/context-content-remediation` (commit `48ec675`).
 - **Date:** 2026-07-17
 - **Source:** Tier-by-tier *content* review (session 2026-07-17, round 2 —
   full-text read of every tier, claims verified against code). Follows

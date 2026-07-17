@@ -1,6 +1,6 @@
 # 0026. LLM-as-Judge for Behavioral Eval
 
-- **Status:** Accepted
+- **Status:** Deprecated (2026-07-18 — grader structurally unreliable; instrument retired without calibration; see docs/plans/context-layer-r3-overhaul-2026-07.md)
 - **Date:** 2026-07-10
 - **Owner:** platform / AI context layer
 
