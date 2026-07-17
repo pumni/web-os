@@ -18,8 +18,8 @@ validation gate (`scripts/check-ai-context.mjs`).
   `bun run ai:check` fails if a shim is missing, stale, or orphaned.
 
   Why: Claude Code discovers project skills from `.claude/skills/`, but the
-  canonical, tool-agnostic body must stay the single source of truth so other
-  agents (Cursor, Gemini CLI, OpenHands…) read the same file. The shim is the
+  canonical, tool-agnostic body must stay the single source of truth so any
+  AGENTS.md-reading agent reads the same file. The shim is the
   thin adapter that keeps both properties — Claude-native discovery + one source
   of truth — without a hand-maintained copy of every description.
 - List the skill in the root `AGENTS.md` navigation table under `.agents/skills/`.
@@ -49,9 +49,9 @@ the skill. Write it for the model, not for a human menu:
 
 ```
 description: Build Next.js Server Actions with Zod validation, server-derived
-auth, and cache invalidation. Use when adding or changing an action in
-features/<feature>/actions.ts, handling a form mutation, or wiring
-updateTag/revalidateTag.
+auth, and cache invalidation. Use when adding or changing a server-side mutation in
+features/<feature>/actions.ts, or wiring updateTag/revalidateTag. For client
+form wiring, use react-hook-form.
 ```
 
 ## Information hierarchy (most immediate first)

@@ -11,7 +11,7 @@ are defined in `scripts/review-gate-rules.mjs`. Unlabeled = enforced;
 ## 1. State ownership (`query-result-in-zustand`)
 
 ❌ `useEffect(() => useProfileStore.getState().setProfile(data), [data])` after `useQuery`
-    ✅ Read directly from `useQuery`; Zustand is for client UI only (`docs/conventions/data-fetching.md`).
+✅ Read directly from `useQuery`; Zustand is for client UI only (`docs/conventions/data-fetching.md`).
 
 ## 2. Supabase select-all (`supabase-select-star`)
 

@@ -44,6 +44,7 @@ for the architecture rules before copying.
 - `supabase/migrations/003_audit_events.sql`: audit/event table pattern.
 - `supabase/migrations/017_harden_watch_queue_rls.sql`: Pattern for hardening existing table RLS policies using security definer functions or user-scoped conditions.
 - `supabase/migrations/018_harden_watch_rpcs.sql`: Pattern for hardening database RPC functions to prevent privilege escalation or data exposure.
+- `supabase/migrations/023_watch_rooms_limit_rls.sql`: atomic quota RPC pattern (advisory lock + volatile recount).
 
 ## App Router
 

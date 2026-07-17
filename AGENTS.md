@@ -64,6 +64,7 @@ violation, not a style choice; skills still cannot override P0–P4).
 
 | Editing… | Read first | Mandatory skill |
 |---|---|---|
+| Billing, quota, Polar webhooks (features/billing) | docs/conventions/billing.md | — |
 | Next.js app code (`apps/web/src`) | `apps/web/AGENTS.md` (+ `.claude/rules/*` auto-load on Claude Code) | — |
 | A new feature slice under `features/` | `docs/conventions/feature-module.md` | `feature-module` |
 | Server Action (`features/*/actions.ts`) | `docs/conventions/data-fetching.md` | `server-action` |

@@ -23,7 +23,6 @@ graph TD
   Auth[@pumni/auth]
   Config[@pumni/config]
   Env[@pumni/env]
-  Features[@pumni/features]
   Supabase[@pumni/supabase]
   TestUtils[@pumni/test-utils]
   Ui[@pumni/ui]

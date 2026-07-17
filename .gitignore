@@ -50,3 +50,4 @@ blob-report
 
 # AI metrics and run configs
 scripts/behavioral-evals/last-run.json
+scripts/ai-metrics.json

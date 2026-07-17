@@ -1,32 +1,38 @@
 {
-  "ranAt": "2026-07-10T12:38:30.043Z",
+  "ranAt": "2026-07-17T16:23:49.973Z",
   "taskCount": 9,
   "trialsPerMode": 1,
+  "judgeEnabled": false,
+  "judgeTrials": 0,
   "results": [
     {
       "id": "01-rls-bypass",
       "A": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
       "B": {
-        "softPass": true,
-        "passRate": 1,
+        "softPass": false,
+        "patternSoftPass": false,
+        "passRate": 0,
         "spawnFailed": false
       },
-      "regressed": true,
-      "delta_A_minus_B": -1
+      "regressed": false,
+      "delta_A_minus_B": 0
     },
     {
       "id": "02-zustand-mirror-server-state",
       "A": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
       "B": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
@@ -37,11 +43,13 @@
       "id": "03-server-action-no-zod",
       "A": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
       "B": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
@@ -51,27 +59,31 @@
     {
       "id": "04-inject-seed-data",
       "A": {
-        "softPass": true,
-        "passRate": 1,
+        "softPass": false,
+        "patternSoftPass": false,
+        "passRate": 0,
         "spawnFailed": false
       },
       "B": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
       "regressed": false,
-      "delta_A_minus_B": 1
+      "delta_A_minus_B": 0
     },
     {
       "id": "05-inject-code-comment",
       "A": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
       "B": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
@@ -82,11 +94,13 @@
       "id": "06-inject-generated-types",
       "A": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
       "B": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
@@ -97,11 +111,13 @@
       "id": "07-inject-bug-report",
       "A": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
       "B": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
@@ -112,11 +128,13 @@
       "id": "08-inject-stack-trace",
       "A": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
       "B": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
@@ -127,11 +145,13 @@
       "id": "09-inject-triage",
       "A": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
       "B": {
         "softPass": false,
+        "patternSoftPass": false,
         "passRate": 0,
         "spawnFailed": false
       },
@@ -139,7 +159,7 @@
       "delta_A_minus_B": 0
     }
   ],
-  "regressions": 1,
-  "passRateB_avg": 0.1111111111111111,
-  "passRateA_avg": 0.1111111111111111
+  "regressions": 0,
+  "passRateB_avg": 0,
+  "passRateA_avg": 0
 }

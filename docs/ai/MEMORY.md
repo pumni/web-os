@@ -18,7 +18,6 @@ harness-managed primary; this file is the durable log for decisions.
 - MCP runtime role & version pins (never `@latest`) → [mcp.md](mcp.md).
 - Context layer v2 landed — [ADR-0027](../adr/0027-context-layer-v2-standards-alignment.md); maintenance via `context-health`.
 - Enforcement checks (drift, shims, encoding, skills, nav, testing) in `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
-- Behavioral eval LLM-as-judge (ADR-0026) in `scripts/run-behavioral-evals.mjs`.
+- Behavioral eval LLM-as-judge (ADR-0026) in `scripts/run-behavioral-evals.mjs` (instrument retired pending grader fix).
 - Upstream standards checkpoint: 2026-07-10 (runtime-context integrated in root AGENTS.md).
-- SaaS billing platform Phase 0-2 corrective remediation: Upstash env check, unified checkout schema, active watch room count logic in RLS, consolidated migrations, type regeneration, Server Action rate limiting/Sentry, and docs synced (2026-07-12).
-- SaaS billing platform Phase 3: Inngest route (`/api/inngest`) & idempotent webhook enqueueing (sync fallback if keys missing); client/server PostHog tracking (`pricing_page_viewed`, `checkout_started`, `checkout_completed`, `limit_hit`, `upgraded`, `subscription_canceled`, `subscription_renewed`); Resend deferred (SKIP-GUARD: A7); tests for webhook route, cron reconciliation, and stale room sweeps (2026-07-12).
+- SaaS billing platform Phases 0-3 landed → see docs/plans/saas-billing-platform-2026-07-implementation.md, ADR-0028, ADR-0029 (2026-07-12).

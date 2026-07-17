@@ -40,7 +40,8 @@
     "docs/conventions/testing.md",
     "docs/conventions/transpile-packages.md",
     "docs/conventions/nextjs-16.md",
-    ".claude/rules/supabase-migrations.md"
+    ".claude/rules/supabase-migrations.md",
+    "docs/conventions/billing.md"
   ],
   "requiredExistingPaths": [
     "apps/web/src/shared/stores/app-ui-store.ts",
@@ -85,7 +86,8 @@
     "docs/conventions/supabase-security.md",
     "docs/conventions/testing.md",
     "docs/conventions/transpile-packages.md",
-    "docs/conventions/nextjs-16.md"
+    "docs/conventions/nextjs-16.md",
+    "docs/conventions/billing.md"
   ],
   "skillValidation": {
     "yamlRequiredFields": [
@@ -140,6 +142,10 @@
     {
       "path": "docs/conventions/design-system.md",
       "maxBytes": 8800
+    },
+    {
+      "path": "docs/conventions/billing.md",
+      "maxBytes": 3500
     }
   ]
 }

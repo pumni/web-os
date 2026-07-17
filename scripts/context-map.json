@@ -1,8 +1,23 @@
 {
   "subsystems": [
     {
+      "name": "billing",
+      "code": [
+        "apps/web/src/features/billing/**",
+        "apps/web/src/app/api/webhooks/**",
+        "apps/web/src/app/api/inngest/**"
+      ],
+      "owners": [
+        "docs/conventions/billing.md"
+      ],
+      "nav": {
+        "editing": "Billing, quota, Polar webhooks (features/billing)",
+        "read_first": "docs/conventions/billing.md",
+        "skill": "—"
+      }
+    },
+    {
       "name": "nextjs-app",
-      "code": ["apps/web/src/**"],
       "owners": ["apps/web/AGENTS.md"],
       "nav": {
         "editing": "Next.js app code (`apps/web/src`)",
@@ -12,7 +27,6 @@
     },
     {
       "name": "feature-module",
-      "code": ["apps/web/src/features/**"],
       "owners": ["docs/conventions/feature-module.md", ".agents/skills/feature-module/SKILL.md"],
       "nav": {
         "editing": "A new feature slice under `features/`",
@@ -98,7 +112,7 @@
     },
     {
       "name": "testing",
-      "code": ["apps/web/src/test/**", "packages/ui/src/test/**", "apps/web/vitest.config.ts", "packages/ui/vitest.config.ts"],
+      "code": ["apps/web/vitest.config.ts", "packages/ui/vitest.config.ts"],
       "owners": ["docs/conventions/testing.md", ".agents/skills/testing-template/SKILL.md"],
       "nav": {
         "editing": "Tests",

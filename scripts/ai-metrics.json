@@ -1,14 +1,10 @@
 {
-  "totalSizeBytes": 49386,
+  "totalSizeBytes": 50249,
   "skillCount": 19,
-  "manifestItemCount": 41,
+  "manifestItemCount": 42,
   "commonMistakesEnforcementGap": 3,
   "behavioralBaseline": {
-    "ranAt": "2026-07-10T12:38:30.043Z",
-    "taskCount": 9,
-    "trialsPerMode": 1,
-    "passRateA_avg": 0.1111111111111111,
-    "passRateB_avg": 0.1111111111111111,
-    "regressions": 1
+    "status": "invalid",
+    "reason": "grader non-functional 2026-07-10 run; see docs/plans/context-layer-remediation-2026-07.md"
   }
 }
