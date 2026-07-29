@@ -36,8 +36,8 @@ function renderShowcase() {
   );
 }
 
-describe('DesignSystemShowcase', () => {
-  it('renders the primary QA sections from shared UI primitives', { timeout: 15000 }, () => {
+describe('DesignSystemShowcase', { timeout: 15000 }, () => {
+  it('renders the primary QA sections from shared UI primitives', () => {
     renderShowcase();
 
     expect(screen.getByRole('heading', { name: 'Design System' })).toBeInTheDocument();
