@@ -4,15 +4,24 @@ description: How AI agents use the next-devtools MCP server (live Next.js dev-se
 
 # MCP Integration
 
-The repo declares the **next-devtools** (`next-devtools-mcp`) MCP server in `.mcp.json` as a local dev aid (never a CI dependency). The server is **opt-in and disabled by default locally** (`disabledMcpjsonServers` in `.claude/settings.local.json`). If unavailable or not running, fall back to `bun run typecheck`, `bun run build`, and direct code reads. P0–P4 in `AGENTS.md` always win. Never edit `.mcp.json` to bypass a gate or disable validation.
+The repo declares the **next-devtools** (`next-devtools-mcp`) MCP server in `.mcp.json` launched via `bunx` as a local dev aid (never a CI or build dependency). The server is **opt-in and disabled by default locally**. If unavailable or not running, fall back to native tools (`bun run typecheck`, `bun run build`, and direct code reads). Project invariants in `AGENTS.md` always apply.
 
-## Strategic position
+## Capability Gap & Strategic Position
 
-MCP here is a **local dev runtime aid, not a data-provisioning layer.** The repo does not expose code, git, or database through MCP: the agent has native filesystem + shell access; a database server would widen the token/trust surface. The data plane remains native file reads + `packages/supabase/src/types.ts` + `supabase/migrations`. Revisit only if a target harness lacks native FS/shell.
+`next-devtools` addresses specific capability gaps that native static file tools cannot fulfill:
+- Observing live Next.js client-side runtime errors and hydration mismatches.
+- Inspecting active dev server component trees and route handler states.
+- Running browser-backed visual/console verification via Playwright.
 
-## Version pin policy
+MCP here is a **local dev runtime aid, not a data-provisioning layer.** The repo does not expose code, git, shell, or database through MCP: native coding agents already have superior native capabilities for filesystem and shell operations.
 
-Versions in `.mcp.json` are **pinned to exact releases** (no `@latest`). Bump intentionally: check npm changelog → edit pin → enable locally → smoke one tool call → leave disabled-by-default. Never reintroduce `@latest`.
+## Version Pin & Removal Policy
+
+- **Version pin:** Versions in `.mcp.json` are **pinned to exact releases** (e.g. `next-devtools-mcp@0.4.0`, never `@latest`).
+- **Removal conditions:** An MCP server must be removed or disabled when:
+  1. The underlying package is deprecated or unmaintained.
+  2. Native agent harness capabilities evolve to replace the MCP functionality.
+  3. The trust surface or token cost exceeds actual runtime benefit.
 
 ## When MCP is unavailable / handshake fails
 
@@ -23,8 +32,8 @@ Versions in `.mcp.json` are **pinned to exact releases** (no `@latest`). Bump in
 
 `next-devtools-mcp` exposes tools to interact with a running Next.js dev server:
 - `init` — connects the bridge to this Next.js project and discovers the running dev server.
-- `nextjs_runtime` — lists and invokes the dev server's runtime tools (errors, logs, page/component-tree, Server Actions, etc.) dynamically.
-- `nextjs_docs` — search/retrieve Next.js docs (complements `apps/web/AGENTS.md` + `.claude/rules/*`).
+- `nextjs_runtime` — lists and invokes the dev server's runtime tools dynamically.
+- `nextjs_docs` — search/retrieve Next.js docs.
 - `browser_eval` — Playwright-backed tool to interact, screenshot, and read console logs.
 
 ### Closed-loop workflow:
@@ -34,5 +43,3 @@ Versions in `.mcp.json` are **pinned to exact releases** (no `@latest`). Bump in
 4. Call `nextjs_runtime` on the dev port to inspect errors/structure.
 5. Fix root cause using the evidence.
 6. Verify interactions via `browser_eval`.
-
-Rejected servers + rationale: ADR-0027.

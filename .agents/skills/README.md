@@ -110,7 +110,20 @@ For high-risk or error-prone subsystems, you can add a specialized domain review
 2. Create a read-only subagent under `.claude/agents/<domain>-reviewer.md` that *references* the skill and relevant ADRs rather than duplicating them.
 3. Add an optional, path-scoped checklist line recommending the reviewer under `## Verification` in `.agents/skills/review-gate/SKILL.md`.
 
-## P0–P4 still win
+## Skill Activation & Invocation Policy
 
-Nothing in a skill overrides the security mandates, enforced config, or
-conventions in `AGENTS.md`. Skills are P5 task recipes.
+Skill activation is outcome-based. Use a relevant skill when its specialized process, references or attached scripts reduce uncertainty. Native agent workflows are acceptable when they satisfy the same project invariants and verification criteria.
+
+## Skill Taxonomy
+
+Every skill under `.agents/skills/` belongs to one of five logical categories:
+
+- **procedure**: Guided multi-step creation or modification flows (e.g. `feature-module`, `refactor-plan`, `server-action`).
+- **diagnostic**: Systematic root-cause investigation workflows (e.g. `diagnosing-bugs`).
+- **review**: Verification and self-audit gates (e.g. `review-gate`, `context-health`).
+- **reference**: Curated domain-specific vocabulary and standards (e.g. `domain-modeling`, `ui-styling`).
+- **generator**: Code or test scaffold helpers (e.g. `testing-template`, `zod-validator`).
+
+## Standard Authority
+
+Nothing in a skill overrides platform safety, direct user intent, or canonical repository invariants in `AGENTS.md`. Skills provide task-scoped process guidance.

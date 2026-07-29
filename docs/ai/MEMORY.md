@@ -1,24 +1,49 @@
 # Memory — Pumni Web OS
 
-Long-term index of settled facts. Pointers-first. Hybrid memory model —
-harness-managed primary; this file is the durable log for decisions.
+Long-term index of settled facts and decision pointers. Durable log for non-canonical or cross-cutting items with clear evidence and lifecycle tracking.
 
-## How to use
+## Lifecycle Rules
 
-- Read at start of long task alongside root `AGENTS.md`.
-- Add only when a decision is settled and not yet canonical.
-- Promote to `docs/conventions/*` or `docs/architecture/*` then remove here.
+1. **Item format**: Each entry must state ID, Statement, Type, Verified Date, Evidence, Applies-To, Owner, Review-By, Promoted-To, and Superseded-By.
+2. **Promotion**:
+   - Stable invariant → `AGENTS.md` or convention doc.
+   - Repeated procedure → `.agents/skills/*`.
+   - Harness-specific issue → `.claude/` or `.github/` adapter.
+   - Live data requirement → native runtime or MCP bridge.
 
-## Settled facts
+---
 
-- Surface identity (glass vs solid) & Glass 2.0 (SSOT fill, contrast, alpha scale) → [design-system.md](../conventions/design-system.md).
-- Security boundary (RLS and keys) → [AGENTS.md](../../AGENTS.md) and [supabase-security.md](../conventions/supabase-security.md).
-- State ownership & Next.js 16 cache API → [data-fetching.md](../conventions/data-fetching.md), [common-mistakes.md](common-mistakes.md).
-- transpilePackages necessity → [transpile-packages.md](../conventions/transpile-packages.md).
-- MCP runtime role & version pins (never `@latest`) → [mcp.md](mcp.md).
-- Context layer v2 landed — [ADR-0027](../adr/0027-context-layer-v2-standards-alignment.md); maintenance via `context-health`.
-- Enforcement checks (drift, shims, encoding, skills, nav, testing) in `scripts/check-ai-context.mjs`, `scripts/review-gate-rules.mjs`.
-- Behavioral eval retired (ADR-0026 Deprecated 2026-07-18); skills verified structurally only.
-- Upstream standards checkpoint: 2026-07-10 (runtime-context integrated in root AGENTS.md).
-- Harness-loading canary added to context-health; check (1) root-import verified 2026-07-18; checks (2)(3) due at next quarterly (2026-10).
-- SaaS billing platform Phases 0-3 landed → see docs/plans/saas-billing-platform-2026-07-implementation.md, ADR-0028, ADR-0029 (2026-07-12).
+## Settled Fact Index
+
+- **ID**: `MEM-001`
+  - **Statement**: Surface identity (glass vs solid) & Glass 2.0 design tokens canonical reference.
+  - **Type**: Index pointer
+  - **Verified Date**: 2026-07-29
+  - **Evidence**: `docs/conventions/design-system.md`
+  - **Applies-To**: UI components (`packages/ui`)
+  - **Owner**: UI Design Guild
+  - **Review-By**: 2026-10-30
+  - **Promoted-To**: `docs/conventions/design-system.md`
+  - **Superseded-By**: N/A
+
+- **ID**: `MEM-002`
+  - **Statement**: Security boundary (Supabase RLS & server-only keys) lifecycle.
+  - **Type**: Index pointer
+  - **Verified Date**: 2026-07-29
+  - **Evidence**: `AGENTS.md`, `docs/conventions/supabase-security.md`
+  - **Applies-To**: Entire monorepo
+  - **Owner**: Security Lead
+  - **Review-By**: 2026-10-30
+  - **Promoted-To**: `AGENTS.md`
+  - **Superseded-By**: N/A
+
+- **ID**: `MEM-003`
+  - **Statement**: Next.js 16 caching & Zustand state isolation architecture.
+  - **Type**: Index pointer
+  - **Verified Date**: 2026-07-29
+  - **Evidence**: `docs/conventions/data-fetching.md`
+  - **Applies-To**: `apps/web`
+  - **Owner**: Web Lead
+  - **Review-By**: 2026-10-30
+  - **Promoted-To**: `docs/conventions/data-fetching.md`
+  - **Superseded-By**: N/A

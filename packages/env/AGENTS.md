@@ -31,6 +31,6 @@ configuration paths.
 
 - Never export `serverEnv` from a client-safe barrel or import it into
   `"use client"` files.
-- Service-role and secret keys must remain in `src/server.ts` behind `server-only` (P0, see [supabase-security.md](../../docs/conventions/supabase-security.md)).
+- Service-role and secret keys must remain in `src/server.ts` behind `server-only` (security invariant, see [supabase-security.md](../../docs/conventions/supabase-security.md)).
 - New browser-visible variables must be prefixed `NEXT_PUBLIC_*` and added to
   the client schema deliberately.

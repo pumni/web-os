@@ -1,0 +1,38 @@
+[
+  {
+    "agent": "claude-code",
+    "surface": "cli",
+    "instructionEntry": "CLAUDE.md",
+    "supportsAgentsMd": true,
+    "supportsImports": true,
+    "supportsNestedInstructions": true,
+    "supportsPathScopedRules": true,
+    "supportsSkills": true,
+    "lastVerified": "2026-07-29",
+    "canary": "docs/ai/agent-load-canaries.md#claude-code"
+  },
+  {
+    "agent": "codex-cli",
+    "surface": "cli",
+    "instructionEntry": "AGENTS.md",
+    "supportsAgentsMd": true,
+    "supportsImports": false,
+    "supportsNestedInstructions": true,
+    "supportsPathScopedRules": false,
+    "supportsSkills": false,
+    "lastVerified": "2026-07-29",
+    "canary": "docs/ai/agent-load-canaries.md#codex-cli"
+  },
+  {
+    "agent": "github-copilot",
+    "surface": "ide-extension",
+    "instructionEntry": ".github/copilot-instructions.md",
+    "supportsAgentsMd": true,
+    "supportsImports": false,
+    "supportsNestedInstructions": false,
+    "supportsPathScopedRules": true,
+    "supportsSkills": false,
+    "lastVerified": "2026-07-29",
+    "canary": "docs/ai/agent-load-canaries.md#github-copilot"
+  }
+]

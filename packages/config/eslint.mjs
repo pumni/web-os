@@ -2,7 +2,7 @@
  * Shared ESLint boundary rules for pure, client-safe `@pumni/*` packages
  * (currently `@pumni/ui`).
  *
- * Enforces the P0 security boundary documented in AGENTS.md: a pure UI package
+ * Enforces the security boundary documented in AGENTS.md: a pure UI package
  * must never reach into app code (`@/`), server-only modules, or the
  * auth/data/env/validator layers. Until now this rule lived only in prose — this
  * makes a violation fail `lint` instead of relying on humans remembering.
@@ -40,7 +40,7 @@ export const restrictedUiImports = [
           '@pumni/features/*',
         ],
         message:
-          'P0 security: @pumni/ui must stay client-safe. Do not import server-only, auth, Supabase, env, validators, or feature packages into the UI layer.',
+          'Security boundary: @pumni/ui must stay client-safe. Do not import server-only, auth, Supabase, env, validators, or feature packages into the UI layer.',
       },
     ],
   },

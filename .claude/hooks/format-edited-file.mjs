@@ -1,8 +1,10 @@
-// PostToolUse formatter hook (Edit | Write | MultiEdit).
+// Developer Tooling: PostToolUse Formatter Hook (Edit | Write | MultiEdit).
+//
+// NOTE: This hook is developer automation tooling, NOT part of the AI context
+// assurance layer or context quality metrics.
 //
 // Runs Prettier on the single file the agent just wrote, so formatting never
-// has to live as prose rules in the context window (the "free the context"
-// win from both context-architecture reports). Single-file = fast.
+// has to live as prose rules in the context window. Single-file = fast.
 //
 // Contract: fail-open. Any error, missing tool, or unformattable file exits 0
 // and stays silent — a formatter must never wedge or interrupt the agent.
