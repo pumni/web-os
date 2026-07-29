@@ -63,8 +63,7 @@ for the architecture rules before copying.
 
 ## Agent Skills
 
-- `.agents/skills/domain-modeling/SKILL.md`: update
-  `docs/ai/domain-language.md` when a durable term is clarified.
+- `docs/ai/domain-language.md`: shared glossary for durable domain terms.
 
 ## How To Use
 

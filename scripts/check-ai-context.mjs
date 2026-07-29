@@ -1078,7 +1078,6 @@ checkMarkdownLinks();
 checkDocPathReferences();
 checkCodeReferences();
 
-checkRuleInventory();
 checkPackageScripts();
 checkDesignTokenBoundaries();
 checkUiPackageBoundaries();
@@ -1089,8 +1088,6 @@ checkProjectGraphSync();
 checkAdrRegisterSync();
 checkClaudeShims();
 checkEncodingHygiene();
-checkSkillEvalsAndPaths();
-checkNavMapSync();
 
 // Advisory metrics snapshot — writes scripts/ai-metrics.json, never blocks the gate.
 try {

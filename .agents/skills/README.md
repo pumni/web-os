@@ -108,7 +108,7 @@ ship a `.sh` twin only when cross-platform `bun run` fallback is needed.
 For high-risk or error-prone subsystems, you can add a specialized domain reviewer subagent:
 1. Ensure the corresponding domain skill under `.agents/skills` has a populated `## Known Failure Modes` section.
 2. Create a read-only subagent under `.claude/agents/<domain>-reviewer.md` that *references* the skill and relevant ADRs rather than duplicating them.
-3. Add an optional, path-scoped checklist line recommending the reviewer under `## Verification` in `.agents/skills/review-gate/SKILL.md`.
+3. Add an optional, path-scoped checklist line recommending the reviewer in the domain skill's verification checklist.
 
 ## Skill Activation & Invocation Policy
 

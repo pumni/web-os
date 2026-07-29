@@ -1,10 +1,10 @@
 ---
-description: Pumni OS design system hard rules for tokens, surfaces, contrast, motion, and @pumni/ui. Use when styling UI, adding design tokens, building components, or deciding whether to load `.agents/skills/ui-styling/SKILL.md` for reference tables.
+description: Pumni OS design system hard rules for tokens, surfaces, contrast, motion, and @pumni/ui. Use when styling UI, adding design tokens, building components, or deciding whether to load `.agents/skills/ui-system/SKILL.md` for reference tables.
 ---
 
 # Pumni OS Design System
 
-Pumni Web OS is token-first: OKLCH primitives feed semantic roles; components consume semantic utilities only. Reference tables and recipes live in `.agents/skills/ui-styling/SKILL.md`.
+Pumni Web OS is token-first: OKLCH primitives feed semantic roles; components consume semantic utilities only. Reference tables and recipes live in `.agents/skills/ui-system/SKILL.md`.
 
 Token source of truth lives in `@pumni/ui`:
 - `packages/ui/src/styles/tokens.css`
@@ -96,4 +96,4 @@ This repo is **Tailwind v4**. Prefer v4 canonical shorthand over verbose v3 form
 
 ## State-layer tokens
 
-`--state-hover`, `--state-pressed`, and `--state-selected` are transient interactive overlays distinct from persistent opacity. See `.agents/skills/ui-styling/REFERENCE.md` for details.
+`--state-hover`, `--state-pressed`, and `--state-selected` are transient interactive overlays distinct from persistent opacity. See `.agents/skills/ui-system/SKILL.md` for details.

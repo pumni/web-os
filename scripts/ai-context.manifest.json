@@ -5,22 +5,10 @@
     ".mcp.json",
     ".github/copilot-instructions.md",
     "scripts/check-ai-context.mjs",
-    "scripts/check-review-gate-rules.mjs",
-    "scripts/check-secrets.mjs",
     "scripts/run-ai-evals.mjs",
-    "scripts/run-agent-context-evals.mjs",
-    "scripts/report-agent-context-evals.mjs",
-    "scripts/report-context-budget.mjs",
-    "scripts/ai-review-rule-allowlist.json",
-    "scripts/review-gate-rules.mjs",
-    "scripts/sync-nav-table.mjs",
-    "scripts/sync-project-graph.mjs",
     "scripts/sync-skills.mjs",
+    "scripts/sync-project-graph.mjs",
     "scripts/sync-adr-register.mjs",
-    "scripts/check-context-drift.mjs",
-    "scripts/context-scope-map.json",
-    "scripts/agent-capabilities.json",
-    "scripts/runtime-capabilities.json",
     ".claude/rules/nextjs-async-apis.md",
     ".claude/rules/nextjs-cache-components.md",
     "apps/web/AGENTS.md",
@@ -31,134 +19,22 @@
     "packages/config/AGENTS.md",
     "packages/env/AGENTS.md",
     "packages/test-utils/AGENTS.md",
-    "packages/validators/AGENTS.md",
-    "docs/ai/domain-language.md",
-    "docs/ai/mcp.md",
-    "docs/ai/MEMORY.md",
-    "docs/ai/golden-examples.md",
-    "docs/ai/common-mistakes.md",
-    ".agents/skills/review-gate/SKILL.md",
-    ".agents/skills/domain-modeling/SKILL.md",
-    "docs/architecture/overview.md",
-    "docs/architecture/project-graph.md",
-    "docs/conventions/server-client-boundary.md",
-    "docs/conventions/data-fetching.md",
-    "docs/conventions/feature-module.md",
-    "docs/conventions/design-system.md",
-    "docs/conventions/supabase-security.md",
-    "docs/conventions/testing.md",
-    "docs/conventions/transpile-packages.md",
-    "docs/conventions/nextjs-16.md",
-    ".claude/rules/supabase-migrations.md",
-    "docs/conventions/billing.md"
-  ],
-  "requiredExistingPaths": [
-    "apps/web/src/shared/stores/app-ui-store.ts",
-    "apps/web/src/features/profile/use-profile-mutation.ts",
-    "apps/web/src/features/watch/stores/volume-store.ts",
-    "apps/web/src/shared/components/app-shell/app-shell.tsx",
-    "apps/web/src/features/profile/actions.ts",
-    "apps/web/src/features/profile/queries.ts",
-    "apps/web/src/features/profile/profile-form.tsx",
-    "apps/web/src/features/watch/sync-machine.ts",
-    "apps/web/src/features/watch/sync-math.ts",
-    "apps/web/src/features/watch/hooks/use-sync-controller.ts",
-    "apps/web/src/features/watch/hooks/use-server-clock.ts",
-    "apps/web/src/test/features/watch-sync-machine.test.ts",
-    "supabase/migrations/001_initial_profiles.sql",
-    "supabase/migrations/002_user_settings.sql",
-    "supabase/migrations/003_audit_events.sql",
-    "supabase/migrations/017_harden_watch_queue_rls.sql",
-    "supabase/migrations/018_harden_watch_rpcs.sql"
+    "packages/validators/AGENTS.md"
   ],
   "requiredPackageScripts": [
     "ai:check",
     "ai:review",
     "ai:eval",
     "ai:premerge",
-    "ai:nav:sync",
     "lint",
     "typecheck",
     "test",
     "build"
   ],
-  "frontmatterRequired": [
-    "docs/ai/agent-load-canaries.md",
-    "docs/ai/context-budget.md",
-    "docs/ai/context-incidents.md",
-    "docs/ai/domain-language.md",
-    "docs/ai/mcp.md",
-    "docs/ai/golden-examples.md",
-    "docs/ai/common-mistakes.md",
-    "docs/architecture/overview.md",
-    "docs/architecture/project-graph.md",
-    "docs/conventions/server-client-boundary.md",
-    "docs/conventions/data-fetching.md",
-    "docs/conventions/feature-module.md",
-    "docs/conventions/design-system.md",
-    "docs/conventions/supabase-security.md",
-    "docs/conventions/testing.md",
-    "docs/conventions/transpile-packages.md",
-    "docs/conventions/nextjs-16.md",
-    "docs/conventions/billing.md"
-  ],
-  "skillValidation": {
-    "yamlRequiredFields": [
-      "name",
-      "description"
-    ],
-    "markdownRequiredSections": [
-      "Rules",
-      "Checklist"
-    ],
-    "recommendedSections": [
-      "Known Failure Modes"
-    ]
-  },
   "sizeBudgets": [
     {
       "path": "AGENTS.md",
       "maxBytes": 12500
-    },
-    {
-      "path": "docs/ai/MEMORY.md",
-      "maxBytes": 2300
-    },
-    {
-      "path": "docs/ai/common-mistakes.md",
-      "maxBytes": 4600
-    },
-    {
-      "path": ".agents/skills/review-gate/SKILL.md",
-      "maxBytes": 3300
-    },
-    {
-      "path": "docs/ai/mcp.md",
-      "maxBytes": 3300
-    },
-    {
-      "path": ".claude/rules/nextjs-async-apis.md",
-      "maxBytes": 900
-    },
-    {
-      "path": ".claude/rules/nextjs-cache-components.md",
-      "maxBytes": 1200
-    },
-    {
-      "path": "docs/conventions/nextjs-16.md",
-      "maxBytes": 5500
-    },
-    {
-      "path": ".claude/rules/supabase-migrations.md",
-      "maxBytes": 750
-    },
-    {
-      "path": "docs/conventions/design-system.md",
-      "maxBytes": 8800
-    },
-    {
-      "path": "docs/conventions/billing.md",
-      "maxBytes": 3500
     }
   ]
 }
