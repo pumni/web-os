@@ -14,8 +14,8 @@
     "./lib/*": "./src/lib/*.ts"
   },
   "scripts": {
-    "lint": "bun --bun eslint .",
-    "typecheck": "bun --bun tsc --noEmit",
+    "lint": "bunx eslint .",
+    "typecheck": "bunx tsc --noEmit",
     "generate-exports": "bun run scripts/generate-exports.ts",
     "export-dtcg": "bun run scripts/export-dtcg.ts",
     "test": "vitest run",

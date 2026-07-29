@@ -27,5 +27,5 @@ short reminder with a back-link to the canonical above.
   `src/app/(app)/todos` — are exempt from full feature-module requirements, but
   security mandates (RLS/auth) still apply if they touch any server resource.
 
-For repeated procedures see `.agents/skills/*` (e.g. `server-action`,
-`tanstack-query-hook`, `zustand-store`, `ui-styling`).
+For repeated procedures see `.agents/skills/*` (e.g. `web-feature`,
+`ui-system`, `watch-sync`, `supabase-migration`).

@@ -13,7 +13,7 @@
     "zod": "catalog:"
   },
   "scripts": {
-    "typecheck": "bun --bun tsc --noEmit"
+    "typecheck": "bunx tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "catalog:",

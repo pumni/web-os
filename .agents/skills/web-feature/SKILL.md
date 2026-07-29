@@ -10,14 +10,15 @@ Scaffold or extend a vertical feature slice (`apps/web/src/features/<feature>`) 
 ## Rules
 
 1. **Feature Scope**: Domain logic lives in `features/<feature>` vertical slices behind `index.ts`. Routes in `src/app` compose UI components only.
-2. **Server Reads**: Fetch request-scoped data in `queries.ts` or Server Components using `'use cache'` and parameterized `cacheTag`.
-3. **Server Actions**: Mutations in `actions.ts` validate inputs with Zod, verify server auth (`requireUser`), and revalidate tags (`updateTag`).
-4. **Forms**: Client forms (`*-form.tsx`) use `react-hook-form` + `zodResolver` calling a Server Action.
-5. **State Separation**: Server state stays in TanStack Query or Server Components. Zustand stores hold client UI state only.
+2. **Server Reads**: Standard Server Components are default for initial reads. Use `'use cache'` and `cacheTag` only when data is safe to reuse across requests.
+3. **Server Actions**: Mutations in `actions.ts` validate inputs with Zod and verify server auth (`requireUser`). Call `updateTag` when the mutation invalidates cached server data.
+4. **Forms**: Use React Hook Form + Zod for forms with validation or interactive state. Small/simple inputs may use native forms or direct Server Actions.
+5. **State Separation**: Server state stays in Server Components or TanStack Query. Create a Zustand store only when client UI state needs to be shared or persisted (never mirror server data).
 
 ## Checklist
 
 - [ ] Feature exported behind public `index.ts` API.
-- [ ] Server Action input validated with Zod and auth checked with `requireUser()`.
+- [ ] Server Action inputs validated with Zod and auth checked with `requireUser()`.
+- [ ] Caching and tag revalidation applied conditionally where data reuse occurs.
 - [ ] Zustand stores contain client UI state only (no server data mirror).
 - [ ] `bun run lint` && `bun run typecheck` pass cleanly.

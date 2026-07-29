@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "storybook dev -p 61000",
     "catalog:build": "storybook build",
-    "catalog:lint": "bun --bun eslint .",
-    "catalog:typecheck": "bun --bun tsc --noEmit"
+    "catalog:lint": "bunx eslint .",
+    "catalog:typecheck": "bunx tsc --noEmit"
   },
   "dependencies": {
     "@pumni/ui": "workspace:*",

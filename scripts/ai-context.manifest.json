@@ -24,7 +24,6 @@
   "requiredPackageScripts": [
     "ai:check",
     "ai:review",
-    "ai:eval",
     "ai:premerge",
     "lint",
     "typecheck",

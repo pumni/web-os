@@ -5,9 +5,6 @@
  *   1. Review Gate static rules (architecture + RLS + Query/Zustand boundaries)
  *   2. Secrets scan (.env committed, hardcoded keys, service-role literals)
  *   3. Feature boundary check
- *
- * Note: Static policy checks verify rule adherence; for behavioral evaluation of agent execution,
- * see `ai:context-eval` (`scripts/run-agent-context-evals.mjs`).
  */
 
 import path from 'node:path';
@@ -16,10 +13,6 @@ import { execFileSync } from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
-
-if (process.env.npm_lifecycle_event === 'ai:eval') {
-  console.warn('[DEPRECATION WARNING] `bun run ai:eval` is deprecated and will be removed in a future release. Please use `bun run ai:review` instead.');
-}
 
 let failed = false;
 

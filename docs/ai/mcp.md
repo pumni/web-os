@@ -28,18 +28,18 @@ MCP here is a **local dev runtime aid, not a data-provisioning layer.** The repo
 - **next-devtools unavailable:** fall back to `bun run typecheck` / `bun run build` / direct code reads. **Do not invent runtime errors.**
 - **Database schema queries:** fallback to `packages/supabase/src/types.ts` and migrations under `supabase/migrations`. **Do not invent columns, types, or policies.**
 
-## 1. next-devtools (Runtime Bridge)
+## 1. next-devtools (Runtime Bridge v0.4.0)
 
-`next-devtools-mcp` exposes tools to interact with a running Next.js dev server:
-- `init` — connects the bridge to this Next.js project and discovers the running dev server.
-- `nextjs_runtime` — lists and invokes the dev server's runtime tools dynamically.
-- `nextjs_docs` — search/retrieve Next.js docs.
+`next-devtools-mcp` (v0.4.0+) exposes tools to interact with a running Next.js dev server:
+- `nextjs_index` — discovers the running Next.js dev server and lists available runtime tools.
+- `nextjs_call` — invokes a runtime tool on the discovered dev server.
+- `nextjs_docs` — search/retrieve Next.js documentation installed with the package.
 - `browser_eval` — Playwright-backed tool to interact, screenshot, and read console logs.
 
 ### Closed-loop workflow:
 1. Make code change.
 2. Run dev server (`bun run dev`) and note port.
-3. Call `init`.
-4. Call `nextjs_runtime` on the dev port to inspect errors/structure.
+3. Call `nextjs_index` to discover the dev server and list available tools.
+4. Call `nextjs_call` to inspect runtime errors or component trees on the dev server.
 5. Fix root cause using the evidence.
 6. Verify interactions via `browser_eval`.

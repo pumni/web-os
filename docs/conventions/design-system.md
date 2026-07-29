@@ -65,7 +65,7 @@ Token inventory: `packages/ui/src/styles/tokens.css`, `packages/ui/src/styles/th
 5. Radius via named utilities only (`rounded-md/lg/xl`, `rounded-full`). No `rounded-[Npx]`.
 6. No new color tokens. Reuse existing semantic tokens.
 7. **Backdrop-root trap (MDN §backdrop-filter).** Never wrap glass in an ancestor carrying `opacity < 1`, `mix-blend-mode`, or `will-change: opacity|mix-blend-mode`. Guarded by `glass-backdrop-root-trap.test.ts`.
-8. **Accent Lc 45 ↔ font-size pairing (APCA Bronze Simple Mode).** Lc 45 is large/heavy text floor (24px/700 or 36px/400). A small accent chip label must carry ≥ `text-sm font-semibold` (14px/600) or heavier. See `REFERENCE.md` for detail.
+8. **Accent Lc 45 ↔ font-size pairing (APCA Bronze Simple Mode).** Lc 45 is large/heavy text floor (24px/700 or 36px/400). A small accent chip label must carry ≥ `text-sm font-semibold` (14px/600) or heavier. See `.agents/skills/ui-system/SKILL.md` for detail.
 
 ### Decision tree
 
