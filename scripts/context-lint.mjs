@@ -114,6 +114,32 @@ function collectActiveContextFiles() {
     }
   }
 
+  // Add vendor rules & instructions (.claude/rules/*.md, .github/**/*.md)
+  const claudeRulesDir = resolveRel('.claude/rules');
+  if (fs.existsSync(claudeRulesDir)) {
+    for (const entry of fs.readdirSync(claudeRulesDir, { withFileTypes: true })) {
+      if (entry.isFile() && entry.name.endsWith('.md')) {
+        files.add(`.claude/rules/${entry.name}`);
+      }
+    }
+  }
+
+  const githubDir = resolveRel('.github');
+  if (fs.existsSync(githubDir)) {
+    function scanGithub(dir) {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (entry.name === 'workflows') continue;
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          scanGithub(fullPath);
+        } else if (entry.isFile() && entry.name.endsWith('.md')) {
+          files.add(path.relative(ROOT, fullPath).replaceAll(path.sep, '/'));
+        }
+      }
+    }
+    scanGithub(githubDir);
+  }
+
   return Array.from(files);
 }
 

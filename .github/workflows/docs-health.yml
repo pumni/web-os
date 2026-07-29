@@ -1,12 +1,7 @@
 name: Docs Health
 
-# Nightly documentation health check. Runs the deterministic AI-context gate on
-# a schedule (not only on PR) so staleness, graph drift, and link rot surface
-# even when no one is actively editing docs. Also scans external links with
-# Lychee — internal links are already covered by `bun run ai:check` on every
-# push/PR; this adds coverage for https:// links that rot silently.
-#
-# Manual trigger is available for on-demand runs after bulk doc edits.
+# Scheduled documentation link-rot check. Scans external URLs in documentation
+# to surface broken links that rot over time.
 
 on:
   schedule:
@@ -29,9 +24,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          # Full history so ai-metrics can score ADR adoption across recent commits.
-          fetch-depth: 0
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -41,16 +33,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: AI context check (structure + freshness)
-        run: bun run context:lint
-
-      - name: AI static policy check
-        run: bun run policy:check
-
       - name: External link check (Lychee)
         uses: lycheeverse/lychee-action@v2
         with:
-          # Scan the instruction + docs surface only (not node_modules / generated).
           args: >-
             --no-progress
             --exclude-mail

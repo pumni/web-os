@@ -37,7 +37,6 @@ jobs:
       - name: Fallow code quality audit
         # gate: new-only (set in .fallowrc.json audit.gate) — only new findings block CI.
         # --format compact: stable parseable output in v3.3.0.
-        # NOTE: --format github-annotations is in [Unreleased]; switch when fallow >= next release.
         run: bun run fallow:audit --format compact --quiet
 
       - name: Fallow health score
@@ -45,25 +44,10 @@ jobs:
         run: bun run fallow:health --format compact --quiet
         continue-on-error: true
 
-      - name: AI context check
-        run: bun run context:lint
-
-      - name: Lint
-        run: bun run lint
-
-      - name: Typecheck
-        run: bun run typecheck
-
-      - name: Test
-        run: bun run test
-
-      - name: Build
-        run: bun run build
+      - name: Verify
+        run: bun run verify
         env:
           NEXT_PUBLIC_APP_URL: http://localhost:3000
           NEXT_PUBLIC_SUPABASE_URL: https://xtvuzvvqhbuldnaznfnq.supabase.co
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy
           SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy-secret
-
-      - name: AI static policy check
-        run: bun run policy:check
