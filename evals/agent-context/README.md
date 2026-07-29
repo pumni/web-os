@@ -1,6 +1,9 @@
-# Agent Context Behavioral Evaluation Harness (Generation 2)
+# Agent Context Behavioral Evaluation Harness (Design Specification)
 
-This harness evaluates whether project context layers (AGENTS.md, conventions, skills) measurably improve coding agent outcomes compared to native agent baselines.
+This specification defines the methodology for evaluating whether project context layers (AGENTS.md, conventions, skills) measurably improve coding agent outcomes compared to native agent baselines.
+
+> [!IMPORTANT]
+> This harness requires a live LLM agent execution runner (Codex CLI, Claude Code, GitHub Copilot) with treatment isolation. Synthetic or hardcoded verdicts are prohibited.
 
 ## Treatments
 
@@ -8,26 +11,22 @@ This harness evaluates whether project context layers (AGENTS.md, conventions, s
 - **Treatment B (Minimal)**: Targeted minimal context (security boundaries & scope invariants only).
 - **Treatment C (Full Context)**: Complete context layer (AGENTS.md + scope map + active skills).
 
-## Task Suite (`evals/agent-context/tasks/`)
+## Task Suite Specification (`evals/agent-context/tasks/suite.json`)
 
-Includes benchmark scenarios covering:
-1. Security & RLS boundaries (`security-rls.yaml`)
-2. Secret key client-isolation (`security-keys.yaml`)
-3. Architecture & server-client boundary (`architecture-boundary.yaml`)
-4. Data fetching & Zustand state separation (`data-fetching.yaml`)
-5. Bug diagnosis feedback loop (`debugging-loop.yaml`)
-6. Vertical feature slicing (`feature-module.yaml`)
-7. Refactor & structural reshape (`refactor-plan.yaml`)
-8. Prompt injection resistance in seed/fixtures (`security-injection.yaml`)
-9. Ambiguous requirement handling (`ambiguous-spec.yaml`)
-10. Correct refusal on illegal overrides (`correct-refusal.yaml`)
-11. Narrow verification selection (`verification-selection.yaml`)
-12. Skill activation precision/recall (`skill-activation.yaml`)
+Currently defines 6 core benchmark task specifications:
+1. Supabase RLS Data Boundary Enforcement (`security-rls`)
+2. Prevent Service-Role Leak in Client Component (`security-keys`)
+3. Client UI State vs Server State Separation (`architecture-boundary`)
+4. Prompt Injection Resistance in Untrusted Repo Content (`security-injection`)
+5. Refuse Explicit Safety Boundary Overrides (`correct-refusal`)
+6. Precision Skill Activation on Form Mutation (`skill-activation`)
 
-## Metrics Collected
+## Required Metrics Protocol
 
-- `task_success`
-- `critical_violation_count`
+When a live agent runner is connected, the following empirical metrics must be captured across at least 3 trials per treatment:
+
+- `task_success` (Deterministic test/gate execution)
+- `critical_violation_count` (Security/RLS/secret violations)
 - `incorrect_refusal_count`
 - `unnecessary_clarification_count`
 - `files_read`
@@ -41,14 +40,3 @@ Includes benchmark scenarios covering:
 - `skill_activation_precision`
 - `skill_activation_recall`
 - `human_maintainability_score`
-
-## Execution & Reporting
-
-Run evaluations:
-```bash
-bun run ai:context-eval
-```
-Generate report:
-```bash
-bun scripts/report-agent-context-evals.mjs
-```

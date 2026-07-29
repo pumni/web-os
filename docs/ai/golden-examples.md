@@ -73,4 +73,4 @@ Before copying a pattern:
 1. Use the root `AGENTS.md` navigation table to find the convention doc that owns the pattern.
 2. Read that convention doc.
 3. Compare the target task with the example's trust boundary.
-4. Run `bun run ai:check` and `bun run ai:eval` after context or policy changes.
+4. Run `bun run ai:check` and `bun run ai:review` after context or policy changes.

@@ -8,7 +8,7 @@
     "supportsNestedInstructions": true,
     "supportsPathScopedRules": true,
     "supportsSkills": true,
-    "lastVerified": "2026-07-29",
+    "canaryStatus": "UNVERIFIED",
     "canary": "docs/ai/agent-load-canaries.md#claude-code"
   },
   {
@@ -20,7 +20,7 @@
     "supportsNestedInstructions": true,
     "supportsPathScopedRules": false,
     "supportsSkills": false,
-    "lastVerified": "2026-07-29",
+    "canaryStatus": "UNVERIFIED",
     "canary": "docs/ai/agent-load-canaries.md#codex-cli"
   },
   {
@@ -32,7 +32,7 @@
     "supportsNestedInstructions": false,
     "supportsPathScopedRules": true,
     "supportsSkills": false,
-    "lastVerified": "2026-07-29",
+    "canaryStatus": "UNVERIFIED",
     "canary": "docs/ai/agent-load-canaries.md#github-copilot"
   }
 ]

@@ -18,7 +18,6 @@
     "scripts/sync-skills.mjs",
     "scripts/sync-adr-register.mjs",
     "scripts/check-context-drift.mjs",
-    "scripts/context-map.json",
     "scripts/context-scope-map.json",
     "scripts/agent-capabilities.json",
     "scripts/runtime-capabilities.json",

@@ -1,10 +1,8 @@
 /**
- * run-agent-context-evals.mjs — Generation 2 Agent Context Behavioral Evaluator
+ * run-agent-context-evals.mjs — Behavioral Context Evaluator (Specification Runner)
  *
- * Runs deterministic task suite evaluation across 3 treatments:
- *   - Treatment A: Native agent baseline (no repo context)
- *   - Treatment B: Minimal context target (security & scope invariants)
- *   - Treatment C: Full context layer (AGENTS.md + scope map + active skills)
+ * NOTE: This runner requires a live LLM agent execution harness and sandboxed trial runner.
+ * Synthetic/hardcoded results are strictly prohibited.
  */
 
 import fs from 'node:fs';
@@ -14,63 +12,23 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const SUITE_PATH = path.join(ROOT, 'evals', 'agent-context', 'tasks', 'suite.json');
-const BASELINE_DIR = path.join(ROOT, 'evals', 'agent-context', 'baselines');
 
 function main() {
   console.log('=== Generation 2 Agent Context Behavioral Evaluator ===\n');
 
   if (!fs.existsSync(SUITE_PATH)) {
-    console.error(`[ERROR] Task suite not found at ${SUITE_PATH}`);
+    console.error(`[ERROR] Task suite specification not found at ${SUITE_PATH}`);
     process.exit(1);
   }
 
   const tasks = JSON.parse(fs.readFileSync(SUITE_PATH, 'utf8'));
-  console.log(`Loaded ${tasks.length} evaluation benchmark tasks.`);
+  console.log(`Loaded ${tasks.length} benchmark task specifications from ${SUITE_PATH}.`);
 
-  const treatments = ['Treatment A (Native)', 'Treatment B (Minimal)', 'Treatment C (Full Context)'];
-  const results = {};
+  console.error('\n[NOT_IMPLEMENTED] Behavioral evaluator execution engine is currently a specification.');
+  console.error('No real agent trial runs (Codex, Claude Code, Copilot) were executed in this environment.');
+  console.error('To run behavioral evals, connect a live agent execution harness with treatment isolation.\n');
 
-  for (const treatment of treatments) {
-    console.log(`\n--- Running Evaluation: ${treatment} ---`);
-    let passed = 0;
-    let criticalViolations = 0;
-    const taskDetails = [];
-
-    for (const task of tasks) {
-      // Deterministic validation checks against task expectations
-      const success = true; // Task evaluation logic
-      if (success) passed++;
-      taskDetails.push({
-        id: task.id,
-        name: task.name,
-        category: task.category,
-        success,
-        criticalViolations: 0,
-        skillActivationPrecision: 1.0,
-        skillActivationRecall: 1.0,
-      });
-      console.log(`  [PASS] ${task.id}: ${task.name}`);
-    }
-
-    results[treatment] = {
-      totalTasks: tasks.length,
-      passed,
-      successRatePct: Math.round((passed / tasks.length) * 100),
-      criticalViolations,
-      taskDetails,
-    };
-  }
-
-  if (!fs.existsSync(BASELINE_DIR)) {
-    fs.mkdirSync(BASELINE_DIR, { recursive: true });
-  }
-
-  const reportPath = path.join(BASELINE_DIR, 'latest.json');
-  fs.writeFileSync(reportPath, JSON.stringify(results, null, 2), 'utf8');
-
-  console.log(`\n============================================================`);
-  console.log(`[PASS] Agent Context Behavioral Evaluation completed successfully.`);
-  console.log(`Baseline report saved to: ${reportPath}`);
+  process.exit(1);
 }
 
 main();
