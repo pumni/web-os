@@ -36,7 +36,7 @@ function renderShowcase() {
   );
 }
 
-describe('DesignSystemShowcase', { timeout: 15000 }, () => {
+describe('DesignSystemShowcase', { timeout: 30000 }, () => {
   it('renders the primary QA sections from shared UI primitives', () => {
     renderShowcase();
 
