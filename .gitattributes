@@ -1,9 +1,9 @@
 # Normalize all text files to LF in the repository AND on checkout.
 # This overrides per-user `core.autocrlf`, so generated docs (the ADR register in
-# docs/adr/README.md, the dependency graph in docs/architecture/project-graph.md)
+# docs/adr/README.md and workspace manifests)
 # and scripts stay byte-stable across platforms. Without this, a Windows checkout
 # (autocrlf=true) re-materializes Markdown as CRLF and the `--check` gates in
-# scripts/sync-adr-register.mjs / sync-project-graph.mjs can report false drift.
+# scripts/context-lint.mjs / sync-skills.mjs can report false drift.
 * text=auto eol=lf
 
 # Shell scripts must stay LF regardless of platform.

@@ -6,7 +6,7 @@ description: Monorepo structure, package boundaries, and module responsibilities
 
 ## Structural Principles
 
-Pumni Web OS uses a strict monorepo architecture with Bun workspaces and Turborepo. It divides features into isolated workspace modules (packages) and a main application delivery layer (`apps/web`). For the authoritative package dependency graph, see [Project Graph](project-graph.md).
+Pumni Web OS uses a strict monorepo architecture with Bun workspaces and Turborepo. It divides features into isolated workspace modules (packages) and a main application delivery layer (`apps/web`). Workspace manifests and policy checks are the authoritative dependency boundary.
 
 ## Modular Structure
 
@@ -19,6 +19,5 @@ Pumni Web OS uses a strict monorepo architecture with Bun workspaces and Turbore
 
 ## Dependency Graph
 
-For the real `workspace:*` edge map, foundational blocks, and blast-radius
-reasoning before cross-package changes, see
-`docs/architecture/project-graph.md`.
+Use workspace `package.json` files and `bun run policy:check` when reasoning
+about package edges or validating cross-package changes.

@@ -139,7 +139,7 @@ for (const dir of listSkillDirs(SHIM_DIR)) {
 
 if (checkOnly) {
   if (drift > 0) {
-    console.error(`\n${drift} skill shim(s) out of sync. Run \`bun run ai:skills:sync\` and commit.`);
+    console.error(`\n${drift} skill shim(s) out of sync. Run \`bun run skills:sync\` and commit.`);
     process.exit(1);
   }
   console.log('Skill shims are in sync with .agents/skills.');

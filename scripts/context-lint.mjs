@@ -79,11 +79,10 @@ function contextFiles() {
     if (file.startsWith('.claude/skills/') && name === 'SKILL.md') files.add(file);
   });
 
-  const conventions = absolute('docs/conventions');
-  if (fs.existsSync(conventions)) {
-    for (const name of fs.readdirSync(conventions)) {
-      if (name.endsWith('.md')) files.add(`docs/conventions/${name}`);
-    }
+  for (const directory of ['docs/ai', 'docs/conventions', 'docs/architecture']) {
+    walk(absolute(directory), (fullPath, name) => {
+      if (name.endsWith('.md')) files.add(relative(fullPath));
+    });
   }
   return [...files].filter((file) => fs.existsSync(absolute(file)));
 }
