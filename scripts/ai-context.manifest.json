@@ -5,12 +5,7 @@
     ".mcp.json",
     ".github/copilot-instructions.md",
     "scripts/check-ai-context.mjs",
-    "scripts/run-ai-evals.mjs",
     "scripts/sync-skills.mjs",
-    "scripts/sync-project-graph.mjs",
-    "scripts/sync-adr-register.mjs",
-    ".claude/rules/nextjs-async-apis.md",
-    ".claude/rules/nextjs-cache-components.md",
     "apps/web/AGENTS.md",
     "apps/catalog/AGENTS.md",
     "packages/ui/AGENTS.md",
@@ -33,7 +28,7 @@
   "sizeBudgets": [
     {
       "path": "AGENTS.md",
-      "maxBytes": 12500
+      "maxBytes": 5000
     }
   ]
 }

@@ -23,7 +23,7 @@ resolved before any privileged write.
 
 - `bun --filter @pumni/auth typecheck`
 - `bun run typecheck`
-- `bun run ai:eval` (`server-action-missing-auth`, `service-role-client`,
+- `bun run ai:review` (`server-action-missing-auth`, `service-role-client`,
   `server-only-in-client` all govern how this package is consumed)
 
 ## Pitfalls

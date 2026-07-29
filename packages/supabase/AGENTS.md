@@ -25,7 +25,7 @@ database types. This package owns the app↔DB contract.
 
 - `bun --filter @pumni/supabase typecheck`
 - `bun run typecheck` (catches cross-package type drift on generated types)
-- `bun run ai:eval` (the `service-role-client` and `server-only-in-client`
+- `bun run ai:review` (the `service-role-client` and `server-only-in-client`
   rules scan imports of this package)
 
 ## Pitfalls

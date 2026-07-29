@@ -25,7 +25,7 @@ configuration paths.
 
 - `bun --filter @pumni/env typecheck`
 - `bun run ai:check`
-- `bun run ai:eval` when changing secret handling
+- `bun run ai:review` when changing secret handling
 
 ## Pitfalls
 

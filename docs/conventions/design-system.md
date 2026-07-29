@@ -1,10 +1,10 @@
 ---
-description: Pumni OS design system hard rules for tokens, surfaces, contrast, motion, and @pumni/ui. Use when styling UI, adding design tokens, building components, or deciding whether to load `.agents/skills/ui-system/SKILL.md` for reference tables.
+description: Pumni OS design system hard rules for tokens, surfaces, contrast, motion, and @pumni/ui. Use when styling UI, adding design tokens, or building UI components.
 ---
 
 # Pumni OS Design System
 
-Pumni Web OS is token-first: OKLCH primitives feed semantic roles; components consume semantic utilities only. Reference tables and recipes live in `.agents/skills/ui-system/SKILL.md`.
+Pumni Web OS is token-first: OKLCH primitives feed semantic roles; components consume semantic utilities only. See `.agents/skills/ui-system/SKILL.md` for the quick activation card.
 
 Token source of truth lives in `@pumni/ui`:
 - `packages/ui/src/styles/tokens.css`
@@ -65,7 +65,7 @@ Token inventory: `packages/ui/src/styles/tokens.css`, `packages/ui/src/styles/th
 5. Radius via named utilities only (`rounded-md/lg/xl`, `rounded-full`). No `rounded-[Npx]`.
 6. No new color tokens. Reuse existing semantic tokens.
 7. **Backdrop-root trap (MDN §backdrop-filter).** Never wrap glass in an ancestor carrying `opacity < 1`, `mix-blend-mode`, or `will-change: opacity|mix-blend-mode`. Guarded by `glass-backdrop-root-trap.test.ts`.
-8. **Accent Lc 45 ↔ font-size pairing (APCA Bronze Simple Mode).** Lc 45 is large/heavy text floor (24px/700 or 36px/400). A small accent chip label must carry ≥ `text-sm font-semibold` (14px/600) or heavier. See `.agents/skills/ui-system/SKILL.md` for detail.
+8. **Accent Lc 45 ↔ font-size pairing (APCA Bronze Simple Mode).** Lc 45 is large/heavy text floor (24px/700 or 36px/400). A small accent chip label must carry ≥ `text-sm font-semibold` (14px/600) or heavier.
 
 ### Decision tree
 
@@ -96,4 +96,4 @@ This repo is **Tailwind v4**. Prefer v4 canonical shorthand over verbose v3 form
 
 ## State-layer tokens
 
-`--state-hover`, `--state-pressed`, and `--state-selected` are transient interactive overlays distinct from persistent opacity. See `.agents/skills/ui-system/SKILL.md` for details.
+`--state-hover`, `--state-pressed`, and `--state-selected` are transient interactive overlays distinct from persistent opacity.

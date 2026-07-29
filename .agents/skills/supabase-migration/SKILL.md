@@ -7,8 +7,7 @@ description: Author Supabase migrations bundling schema, RLS, policies, grants, 
 
 Use this skill when adding or changing files under `supabase/migrations`.
 
-Skeleton: copy [scripts/migration.template.sql](/.agents/skills/supabase-migration/scripts/migration.template.sql)
-and fill in — schema + RLS + owner `auth.uid()` policies + minimal grants together.
+Skeleton: bundle schema + RLS + owner `auth.uid()` policies + minimal grants together in a new migration file under `supabase/migrations`.
 
 ## Rules
 
@@ -42,6 +41,6 @@ and fill in — schema + RLS + owner `auth.uid()` policies + minimal grants toge
 - [ ] Grants are explicit and minimal.
 - [ ] RPCs do not trust `p_user_id` without an `auth.uid()` check.
 - [ ] Function `search_path` is explicit.
-- [ ] `bun run ai:eval` scans clean.
+- [ ] `bun run ai:review` scans clean.
 - [ ] `bun run typecheck` passes after type generation when generated types
       changed.
