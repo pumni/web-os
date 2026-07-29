@@ -46,7 +46,7 @@ jobs:
         continue-on-error: true
 
       - name: AI context check
-        run: bun run ai:check
+        run: bun run context:lint
 
       - name: Lint
         run: bun run lint
@@ -65,5 +65,5 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy
           SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy-secret
 
-      - name: AI static review gate
-        run: bun run ai:review
+      - name: AI static policy check
+        run: bun run policy:check

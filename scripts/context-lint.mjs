@@ -9,62 +9,40 @@ const ROOT = path.resolve(__dirname, '..');
 
 let errors = 0;
 let warnings = 0;
-
 function reportError(msg) {
   console.error(`[ERROR] ${msg}`);
   errors++;
-}
-
-function reportWarn(msg) {
-  console.warn(`[WARN] ${msg}`);
-  warnings++;
-}
-
-function relPath(filePath) {
-  return path.relative(ROOT, filePath).replaceAll(path.sep, '/');
 }
 
 function resolveRel(relativePath) {
   return path.join(ROOT, relativePath);
 }
 
-const MANIFEST_PATH = path.resolve(ROOT, 'scripts', 'ai-context.manifest.json');
-let manifest = {};
-try {
-  manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
-} catch (err) {
-  console.error(`[ERROR] Failed to load ai-context.manifest.json: ${err.message}`);
-  process.exit(1);
-}
+const REQUIRED_ENTRYPOINTS = [
+  'AGENTS.md',
+  'CLAUDE.md',
+  '.mcp.json',
+  '.github/copilot-instructions.md',
+  'scripts/context-lint.mjs',
+  'scripts/policy-check.mjs',
+  'scripts/sync-skills.mjs',
+];
 
 function checkRequiredFiles() {
-  for (const rel of manifest.requiredFiles ?? []) {
+  for (const rel of REQUIRED_ENTRYPOINTS) {
     const full = resolveRel(rel);
     if (!fs.existsSync(full)) {
-      reportError(`Required context file missing: ${rel}`);
-    }
-  }
-}
-
-function checkPackageScripts() {
-  const pkgPath = resolveRel('package.json');
-  if (!fs.existsSync(pkgPath)) return;
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-  const scripts = pkg.scripts ?? {};
-  for (const s of manifest.requiredPackageScripts ?? []) {
-    if (!scripts[s]) {
-      reportError(`Missing required package.json script: "${s}"`);
+      reportError(`Required entrypoint missing: ${rel}`);
     }
   }
 }
 
 function checkAlwaysLoadedSize() {
-  for (const budget of manifest.sizeBudgets ?? []) {
-    const fullPath = resolveRel(budget.path);
-    if (!fs.existsSync(fullPath)) continue;
-    const stat = fs.statSync(fullPath);
-    if (stat.size > budget.maxBytes) {
-      reportError(`${budget.path} size (${stat.size}B) exceeds max budget of ${budget.maxBytes}B.`);
+  const rootAgents = resolveRel('AGENTS.md');
+  if (fs.existsSync(rootAgents)) {
+    const stat = fs.statSync(rootAgents);
+    if (stat.size > 8000) {
+      reportError(`AGENTS.md size (${stat.size}B) exceeds maximum budget of 8000B.`);
     }
   }
 }
@@ -75,7 +53,7 @@ function checkSkillShimsSync() {
     try {
       execFileSync(process.execPath, [syncScript, '--check'], { stdio: 'inherit', cwd: ROOT });
     } catch {
-      reportError('.claude/skills shims are out of sync with .agents/skills. Run `bun run ai:skills:sync`.');
+      reportError('.claude/skills shims are out of sync with .agents/skills. Run `bun run skills:sync`.');
     }
   }
 }
@@ -95,20 +73,25 @@ function collectActiveContextFiles() {
     'AGENTS.md',
     'CLAUDE.md',
     '.github/copilot-instructions.md',
-    'apps/web/AGENTS.md',
-    'apps/catalog/AGENTS.md',
-    'packages/ui/AGENTS.md',
-    'packages/supabase/AGENTS.md',
-    'packages/auth/AGENTS.md',
-    'packages/config/AGENTS.md',
-    'packages/env/AGENTS.md',
-    'packages/test-utils/AGENTS.md',
-    'packages/validators/AGENTS.md',
-    'docs/ai/golden-examples.md',
     'docs/ai/mcp.md',
-    '.agents/skills/README.md',
   ]);
 
+  // Discover all AGENTS.md dynamically
+  function scanDir(dir) {
+    if (!fs.existsSync(dir)) return;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === '.turbo') continue;
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        scanDir(fullPath);
+      } else if (entry.isFile() && entry.name === 'AGENTS.md') {
+        files.add(path.relative(ROOT, fullPath).replaceAll(path.sep, '/'));
+      }
+    }
+  }
+  scanDir(ROOT);
+
+  // Add active skills
   const agentsSkillsDir = resolveRel('.agents/skills');
   if (fs.existsSync(agentsSkillsDir)) {
     for (const entry of fs.readdirSync(agentsSkillsDir, { withFileTypes: true })) {
@@ -121,7 +104,7 @@ function collectActiveContextFiles() {
     }
   }
 
-  // Add referenced convention/architecture docs
+  // Add convention docs
   const convDir = resolveRel('docs/conventions');
   if (fs.existsSync(convDir)) {
     for (const entry of fs.readdirSync(convDir, { withFileTypes: true })) {
@@ -235,12 +218,11 @@ function checkEncodingHygiene(contextFiles) {
   }
 }
 
-console.log('Running AI context validation...');
+console.log('Running AI context linting...');
 
 const activeFiles = collectActiveContextFiles();
 
 checkRequiredFiles();
-checkPackageScripts();
 checkAlwaysLoadedSize();
 checkSkillShimsSync();
 checkClaudeShims();
@@ -249,8 +231,8 @@ checkActiveContextCommandsAndLinks(activeFiles);
 checkEncodingHygiene(activeFiles);
 
 if (errors > 0) {
-  console.error(`\nValidation failed with ${errors} error(s) and ${warnings} warning(s).`);
+  console.error(`\nContext lint failed with ${errors} error(s) and ${warnings} warning(s).`);
   process.exit(1);
 }
 
-console.log(`AI context validation passed with ${warnings} warning(s).`);
+console.log(`AI context linting passed with ${warnings} warning(s).`);

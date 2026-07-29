@@ -41,23 +41,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: AI context check (structure + graph sync + freshness)
-        run: bun run ai:check
+      - name: AI context check (structure + freshness)
+        run: bun run context:lint
 
-      - name: AI static review gate
-        run: bun run ai:review
-
-      - name: AI context metrics snapshot
-        # Advisory only — never fails the job. The JSON artifact is how trends
-        # are compared across weekly runs.
-        run: bun run ai:metrics -- --json > ai-metrics-snapshot.json
-
-      - name: Upload metrics snapshot
-        uses: actions/upload-artifact@v4
-        with:
-          name: ai-metrics-${{ github.run_id }}
-          path: ai-metrics-snapshot.json
-          retention-days: 90
+      - name: AI static policy check
+        run: bun run policy:check
 
       - name: External link check (Lychee)
         uses: lycheeverse/lychee-action@v2

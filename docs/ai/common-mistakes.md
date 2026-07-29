@@ -1,12 +1,10 @@
 ---
-description: Common AI mistakes in this codebase as ❌/✅ pairs, cross-referenced to the static rules that catch them. Use before writing feature code, Supabase access, or state logic — and when a review-gate rule fires.
+description: Common AI mistakes in this codebase as ❌/✅ pairs, cross-referenced to the static rules that catch them. Use before writing feature code, Supabase access, or state logic — and when a policy check rule fires.
 ---
 
 # Common Mistakes
 
-`bun run ai:review` _catches_ these; this doc helps you _avoid_ them. Rule ids
-are defined in `scripts/review-gate-rules.mjs`. Unlabeled = enforced;
-`(partial)` or `(honor-system)` = not fully automated.
+`bun run policy:check` _catches_ these; this doc helps you _avoid_ them. Rule ids are defined in `scripts/review-gate-rules.mjs`. Unlabeled = enforced; `(partial)` or `(honor-system)` = not fully automated.
 
 ## 1. State ownership (`query-result-in-zustand`)
 
@@ -55,10 +53,9 @@ are defined in `scripts/review-gate-rules.mjs`. Unlabeled = enforced;
 
 ## 10. Next.js 16 cache & tags (`cache-life-too-short`, `cache-tag-unparameterized`, `use-cache-placement`, `update-tag-scope`, `single-arg-revalidate-tag`)
 
-SSOT: `docs/conventions/nextjs-16.md` (enforced by static check).
+SSOT: `docs/conventions/nextjs-project-profile.md` (enforced by static check).
 
-Includes: `cacheLife` minimums, parameterized `cacheTag`, `'use cache'` placement,
-`updateTag` Server-Action-only scope, and two-arg `revalidateTag(tag, profile)`.
+Includes: `cacheLife` minimums, parameterized `cacheTag`, `'use cache'` placement, `updateTag` Server-Action-only scope, and two-arg `revalidateTag(tag, profile)`.
 
 ## 11. Weakening a test to make it pass (`test-weakening`)
 
@@ -69,6 +66,7 @@ Includes: `cacheLife` minimums, parameterized `cacheTag`, `'use cache'` placemen
 
 ❌ Implementing routing or auth check inside App Router `middleware.ts`.
 ✅ Use Node-based auth proxy at `apps/web/src/proxy.ts` (or equivalent).
+
 ## 13. Server-only leaks (`server-only-in-client`, `server-action-missing-auth`, `server-action-missing-revalidation`)
 
 ❌ Importing `"server-only"` in client code, or actions missing auth check / tag updates.
@@ -88,4 +86,3 @@ Includes: `cacheLife` minimums, parameterized `cacheTag`, `'use cache'` placemen
 
 ❌ `stable` fn counts rows, returns `count < limit`; RLS inserts after — racing requests all pass.
 ✅ `pg_advisory_xact_lock` on the contended key + `volatile`, so the recount sees committed rows. `stable` reuses the caller's snapshot, so the lock alone is not enough (migration `024`).
-

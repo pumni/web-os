@@ -107,7 +107,7 @@ Since ESLint flat config does not merge two `no-restricted-imports` matching the
 3.  **`pumni/feature-boundary-external`** (`src/**`, excluding `src/features/**`): Code outside the feature (routes, shared components, lib) must only interact with features through the public API path (`@/features/<name>`), never reaching feature internals.
 
 > [!NOTE]
-> Emitting a config object per feature would fall into the override trap (only the last declared feature gets enforced). `check-feature-boundary.mjs` (run during `bun run ai:review`) automatically verifies that all features are enforced across all three scopes.
+> Emitting a config object per feature would fall into the override trap (only the last declared feature gets enforced). `check-feature-boundary.mjs` (run during `bun run policy:check`) automatically verifies that all features are enforced across all three scopes.
 
 Run the validation check manually before committing:
 ```pwsh

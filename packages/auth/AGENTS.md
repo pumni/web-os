@@ -4,15 +4,12 @@ Package delta; root AGENTS.md applies.
 
 ## Summary
 
-High-level, server-only authentication helpers (`getCurrentUser`, `requireUser`)
-built on `@pumni/supabase/server`. This is where request-scoped identity is
-resolved before any privileged write.
+High-level, server-only authentication helpers (`getCurrentUser`, `requireUser`) built on `@pumni/supabase/server`. This is where request-scoped identity is resolved before any privileged write.
 
 ## Architecture
 
 - Server-only package (security invariant, see [supabase-security.md](../../docs/conventions/supabase-security.md)). Keep "server-only" declarations.
-- Consumers: `apps/web` Server Components, Server Actions, and route handlers.
-  Client components must never import from here.
+- Consumers: `apps/web` Server Components, Server Actions, and route handlers. Client components must never import from here.
 - Workspace dep: `@pumni/supabase`.
 
 ## Stack
@@ -23,15 +20,10 @@ resolved before any privileged write.
 
 - `bun --filter @pumni/auth typecheck`
 - `bun run typecheck`
-- `bun run ai:review` (`server-action-missing-auth`, `service-role-client`,
-  `server-only-in-client` all govern how this package is consumed)
+- `bun run policy:check` (`server-action-missing-auth`, `service-role-client`, `server-only-in-client` govern consumption)
 
 ## Pitfalls
 
-- Mutating Server Actions must call `requireUser()` (or an equivalent auth check)
-  **before** any Supabase write. Deriving the user client-side and passing a
-  `user_id` is blocked by `trusted-client-user-id-write`.
-- Do not add a browser/`NEXT_PUBLIC_*` entry point here. Browser identity flows
-  through `@pumni/supabase/browser` and Supabase Auth, not this package.
-- This is a foundational block (see `docs/architecture/project-graph.md`):
-  changing `requireUser`/`getCurrentUser` affects every protected route.
+- Mutating Server Actions must call `requireUser()` (or an equivalent auth check) **before** any Supabase write.
+- Do not add a browser/`NEXT_PUBLIC_*` entry point here. Browser identity flows through `@pumni/supabase/browser` and Supabase Auth, not this package.
+- Changing `requireUser`/`getCurrentUser` affects every protected route.

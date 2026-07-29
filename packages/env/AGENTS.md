@@ -4,9 +4,7 @@ Package delta; root AGENTS.md applies.
 
 ## Summary
 
-Zod-validated environment access split into client-safe and server-only entry
-points. Browser code may only use publishable `NEXT_PUBLIC_*` values; privileged
-keys stay server-only.
+Zod-validated environment access split into client-safe and server-only entry points. Browser code may only use publishable `NEXT_PUBLIC_*` values; privileged keys stay server-only.
 
 ## Architecture
 
@@ -18,19 +16,16 @@ keys stay server-only.
 
 ## Stack
 
-Zod 4 and `server-only`. Consumed by Supabase/auth/server code and client-safe
-configuration paths.
+Zod 4 and `server-only`. Consumed by Supabase/auth/server code and client-safe configuration paths.
 
 ## Commands
 
 - `bun --filter @pumni/env typecheck`
-- `bun run ai:check`
-- `bun run ai:review` when changing secret handling
+- `bun run context:lint`
+- `bun run policy:check` when changing secret handling
 
 ## Pitfalls
 
-- Never export `serverEnv` from a client-safe barrel or import it into
-  `"use client"` files.
+- Never export `serverEnv` from a client-safe barrel or import it into `"use client"` files.
 - Service-role and secret keys must remain in `src/server.ts` behind `server-only` (security invariant, see [supabase-security.md](../../docs/conventions/supabase-security.md)).
-- New browser-visible variables must be prefixed `NEXT_PUBLIC_*` and added to
-  the client schema deliberately.
+- New browser-visible variables must be prefixed `NEXT_PUBLIC_*` and added to the client schema deliberately.

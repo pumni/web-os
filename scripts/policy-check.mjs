@@ -1,5 +1,5 @@
 /**
- * ai:review — Static code & policy review gate for Pumni Web OS.
+ * policy:check — Static code & policy enforcement gate for Pumni Web OS.
  *
  * Runs deterministic static policy checks:
  *   1. Review Gate static rules (architecture + RLS + Query/Zustand boundaries)
@@ -42,7 +42,7 @@ runScript('Secrets scan', 'check-secrets.mjs');
 runScript('Feature boundary check', 'check-feature-boundary.mjs');
 
 if (failed) {
-  console.error('\n[FAIL] Static review checks failed.');
+  console.error('\n[FAIL] Static policy checks failed.');
   process.exit(1);
 }
-console.log('\n[PASS] All static review checks passed.');
+console.log('\n[PASS] All static policy checks passed.');

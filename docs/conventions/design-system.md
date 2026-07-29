@@ -4,7 +4,7 @@ description: Pumni OS design system hard rules for tokens, surfaces, contrast, m
 
 # Pumni OS Design System
 
-Pumni Web OS is token-first: OKLCH primitives feed semantic roles; components consume semantic utilities only. See `.agents/skills/ui-system/SKILL.md` for the quick activation card.
+Pumni Web OS is token-first: OKLCH primitives feed semantic roles; components consume semantic utilities only.
 
 Token source of truth lives in `@pumni/ui`:
 - `packages/ui/src/styles/tokens.css`
@@ -92,7 +92,7 @@ Solid-vs-glass hairline separation is pinned by `border-consumption.test.ts`.
 
 ## Tailwind v4 variant syntax (canonical form)
 
-This repo is **Tailwind v4**. Prefer v4 canonical shorthand over verbose v3 forms. Checked in CI via `tailwind-lint` (`bun run ai:tw` and `bun run ai:tw -- --fix`).
+This repo is **Tailwind v4**. Prefer v4 canonical shorthand over verbose v3 forms. Checked in CI via `tailwind-lint` (`bun run tw:lint` and `bun run tw:lint -- --fix`).
 
 ## State-layer tokens
 

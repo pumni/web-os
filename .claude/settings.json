@@ -23,7 +23,7 @@
             "command": "bun",
             "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-context-stop-gate.mjs"],
             "timeout": 120,
-            "statusMessage": "ai:check (context files)"
+            "statusMessage": "context:lint (context files)"
           }
         ]
       }

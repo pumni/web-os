@@ -1,6 +1,6 @@
 // Stop hook — deterministic AI-context gate.
 //
-// Turns the otherwise-advisory `ai:check` into enforcement, but ONLY when the
+// Turns the otherwise-advisory `context:lint` into enforcement, but ONLY when the
 // session actually touched AI-context files (root agent docs, docs/ai,
 // conventions, architecture, skills, rules, the gate scripts). Normal coding
 // sessions pay nothing: a fast `git status` returns no context paths and the
@@ -9,7 +9,7 @@
 // On a real failure it asks Claude to keep going and fix it (decision: block,
 // honored where the runtime supports Stop-blocking). Contract: fail-open — any
 // infra error (no git, detached state, missing bun) exits 0 so the agent is
-// never wedged. CI (`bun run ai:premerge`) remains the authoritative gate.
+// never wedged. CI (`bun run verify`) remains the authoritative gate.
 
 import { spawnSync } from 'node:child_process';
 
@@ -22,8 +22,7 @@ const CONTEXT = new RegExp(
     '^docs/(?:ai|conventions|architecture|adr)/',
     '^\\.agents/',
     '^\\.claude/(?:rules|skills)/',
-    '^scripts/(?:check-ai-context|sync-skills|sync-project-graph|check-secrets|review-gate-rules)\\.mjs$',
-    '^scripts/ai-context\\.manifest\\.json$',
+    '^scripts/(?:context-lint|policy-check|sync-skills|check-secrets|check-review-gate-rules)\\.mjs$',
     '^apps/[^/]+/AGENTS\\.md$',
     '^packages/[^/]+/AGENTS\\.md$',
   ].join('|'),
@@ -60,7 +59,7 @@ try {
   const cwd = payload?.cwd || process.env.CLAUDE_PROJECT_DIR || process.cwd();
   if (changedContextFiles(cwd).length === 0) process.exit(0);
 
-  const check = spawnSync('bun', ['scripts/check-ai-context.mjs'], {
+  const check = spawnSync('bun', ['scripts/context-lint.mjs'], {
     cwd,
     encoding: 'utf8',
     timeout: 110_000,
@@ -77,9 +76,9 @@ try {
     JSON.stringify({
       decision: 'block',
       reason:
-        'AI-context files changed and `bun scripts/check-ai-context.mjs` failed. ' +
+        'AI-context files changed and `bun scripts/context-lint.mjs` failed. ' +
         'Fix these before finishing:\n' +
-        (detail || '(run `bun run ai:check` to see the failures)'),
+        (detail || '(run `bun run context:lint` to see the failures)'),
     }),
   );
 } catch {
