@@ -10,7 +10,7 @@ resolved before any privileged write.
 
 ## Architecture
 
-- Server-only package (P0, see [supabase-security.md](../../docs/conventions/supabase-security.md)). Keep "server-only" declarations.
+- Server-only package (security invariant, see [supabase-security.md](../../docs/conventions/supabase-security.md)). Keep "server-only" declarations.
 - Consumers: `apps/web` Server Components, Server Actions, and route handlers.
   Client components must never import from here.
 - Workspace dep: `@pumni/supabase`.

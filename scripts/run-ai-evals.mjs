@@ -1,17 +1,13 @@
 /**
- * ai:eval — AI regression evals for Pumni Web OS.
+ * ai:review — Static code & policy review gate for Pumni Web OS.
  *
- * Runs the deterministic policy gates an AI agent must pass before "done":
+ * Runs deterministic static policy checks:
  *   1. Review Gate static rules (architecture + RLS + Query/Zustand boundaries)
  *   2. Secrets scan (.env committed, hardcoded keys, service-role literals)
+ *   3. Feature boundary check
  *
- * These are deterministic and require no LLM API key. Prompt-injection
- * resistance is governed by the Untrusted Content Policy in AGENTS.md plus the
- * secrets/RLS static scan below. The `ai:eval:behavioral` task is an opt-in,
- * fail-open-without-API-key behavioral eval tier.
- *
- * The RN-specific raw-console.log scanner is intentionally omitted: console
- * logging is acceptable in a Next.js web app.
+ * Note: Static policy checks verify rule adherence; for behavioral evaluation of agent execution,
+ * see `ai:context-eval` (`scripts/run-agent-context-evals.mjs`).
  */
 
 import path from 'node:path';
@@ -49,7 +45,7 @@ runScript('Secrets scan', 'check-secrets.mjs');
 runScript('Feature boundary check', 'check-feature-boundary.mjs');
 
 if (failed) {
-  console.error('\n[FAIL] AI regression evals failed.');
+  console.error('\n[FAIL] Static review checks failed.');
   process.exit(1);
 }
-console.log('\n[PASS] All AI regression evals passed.');
+console.log('\n[PASS] All static review checks passed.');

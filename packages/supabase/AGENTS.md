@@ -30,7 +30,7 @@ database types. This package owns the app↔DB contract.
 
 ## Pitfalls
 
-- Service-role client is server-only (P0, see [supabase-security.md](../../docs/conventions/supabase-security.md)).
+- Service-role client is server-only (security invariant, see [supabase-security.md](../../docs/conventions/supabase-security.md)).
 - Do not change `./server` or `./service-role` to read client env. Server
   modules read private env; only `./browser` reads `NEXT_PUBLIC_*`.
 - This is a foundational block (see `docs/architecture/project-graph.md`):

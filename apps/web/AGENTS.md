@@ -24,7 +24,7 @@ short reminder with a back-link to the canonical above.
   for ordinary stability. Optimize manually only for `useTransition`, ref cleanup,
   or dynamic third-party JSX props.
 - Playground/demo surfaces — `src/features/sky-player`, `src/features/design-trends`,
-  `src/app/(app)/todos` — are exempt from full feature-module requirements, but P0
+  `src/app/(app)/todos` — are exempt from full feature-module requirements, but
   security mandates (RLS/auth) still apply if they touch any server resource.
 
 For repeated procedures see `.agents/skills/*` (e.g. `server-action`,

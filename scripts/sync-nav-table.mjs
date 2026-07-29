@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 
 const AGENTS_MD = path.join(ROOT, 'AGENTS.md');
-const MAP_PATH = path.join(ROOT, 'scripts', 'context-map.json');
+const MAP_PATH = path.join(ROOT, 'scripts', 'context-scope-map.json');
 
 const BEGIN = '<!-- BEGIN:auto-generated-nav -->';
 const END = '<!-- END:auto-generated-nav -->';
@@ -26,13 +26,13 @@ function main() {
     console.error(`[sync-nav-table] Missing ${MAP_PATH}`);
     process.exit(1);
   }
-  const { subsystems } = JSON.parse(fs.readFileSync(MAP_PATH, 'utf8'));
+  const { scopes } = JSON.parse(fs.readFileSync(MAP_PATH, 'utf8'));
 
   const rows = [];
-  rows.push('| Editing… | Read first | Mandatory skill |');
+  rows.push('| Editing… | Read first | Relevant skill |');
   rows.push('|---|---|---|');
 
-  for (const sub of subsystems) {
+  for (const sub of scopes) {
     if (!sub.nav) continue;
     const navs = Array.isArray(sub.nav) ? sub.nav : [sub.nav];
     for (const nav of navs) {
@@ -87,7 +87,7 @@ function main() {
     next = `${before}${generated}\n${after}`;
   } else {
     // Replace the raw markdown table
-    const tableHeader = '| Editing… | Read first | Mandatory skill |';
+    const tableHeader = '| Editing… | Read first | Relevant skill |';
     const tableHeaderIdx = content.indexOf(tableHeader);
     if (tableHeaderIdx === -1) {
       console.error('[sync-nav-table] Cannot find navigation table in AGENTS.md to insert markers.');

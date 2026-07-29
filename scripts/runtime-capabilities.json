@@ -1,0 +1,11 @@
+[
+  {
+    "name": "next-devtools",
+    "capability": "Live Next.js runtime error diagnosis, route & component tree inspection, browser-backed verification",
+    "whyNativeInsufficient": "Native file tools cannot observe client-side browser runtime errors, hydration mismatches, or live DevTools state",
+    "trustLevel": "local-dev-only",
+    "version": "0.4.0",
+    "fallback": "Standard Bun server log analysis & browser console review",
+    "enabledByDefault": true
+  }
+]

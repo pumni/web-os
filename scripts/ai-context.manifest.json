@@ -8,6 +8,9 @@
     "scripts/check-review-gate-rules.mjs",
     "scripts/check-secrets.mjs",
     "scripts/run-ai-evals.mjs",
+    "scripts/run-agent-context-evals.mjs",
+    "scripts/report-agent-context-evals.mjs",
+    "scripts/report-context-budget.mjs",
     "scripts/ai-review-rule-allowlist.json",
     "scripts/review-gate-rules.mjs",
     "scripts/sync-nav-table.mjs",
@@ -16,6 +19,9 @@
     "scripts/sync-adr-register.mjs",
     "scripts/check-context-drift.mjs",
     "scripts/context-map.json",
+    "scripts/context-scope-map.json",
+    "scripts/agent-capabilities.json",
+    "scripts/runtime-capabilities.json",
     ".claude/rules/nextjs-async-apis.md",
     ".claude/rules/nextjs-cache-components.md",
     "apps/web/AGENTS.md",
@@ -68,6 +74,7 @@
   ],
   "requiredPackageScripts": [
     "ai:check",
+    "ai:review",
     "ai:eval",
     "ai:premerge",
     "ai:nav:sync",
@@ -77,6 +84,9 @@
     "build"
   ],
   "frontmatterRequired": [
+    "docs/ai/agent-load-canaries.md",
+    "docs/ai/context-budget.md",
+    "docs/ai/context-incidents.md",
     "docs/ai/domain-language.md",
     "docs/ai/mcp.md",
     "docs/ai/golden-examples.md",
