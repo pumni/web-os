@@ -6,7 +6,7 @@ Stack: Supabase (RLS-first), TanStack Query (client async only), Zustand
 
 **AGENTS.md files are the source of truth for agent instructions** — this file
 plus the nested ones named in the Navigation Map ("closest wins"). Machine map:
-`scripts/context-map.json` — edit it, then `bun run ai:nav:sync`. Do not
+`scripts/context-scope-map.json` — edit it, then `bun run ai:nav:sync`. Do not
 duplicate guidance into tool-specific rule files: everything under `.claude/`
 is either generated from a canonical source (skill shims — regenerate with
 `bun run ai:skills:sync`, never hand-edit) or a thin pointer to one. Canonical
@@ -117,7 +117,7 @@ reflex. If a gate fails, fix it before moving on.
 
 | Scope | Gate |
 |---|---|
-| AI context / docs | `bun run ai:check` (+ `bun run ai:eval` on security/arch touch) |
+| AI context / docs | `bun run ai:check` (+ `bun run ai:review` on security/arch touch) |
 | TS-only (types, validators) | `bun run typecheck` |
 | Feature code (components, actions, hooks) | `bun run lint` && `bun run typecheck` && `bun run test` |
 | Bundle-affecting (layout, config, routes) | …then `bun run build` |

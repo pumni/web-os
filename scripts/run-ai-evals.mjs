@@ -17,6 +17,10 @@ import { execFileSync } from 'node:child_process';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 
+if (process.env.npm_lifecycle_event === 'ai:eval') {
+  console.warn('[DEPRECATION WARNING] `bun run ai:eval` is deprecated and will be removed in a future release. Please use `bun run ai:review` instead.');
+}
+
 let failed = false;
 
 function runScript(label, scriptName, extraArgs = []) {

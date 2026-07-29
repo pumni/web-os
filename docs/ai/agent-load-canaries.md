@@ -4,40 +4,60 @@ description: Verification markers and load canary matrix for coding agent adapte
 
 # Agent Load Canaries Matrix
 
-This matrix tracks verified entry points, instruction loading behaviors, path-scope capabilities, and fallback actions for supported coding agents.
+This matrix tracks entry points, instruction loading behaviors, path-scope capabilities, and empirical canary evidence for supported coding agents. All entries remain `UNVERIFIED` until backed by verified execution traces.
+
+## Schema Standard
+
+Every canary entry requires:
+- `status`: `UNVERIFIED` | `PASS` | `FAIL`
+- `verifiedAt`: ISO Timestamp or `null`
+- `verifiedCommit`: Git commit SHA or `null`
+- `harnessVersion`: Version string or `null`
+- `command`: Execution command used to test
+- `expectedObservation`: Expected marker or load behavior
+- `actualObservation`: Observed marker or load behavior
+- `evidencePath`: Path to transcript, log, or trace artifact
+
+---
 
 ## Claude Code (#claude-code)
 
-- **Agent / Version**: Claude Code CLI 2026.x
+- **Status**: `UNVERIFIED`
+- **Agent / Surface**: Claude Code CLI
 - **Entry File**: `CLAUDE.md` (imports `@AGENTS.md`)
-- **Expected Marker**: `[CANARY:CLAUDE_CODE_LOADED]`
-- **Nested Behavior**: Native discovery of nested `AGENTS.md` per scope
-- **Path-Scope Behavior**: Native `.claude/rules/*.md` path matching
-- **Skill Discovery Behavior**: Native `.claude/skills/*/SKILL.md` auto-discovery
-- **Last Verified Date**: 2026-07-29
-- **Test Result**: PASS
+- **Verified At**: `null`
+- **Verified Commit**: `null`
+- **Harness Version**: `null`
+- **Command**: `claude --print "Check instruction load"`
+- **Expected Observation**: `[CANARY:CLAUDE_CODE_LOADED]`
+- **Actual Observation**: `TBD`
+- **Evidence Path**: `null`
 - **Failure Action**: Fallback to direct reading of root `AGENTS.md` and `docs/conventions/*`.
 
 ## Codex CLI (#codex-cli)
 
-- **Agent / Version**: OpenAI Codex CLI / AI Agent
+- **Status**: `UNVERIFIED`
+- **Agent / Surface**: OpenAI Codex CLI
 - **Entry File**: `AGENTS.md` (Native root entry point)
-- **Expected Marker**: `[CANARY:CODEX_AGENTS_MD_LOADED]`
-- **Nested Behavior**: Native directory-scoped `AGENTS.md` traversal
-- **Path-Scope Behavior**: Evaluated via root `AGENTS.md` navigation map pointers
-- **Skill Discovery Behavior**: Manual resolution via `.agents/skills/*/SKILL.md`
-- **Last Verified Date**: 2026-07-29
-- **Test Result**: PASS
+- **Verified At**: `null`
+- **Verified Commit**: `null`
+- **Harness Version**: `null`
+- **Command**: `codex "Check instruction load"`
+- **Expected Observation**: `[CANARY:CODEX_AGENTS_MD_LOADED]`
+- **Actual Observation**: `TBD`
+- **Evidence Path**: `null`
 - **Failure Action**: Direct prompt-injection of root `AGENTS.md` invariants.
 
 ## GitHub Copilot (#github-copilot)
 
-- **Agent / Version**: GitHub Copilot Extension / Workspace Agent
+- **Status**: `UNVERIFIED`
+- **Agent / Surface**: GitHub Copilot Extension
 - **Entry File**: `.github/copilot-instructions.md`
-- **Expected Marker**: `[CANARY:COPILOT_INSTRUCTIONS_LOADED]`
-- **Nested Behavior**: Manual reference via `.github/copilot-instructions.md` pointers
-- **Path-Scope Behavior**: Direct canonical document backlinks
-- **Skill Discovery Behavior**: Explicit reference to `.agents/skills/*`
-- **Last Verified Date**: 2026-07-29
-- **Test Result**: PASS
+- **Verified At**: `null`
+- **Verified Commit**: `null`
+- **Harness Version**: `null`
+- **Command**: `TBD`
+- **Expected Observation**: `[CANARY:COPILOT_INSTRUCTIONS_LOADED]`
+- **Actual Observation**: `TBD`
+- **Evidence Path**: `null`
 - **Failure Action**: Fallback to repository root `AGENTS.md`.

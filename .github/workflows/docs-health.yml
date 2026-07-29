@@ -44,8 +44,8 @@ jobs:
       - name: AI context check (structure + graph sync + freshness)
         run: bun run ai:check
 
-      - name: AI regression evals
-        run: bun run ai:eval
+      - name: AI static review gate
+        run: bun run ai:review
 
       - name: AI context metrics snapshot
         # Advisory only — never fails the job. The JSON artifact is how trends

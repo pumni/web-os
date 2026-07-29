@@ -1,7 +1,8 @@
 /**
- * report-context-budget.mjs — Token & Context Load Budget Analyzer
+ * report-context-budget.mjs — Token & Context Load Budget Analyzer (Scenario-Based)
  *
- * Measures startup, path-scoped, nested, and skill token metrics across harnesses.
+ * Estimates startup, path-scoped, skill metadata, and activated skill tokens per harness scenario.
+ * Note: Token counts are estimated using the standard 4 chars/token approximation.
  */
 
 import fs from 'node:fs';
@@ -16,59 +17,64 @@ function estimateTokens(text) {
   return Math.round((text || '').length / 4);
 }
 
-function analyzeHarness(harnessName, entryFile, ruleFiles = [], nestedFiles = []) {
-  let startupBytes = 0;
-  let loadedFiles = 0;
+function readFileSafe(relPath) {
+  const fullPath = path.join(ROOT, relPath);
+  if (!fs.existsSync(fullPath)) return '';
+  return fs.readFileSync(fullPath, 'utf8');
+}
 
-  if (fs.existsSync(path.join(ROOT, entryFile))) {
-    startupBytes += fs.readFileSync(path.join(ROOT, entryFile), 'utf8').length;
-    loadedFiles++;
+function analyzeHarnessScenario(harnessName, entryFile, scopedRuleFiles = [], sampleActivatedSkills = []) {
+  const entryContent = readFileSafe(entryFile);
+  const alwaysLoadedTokens = estimateTokens(entryContent);
+
+  let scopedBytes = 0;
+  for (const rf of scopedRuleFiles) {
+    scopedBytes += readFileSafe(rf).length;
   }
+  const scopedInstructionTokens = estimateTokens(' '.repeat(scopedBytes));
 
-  let pathRuleBytes = 0;
-  for (const rf of ruleFiles) {
-    const fullPath = path.join(ROOT, rf);
-    if (fs.existsSync(fullPath)) {
-      pathRuleBytes += fs.readFileSync(fullPath, 'utf8').length;
-      loadedFiles++;
+  const skillFiles = globSync('.agents/skills/*/SKILL.md', { cwd: ROOT });
+  let skillMetadataBytes = 0;
+  for (const sf of skillFiles) {
+    const content = readFileSafe(sf);
+    // Extract frontmatter / metadata section
+    const endFm = content.indexOf('\n---', 4);
+    if (endFm !== -1) {
+      skillMetadataBytes += content.slice(0, endFm + 4).length;
+    } else {
+      skillMetadataBytes += 200; // estimated frontmatter size
     }
   }
+  const skillMetadataTokens = estimateTokens(' '.repeat(skillMetadataBytes));
 
-  let nestedBytes = 0;
-  for (const nf of nestedFiles) {
-    const fullPath = path.join(ROOT, nf);
-    if (fs.existsSync(fullPath)) {
-      nestedBytes += fs.readFileSync(fullPath, 'utf8').length;
-    }
+  let activatedSkillBytes = 0;
+  for (const skName of sampleActivatedSkills) {
+    const skPath = `.agents/skills/${skName}/SKILL.md`;
+    activatedSkillBytes += readFileSafe(skPath).length;
   }
-
-  const skills = globSync('.agents/skills/*/SKILL.md', { cwd: ROOT });
-  let skillBytes = 0;
-  for (const sk of skills) {
-    skillBytes += fs.readFileSync(path.join(ROOT, sk), 'utf8').length;
-  }
+  const activatedSkillBodyTokens = estimateTokens(' '.repeat(activatedSkillBytes));
 
   return {
     harness: harnessName,
-    startupTokens: estimateTokens(fs.readFileSync(path.join(ROOT, 'AGENTS.md'), 'utf8')),
-    pathScopedRuleTokens: estimateTokens(' '.repeat(pathRuleBytes)),
-    nestedContextTokens: estimateTokens(' '.repeat(nestedBytes)),
-    skillCatalogTokens: estimateTokens(' '.repeat(skillBytes)),
-    totalStartupFiles: loadedFiles,
+    alwaysLoadedTokens,
+    scopedInstructionTokens,
+    skillMetadataTokens,
+    activatedSkillBodyTokens,
+    totalEstimatedTokens: alwaysLoadedTokens + scopedInstructionTokens + skillMetadataTokens + activatedSkillBodyTokens,
   };
 }
 
 function main() {
-  console.log('=== Aggregate Context Token Budget Report ===\n');
+  console.log('=== Context Load Token Budget Analysis (Scenario Prototype) ===');
+  console.log('Disclaimer: Token numbers are estimates (~4 characters / token).\n');
 
   const claudeRules = globSync('.claude/rules/*.md', { cwd: ROOT });
-  const nestedAgents = globSync('{apps,packages}/*/AGENTS.md', { cwd: ROOT });
 
-  const claudeStats = analyzeHarness('Claude Code', 'CLAUDE.md', claudeRules, nestedAgents);
-  const codexStats = analyzeHarness('Codex CLI', 'AGENTS.md', [], nestedAgents);
-  const copilotStats = analyzeHarness('GitHub Copilot', '.github/copilot-instructions.md', [], []);
+  const claudeScenario = analyzeHarnessScenario('Claude Code', 'CLAUDE.md', claudeRules, ['feature-module', 'server-action']);
+  const codexScenario = analyzeHarnessScenario('Codex CLI', 'AGENTS.md', [], ['feature-module', 'server-action']);
+  const copilotScenario = analyzeHarnessScenario('GitHub Copilot', '.github/copilot-instructions.md', [], ['feature-module', 'server-action']);
 
-  console.table([claudeStats, codexStats, copilotStats]);
+  console.table([claudeScenario, codexScenario, copilotScenario]);
 }
 
 main();

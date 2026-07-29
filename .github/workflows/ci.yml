@@ -65,5 +65,5 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy
           SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.dummy-secret
 
-      - name: AI regression evals
-        run: bun run ai:eval
+      - name: AI static review gate
+        run: bun run ai:review

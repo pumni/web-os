@@ -1,18 +1,21 @@
 ---
-description: Aggregate token load budgets, pruning criteria, and per-harness startup context metrics.
+description: Scenario-based token load estimates, pruning criteria, and per-harness startup context metrics.
 ---
 
 # Agent Context Token & Load Budget Report
 
-This document specifies aggregate startup, path-scoped, and skill token budgets for supported coding agent harnesses.
+This document specifies scenario-based startup, path-scoped, and skill token estimates for supported coding agent harnesses.
 
-## Token Load Summary (Post-Refactor Baseline)
+> [!NOTE]
+> Token counts in this report are scenario-based approximations estimated using the standard 4 characters per token heuristic.
 
-| Harness | Entry Point | Always-Loaded Startup Tokens | Path-Scoped Rule Tokens | Skill Catalog (On-Demand) | Startup File Count |
-|---|---|---|---|---|---|
-| **Claude Code** | `CLAUDE.md` (`@AGENTS.md`) | ~2,689 | ~559 | ~19,795 | 4 |
-| **Codex CLI** | `AGENTS.md` | ~2,689 | 0 (Manual) | ~19,795 | 1 |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | ~2,689 | 0 (Manual) | ~19,795 | 1 |
+## Token Load Summary (Scenario-Based Estimate)
+
+| Harness | Entry Point | Always-Loaded Tokens | Scoped Instruction Tokens | Skill Metadata Tokens | Sample Activated Skill Tokens | Total Estimated Scenario Tokens |
+|---|---|---|---|---|---|---|
+| **Claude Code** | `CLAUDE.md` (`@AGENTS.md`) | ~3 | ~559 | ~1,045 | ~2,150 | ~3,757 |
+| **Codex CLI** | `AGENTS.md` | ~2,689 | 0 | ~1,045 | ~2,150 | ~5,884 |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | ~99 | 0 | ~1,045 | ~2,150 | ~3,294 |
 
 ---
 
@@ -27,14 +30,12 @@ Every sentence or instruction in the context layer must satisfy all 6 pruning qu
 5. **Progressive Disclosure**: Can this rule be moved from always-loaded context to path-scoped or on-demand skill context?
 6. **Review Schedule**: When is this instruction scheduled for review or removal?
 
-Instructions that fail to satisfy these questions are pruned or demoted to reference files.
-
 ---
 
-## Size & Token Budgets (`scripts/ai-context.manifest.json`)
+## Hard Size Budgets (`scripts/ai-context.manifest.json`)
 
-- `AGENTS.md`: max 12,500 bytes (~3,125 tokens)
-- `docs/ai/MEMORY.md`: max 2,300 bytes (~575 tokens)
-- `docs/ai/common-mistakes.md`: max 4,600 bytes (~1,150 tokens)
-- `.agents/skills/review-gate/SKILL.md`: max 3,300 bytes (~825 tokens)
-- `docs/ai/mcp.md`: max 3,300 bytes (~825 tokens)
+- `AGENTS.md`: max 12,500 bytes
+- `docs/ai/MEMORY.md`: max 2,300 bytes
+- `docs/ai/common-mistakes.md`: max 4,600 bytes
+- `.agents/skills/review-gate/SKILL.md`: max 3,300 bytes
+- `docs/ai/mcp.md`: max 3,300 bytes

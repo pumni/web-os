@@ -2,7 +2,7 @@
 // changed without its owning doc/skill changing in the same range — a proxy for
 // specification staleness (the top documented failure mode). Fail-open by design:
 // any infra error prints nothing and exits 0. Tool-agnostic; the Claude hook is a
-// thin wrapper. SSOT for ownership: scripts/context-map.json.
+// thin wrapper. SSOT for ownership: scripts/context-scope-map.json.
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -28,14 +28,14 @@ function matches(glob, file) {
 }
 
 try {
-  const mapPath = path.join(ROOT, 'scripts', 'context-map.json');
+  const mapPath = path.join(ROOT, 'scripts', 'context-scope-map.json');
   if (!fs.existsSync(mapPath)) process.exit(0);
-  const { subsystems = [] } = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
+  const { scopes = [] } = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
   const changed = changedFiles();
   if (changed.length === 0) process.exit(0);
 
   const stale = [];
-  for (const s of subsystems) {
+  for (const s of scopes) {
     const codeTouched = changed.some((f) => (s.code ?? []).some((g) => matches(g, f)));
     const ownerTouched = changed.some((f) => (s.owners ?? []).includes(f));
     if (codeTouched && !ownerTouched) stale.push(s);
