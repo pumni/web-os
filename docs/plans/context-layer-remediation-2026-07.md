@@ -1,5 +1,7 @@
 # Context-Layer Remediation — 2026-07
 
+> Historical — not current guidance. Executed plan retained for audit history.
+
 - **Status:** Executed 2026-07-17 on `chore/context-layer-remediation`; merged to `main`.
 - **Date:** 2026-07-17
 - **Source:** Independent context-layer review (session 2026-07-17). Findings

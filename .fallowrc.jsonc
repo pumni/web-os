@@ -19,7 +19,7 @@
   // auto-detected by the script-multiplexer analysis). Listed explicitly to
   // avoid false-positive unused-file/export findings on their imports.
   "entry": [
-    "scripts/check-ai-context.mjs",
+    "scripts/context-lint.mjs",
     "scripts/check-context-drift.mjs",
     "scripts/check-feature-boundary.mjs",
     "scripts/check-review-gate-rules.mjs",
@@ -147,7 +147,7 @@
       {
         "files": ["scripts/**"],
         "maxUnitSize": 200,
-        "reason": "CI/AI scripts contain large procedural functions (check-ai-context.mjs etc.)"
+        "reason": "CI/AI scripts contain procedural functions"
       }
     ]
   },

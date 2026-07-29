@@ -45,6 +45,6 @@ jobs:
             'packages/*/AGENTS.md'
             'docs/**/*.md'
             '.agents/**/*.md'
-            '.claude/rules/*.md'
+            '.claude/skills/**/*.md'
             'README.md'
           fail: true

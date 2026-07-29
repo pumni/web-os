@@ -13,7 +13,6 @@ const read = (rel: string) => readFileSync(path.join(repoRoot, rel), 'utf8');
 
 const DESIGN_DOCS = [
   'docs/conventions/design-system.md',
-  '.agents/skills/ui-system/SKILL.md',
 ] as const;
 
 describe('design-system doc drift', () => {

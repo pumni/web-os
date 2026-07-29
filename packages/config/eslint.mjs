@@ -277,7 +277,7 @@ export function pumniFeatureBoundary(featuresDir) {
   const presentationPattern = {
     group: ['@pumni/supabase', '@pumni/supabase/*', '@pumni/auth', '@pumni/auth/*'],
     message:
-      'Presentation boundary violation: UI components (.tsx) must not import Supabase clients or auth helpers directly. Delegate data operations to custom hooks, queries, or Server Actions. See docs/conventions/feature-module.md.',
+      'Presentation boundary violation: UI components (.tsx) must not import Supabase clients or auth helpers directly. Delegate data operations to custom hooks, queries, or Server Actions. See apps/web/src/features/AGENTS.md.',
   };
 
   // The three scopes below are disjoint by file path/extension, so no file is

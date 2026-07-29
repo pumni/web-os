@@ -10,7 +10,7 @@ Keep tests focused on core behavior.
 
 - **Web tests**: Unit and component tests for Next.js app code live in `apps/web/src/test/`, mirroring the feature structure (e.g. `src/test/features/watch-sync-machine.test.ts`).
 - **Package tests**: Tests for packages live in `packages/<pkg>/src/test/`.
-- **Deep imports**: Test files under `apps/web/src/test/` are the **only** code allowed to deep-import feature internals. See `docs/conventions/feature-module.md` Firewall exception.
+- **Deep imports**: Test files under `apps/web/src/test/` are the **only** code allowed to deep-import feature internals. See `apps/web/src/features/AGENTS.md`.
 
 ## Unit Tests
 

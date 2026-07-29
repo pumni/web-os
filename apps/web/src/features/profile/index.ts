@@ -7,7 +7,7 @@
  * which callers import via the component's own subpath.
  */
 
-// fallow-ignore-file mixed-client-server-barrel -- barrel re-exports a client component (ProfileForm) alongside server-only modules; the layout is intentional and split into the public API (server-only here) + direct client-component imports. See docs/conventions/feature-module.md §3.
+// fallow-ignore-file mixed-client-server-barrel -- barrel re-exports a client component (ProfileForm) alongside server-only modules; the layout is intentional and split into the public API (server-only here) + direct client-component imports. See apps/web/src/features/AGENTS.md.
 export * from './queries';
 export * from './actions';
 export { ProfileForm } from './profile-form';

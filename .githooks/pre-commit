@@ -4,16 +4,15 @@
 #
 # This is the shared enforcement every coding tool passes through, because every
 # tool commits through git — Claude Code, Codex, Gemini/Antigravity, Copilot,
-# Cursor, or a human. It runs the SAME gate as CI (.github/workflows/ci.yml) and
-# the Claude Code Stop hook: scripts/check-ai-context.mjs. CI stays authoritative.
+# Cursor, or a human. It runs the same structural gate used by CI: context-lint.
 #
 # Scoped: only fires when the commit actually stages AI-context files, so
 # code-only commits stay frictionless.
 
 changed=$(git diff --cached --name-only)
-if printf '%s\n' "$changed" | grep -Eq '^(AGENTS|CLAUDE|GEMINI|CODEX)\.md$|^llms\.txt$|^\.mcp\.json$|^docs/(ai|conventions|architecture|adr)/|^\.agents/|^\.claude/(rules|skills)/|^scripts/(check-ai-context|sync-skills|sync-project-graph|check-secrets|review-gate-rules)\.mjs$|^scripts/ai-context\.manifest\.json$|^(apps|packages)/[^/]*/AGENTS\.md$|^\.github/copilot-instructions\.md$'; then
-  echo "[pre-commit] AI-context files staged — running scripts/check-ai-context.mjs"
-  bun scripts/check-ai-context.mjs || {
+if printf '%s\n' "$changed" | grep -Eq '(^|/)AGENTS\.md$|(^|/)CLAUDE\.md$|^\.mcp\.json$|^docs/(ai|conventions|architecture)/|^\.agents/|^\.claude/skills/|^scripts/(context-lint|sync-claude-shims|sync-skills)\.mjs$|^\.github/copilot-instructions\.md$'; then
+  echo "[pre-commit] AI-context files staged — running context-lint"
+  bun run context:lint || {
     echo "[pre-commit] AI-context gate failed. Fix, or bypass with --no-verify (CI will still enforce)."
     exit 1
   }

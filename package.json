@@ -86,6 +86,7 @@
     "context:lint": "bun scripts/context-lint.mjs",
     "policy:check": "bun scripts/policy-check.mjs",
     "skills:sync": "bun scripts/sync-skills.mjs",
+    "claude:shims:sync": "bun scripts/sync-claude-shims.mjs",
     "tw:lint": "tailwind-lint --config apps/web/src/app/globals.css \"apps/web/**/*.{ts,tsx}\" \"packages/ui/src/**/*.{ts,tsx}\"",
     "verify": "bun run context:lint && bun run policy:check && bun run tw:lint && turbo run lint typecheck test build",
     "clean": "bun run scripts/clean.mjs",

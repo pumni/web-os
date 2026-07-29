@@ -1,5 +1,7 @@
 # Khảo sát hiện trạng context layer — đối chiếu chuẩn 07/2026
 
+> Historical — not current guidance. Findings describe the pre-remediation tree.
+
 > Bước khám phá (discovery) cho đợt viết lại agent context layer. Chuẩn đối
 > chiếu: `docs/research/agent-context-layer-architecture-2026-07.md` (gọi tắt
 > "RESEARCH"). Mọi phát hiện dưới đây đã được xác minh trực tiếp trên cây repo

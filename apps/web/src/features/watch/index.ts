@@ -9,7 +9,7 @@
  * stay separate.
  */
 
-// fallow-ignore-file mixed-client-server-barrel -- barrel re-exports 'use client' components next to server-only modules for the page→client SSR flow; intentional split. See docs/conventions/feature-module.md §2.
+// fallow-ignore-file mixed-client-server-barrel -- barrel re-exports 'use client' components next to server-only modules for the page→client SSR flow; intentional split. See apps/web/src/features/AGENTS.md.
 export * from './queries';
 export * from './actions';
 export * from './types';

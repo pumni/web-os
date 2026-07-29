@@ -14,7 +14,7 @@
  *   bun scripts/sync-skills.mjs           # write/refresh shims
  *   bun scripts/sync-skills.mjs --check   # fail if any shim is missing/stale/orphan
  *
- * The --check form is wired into `bun run ai:check`.
+ * The --check form is wired into `bun run context:lint`.
  */
 
 import fs from 'node:fs';
@@ -55,7 +55,7 @@ function parseCanonical(content) {
 
 /** Render the canonical shim content for a given skill directory. */
 function renderShim(dir, parsed) {
-  const canonicalPath = `.agents/skills/${dir}/SKILL.md`;
+  const canonicalPath = `../../../.agents/skills/${dir}/SKILL.md`;
   return `---
 name: ${parsed.name}
 description: ${parsed.description}
@@ -64,7 +64,7 @@ description: ${parsed.description}
 # ${parsed.title} (pointer)
 
 Canonical, tool-agnostic procedure — read it before acting:
-[${canonicalPath}](/${canonicalPath})
+  [canonical skill](${canonicalPath})
 `;
 }
 

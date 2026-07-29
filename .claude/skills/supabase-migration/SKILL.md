@@ -6,4 +6,4 @@ description: Author Supabase migrations bundling schema, RLS, policies, grants, 
 # Supabase Migration (pointer)
 
 Canonical, tool-agnostic procedure — read it before acting:
-[.agents/skills/supabase-migration/SKILL.md](/.agents/skills/supabase-migration/SKILL.md)
+  [canonical skill](../../../.agents/skills/supabase-migration/SKILL.md)

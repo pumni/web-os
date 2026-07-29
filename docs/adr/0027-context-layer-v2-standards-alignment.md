@@ -1,8 +1,13 @@
 # 0027. Context Layer v2 — Standards Alignment
 
-- **Status:** Accepted
+- **Status:** Accepted — implementation details below the current-state note are historical after the 2026-07-29 remediation.
 - **Date:** 2026-07-11
 - **Owner:** AI context layer
+
+> Current-state note: `AGENTS.md` is the portable standing guide; scoped
+> `AGENTS.md` files own directory boundaries; `.agents/skills` owns reusable
+> procedures; `.claude` contains generated skill pointers only; and
+> `scripts/context-lint.mjs` checks structure without owning policy enforcement.
 
 ## Context
 

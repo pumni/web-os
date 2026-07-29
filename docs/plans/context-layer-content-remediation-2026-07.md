@@ -1,5 +1,7 @@
 # Context-Layer Content Remediation — 2026-07 (round 2)
 
+> Historical — not current guidance. Executed plan retained for audit history.
+
 - **Status:** Executed 2026-07-18 on `chore/context-content-remediation` (commit `48ec675`).
 - **Date:** 2026-07-17
 - **Source:** Tier-by-tier *content* review (session 2026-07-17, round 2 —

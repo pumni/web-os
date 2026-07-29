@@ -1,5 +1,8 @@
 # Agent Context Layer Baseline — July 2026
 
+> Historical — not current guidance. This baseline describes the pre-remediation
+> context layer and is retained for audit history only.
+
 ## 1. Overview & Baseline Execution Status
 
 Baseline executed on branch `refactor/agent-context-2026-07`.

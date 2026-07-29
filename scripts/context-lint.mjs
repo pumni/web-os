@@ -3,262 +3,184 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const ROOT = path.resolve(__dirname, '..');
-
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let errors = 0;
-let warnings = 0;
-function reportError(msg) {
-  console.error(`[ERROR] ${msg}`);
-  errors++;
+
+function error(message) {
+  console.error(`[ERROR] ${message}`);
+  errors += 1;
 }
 
-function resolveRel(relativePath) {
+function absolute(relativePath) {
   return path.join(ROOT, relativePath);
 }
 
-const REQUIRED_ENTRYPOINTS = [
-  'AGENTS.md',
-  'CLAUDE.md',
-  '.mcp.json',
-  '.github/copilot-instructions.md',
-  'scripts/context-lint.mjs',
-  'scripts/policy-check.mjs',
-  'scripts/sync-skills.mjs',
-];
+function relative(fullPath) {
+  return path.relative(ROOT, fullPath).replaceAll(path.sep, '/');
+}
+
+function walk(dir, visit) {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (['.git', '.next', '.turbo', 'node_modules'].includes(entry.name)) continue;
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) walk(fullPath, visit);
+    else visit(fullPath, entry.name);
+  }
+}
+
+function read(relativePath) {
+  return fs.readFileSync(absolute(relativePath), 'utf8');
+}
 
 function checkRequiredFiles() {
-  for (const rel of REQUIRED_ENTRYPOINTS) {
-    const full = resolveRel(rel);
-    if (!fs.existsSync(full)) {
-      reportError(`Required entrypoint missing: ${rel}`);
-    }
-  }
-}
-
-function checkAlwaysLoadedSize() {
-  const rootAgents = resolveRel('AGENTS.md');
-  if (fs.existsSync(rootAgents)) {
-    const stat = fs.statSync(rootAgents);
-    if (stat.size > 8000) {
-      reportError(`AGENTS.md size (${stat.size}B) exceeds maximum budget of 8000B.`);
-    }
-  }
-}
-
-function checkSkillShimsSync() {
-  const syncScript = path.join(__dirname, 'sync-skills.mjs');
-  if (fs.existsSync(syncScript)) {
-    try {
-      execFileSync(process.execPath, [syncScript, '--check'], { stdio: 'inherit', cwd: ROOT });
-    } catch {
-      reportError('.claude/skills shims are out of sync with .agents/skills. Run `bun run skills:sync`.');
-    }
-  }
-}
-
-function checkClaudeShims() {
-  const rootClaude = resolveRel('CLAUDE.md');
-  if (fs.existsSync(rootClaude)) {
-    const content = fs.readFileSync(rootClaude, 'utf8').trim();
-    if (!content.includes('@AGENTS.md')) {
-      reportError("Root CLAUDE.md must point to '@AGENTS.md'.");
-    }
-  }
-}
-
-function collectActiveContextFiles() {
-  const files = new Set([
+  for (const file of [
     'AGENTS.md',
     'CLAUDE.md',
-    '.github/copilot-instructions.md',
-    'docs/ai/mcp.md',
-  ]);
-
-  // Discover all AGENTS.md dynamically
-  function scanDir(dir) {
-    if (!fs.existsSync(dir)) return;
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === '.turbo') continue;
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        scanDir(fullPath);
-      } else if (entry.isFile() && entry.name === 'AGENTS.md') {
-        files.add(path.relative(ROOT, fullPath).replaceAll(path.sep, '/'));
-      }
-    }
+    'scripts/context-lint.mjs',
+    'scripts/sync-claude-shims.mjs',
+    'scripts/sync-skills.mjs',
+  ]) {
+    if (!fs.existsSync(absolute(file))) error(`Required context file missing: ${file}`);
   }
-  scanDir(ROOT);
-
-  // Add active skills
-  const agentsSkillsDir = resolveRel('.agents/skills');
-  if (fs.existsSync(agentsSkillsDir)) {
-    for (const entry of fs.readdirSync(agentsSkillsDir, { withFileTypes: true })) {
-      if (entry.isDirectory()) {
-        const skillFile = `.agents/skills/${entry.name}/SKILL.md`;
-        if (fs.existsSync(resolveRel(skillFile))) {
-          files.add(skillFile);
-        }
-      }
-    }
-  }
-
-  // Add convention docs
-  const convDir = resolveRel('docs/conventions');
-  if (fs.existsSync(convDir)) {
-    for (const entry of fs.readdirSync(convDir, { withFileTypes: true })) {
-      if (entry.isFile() && entry.name.endsWith('.md')) {
-        files.add(`docs/conventions/${entry.name}`);
-      }
-    }
-  }
-
-  // Add vendor rules & instructions (.claude/rules/*.md, .github/**/*.md)
-  const claudeRulesDir = resolveRel('.claude/rules');
-  if (fs.existsSync(claudeRulesDir)) {
-    for (const entry of fs.readdirSync(claudeRulesDir, { withFileTypes: true })) {
-      if (entry.isFile() && entry.name.endsWith('.md')) {
-        files.add(`.claude/rules/${entry.name}`);
-      }
-    }
-  }
-
-  const githubDir = resolveRel('.github');
-  if (fs.existsSync(githubDir)) {
-    function scanGithub(dir) {
-      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-        if (entry.name === 'workflows') continue;
-        const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory()) {
-          scanGithub(fullPath);
-        } else if (entry.isFile() && entry.name.endsWith('.md')) {
-          files.add(path.relative(ROOT, fullPath).replaceAll(path.sep, '/'));
-        }
-      }
-    }
-    scanGithub(githubDir);
-  }
-
-  return Array.from(files);
 }
 
-function checkSkillFrontmatter() {
-  const agentsSkillsDir = resolveRel('.agents/skills');
-  if (!fs.existsSync(agentsSkillsDir)) return;
+function checkRootShim() {
+  if (!fs.existsSync(absolute('CLAUDE.md'))) return;
+  if (read('CLAUDE.md') !== '@AGENTS.md\n') {
+    error("Root CLAUDE.md must contain exactly '@AGENTS.md'.");
+  }
+}
 
-  const entries = fs.readdirSync(agentsSkillsDir, { withFileTypes: true });
-  for (const entry of entries) {
+function runShimCheck(script, label) {
+  if (!fs.existsSync(absolute(script))) return;
+  try {
+    execFileSync(process.execPath, [absolute(script), '--check'], {
+      cwd: ROOT,
+      stdio: 'inherit',
+    });
+  } catch {
+    error(`${label} are missing or out of sync.`);
+  }
+}
+
+function checkBudgets() {
+  const stat = fs.statSync(absolute('AGENTS.md'));
+  if (stat.size > 8000) error(`AGENTS.md size (${stat.size}B) exceeds 8000B.`);
+}
+
+function contextFiles() {
+  const files = new Set(['AGENTS.md', 'CLAUDE.md', '.github/copilot-instructions.md', 'docs/ai/mcp.md']);
+
+  walk(ROOT, (fullPath, name) => {
+    const file = relative(fullPath);
+    if (name === 'AGENTS.md' || (file.startsWith('.github/') && name.endsWith('.md'))) files.add(file);
+    if (file.startsWith('.agents/skills/') && name === 'SKILL.md') files.add(file);
+    if (file.startsWith('.claude/skills/') && name === 'SKILL.md') files.add(file);
+  });
+
+  const conventions = absolute('docs/conventions');
+  if (fs.existsSync(conventions)) {
+    for (const name of fs.readdirSync(conventions)) {
+      if (name.endsWith('.md')) files.add(`docs/conventions/${name}`);
+    }
+  }
+  return [...files].filter((file) => fs.existsSync(absolute(file)));
+}
+
+function parseSkillFrontmatter(content) {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  if (!match) return null;
+  const frontmatter = match[1];
+  const name = frontmatter.match(/^name:\s*(.+)$/m)?.[1]?.trim();
+  const rawDescription = frontmatter.match(/^description:\s*(.+)$/m)?.[1]?.trim();
+  const description = rawDescription?.replace(/^(['"])(.*)\1$/, '$2');
+  return { name, description };
+}
+
+function checkSkills() {
+  const skillsDir = absolute('.agents/skills');
+  if (!fs.existsSync(skillsDir)) {
+    error('.agents/skills is missing.');
+    return;
+  }
+
+  for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    const skillPath = path.join(agentsSkillsDir, entry.name, 'SKILL.md');
-    if (!fs.existsSync(skillPath)) {
-      reportError(`Skill directory missing SKILL.md: .agents/skills/${entry.name}`);
+    const name = entry.name;
+    const skillFile = `.agents/skills/${name}/SKILL.md`;
+    if (!fs.existsSync(absolute(skillFile))) {
+      error(`Skill directory missing SKILL.md: ${skillFile}`);
       continue;
     }
 
-    const content = fs.readFileSync(skillPath, 'utf8');
-    if (!content.startsWith('---\n') && !content.startsWith('---\r\n')) {
-      reportError(`.agents/skills/${entry.name}/SKILL.md is missing YAML frontmatter.`);
-      continue;
+    const parsed = parseSkillFrontmatter(read(skillFile));
+    if (!parsed?.name) error(`${skillFile} is missing frontmatter name.`);
+    if (!parsed?.description) error(`${skillFile} is missing frontmatter description.`);
+    if (parsed?.name && parsed.name !== name) error(`${skillFile} name must match its directory.`);
+    if (parsed?.name && (parsed.name.length > 64 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(parsed.name))) {
+      error(`${skillFile} name must be 1-64 chars, lowercase, and kebab-case without leading/trailing or repeated hyphens.`);
     }
-
-    const end = content.indexOf('\n---', 4);
-    if (end === -1) {
-      reportError(`.agents/skills/${entry.name}/SKILL.md has unterminated frontmatter.`);
-      continue;
-    }
-
-    const frontmatter = content.slice(4, end);
-    const nameMatch = frontmatter.match(/^\s*name:\s*(\S+)/m);
-    const descMatch = frontmatter.match(/^\s*description:\s*(.+)$/m);
-
-    if (!nameMatch) {
-      reportError(`.agents/skills/${entry.name}/SKILL.md frontmatter missing 'name:'`);
-    } else {
-      const name = nameMatch[1];
-      if (name !== entry.name) {
-        reportError(`.agents/skills/${entry.name}/SKILL.md 'name: ${name}' does not match directory name '${entry.name}'`);
-      }
-      if (!/^[a-z0-9-]+$/.test(name)) {
-        reportError(`.agents/skills/${entry.name}/SKILL.md 'name: ${name}' must be lowercase kebab-case.`);
-      }
-    }
-
-    if (!descMatch || !descMatch[1].trim()) {
-      reportError(`.agents/skills/${entry.name}/SKILL.md frontmatter missing non-empty 'description:'`);
-    } else if (descMatch[1].trim().length > 500) {
-      reportError(`.agents/skills/${entry.name}/SKILL.md description is too long (>500 chars).`);
+    if (parsed?.description && parsed.description.length > 1024) {
+      error(`${skillFile} description exceeds the 1024-character Agent Skills limit.`);
     }
   }
 }
 
-function checkActiveContextCommandsAndLinks(contextFiles) {
-  const pkgPath = resolveRel('package.json');
-  const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf8')) : {};
-  const rootScripts = new Set(Object.keys(pkg.scripts ?? {}));
-
-  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-  const commandRegex = /bun\s+run\s+([a-z0-9:-]+)/g;
-
-  for (const relDoc of contextFiles) {
-    const fullDoc = resolveRel(relDoc);
-    if (!fs.existsSync(fullDoc)) continue;
-    const content = fs.readFileSync(fullDoc, 'utf8');
-    const docDir = path.dirname(fullDoc);
-
-    // 1. Check referenced bun run commands
-    let cmdMatch;
-    while ((cmdMatch = commandRegex.exec(content)) !== null) {
-      const scriptName = cmdMatch[1];
-      if (!rootScripts.has(scriptName)) {
-        reportError(`Active context file '${relDoc}' references non-existent command 'bun run ${scriptName}'`);
-      }
-    }
-
-    // 2. Check relative markdown links
-    let linkMatch;
-    while ((linkMatch = linkRegex.exec(content)) !== null) {
-      const href = linkMatch[2].trim();
-      if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('#') || href.startsWith('file://')) {
-        continue;
-      }
-      const cleanPath = href.split('#')[0];
-      if (!cleanPath) continue;
-
-      const targetPath = path.resolve(docDir, cleanPath);
-      if (!fs.existsSync(targetPath)) {
-        reportError(`Broken relative link in ${relDoc}: ${href} -> file not found.`);
-      }
-    }
-  }
+function isRepositoryPath(value) {
+  const candidate = value.replaceAll('\\', '/');
+  if (!candidate || /\s|[*<>|]/.test(candidate)) return false;
+  return /^(?:\.agents|\.claude|\.github|apps|docs|packages|scripts|supabase)(?:\/|$)/.test(candidate)
+    || /^(?:AGENTS|CLAUDE|package\.json|\.mcp\.json)(?:$|\/)/.test(candidate);
 }
 
-function checkEncodingHygiene(contextFiles) {
-  for (const rel of contextFiles) {
-    const full = resolveRel(rel);
-    if (!fs.existsSync(full)) continue;
-    const content = fs.readFileSync(full, 'utf8');
-    if (content.includes('\uFFFD')) {
-      reportError(`Encoding corruption (U+FFFD replacement char) found in ${rel}`);
+function checkDocs(files) {
+  const packageJson = JSON.parse(read('package.json'));
+  const scripts = new Set(Object.keys(packageJson.scripts ?? {}));
+  const linkPattern = /\[[^\]]*\]\(([^)]+)\)/g;
+  const commandPattern = /\bbun\s+run\s+([a-z0-9][a-z0-9:_-]*)/gi;
+  const inlinePattern = /`([^`\r\n]+)`/g;
+
+  for (const file of files) {
+    const content = read(file);
+    const dir = path.dirname(absolute(file));
+    let match;
+
+    while ((match = commandPattern.exec(content))) {
+      const command = match[1];
+      if (!scripts.has(command)) error(`${file} references missing command: bun run ${command}`);
     }
+
+    while ((match = linkPattern.exec(content))) {
+      const href = match[1].trim().split('#')[0];
+      if (!href || /^(?:https?:|mailto:|file:|#)/.test(href)) continue;
+      const target = path.resolve(dir, href);
+      if (!fs.existsSync(target)) error(`Broken link in ${file}: ${href}`);
+    }
+
+    while ((match = inlinePattern.exec(content))) {
+      const candidate = match[1].trim();
+      if (!isRepositoryPath(candidate)) continue;
+      if (!fs.existsSync(absolute(candidate))) error(`Broken repository path in ${file}: ${candidate}`);
+    }
+
+    if (content.includes('\uFFFD')) error(`Encoding corruption found in ${file}`);
   }
 }
 
 console.log('Running AI context linting...');
-
-const activeFiles = collectActiveContextFiles();
-
 checkRequiredFiles();
-checkAlwaysLoadedSize();
-checkSkillShimsSync();
-checkClaudeShims();
-checkSkillFrontmatter();
-checkActiveContextCommandsAndLinks(activeFiles);
-checkEncodingHygiene(activeFiles);
+if (fs.existsSync(absolute('AGENTS.md'))) {
+  checkRootShim();
+  checkBudgets();
+}
+runShimCheck('scripts/sync-claude-shims.mjs', 'Claude shims');
+runShimCheck('scripts/sync-skills.mjs', 'Skill shims');
+checkSkills();
+checkDocs(contextFiles());
 
 if (errors > 0) {
-  console.error(`\nContext lint failed with ${errors} error(s) and ${warnings} warning(s).`);
+  console.error(`\nContext lint failed with ${errors} error(s).`);
   process.exit(1);
 }
-
-console.log(`AI context linting passed with ${warnings} warning(s).`);
+console.log('AI context linting passed.');

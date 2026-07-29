@@ -6,4 +6,4 @@ description: Maintain the watch-together playback-sync architecture — a pure f
 # Watch Sync (pointer)
 
 Canonical, tool-agnostic procedure — read it before acting:
-[.agents/skills/watch-sync/SKILL.md](/.agents/skills/watch-sync/SKILL.md)
+  [canonical skill](../../../.agents/skills/watch-sync/SKILL.md)

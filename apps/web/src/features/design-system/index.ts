@@ -3,7 +3,7 @@
  *
  * The showcase routes under app/(app)/design-system consume these section
  * components through this barrel only; deep imports into ./components/* are
- * blocked by the feature-boundary firewall (docs/conventions/feature-module.md).
+ * blocked by the feature-boundary firewall (apps/web/src/features/AGENTS.md).
  */
 
 export { DesignSystemShowcase } from './components/showcase';

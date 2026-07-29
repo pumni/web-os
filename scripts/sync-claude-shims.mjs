@@ -6,37 +6,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 
 const checkOnly = process.argv.includes('--check');
+const SKIP_DIRS = new Set(['.agents', '.claude', '.git', '.next', '.turbo', 'dist', 'node_modules']);
 
-function findAgentsMd(dir) {
+function findFiles(dir, filename) {
   const results = [];
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-  for (const entry of entries) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory() && SKIP_DIRS.has(entry.name)) continue;
     const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      if (
-        entry.name === 'node_modules' ||
-        entry.name === '.git' ||
-        entry.name === '.gemini' ||
-        entry.name === '.claude' ||
-        entry.name === '.agents' ||
-        entry.name === 'dist' ||
-        entry.name === '.turbo'
-      ) {
-        continue;
-      }
-      results.push(...findAgentsMd(fullPath));
-    } else if (entry.name === 'AGENTS.md') {
-      // Ignore root AGENTS.md
-      if (fullPath !== path.join(ROOT, 'AGENTS.md')) {
-        results.push(fullPath);
-      }
-    }
+    if (entry.isDirectory()) results.push(...findFiles(fullPath, filename));
+    else if (entry.name === filename) results.push(fullPath);
   }
   return results;
 }
 
-const agentsFiles = findAgentsMd(ROOT);
+const agentsFiles = findFiles(ROOT, 'AGENTS.md').filter((file) => file !== path.join(ROOT, 'AGENTS.md'));
 let drift = 0;
 let written = 0;
 
@@ -64,36 +47,8 @@ for (const agentsFile of agentsFiles) {
   }
 }
 
-// Check for orphan CLAUDE.md shims that contain "@AGENTS.md" but don't have AGENTS.md next to them
-function findClaudeMd(dir) {
-  const results = [];
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      if (
-        entry.name === 'node_modules' ||
-        entry.name === '.git' ||
-        entry.name === '.gemini' ||
-        entry.name === '.claude' ||
-        entry.name === '.agents' ||
-        entry.name === 'dist' ||
-        entry.name === '.turbo'
-      ) {
-        continue;
-      }
-      results.push(...findClaudeMd(fullPath));
-    } else if (entry.name === 'CLAUDE.md') {
-      if (fullPath !== path.join(ROOT, 'CLAUDE.md')) {
-        results.push(fullPath);
-      }
-    }
-  }
-  return results;
-}
-
-const claudeFiles = findClaudeMd(ROOT);
+// Check for orphan CLAUDE.md shims that contain "@AGENTS.md" but don't have AGENTS.md next to them.
+const claudeFiles = findFiles(ROOT, 'CLAUDE.md').filter((file) => file !== path.join(ROOT, 'CLAUDE.md'));
 for (const claudeFile of claudeFiles) {
   const dir = path.dirname(claudeFile);
   const agentsFile = path.join(dir, 'AGENTS.md');
@@ -114,7 +69,7 @@ for (const claudeFile of claudeFiles) {
 
 if (checkOnly) {
   if (drift > 0) {
-    console.error(`\n${drift} CLAUDE.md shim(s) out of sync. Run \`bun run ai:shims:sync\` and commit.`);
+    console.error(`\n${drift} CLAUDE.md shim(s) out of sync. Run \`bun run claude:shims:sync\` and commit.`);
     process.exit(1);
   }
   console.log('CLAUDE.md shims are in sync.');

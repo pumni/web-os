@@ -1,5 +1,8 @@
 # Kiến trúc Context Layer cho dự án đa agent — Nghiên cứu độc lập & Blueprint chuẩn (07/2026)
 
+> Historical — not current guidance. Use the repository's current `AGENTS.md`,
+> scoped context files, and active skills instead.
+
 > Tài liệu nghiên cứu độc lập, tổng hợp từ nguồn gốc chính thức (spec, repo, tài liệu kỹ thuật của Anthropic, OpenAI, Linux Foundation, GitHub, LangChain, HumanLayer, Sentry, Apache, Cloudflare, Coder, Temporal) — **không** tham chiếu hay dựa trên hệ thống context hiện có của dự án này. Mọi khẳng định đều được fetch trực tiếp từ nguồn trong tháng 7/2026. Danh mục nguồn đầy đủ ở cuối tài liệu.
 
 ---
