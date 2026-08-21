@@ -69,3 +69,12 @@ Bun only — `bun install` · `bun run dev` · `bun run build`. Run the narrowes
 1. The narrowest gate for the change scope is green.
 2. No unrelated code was changed.
 3. The owning spec/doc is updated if documented behavior changed.
+
+## Context maintenance
+
+- Keep one canonical owner for each invariant. Scoped guides and skills should
+  point to that owner instead of copying a second rule set.
+- Add a custom checker only after a concrete failure shows that the standard
+  owner and focused tests cannot catch the invariant precisely.
+- Completed plans and research are historical evidence; archive them rather
+  than leaving executable-looking instructions in active context.
