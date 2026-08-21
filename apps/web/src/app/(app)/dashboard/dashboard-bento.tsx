@@ -11,7 +11,7 @@ import { BentoGrid, BentoGridItem } from '@pumni/ui/os';
 import { Button, Input } from '@pumni/ui/form';
 import { CardWell } from '@pumni/ui/layout';
 
-import type { Room } from '@/features/watch';
+import type { Room } from '@/features/watch/client';
 
 interface DashboardBentoProps {
   recentRooms: ReadonlyArray<Room>;
@@ -57,169 +57,133 @@ function DashboardHero({ recentRooms }: { recentRooms: ReadonlyArray<Room> }) {
         ? 'Open room'
         : 'Start a new room';
 
-  const PrimaryIcon =
-    intent.kind === 'resume-live' ? Play : intent.kind === 'open' ? ArrowUpRight : Plus;
+  const PrimaryIcon = intent.kind === 'resume-live' ? Play : intent.kind === 'open' ? Tv : Plus;
 
-  if (intent.kind === 'start') {
-    return (
-      <BentoGridItem
-        tier="hero"
-        interactive={false}
-        icon={<Tv className="size-4" />}
-        title={title}
-        description={subtitle}
-        minHeight={320}
-      >
-        <CardWell className="mt-2 flex flex-1 flex-col gap-3">
-          <Button
-            asChild
-            size="lg"
-            className="w-full justify-center gap-2 bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-via) text-primary-foreground shadow-card hover:shadow-interactive-hover"
-          >
-            <Link href={primaryHref}>
-              <PrimaryIcon className="size-4" />
-              {primaryLabel}
-            </Link>
-          </Button>
+  const joinRoom = () => {
+    const normalized = roomCode.trim().toUpperCase();
+    if (!normalized) return;
+    router.push(`/watch?roomCode=${encodeURIComponent(normalized)}` as Route);
+  };
 
-          <form
-            className="flex flex-col gap-2 sm:flex-row sm:items-center"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const code = roomCode.trim().toUpperCase();
-              if (code) {
-                router.push(`/watch?roomCode=${code}` as Route);
-              }
-            }}
-          >
+  return (
+    <BentoGridItem className="md:col-span-2" aria-labelledby="dashboard-next-action">
+      <div className="flex h-full flex-col justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Badge tone="accent" size="sm">
+              Next action
+            </Badge>
+            {intent.kind === 'resume-live' ? (
+              <Badge tone="success" size="sm" className="gap-1">
+                <Wifi className="size-3" /> Live
+              </Badge>
+            ) : null}
+          </div>
+          <div className="space-y-1">
+            <h2 id="dashboard-next-action" className="type-display text-xl text-foreground">
+              {title}
+            </h2>
+            <p className="type-caption max-w-xl text-muted-foreground">{subtitle}</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex min-w-0 flex-1 gap-2">
             <Input
-              name="roomCode"
-              placeholder="Enter a room code (e.g. ABCD)"
-              maxLength={12}
-              aria-label="Room code to join"
-              className="flex-1 font-mono tracking-wider uppercase"
-              autoCapitalize="characters"
-              spellCheck={false}
               value={roomCode}
-              onChange={(e) => setRoomCode(e.target.value)}
+              onChange={(event) => setRoomCode(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') joinRoom();
+              }}
+              placeholder="Room code"
+              aria-label="Room code"
+              className="max-w-xs"
             />
-            <Button type="submit" variant="outline" className="shrink-0 sm:w-auto">
+            <Button variant="secondary" onClick={joinRoom} disabled={!roomCode.trim()}>
               Join
             </Button>
-          </form>
-        </CardWell>
-      </BentoGridItem>
-    );
-  }
+          </div>
 
-  const room = intent.room;
-
-  return (
-    <BentoGridItem
-      tier="hero"
-      interactive={false}
-      icon={<Tv className="size-4" />}
-      title={title}
-      description={subtitle}
-      minHeight={320}
-    >
-      <CardWell className="mt-2 flex flex-1 flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-2 rounded-md border bg-card px-2.5 py-1 font-mono text-sm font-semibold text-foreground">
-            <Tv className="size-3.5 text-primary" />
-            {room.code}
-          </span>
-          {intent.kind === 'resume-live' ? (
-            <Badge tone="success" pulse>
-              Live now
-            </Badge>
-          ) : (
-            <Badge tone="neutral">
-              <Pause className="size-3" />
-              Idle
-            </Badge>
-          )}
-        </div>
-
-        <div className="space-y-1">
-          <p className="truncate text-sm font-semibold text-foreground">
-            {room.source_type
-              ? room.source_type.charAt(0).toUpperCase() + room.source_type.slice(1)
-              : 'No media queued yet'}
-          </p>
-          <p className="truncate font-mono text-xs text-muted-foreground">
-            {room.source_ref ?? 'Queue something to start playback'}
-          </p>
-        </div>
-
-        <div className="mt-auto flex flex-col gap-2 sm:flex-row">
-          <Button asChild className="w-full justify-center gap-2 sm:flex-1">
+          <Button asChild className="shrink-0 gap-2">
             <Link href={primaryHref}>
               <PrimaryIcon className="size-4" />
               {primaryLabel}
             </Link>
           </Button>
-          <Button asChild variant="outline" size="default" className="w-full sm:w-auto">
+        </div>
+      </div>
+    </BentoGridItem>
+  );
+}
+
+function SessionPulse({ recentRooms }: { recentRooms: ReadonlyArray<Room> }) {
+  const active = recentRooms.filter((room) => room.is_playing).length;
+  const paused = Math.max(recentRooms.length - active, 0);
+
+  return (
+    <BentoGridItem className="md:col-span-1" aria-labelledby="dashboard-session-pulse">
+      <div className="flex h-full flex-col justify-between gap-4">
+        <div className="space-y-1">
+          <p className="type-caption text-muted-foreground">Session pulse</p>
+          <h2 id="dashboard-session-pulse" className="type-display text-2xl text-foreground">
+            {active} live
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <CardWell className="flex items-center gap-2 p-3">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-success/12 text-success">
+              <Play className="size-4" />
+            </span>
+            <div>
+              <div className="type-heading text-sm text-foreground">{active}</div>
+              <div className="type-caption text-muted-foreground">Playing</div>
+            </div>
+          </CardWell>
+          <CardWell className="flex items-center gap-2 p-3">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+              <Pause className="size-4" />
+            </span>
+            <div>
+              <div className="type-heading text-sm text-foreground">{paused}</div>
+              <div className="type-caption text-muted-foreground">Paused</div>
+            </div>
+          </CardWell>
+        </div>
+      </div>
+    </BentoGridItem>
+  );
+}
+
+function RoomInventory({ recentRooms }: { recentRooms: ReadonlyArray<Room> }) {
+  const total = recentRooms.length;
+  const mostRecent = recentRooms[0];
+
+  return (
+    <BentoGridItem className="md:col-span-1" aria-labelledby="dashboard-room-inventory">
+      <div className="flex h-full flex-col justify-between gap-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1">
+            <p className="type-caption text-muted-foreground">Recent rooms</p>
+            <h2 id="dashboard-room-inventory" className="type-display text-2xl text-foreground">
+              {total}
+            </h2>
+          </div>
+          <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Users className="size-4" />
+          </span>
+        </div>
+
+        <div className="space-y-2">
+          <p className="type-caption text-muted-foreground">
+            {mostRecent ? `Latest room ${mostRecent.code}` : 'No recent room yet'}
+          </p>
+          <Button variant="ghost" size="sm" asChild className="w-fit gap-1 px-0">
             <Link href={'/watch' as Route}>
-              Browse watch tools
-              <ArrowUpRight className="size-3.5" />
+              Open Watch Together <ArrowUpRight className="size-3.5" />
             </Link>
           </Button>
         </div>
-      </CardWell>
-    </BentoGridItem>
-  );
-}
-
-function ActiveRoomsMetric({ recentRooms }: { recentRooms: ReadonlyArray<Room> }) {
-  const count = recentRooms.filter((room) => room.is_playing).length;
-  return (
-    <BentoGridItem
-      tier="metric"
-      interactive={false}
-      icon={<Users className="size-4" />}
-      title={String(count)}
-      description={count === 0 ? 'No live sessions' : 'Live right now'}
-      ariaLabel={`${count} active playing rooms`}
-    >
-      <div className="mt-auto flex items-center gap-2">
-        <Badge tone={count > 0 ? 'success' : 'neutral'} pulse={count > 0}>
-          {count > 0 ? 'Sync engaged' : 'Quiet'}
-        </Badge>
-      </div>
-    </BentoGridItem>
-  );
-}
-
-function PendingInvitesMetric({ count }: { count: number }) {
-  return (
-    <BentoGridItem
-      tier="metric"
-      interactive={false}
-      icon={<Wifi className="size-4" />}
-      title={String(count)}
-      description={count === 0 ? 'No pending invites' : 'Awaiting your reply'}
-      ariaLabel={`${count} pending invites`}
-    >
-      <div className="mt-auto flex items-center gap-2">
-        <Badge tone={count > 0 ? 'primary' : 'neutral'}>{count > 0 ? 'Open inbox' : 'Clear'}</Badge>
-      </div>
-    </BentoGridItem>
-  );
-}
-
-function SyncDriftMetric() {
-  return (
-    <BentoGridItem
-      tier="metric"
-      interactive={false}
-      icon={<Wifi className="size-4" />}
-      title="Stable"
-      description="All clear — last activity recent"
-      ariaLabel="Sync drift is stable"
-    >
-      <div className="mt-auto flex items-center gap-2">
-        <Badge tone="success">No drift</Badge>
       </div>
     </BentoGridItem>
   );
@@ -227,22 +191,22 @@ function SyncDriftMetric() {
 
 export function DashboardBento({ recentRooms }: DashboardBentoProps) {
   return (
-    <BentoGrid rowHeight={140}>
+    <BentoGrid className="md:grid-cols-3">
       <DashboardHero recentRooms={recentRooms} />
-      <ActiveRoomsMetric recentRooms={recentRooms} />
-      <PendingInvitesMetric count={0} />
-      <SyncDriftMetric />
+      <SessionPulse recentRooms={recentRooms} />
+      <RoomInventory recentRooms={recentRooms} />
     </BentoGrid>
   );
 }
 
 export function DashboardBentoSkeleton() {
   return (
-    <BentoGrid rowHeight={140}>
-      <BentoGridItem key="hero" tier="hero" loading interactive={false} minHeight={320} />
-      <BentoGridItem key="a" tier="metric" loading interactive={false} />
-      <BentoGridItem key="b" tier="metric" loading interactive={false} />
-      <BentoGridItem key="c" tier="metric" loading interactive={false} />
+    <BentoGrid className="md:grid-cols-3" aria-hidden="true">
+      {[2, 1, 1].map((span, index) => (
+        <BentoGridItem key={index} className={span === 2 ? 'md:col-span-2' : 'md:col-span-1'}>
+          <div className="h-36 animate-pulse rounded-xl bg-muted/40" />
+        </BentoGridItem>
+      ))}
     </BentoGrid>
   );
 }
