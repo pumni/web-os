@@ -11,6 +11,35 @@ export function calculateExpectedPosition(anchor: PlaybackAnchor, serverNowMs: n
   return expected;
 }
 
+export interface DriftThresholds {
+  deadband: number;
+  hardSeek: number;
+  nudge: number;
+}
+
+export type DriftAction = 'in-sync' | 'nudge' | 'seek';
+
+/** Source-specific drift policy. Kept pure so both reducer tests and the player executor share it. */
+export function getDriftThresholds(sourceType: string): DriftThresholds {
+  const isYouTube = sourceType === 'youtube';
+  return {
+    deadband: isYouTube ? 1.0 : 0.3,
+    hardSeek: isYouTube ? 2.0 : 1.5,
+    nudge: isYouTube ? 0.07 : 0.05,
+  };
+}
+
+export function classifyDrift(absDrift: number, thresholds: DriftThresholds): DriftAction {
+  if (absDrift < thresholds.deadband) return 'in-sync';
+  if (absDrift < thresholds.hardSeek) return 'nudge';
+  return 'seek';
+}
+
+/** Shift playback rate one step toward the host, clamped to the player's safe range. */
+export function nudgedRate(anchorRate: number, drift: number, nudgeStep: number): number {
+  return Math.max(0.5, Math.min(2.0, anchorRate + Math.sign(drift) * nudgeStep));
+}
+
 export function shouldAcceptPlaybackAnchor(current: PlaybackAnchor, incoming: PlaybackAnchor) {
   // Unversioned incoming = a persisted (postgres_changes) snapshot. With the
   // low-latency broadcast path (ADR-0011), a versioned live anchor can already
