@@ -1,4 +1,4 @@
-import type { DriftAction } from './hooks/use-sync-controller';
+import type { DriftAction } from './sync-math';
 
 /**
  * Pure state machine for watch playback sync (ADR-0011).
@@ -11,8 +11,8 @@ import type { DriftAction } from './hooks/use-sync-controller';
  *
  * The reducer decides *which* effect class to run; the numeric math
  * (`calculateExpectedPosition`, `classifyDrift`, `nudgedRate`) stays pure in
- * `sync-math.ts` / here, and a thin executor (step 2) reads the player, calls
- * those helpers, dispatches `DRIFT_TICK`, and applies the returned effects.
+ * `sync-math.ts`, and a thin executor reads the player, calls those helpers,
+ * dispatches `DRIFT_TICK`, and applies the returned effects.
  *
  * It is deliberately behaviour-preserving against the current imperative
  * controller (`hooks/use-sync-controller.ts`); see the test suite for the
@@ -101,7 +101,6 @@ const NONE: SyncEffect[] = [];
 export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition {
   switch (event.type) {
     case 'ROLE_CHANGED':
-      // Role flip resets follower locks and quality (controller lines 79-87).
       return {
         state: {
           ...state,
@@ -116,19 +115,13 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
       return { state: { ...state, clockReady: true }, effects: NONE };
 
     case 'CHANNEL_STATUS':
-      // Tracked for phase/telemetry; the controller does not currently react to
-      // connectivity, so no effects (behaviour-preserving, additive).
       return { state: { ...state, connection: event.status }, effects: NONE };
 
     case 'ANCHOR_RECEIVED':
-      // Caller only dispatches this for *accepted* anchors (shouldAcceptPlaybackAnchor).
-      // Host stores the anchor outside the machine and runs no follower effect.
       if (state.role === 'host') return { state, effects: NONE };
-      // A fresh anchor is a deliberate host command: re-engage and reconcile now.
       return { state: { ...state, following: true }, effects: [{ type: 'reconcile-now' }] };
 
     case 'DRIFT_TICK': {
-      // Reconcile bypass: host, or follower that has manually detached.
       if (state.role === 'host' || !state.following) return { state, effects: NONE };
       switch (event.action) {
         case 'in-sync':
@@ -156,13 +149,10 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
     }
 
     case 'MANUAL_INTERACTION':
-      // Host's own interactions are the source of truth, not a detach.
       if (state.role === 'host') return { state, effects: NONE };
       return { state: { ...state, following: false, quality: 'catching-up' }, effects: NONE };
 
     case 'RESYNC_CMD':
-      // Re-engage and snap to the host (controller `resync`, lines 206-222).
-      // quality is left to the next DRIFT_TICK, matching the old code.
       return {
         state: { ...state, following: true },
         effects: [
@@ -176,8 +166,6 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
       return { state: { ...state, gestureRequired: true }, effects: NONE };
 
     case 'GESTURE_RESUMED':
-      // Real user gesture: unmute, then behave like RESYNC_CMD (controller
-      // `resumeFromGesture`, lines 225-231).
       return {
         state: { ...state, gestureRequired: false, following: true },
         effects: [
@@ -212,14 +200,6 @@ export function selectPhase(state: SyncState): SyncPhase {
   return state.quality;
 }
 
-/**
- * Pure nudge math extracted from the reconcile loop: shift the playback rate one
- * step toward the host, clamped to the player's safe range.
- */
-export function nudgedRate(anchorRate: number, drift: number, nudgeStep: number): number {
-  return Math.max(0.5, Math.min(2.0, anchorRate + Math.sign(drift) * nudgeStep));
-}
-
 export interface SyncTelemetryEvent {
   name: string;
   attrs: Record<string, string | number | boolean>;
@@ -240,7 +220,6 @@ export function syncTelemetryEvents(
     case 'ROLE_CHANGED':
       return prev.role !== next.role ? [{ name: 'host.transfer', attrs: { role: next.role } }] : [];
     case 'DRIFT_TICK':
-      // Hard corrections are the felt-quality signal; nudges/in-sync are normal.
       if (next.role === 'follower' && next.following && event.action === 'seek') {
         const attrs: SyncTelemetryEvent['attrs'] = {};
         if (event.drift !== undefined) attrs.drift = Math.round(event.drift * 100) / 100;
