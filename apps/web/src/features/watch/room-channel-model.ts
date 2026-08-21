@@ -15,13 +15,16 @@ type PresenceRecord = {
   joinedAt?: number;
 };
 
-type NoticeAction = Exclude<QueueBroadcastEvent['action'], 'advance'>;
-
-const QUEUE_NOTICE: Record<NoticeAction, (name: string) => string> = {
+const QUEUE_NOTICE: Record<QueueBroadcastEvent['action'], (name: string) => string | null> = {
   add: (name) => `Video "${name}" đã được thêm vào hàng chờ`,
   remove: (name) => `Video "${name}" đã bị xóa khỏi hàng chờ`,
   reorder: () => 'Thứ tự hàng chờ vừa được cập nhật',
+  advance: () => null,
 };
+
+function withDefault<T>(value: T | null | undefined, fallback: T): T {
+  return value ?? fallback;
+}
 
 export function getPlaybackSignature(room: Room): string {
   return `${room.is_playing}|${room.anchor_position}|${room.anchor_server_ts}|${room.playback_rate}`;
@@ -61,14 +64,15 @@ function participantFromPresence(
   value: unknown,
   fallbackJoinedAt: number,
 ): Participant | null {
-  if (!Array.isArray(value) || value.length === 0) return null;
+  if (!Array.isArray(value)) return null;
+  const latest = value.at(-1) as PresenceRecord | undefined;
+  if (!latest) return null;
 
-  const latest = value[value.length - 1] as PresenceRecord;
   return {
     presenceRef: latest.presenceRef,
-    userId: latest.userId ?? key,
+    userId: withDefault(latest.userId, key),
     isHost: latest.isHost === true,
-    joinedAt: latest.joinedAt ?? fallbackJoinedAt,
+    joinedAt: withDefault(latest.joinedAt, fallbackJoinedAt),
   };
 }
 
@@ -87,6 +91,6 @@ export function normalizeParticipants(
 export function queueBroadcastNotice(
   event: Partial<QueueBroadcastEvent> | null | undefined,
 ): string | null {
-  if (!event?.action || event.action === 'advance') return null;
-  return QUEUE_NOTICE[event.action](event.title ?? 'Không tên');
+  const action = event?.action ?? 'advance';
+  return QUEUE_NOTICE[action](event?.title || 'Không tên');
 }
