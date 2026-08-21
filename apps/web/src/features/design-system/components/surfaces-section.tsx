@@ -99,7 +99,7 @@ export function SurfacesSection() {
                     <span>
                       Window Header (Plain header row — no nested glass)
                     </span>
-                    {/* Neutral monochrome controls (de-Appled per ADR-0012) */}
+                    {/* Neutral monochrome controls keep the product surface neutral. */}
                     <div className="flex gap-1.5 text-muted-foreground">
                       <span className="size-2 rounded-full bg-current opacity-40" />
                       <span className="size-2 rounded-full bg-current opacity-40" />

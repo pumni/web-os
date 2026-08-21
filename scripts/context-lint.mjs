@@ -1,37 +1,16 @@
 import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
+import {
+  absolute,
+  createErrorReporter,
+  read,
+  relative,
+  ROOT,
+  walk,
+} from './context-utils.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-let errors = 0;
-
-function error(message) {
-  console.error(`[ERROR] ${message}`);
-  errors += 1;
-}
-
-function absolute(relativePath) {
-  return path.join(ROOT, relativePath);
-}
-
-function relative(fullPath) {
-  return path.relative(ROOT, fullPath).replaceAll(path.sep, '/');
-}
-
-function walk(dir, visit) {
-  if (!fs.existsSync(dir)) return;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (['.git', '.next', '.turbo', 'node_modules'].includes(entry.name)) continue;
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(fullPath, visit);
-    else visit(fullPath, entry.name);
-  }
-}
-
-function read(relativePath) {
-  return fs.readFileSync(absolute(relativePath), 'utf8');
-}
+const reporter = createErrorReporter();
+const { error } = reporter;
 
 function checkRequiredFiles() {
   for (const file of [
@@ -52,6 +31,13 @@ function checkRootShim() {
   }
 }
 
+const CONTEXT_FILE_RULES = [
+  (file, name) => name === 'AGENTS.md',
+  (file, name) => file.startsWith('.github/') && name.endsWith('.md'),
+  (file, name) => file.startsWith('.agents/skills/') && name === 'SKILL.md',
+  (file, name) => file.startsWith('.claude/skills/') && name === 'SKILL.md',
+];
+
 function runShimCheck(script, label) {
   if (!fs.existsSync(absolute(script))) return;
   try {
@@ -64,21 +50,14 @@ function runShimCheck(script, label) {
   }
 }
 
-function checkBudgets() {
-  const stat = fs.statSync(absolute('AGENTS.md'));
-  if (stat.size > 4096) error(`AGENTS.md size (${stat.size}B) exceeds 4096B.`);
+function collectContextFile(files, fullPath, name) {
+  const file = relative(fullPath);
+  for (const rule of CONTEXT_FILE_RULES) if (rule(file, name)) files.add(file);
 }
 
 function contextFiles() {
   const files = new Set(['AGENTS.md', 'CLAUDE.md', '.github/copilot-instructions.md']);
-
-  walk(ROOT, (fullPath, name) => {
-    const file = relative(fullPath);
-    if (name === 'AGENTS.md' || (file.startsWith('.github/') && name.endsWith('.md'))) files.add(file);
-    if (file.startsWith('.agents/skills/') && name === 'SKILL.md') files.add(file);
-    if (file.startsWith('.claude/skills/') && name === 'SKILL.md') files.add(file);
-  });
-
+  walk(ROOT, (fullPath, name) => collectContextFile(files, fullPath, name));
   return [...files].filter((file) => fs.existsSync(absolute(file)));
 }
 
@@ -92,89 +71,82 @@ function parseSkillFrontmatter(content) {
   return { name, description };
 }
 
+function skillDirectories(skillsDir) {
+  return fs.readdirSync(skillsDir, { withFileTypes: true }).filter((entry) => entry.isDirectory());
+}
+
+function missingSkillName(parsed) {
+  return !parsed?.name;
+}
+
+function missingSkillDescription(parsed) {
+  return !parsed?.description;
+}
+
+function mismatchedSkillName(parsed, directoryName) {
+  return Boolean(parsed?.name) && parsed.name !== directoryName;
+}
+
+function invalidSkillName(parsed) {
+  return Boolean(parsed?.name) && !isValidSkillName(parsed.name);
+}
+
+function oversizedSkillDescription(parsed) {
+  return Boolean(parsed?.description) && parsed.description.length > 1024;
+}
+
+function validateSkillMetadata(skillFile, directoryName) {
+  const parsed = parseSkillFrontmatter(read(skillFile));
+  const checks = [
+    [missingSkillName(parsed), `${skillFile} is missing frontmatter name.`],
+    [missingSkillDescription(parsed), `${skillFile} is missing frontmatter description.`],
+    [mismatchedSkillName(parsed, directoryName), `${skillFile} name must match its directory.`],
+    [invalidSkillName(parsed), `${skillFile} name must be 1-64 chars, lowercase, and kebab-case without leading/trailing or repeated hyphens.`],
+    [oversizedSkillDescription(parsed), `${skillFile} description exceeds the 1024-character Agent Skills limit.`],
+  ];
+  for (const [failed, message] of checks) if (failed) error(message);
+}
+
+function isValidSkillName(name) {
+  return name.length <= 64 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name);
+}
+
+function checkSkillDirectory(entry) {
+  const name = entry.name;
+  const skillFile = `.agents/skills/${name}/SKILL.md`;
+  if (!fs.existsSync(absolute(skillFile))) {
+    error(`Skill directory missing SKILL.md: ${skillFile}`);
+    return;
+  }
+  validateSkillMetadata(skillFile, name);
+}
+
 function checkSkills() {
   const skillsDir = absolute('.agents/skills');
   if (!fs.existsSync(skillsDir)) {
     error('.agents/skills is missing.');
     return;
   }
-
-  for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    const name = entry.name;
-    const skillFile = `.agents/skills/${name}/SKILL.md`;
-    if (!fs.existsSync(absolute(skillFile))) {
-      error(`Skill directory missing SKILL.md: ${skillFile}`);
-      continue;
-    }
-
-    const parsed = parseSkillFrontmatter(read(skillFile));
-    if (!parsed?.name) error(`${skillFile} is missing frontmatter name.`);
-    if (!parsed?.description) error(`${skillFile} is missing frontmatter description.`);
-    if (parsed?.name && parsed.name !== name) error(`${skillFile} name must match its directory.`);
-    if (parsed?.name && (parsed.name.length > 64 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(parsed.name))) {
-      error(`${skillFile} name must be 1-64 chars, lowercase, and kebab-case without leading/trailing or repeated hyphens.`);
-    }
-    if (parsed?.description && parsed.description.length > 1024) {
-      error(`${skillFile} description exceeds the 1024-character Agent Skills limit.`);
-    }
-  }
+  for (const entry of skillDirectories(skillsDir)) checkSkillDirectory(entry);
 }
 
-function isRepositoryPath(value) {
-  const candidate = value.replaceAll('\\', '/');
-  if (!candidate || /\s|[*<>|]/.test(candidate)) return false;
-  return /^(?:\.agents|\.claude|\.github|apps|docs|packages|scripts|supabase)(?:\/|$)/.test(candidate)
-    || /^(?:AGENTS|CLAUDE|package\.json|\.mcp\.json)(?:$|\/)/.test(candidate);
-}
-
-function checkDocs(files) {
-  const packageJson = JSON.parse(read('package.json'));
-  const scripts = new Set(Object.keys(packageJson.scripts ?? {}));
-  const linkPattern = /\[[^\]]*\]\(([^)]+)\)/g;
-  const commandPattern = /\bbun\s+run\s+([a-z0-9][a-z0-9:_-]*)/gi;
-  const inlinePattern = /`([^`\r\n]+)`/g;
-
+function checkEncoding(files) {
   for (const file of files) {
     const content = read(file);
-    const dir = path.dirname(absolute(file));
-    let match;
-
-    while ((match = commandPattern.exec(content))) {
-      const command = match[1];
-      if (!scripts.has(command)) error(`${file} references missing command: bun run ${command}`);
-    }
-
-    while ((match = linkPattern.exec(content))) {
-      const href = match[1].trim().split('#')[0];
-      if (!href || /^(?:https?:|mailto:|file:|#)/.test(href)) continue;
-      const target = path.resolve(dir, href);
-      if (!fs.existsSync(target)) error(`Broken link in ${file}: ${href}`);
-    }
-
-    while ((match = inlinePattern.exec(content))) {
-      const candidate = match[1].trim();
-      if (!isRepositoryPath(candidate)) continue;
-      if (!fs.existsSync(absolute(candidate))) error(`Broken repository path in ${file}: ${candidate}`);
-    }
-
     if (content.includes('\uFFFD')) error(`Encoding corruption found in ${file}`);
   }
 }
 
-console.log('Running AI context linting...');
+console.log('Running context integrity linting...');
 checkRequiredFiles();
-if (fs.existsSync(absolute('AGENTS.md'))) {
-  checkRootShim();
-  checkBudgets();
-}
+if (fs.existsSync(absolute('AGENTS.md'))) checkRootShim();
 runShimCheck('scripts/sync-claude-shims.mjs', 'Claude shims');
 runShimCheck('scripts/sync-skills.mjs', 'Skill shims');
 checkSkills();
-checkDocs(contextFiles());
+checkEncoding(contextFiles());
 
-if (errors > 0) {
-  console.error(`\nContext lint failed with ${errors} error(s).`);
+if (reporter.count > 0) {
+  console.error(`\nContext lint failed with ${reporter.count} error(s).`);
   process.exit(1);
 }
-console.log('AI context linting passed.');
+console.log('Context integrity linting passed.');

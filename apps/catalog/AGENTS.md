@@ -1,6 +1,7 @@
-# apps/catalog — Storybook Component Catalog (nearest-file rules)
+# apps/catalog — Storybook component catalog
 
-Package delta; root AGENTS.md applies.
+Root `AGENTS.md` applies. The catalog is an isolated preview surface for
+`@pumni/ui`, not a second product app.
 
 ## Development & Build Commands
 
@@ -9,10 +10,10 @@ Package delta; root AGENTS.md applies.
 - **Linting:** `bun run catalog:lint`
 - **Typechecking:** `bun run catalog:typecheck`
 
-> [!NOTE]
-> The Storybook catalog scripts are prefixed with `catalog:` so they never join the default Turborepo gates (`build` / `lint` / `typecheck` / `test`) — per ADR-0021 the catalog must not become a second app the team is obligated to keep green. They are still registered as dedicated `catalog:*` tasks in `turbo.json`, so runs are cached and graph-aware (`@pumni/ui` changes invalidate them) without pulling Storybook into the main pipeline.
+The scripts are prefixed with `catalog:` and stay outside the default gates;
+this operational decision is recorded in [ADR-0031](../../docs/adr/0031-ui-platform-contract.md).
 
 ## Relationship to `@pumni/ui`
 
-- The catalog acts as an isolated sandbox for testing design system tokens and component layout.
-- Any component changes should be made directly inside `@pumni/ui` (under `packages/ui`) and previewed in the catalog before promotion to `apps/web`.
+- Make component changes in `packages/ui`, then use the catalog to preview them
+  before promotion to `apps/web`.

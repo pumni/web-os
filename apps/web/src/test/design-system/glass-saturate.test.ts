@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { repoRoot } from './token-test-utils';
 
 /**
- * Drift guard for the engineered-glass vibrancy token (ADR-0012).
+ * Drift guard for the engineered-glass vibrancy token.
  *
  * Before the engineered-glass refactor, `glass.css` hard-coded `saturate(1.3)`
  * (the iOS/vibrancy pump) on every `glass-*` utility. That magic value could

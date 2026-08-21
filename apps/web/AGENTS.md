@@ -35,5 +35,4 @@ Use package-local gates while iterating:
 - `bun --filter web test`
 - `bun --filter web build` for route/config/bundle-affecting changes
 
-Use `bun run verify` only when the change crosses workspaces or needs pre-merge
-proof.
+Use `bun run verify` for cross-workspace or pre-merge proof.

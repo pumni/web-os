@@ -7,7 +7,5 @@ Root and `apps/web/AGENTS.md` apply.
 - For request-time APIs, cache semantics, route-segment config, or `"use cache"`,
   consult `docs/conventions/nextjs-project-profile.md` and installed Next.js
   docs/source before changing behavior.
-- Route handlers and Server Actions must enforce authentication through the
-  owning server/auth modules. UI visibility is not authorization.
 - Run `bun --filter web build` when route/config behavior can affect the bundle
   or framework compilation.

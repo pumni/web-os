@@ -10,7 +10,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/** Glass only reads over a colourful backdrop (ADR-0012): a 2-blob + scrim container. */
+/** Glass only reads over a colourful backdrop: a 2-blob + scrim container. */
 function Backdrop({ children }: { children: ReactNode }) {
   return (
     <div className="relative isolate overflow-hidden rounded-2xl bg-muted/30 p-12">

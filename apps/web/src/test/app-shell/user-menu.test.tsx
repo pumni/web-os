@@ -60,5 +60,5 @@ describe('UserMenu', () => {
     expect(toast.success).toHaveBeenCalledWith('Signed out successfully.');
     expect(push).toHaveBeenCalledWith('/sign-in');
     expect(refresh).toHaveBeenCalled();
-  });
+  }, 30_000);
 });

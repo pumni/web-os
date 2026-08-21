@@ -30,7 +30,7 @@
   --primary-foreground: var(--neutral-50);
   /* Step-11 TEXT role (Radix step-9 fill / step-11 text). --primary is anchored
      dark for its FILL role — white --primary-foreground must clear Lc 60 on the
-     fill (ADR-0010) — which leaves it at Lc ~34 when used AS text on
+     fill (ADR-0031) — which leaves it at Lc ~34 when used AS text on
      --background in dark (link button, section captions). Light already reads
      fine as text (Lc 72), so light = --primary; dark lifts the brand hue to
      L 0.80 AND caps chroma at 0.13 — a saturated accent at high lightness
@@ -147,7 +147,8 @@
   */
 
   /* 1. TINT — two-tier glass (chrome vs readable) via single fill source
-     Single opaque L/C/H recipe (CSS Color 5 "fill" pattern — ADR-0025):
+     Single opaque L/C/H recipe (CSS Color 5 "fill" pattern; CSS is the
+     human-authored source in ADR-0031):
        --glass-fill holds the base colour, NO alpha; chrome/readable derive alpha only.
        Light: L=0.96 C=0.006 H=75 · Dark: L=0.15 C=0.005 H=70
      Apple HIG map (two-tier naming, content policy):

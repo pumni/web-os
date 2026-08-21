@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { repoRoot } from './token-test-utils';
 
 /**
- * Backdrop-root trap guard (ADR-0012 perf discipline; MDN backdrop-filter §
+ * Backdrop-root trap guard (glass performance discipline; MDN backdrop-filter §
  * "Backdrop root", https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter).
  *
  * `backdrop-filter` only paints content *behind* the nearest backdrop root —
@@ -20,7 +20,7 @@ import { repoRoot } from './token-test-utils';
  * inside that wrapper, not the page behind it, and glassmorphism silently
  * breaks.
  *
- * Pumni's overlay architecture is safe today (verified 2026-07-09): every
+ * Pumni's overlay architecture is asserted by this focused guard: every
  * glass-utility consumer — Dialog/Sheet/AlertDialog/CommandPalette/Popover/
  * DropdownMenu/ContextMenu — places the glass utility *directly* on the
  * portaled content element as a sibling of the scrim (`DialogPortal` holds

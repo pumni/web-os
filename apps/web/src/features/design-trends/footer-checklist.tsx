@@ -19,7 +19,7 @@ export function DesignTrendsFooter() {
           <h5 className="font-bold text-foreground">1. Contrast APCA</h5>
           <p>
             Text trên glass đạt tối thiểu Lc 60 (APCA). Không dùng tỷ lệ WCAG 2.x cũ.
-            Viền glass là specular rim quang học — không có APCA gate (ADR-0012).
+            Viền glass là specular rim quang học — không có APCA gate.
 
             Gate thực thi ở <code>glass-contrast.test.ts</code>.
           </p>
