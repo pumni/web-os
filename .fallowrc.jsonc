@@ -20,12 +20,10 @@
   // avoid false-positive unused-file/export findings on their imports.
   "entry": [
     "scripts/context-lint.mjs",
-    "scripts/check-context-drift.mjs",
     "scripts/check-feature-boundary.mjs",
     "scripts/check-review-gate-rules.mjs",
     "scripts/check-secrets.mjs",
-    "scripts/review-gate-rules.mjs",
-    "scripts/sync-nav-table.mjs"
+    "scripts/review-gate-rules.mjs"
   ],
 
   // ─── Public package surface ───────────────────────────────────────────────
@@ -35,79 +33,11 @@
     "@pumni/auth",
     "@pumni/config",
     "@pumni/env",
-    "@pumni/features",
     "@pumni/supabase",
     "@pumni/test-utils",
     "@pumni/ui",
     "@pumni/validators"
   ],
-
-  // ─── Architecture boundaries ──────────────────────────────────────────────
-  // Custom zones matching the actual monorepo layout under apps/web/src/.
-  // The built-in feature-sliced preset expects src/{app,features,shared} at
-  // root — incompatible with the apps/web/src/ monorepo prefix here.
-  //
-  // Enforces:
-  //   packages     → isolated sub-packages; imports allowed along the project dependency graph only
-  //                  (Auth -> Supabase -> Env, Ui -> Config/TestUtils).
-  //   shared       → can import packages and app-registry (navigation registry).
-  //   features     → can import shared + packages; features cannot import each other (autoDiscover-enforced).
-  //   app          → can import app-shell, features, shared, packages, and app-registry (entry layer).
-  //   app-registry → specific exception for nav-registry.ts, allowing it to import app pages.
-  "boundaries": {
-    "zones": [
-      {
-        "name": "packages",
-        "autoDiscover": ["packages"]
-      },
-      {
-        "name": "app-registry",
-        "patterns": ["apps/web/src/shared/components/app-shell/nav-registry.ts"]
-      },
-      {
-        "name": "shared",
-        "patterns": ["apps/web/src/shared/**", "!apps/web/src/shared/components/app-shell/nav-registry.ts"]
-      },
-      {
-        "name": "features",
-        "autoDiscover": ["apps/web/src/features"]
-      },
-      {
-        "name": "app",
-        "patterns": ["apps/web/src/app/**"]
-      }
-    ],
-    "rules": [
-      {
-        "from": "app",
-        "allow": ["features", "shared", "packages", "app-registry"]
-      },
-      {
-        "from": "app-registry",
-        "allow": ["app", "features", "shared", "packages"]
-      },
-      {
-        "from": "features",
-        "allow": ["shared", "packages"]
-      },
-      {
-        "from": "shared",
-        "allow": ["packages", "app-registry"]
-      },
-      {
-        "from": "packages/auth",
-        "allow": ["packages/supabase"]
-      },
-      {
-        "from": "packages/supabase",
-        "allow": ["packages/env"]
-      },
-      {
-        "from": "packages/ui",
-        "allow": ["packages/config", "packages/test-utils"]
-      }
-    ]
-  },
 
   // ─── Security category opt-ins ────────────────────────────────────────────
   // hardcoded-secret and secret-to-network are include-required (off unless

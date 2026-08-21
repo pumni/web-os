@@ -36,11 +36,9 @@ export const restrictedUiImports = [
           '@pumni/env/*',
           '@pumni/validators',
           '@pumni/validators/*',
-          '@pumni/features',
-          '@pumni/features/*',
         ],
         message:
-          'Security boundary: @pumni/ui must stay client-safe. Do not import server-only, auth, Supabase, env, validators, or feature packages into the UI layer.',
+          'Security boundary: @pumni/ui must stay client-safe. Do not import server-only, auth, Supabase, env, validators, or application code into the UI layer.',
       },
     ],
   },
