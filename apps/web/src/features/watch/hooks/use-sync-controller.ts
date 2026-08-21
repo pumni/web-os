@@ -7,12 +7,8 @@ import type {
   MediaPauseEvent,
   MediaSeekedEvent,
 } from '@vidstack/react';
-import type { PlaybackAnchor, Room, RoomRealtimeEvents } from '../types';
+
 import {
-  calculateExpectedPosition,
-  classifyDrift,
-  getDriftThresholds,
-  nudgedRate,
   shouldAcceptPersistedAnchorSnapshot,
   shouldAcceptPlaybackAnchor,
 } from '../sync-math';
@@ -25,35 +21,27 @@ import {
   type SyncEvent,
   type SyncState,
 } from '../sync-machine';
+import {
+  applySyncEffect,
+  createDriftTick,
+  tryPlayWithMutedFallback,
+} from '../sync-player-adapter';
+import type { PlaybackAnchor, Room, RoomRealtimeEvents } from '../types';
 import { useTelemetryRef } from '@/shared/lib/observability';
 
 import { useHostAnchorEmitter } from './use-host-anchor-emitter';
 
 // Numeric sync policy is canonical in `sync-math.ts`; keep these re-exports as
 // the controller's compatibility/test surface while dependency direction stays pure.
-export { classifyDrift, getDriftThresholds };
+export { classifyDrift, getDriftThresholds } from '../sync-math';
 export type { DriftAction, DriftThresholds } from '../sync-math';
-
-export function matchTransportState(
-  player: MediaPlayerInstance,
-  anchor: PlaybackAnchor,
-  tryPlay: (p: MediaPlayerInstance) => void,
-  markProgrammatic: () => void,
-) {
-  if (anchor.isPlaying && player.paused) {
-    tryPlay(player);
-  } else if (!anchor.isPlaying && !player.paused) {
-    markProgrammatic();
-    player.pause().catch(() => {});
-  }
-}
+export { matchTransportState } from '../sync-player-adapter';
 
 // ---------------------------------------------------------------------------
-// Hook — drives the pure `syncReducer` (ADR-0011) and applies its effects to
-// the Vidstack player. The reducer owns the lifecycle (following / quality /
-// gesture / role); this hook is the thin executor. Plain functions capture
-// fresh props each render; refs provide stable indirection for the realtime
-// subscription and the reconcile interval.
+// Hook — drives the pure `syncReducer` (ADR-0011) and delegates Vidstack
+// mutations to `sync-player-adapter.ts`. The reducer owns lifecycle decisions;
+// the adapter owns player-effect interpretation; this hook owns React lifecycle,
+// fresh-ref indirection, and host/follower event wiring.
 // ---------------------------------------------------------------------------
 
 export function useSyncController(
@@ -95,68 +83,35 @@ export function useSyncController(
   const dispatchRef = useRef<(event: SyncEvent) => void>(() => {});
   const reconcileNowRef = useRef<() => void>(() => {});
 
-  // Robust play: browsers block unmuted autoplay without a user gesture. Fall
-  // back to muted autoplay (always allowed); if even that fails, surface a
-  // tap-to-play overlay via the GESTURE_REQUIRED event.
-  const tryPlay = (player: MediaPlayerInstance) => {
-    markProgrammatic();
-    player.play().catch(() => {
-      markProgrammatic();
-      player.muted = true;
-      player.play().catch(() => {
-        dispatchRef.current({ type: 'GESTURE_REQUIRED' });
-      });
+  // Browsers can block unmuted autoplay. The adapter owns the concrete player
+  // fallback sequence; the controller only maps terminal failure into machine state.
+  const tryPlay = (player: MediaPlayerInstance) =>
+    tryPlayWithMutedFallback(player, markProgrammatic, () => {
+      dispatchRef.current({ type: 'GESTURE_REQUIRED' });
     });
-  };
 
-  // Compute current drift against the host anchor and feed the machine a tick.
+  // Read the current player snapshot and feed one classified drift event into
+  // the pure state machine. Threshold/math policy stays outside React.
   const reconcileNow = () => {
     const player = playerRef.current;
     if (!player) return;
-    const anchor = anchorRef.current;
-    const expected = calculateExpectedPosition(anchor, serverClock());
-    const drift = expected - player.currentTime;
-    const action = classifyDrift(Math.abs(drift), getDriftThresholds(room.source_type));
-    dispatchRef.current({ type: 'DRIFT_TICK', action, drift });
+    dispatchRef.current(createDriftTick(player, anchorRef.current, serverClock(), room.source_type));
   };
 
-  // Apply one reducer effect to the player. Effects recompute live position from
-  // the current anchor + server clock, so they always act on fresh state.
+  // Effects always read the latest anchor and server clock. The adapter owns
+  // Vidstack mutation semantics; this closure only supplies current dependencies.
   const applyEffect = (effect: SyncEffect) => {
     const player = playerRef.current;
     if (!player) return;
-    const anchor = anchorRef.current;
-    switch (effect.type) {
-      case 'match-transport':
-        matchTransportState(player, anchor, tryPlay, markProgrammatic);
-        break;
-      case 'match-rate':
-        if (player.playbackRate !== anchor.playbackRate) {
-          player.playbackRate = anchor.playbackRate;
-        }
-        break;
-      case 'nudge': {
-        const expected = calculateExpectedPosition(anchor, serverClock());
-        const drift = expected - player.currentTime;
-        const { nudge } = getDriftThresholds(room.source_type);
-        player.playbackRate = nudgedRate(anchor.playbackRate, drift, nudge);
-        break;
-      }
-      case 'seek-to-expected': {
-        const expected = calculateExpectedPosition(anchor, serverClock());
-        if (Math.abs(player.currentTime - expected) > 0.01) {
-          markProgrammatic();
-          player.currentTime = expected;
-        }
-        break;
-      }
-      case 'reconcile-now':
-        reconcileNow();
-        break;
-      case 'unmute':
-        player.muted = false;
-        break;
-    }
+    applySyncEffect(effect, {
+      player,
+      anchor: anchorRef.current,
+      sourceType: room.source_type,
+      serverClock,
+      tryPlay,
+      markProgrammatic,
+      reconcileNow,
+    });
   };
 
   // Run the pure reducer, commit the next state, then apply its effects. Called
