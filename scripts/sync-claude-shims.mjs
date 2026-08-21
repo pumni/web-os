@@ -1,23 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = path.resolve(__dirname, '..');
+import { findFiles, ROOT } from './context-utils.mjs';
 
 const checkOnly = process.argv.includes('--check');
 const SKIP_DIRS = new Set(['.agents', '.claude', '.git', '.next', '.turbo', 'dist', 'node_modules']);
-
-function findFiles(dir, filename) {
-  const results = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (entry.isDirectory() && SKIP_DIRS.has(entry.name)) continue;
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) results.push(...findFiles(fullPath, filename));
-    else if (entry.name === filename) results.push(fullPath);
-  }
-  return results;
-}
 
 const agentsFiles = findFiles(ROOT, 'AGENTS.md').filter((file) => file !== path.join(ROOT, 'AGENTS.md'));
 let drift = 0;

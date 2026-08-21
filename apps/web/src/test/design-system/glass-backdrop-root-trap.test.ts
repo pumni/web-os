@@ -20,7 +20,7 @@ import { repoRoot } from './token-test-utils';
  * inside that wrapper, not the page behind it, and glassmorphism silently
  * breaks.
  *
- * Pumni's overlay architecture is safe today (verified 2026-07-09): every
+ * Pumni's overlay architecture is asserted by this focused guard: every
  * glass-utility consumer — Dialog/Sheet/AlertDialog/CommandPalette/Popover/
  * DropdownMenu/ContextMenu — places the glass utility *directly* on the
  * portaled content element as a sibling of the scrim (`DialogPortal` holds

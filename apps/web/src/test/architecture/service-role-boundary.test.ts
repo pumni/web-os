@@ -16,6 +16,9 @@ const designRuleIds = [
   'pumni/no-raw-timing',
   'pumni/no-raw-z-index',
 ];
+// The full verify command runs ESLint, Vitest, and Next build concurrently.
+// Allow the mechanical guard to initialize under that expected CI load.
+const ESLINT_GUARD_TIMEOUT_MS = 60_000;
 
 const eslint = new ESLint({
   cwd: appRoot,
@@ -47,7 +50,7 @@ describe('ESLint mechanical guard composition', () => {
       2,
       1,
     ]);
-  }, 30_000);
+  }, ESLINT_GUARD_TIMEOUT_MS);
 
   it('allows an approved service-role module without disabling design guards', async () => {
     const messages = messagesByRule(await lintSourceAt('src/app/api/webhooks/polar/route.ts'));
@@ -59,5 +62,5 @@ describe('ESLint mechanical guard composition', () => {
       2,
       1,
     ]);
-  }, 30_000);
+  }, ESLINT_GUARD_TIMEOUT_MS);
 });

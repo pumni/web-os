@@ -7,5 +7,5 @@ the applicable `AGENTS.md` files. Completed or superseded plans belong under
 
 ## Current
 
-No active implementation plans. Completed handoffs are retained under
-[`archive/`](./archive/).
+- [`context-layer-v3/`](./context-layer-v3/) — active implementation handoff;
+  archive only after the implementation and CI acceptance gates are complete.

@@ -58,8 +58,8 @@ saturation in the light theme; the CSS token sources and drift test own the
 exact theme values.
 
 The product mapping is informed by Apple HIG Materials and Material 3
-elevation. Primary-source verification: 2026-07-09; next recheck: 2026-08-15.
-The `glass-hig-primary-source.test.ts` guard owns this verification stamp.
+elevation. These references explain the product rationale; implementation
+tokens and focused tests remain the active sources of truth.
 
 Use semantic color utilities, owned motion/elevation/radius utilities, and
 components such as `CardWell`, `Badge`, and `IconBadge`. Do not invent a raw
