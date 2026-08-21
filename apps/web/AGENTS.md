@@ -1,20 +1,39 @@
-# apps/web — Next.js 16 (nearest-file rules)
+# apps/web — local agent delta
 
-This is **not** the Next.js in your training data. For framework API semantics, consult the installed Next.js documentation in `node_modules/next/dist/docs/` or the `nextjs_docs` MCP.
+Root `AGENTS.md` applies. This file only adds rules specific to the Next.js app.
 
-## Project Profile & Conventions
+## Load when relevant
 
-Canonical: `docs/conventions/nextjs-project-profile.md` — read before writing any Next.js code in `apps/web`.
+- For version-sensitive Next.js behavior, read
+  `docs/conventions/nextjs-project-profile.md` and inspect the installed Next.js
+  docs/source when needed. Prefer repository-local evidence over remembered
+  framework behavior.
+- For cache/server-state changes, read `docs/conventions/data-fetching.md`.
+- For auth, Supabase, or server-secret work, read
+  `docs/conventions/supabase-security.md`.
 
-## App-local layout
+## Structure
 
-- Routes in `src/app`; shared shell/providers/UI in `src/shared` (`components`, `hooks`, `lib`, `stores`); domain logic in `src/features/<feature>` (Server Actions in `actions.ts`, queries, feature components/stores).
-- State ownership: server data stays in Server Components or TanStack Query cache; never mirror it to Zustand (see [data-fetching.md](../../docs/conventions/data-fetching.md)).
-- Server-only modules carry `"server-only"`; the service-role key never reaches client bundles (`docs/conventions/supabase-security.md`).
-- Use `"use client"` only for browser interactivity; keep server-only modules and
-  route-segment configuration in Server Components. Request-time APIs and route
-  props follow `docs/conventions/nextjs-project-profile.md`.
-- React Compiler is active monorepo-wide: do not add **new** `useMemo`/`useCallback` for ordinary stability. Optimize manually only for `useTransition`, ref cleanup, or dynamic third-party JSX props.
-- Playground/demo surfaces — `src/features/sky-player`, `src/features/design-trends`, `src/app/(app)/todos` — are exempt from full feature-module requirements, but security mandates (RLS/auth) still apply if they touch any server resource.
+- `src/app`: route composition and framework entry points.
+- `src/features/<feature>`: domain behavior, feature components, queries,
+  actions, and feature-local state.
+- `src/shared`: app-local shell, providers, reusable hooks/helpers, and UI glue.
+- Routes should consume feature public APIs rather than own domain logic.
+- React Compiler is active. Do not add `useMemo`/`useCallback` solely for
+  ordinary referential stability; use manual memoization only when a concrete
+  boundary requires it.
+- Playground/demo surfaces (`src/features/sky-player`,
+  `src/features/design-trends`, `src/app/(app)/todos`) may stay lightweight,
+  but security boundaries still apply when they touch server resources.
 
-For domain-specific procedures see `.agents/skills/*` (`watch-sync`, `supabase-migration`).
+## Validation
+
+Use package-local gates while iterating:
+
+- `bun --filter web lint`
+- `bun --filter web typecheck`
+- `bun --filter web test`
+- `bun --filter web build` for route/config/bundle-affecting changes
+
+Use `bun run verify` only when the change crosses workspaces or needs pre-merge
+proof.
