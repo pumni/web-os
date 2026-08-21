@@ -65,11 +65,17 @@ export type SyncEvent =
   | { type: 'GESTURE_RESUMED' };
 
 export type SyncEffect =
+  /** Align the player's play/pause state to the anchor (matchTransportState). */
   | { type: 'match-transport' }
+  /** Set the player's playbackRate to the anchor rate (if it differs). */
   | { type: 'match-rate' }
+  /** Small playbackRate nudge toward the anchor to close sub-hardSeek drift. */
   | { type: 'nudge' }
+  /** Hard seek the player to the expected anchor position. */
   | { type: 'seek-to-expected' }
+  /** Run an immediate reconcile tick (compute drift, dispatch DRIFT_TICK). */
   | { type: 'reconcile-now' }
+  /** Clear `muted` before resuming from a user gesture. */
   | { type: 'unmute' };
 
 export interface SyncTransition {
@@ -90,9 +96,14 @@ export function initialSyncState(isHost: boolean): SyncState {
 
 const NONE: SyncEffect[] = [];
 
+/**
+ * Pure transition function. Returns the next state and the effects an executor
+ * must apply to the player. Never mutates the input state.
+ */
 export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition {
   switch (event.type) {
     case 'ROLE_CHANGED':
+      // Role flip resets follower locks and quality (controller lines 79-87).
       return {
         state: {
           ...state,
@@ -102,14 +113,24 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
         },
         effects: NONE,
       };
+
     case 'CLOCK_READY':
       return { state: { ...state, clockReady: true }, effects: NONE };
+
     case 'CHANNEL_STATUS':
+      // Tracked for phase/telemetry; the controller does not currently react to
+      // connectivity, so no effects (behaviour-preserving, additive).
       return { state: { ...state, connection: event.status }, effects: NONE };
+
     case 'ANCHOR_RECEIVED':
+      // Caller only dispatches this for *accepted* anchors (shouldAcceptPlaybackAnchor).
+      // Host stores the anchor outside the machine and runs no follower effect.
       if (state.role === 'host') return { state, effects: NONE };
+      // A fresh anchor is a deliberate host command: re-engage and reconcile now.
       return { state: { ...state, following: true }, effects: [{ type: 'reconcile-now' }] };
+
     case 'DRIFT_TICK': {
+      // Reconcile bypass: host, or follower that has manually detached.
       if (state.role === 'host' || !state.following) return { state, effects: NONE };
       switch (event.action) {
         case 'in-sync':
@@ -135,10 +156,15 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
           return assertNever(event.action);
       }
     }
+
     case 'MANUAL_INTERACTION':
+      // Host's own interactions are the source of truth, not a detach.
       if (state.role === 'host') return { state, effects: NONE };
       return { state: { ...state, following: false, quality: 'catching-up' }, effects: NONE };
+
     case 'RESYNC_CMD':
+      // Re-engage and snap to the host. Quality is left to the next DRIFT_TICK,
+      // matching the previous controller behavior.
       return {
         state: { ...state, following: true },
         effects: [
@@ -147,9 +173,12 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
           { type: 'match-transport' },
         ],
       };
+
     case 'GESTURE_REQUIRED':
       return { state: { ...state, gestureRequired: true }, effects: NONE };
+
     case 'GESTURE_RESUMED':
+      // Real user gesture: unmute, then behave like RESYNC_CMD.
       return {
         state: { ...state, gestureRequired: false, following: true },
         effects: [
@@ -159,15 +188,22 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
           { type: 'match-transport' },
         ],
       };
+
     default:
       return assertNever(event);
   }
 }
 
+/**
+ * Legacy public sync status (`'host' | 'in-sync' | 'catching-up'`) preserved for
+ * the controller's return contract. Followers report drift quality; the host
+ * reports `'host'`.
+ */
 export function selectSyncStatus(state: SyncState): 'host' | 'in-sync' | 'catching-up' {
   return state.role === 'host' ? 'host' : state.quality;
 }
 
+/** Richer lifecycle phase for telemetry and indicators (highest condition wins). */
 export function selectPhase(state: SyncState): SyncPhase {
   if (state.role === 'host') return 'host';
   if (!state.clockReady) return 'idle';
@@ -182,6 +218,12 @@ export interface SyncTelemetryEvent {
   attrs: Record<string, string | number | boolean>;
 }
 
+/**
+ * Derive sync-health telemetry purely from a transition (ADR-0011). Emitting
+ * from the transition rather than hand-placed `track()` calls keeps telemetry
+ * honest — it cannot drift from behaviour. Low-noise by design: only meaningful
+ * lifecycle edges are reported, not every reconcile tick.
+ */
 export function syncTelemetryEvents(
   prev: SyncState,
   event: SyncEvent,
@@ -191,6 +233,7 @@ export function syncTelemetryEvents(
     case 'ROLE_CHANGED':
       return prev.role !== next.role ? [{ name: 'host.transfer', attrs: { role: next.role } }] : [];
     case 'DRIFT_TICK':
+      // Hard corrections are the felt-quality signal; nudges/in-sync are normal.
       if (next.role === 'follower' && next.following && event.action === 'seek') {
         const attrs: SyncTelemetryEvent['attrs'] = {};
         if (event.drift !== undefined) attrs.drift = Math.round(event.drift * 100) / 100;
