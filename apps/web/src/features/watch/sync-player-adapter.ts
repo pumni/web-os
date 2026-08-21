@@ -44,14 +44,15 @@ export function matchTransportState(
   tryPlay: (player: MediaPlayerInstance) => void,
   markProgrammatic: () => void,
 ) {
-  if (anchor.isPlaying && player.paused) {
+  // Matching states are (anchor playing, player playing) and
+  // (anchor paused, player paused). Only the two equal booleans need action.
+  if (anchor.isPlaying !== player.paused) return;
+  if (anchor.isPlaying) {
     tryPlay(player);
     return;
   }
-  if (!anchor.isPlaying && !player.paused) {
-    markProgrammatic();
-    player.pause().catch(() => {});
-  }
+  markProgrammatic();
+  player.pause().catch(() => {});
 }
 
 export function tryPlayWithMutedFallback(
