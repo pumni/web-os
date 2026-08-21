@@ -3,10 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 
 import type { QueueItem, Room } from '../types';
-import { useHostAutopromote } from './use-host-autopromote';
-import { useHostClaimState } from './use-host-claim-state';
 import { useHostHeartbeat } from './use-host-heartbeat';
-import { useMemberProfiles } from './use-room-members';
 import { useRoomChannel } from './use-room-channel';
 import { useRoomMembership } from './use-room-membership';
 import { useQueueQuery } from './use-room-queue';
@@ -20,12 +17,13 @@ interface WatchRoomRuntimeOptions {
 }
 
 /**
- * Composition boundary for room lifecycle + realtime ownership.
+ * Composition boundary for the base room runtime: membership, clock, cached
+ * room/queue state, host heartbeat, and realtime transport.
  *
- * Queue mutations, chat behavior, and player sync deliberately stay outside
- * this hook: they consume the runtime but have independent reasons to change.
- * Keeping this boundary focused lets `WatchRoom` read as orchestration instead
- * of a flat list of infrastructure hooks while avoiding a catch-all mega-hook.
+ * Queue mutations, chat, host election, profiles, and player sync deliberately
+ * stay outside. Their hooks retain the same relative ordering in `WatchRoom`,
+ * avoiding subtle effect-order changes while still giving infrastructure a
+ * named boundary an agent can inspect independently.
  */
 export function useWatchRoomRuntime({ room, userId, initialQueueItems }: WatchRoomRuntimeOptions) {
   const queryClient = useQueryClient();
@@ -37,18 +35,6 @@ export function useWatchRoomRuntime({ room, userId, initialQueueItems }: WatchRo
 
   useHostHeartbeat(currentRoom.id, userId, isHost);
 
-  const channel = useRoomChannel(currentRoom, userId, isHost);
-
-  useHostAutopromote(currentRoom.id, userId, isHost, channel.participants, () =>
-    channel.broadcastRoomEvent({ action: 'host-claim' }),
-  );
-
-  const { data: profiles = {} } = useMemberProfiles(
-    channel.participants.map((participant) => participant.userId),
-  );
-  const hostPresent = channel.participants.some((participant) => participant.isHost);
-  const showClaim = useHostClaimState(isHost, hostPresent);
-
   return {
     currentRoom,
     queueItems,
@@ -56,8 +42,6 @@ export function useWatchRoomRuntime({ room, userId, initialQueueItems }: WatchRo
     membership,
     clockReady,
     serverClock,
-    profiles,
-    showClaim,
-    ...channel,
+    ...useRoomChannel(currentRoom, userId, isHost),
   };
 }
