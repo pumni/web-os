@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const SKIP_DIRS = new Set(['.git', '.next', '.turbo', 'dist', 'node_modules']);
 let errors = 0;
 
 function error(message) {
@@ -22,7 +23,7 @@ function relative(fullPath) {
 function walk(dir, visit) {
   if (!fs.existsSync(dir)) return;
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (['.git', '.next', '.turbo', 'node_modules'].includes(entry.name)) continue;
+    if (entry.isDirectory() && SKIP_DIRS.has(entry.name)) continue;
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) walk(fullPath, visit);
     else visit(fullPath, entry.name);
@@ -64,27 +65,27 @@ function runShimCheck(script, label) {
   }
 }
 
-function checkBudgets() {
-  const stat = fs.statSync(absolute('AGENTS.md'));
-  if (stat.size > 8000) error(`AGENTS.md size (${stat.size}B) exceeds 8000B.`);
-}
-
-function contextFiles() {
-  const files = new Set(['AGENTS.md', 'CLAUDE.md', '.github/copilot-instructions.md', 'docs/ai/mcp.md']);
+function agentFiles() {
+  const files = new Set();
 
   walk(ROOT, (fullPath, name) => {
     const file = relative(fullPath);
-    if (name === 'AGENTS.md' || (file.startsWith('.github/') && name.endsWith('.md'))) files.add(file);
+    if (name === 'AGENTS.md' || name === 'CLAUDE.md') files.add(file);
+    if (file === '.github/copilot-instructions.md') files.add(file);
     if (file.startsWith('.agents/skills/') && name === 'SKILL.md') files.add(file);
     if (file.startsWith('.claude/skills/') && name === 'SKILL.md') files.add(file);
   });
 
-  for (const directory of ['docs/ai', 'docs/conventions', 'docs/architecture']) {
-    walk(absolute(directory), (fullPath, name) => {
-      if (name.endsWith('.md')) files.add(relative(fullPath));
-    });
+  return [...files].sort();
+}
+
+function checkBudgets(files) {
+  for (const file of files) {
+    if (path.basename(file) !== 'AGENTS.md') continue;
+    const size = fs.statSync(absolute(file)).size;
+    const budget = 4096;
+    if (size > budget) error(`${file} size (${size}B) exceeds ${budget}B.`);
   }
-  return [...files].filter((file) => fs.existsSync(absolute(file)));
 }
 
 function parseSkillFrontmatter(content) {
@@ -108,6 +109,7 @@ function checkSkills() {
     if (!entry.isDirectory()) continue;
     const name = entry.name;
     const skillFile = `.agents/skills/${name}/SKILL.md`;
+
     if (!fs.existsSync(absolute(skillFile))) {
       error(`Skill directory missing SKILL.md: ${skillFile}`);
       continue;
@@ -118,7 +120,7 @@ function checkSkills() {
     if (!parsed?.description) error(`${skillFile} is missing frontmatter description.`);
     if (parsed?.name && parsed.name !== name) error(`${skillFile} name must match its directory.`);
     if (parsed?.name && (parsed.name.length > 64 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(parsed.name))) {
-      error(`${skillFile} name must be 1-64 chars, lowercase, and kebab-case without leading/trailing or repeated hyphens.`);
+      error(`${skillFile} name must be 1-64 chars, lowercase, and kebab-case.`);
     }
     if (parsed?.description && parsed.description.length > 1024) {
       error(`${skillFile} description exceeds the 1024-character Agent Skills limit.`);
@@ -133,7 +135,7 @@ function isRepositoryPath(value) {
     || /^(?:AGENTS|CLAUDE|package\.json|\.mcp\.json)(?:$|\/)/.test(candidate);
 }
 
-function checkDocs(files) {
+function checkInstructionReferences(files) {
   const packageJson = JSON.parse(read('package.json'));
   const scripts = new Set(Object.keys(packageJson.scripts ?? {}));
   const linkPattern = /\[[^\]]*\]\(([^)]+)\)/g;
@@ -167,19 +169,23 @@ function checkDocs(files) {
   }
 }
 
-console.log('Running AI context linting...');
+console.log('Running agent context linting...');
 checkRequiredFiles();
+
+const files = agentFiles();
 if (fs.existsSync(absolute('AGENTS.md'))) {
   checkRootShim();
-  checkBudgets();
+  checkBudgets(files);
 }
+
 runShimCheck('scripts/sync-claude-shims.mjs', 'Claude shims');
 runShimCheck('scripts/sync-skills.mjs', 'Skill shims');
 checkSkills();
-checkDocs(contextFiles());
+checkInstructionReferences(files);
 
 if (errors > 0) {
   console.error(`\nContext lint failed with ${errors} error(s).`);
   process.exit(1);
 }
-console.log('AI context linting passed.');
+
+console.log(`Agent context linting passed (${files.length} active instruction files).`);
