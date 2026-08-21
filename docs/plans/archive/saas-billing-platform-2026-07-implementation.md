@@ -1,5 +1,8 @@
 # Implementation Plan: SaaS Billing Platform — phase-by-phase execution guide
 
+> Historical and non-normative. This execution playbook has been superseded by
+> the landed billing implementation; do not execute it without revalidation.
+
 - **Status:** Ready for execution
 - **Date:** 2026-07-11
 - **Sources:** `saas-billing-platform-2026-07.md` (spec, decisions D1–D4, criteria 1–10),

@@ -30,8 +30,8 @@ Open `http://localhost:3000`.
 For local Supabase development:
 
 ```bash
-npx supabase start
-npx supabase db reset
+bunx supabase start
+bunx supabase db reset
 ```
 
 Then copy the local Supabase URL and publishable key into
@@ -61,13 +61,10 @@ bun run test
 bun run build
 ```
 
-Run all four quality gates before merging starter changes:
+Run the canonical complete gate before merging starter changes:
 
 ```bash
-bun run lint
-bun run typecheck
-bun run test
-bun run build
+bun run verify
 ```
 
 ## Structure

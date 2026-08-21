@@ -1,5 +1,8 @@
 # Research Report: SaaS Billing Platform (Polar + Entitlements + Watch-Room Gating)
 
+> Historical and non-normative research. Library versions, commands, and
+> recommendations may be obsolete; do not execute them without revalidation.
+
 - **Date:** 2026-07-11 (last verified 2026-07-11 by re-checking against installed packages)
 - **Compiled for:** `saas-billing-platform-2026-07.md` plan
 - **Purpose:** Deep-dive research into best practices and current documentation for each library/platform/service the plan depends on. Use this report as the technical reference before implementation begins on each phase.
