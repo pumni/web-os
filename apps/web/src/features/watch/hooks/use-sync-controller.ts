@@ -29,6 +29,8 @@ import { useTelemetryRef } from '@/shared/lib/observability';
 
 import { useHostAnchorEmitter } from './use-host-anchor-emitter';
 
+export { classifyDrift, getDriftThresholds };
+
 export function matchTransportState(
   player: MediaPlayerInstance,
   anchor: PlaybackAnchor,
@@ -64,8 +66,6 @@ export function useSyncController(
     playbackRate: room.playback_rate,
   });
 
-  // Ignore play/pause/seeked events emitted by reconcile itself. YouTube iframe
-  // events are synthetic, so isOriginTrusted alone is not a reliable boundary.
   const programmaticUntilRef = useRef(0);
   const PROGRAMMATIC_WINDOW_MS = 1500;
   const markProgrammatic = () => {
@@ -73,8 +73,6 @@ export function useSyncController(
   };
   const isWithinProgrammaticWindow = () => Date.now() < programmaticUntilRef.current;
 
-  // Stable indirection lets realtime subscriptions and the reconcile interval
-  // reach fresh closures without mutating refs during render.
   const dispatchRef = useRef<(event: SyncEvent) => void>(() => {});
   const reconcileNowRef = useRef<() => void>(() => {});
 
