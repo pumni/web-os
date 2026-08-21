@@ -1,5 +1,7 @@
 import type { DriftAction } from './sync-math';
 
+export { nudgedRate } from './sync-math';
+
 /**
  * Pure state machine for watch playback sync (ADR-0011).
  *
@@ -63,17 +65,11 @@ export type SyncEvent =
   | { type: 'GESTURE_RESUMED' };
 
 export type SyncEffect =
-  /** Align the player's play/pause state to the anchor (matchTransportState). */
   | { type: 'match-transport' }
-  /** Set the player's playbackRate to the anchor rate (if it differs). */
   | { type: 'match-rate' }
-  /** Small playbackRate nudge toward the anchor to close sub-hardSeek drift. */
   | { type: 'nudge' }
-  /** Hard seek the player to the expected anchor position. */
   | { type: 'seek-to-expected' }
-  /** Run an immediate reconcile tick (compute drift, dispatch DRIFT_TICK). */
   | { type: 'reconcile-now' }
-  /** Clear `muted` before resuming from a user gesture. */
   | { type: 'unmute' };
 
 export interface SyncTransition {
@@ -94,10 +90,6 @@ export function initialSyncState(isHost: boolean): SyncState {
 
 const NONE: SyncEffect[] = [];
 
-/**
- * Pure transition function. Returns the next state and the effects an executor
- * must apply to the player. Never mutates the input state.
- */
 export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition {
   switch (event.type) {
     case 'ROLE_CHANGED':
@@ -110,17 +102,13 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
         },
         effects: NONE,
       };
-
     case 'CLOCK_READY':
       return { state: { ...state, clockReady: true }, effects: NONE };
-
     case 'CHANNEL_STATUS':
       return { state: { ...state, connection: event.status }, effects: NONE };
-
     case 'ANCHOR_RECEIVED':
       if (state.role === 'host') return { state, effects: NONE };
       return { state: { ...state, following: true }, effects: [{ type: 'reconcile-now' }] };
-
     case 'DRIFT_TICK': {
       if (state.role === 'host' || !state.following) return { state, effects: NONE };
       switch (event.action) {
@@ -147,11 +135,9 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
           return assertNever(event.action);
       }
     }
-
     case 'MANUAL_INTERACTION':
       if (state.role === 'host') return { state, effects: NONE };
       return { state: { ...state, following: false, quality: 'catching-up' }, effects: NONE };
-
     case 'RESYNC_CMD':
       return {
         state: { ...state, following: true },
@@ -161,10 +147,8 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
           { type: 'match-transport' },
         ],
       };
-
     case 'GESTURE_REQUIRED':
       return { state: { ...state, gestureRequired: true }, effects: NONE };
-
     case 'GESTURE_RESUMED':
       return {
         state: { ...state, gestureRequired: false, following: true },
@@ -175,22 +159,15 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
           { type: 'match-transport' },
         ],
       };
-
     default:
       return assertNever(event);
   }
 }
 
-/**
- * Legacy public sync status (`'host' | 'in-sync' | 'catching-up'`) preserved for
- * the controller's return contract. Followers report drift quality; the host
- * reports `'host'`.
- */
 export function selectSyncStatus(state: SyncState): 'host' | 'in-sync' | 'catching-up' {
   return state.role === 'host' ? 'host' : state.quality;
 }
 
-/** Richer lifecycle phase for telemetry and indicators (highest condition wins). */
 export function selectPhase(state: SyncState): SyncPhase {
   if (state.role === 'host') return 'host';
   if (!state.clockReady) return 'idle';
@@ -205,12 +182,6 @@ export interface SyncTelemetryEvent {
   attrs: Record<string, string | number | boolean>;
 }
 
-/**
- * Derive sync-health telemetry purely from a transition (ADR-0011). Emitting
- * from the transition rather than hand-placed `track()` calls keeps telemetry
- * honest — it cannot drift from behaviour. Low-noise by design: only meaningful
- * lifecycle edges are reported, not every reconcile tick.
- */
 export function syncTelemetryEvents(
   prev: SyncState,
   event: SyncEvent,
