@@ -29,7 +29,10 @@ import { useTelemetryRef } from '@/shared/lib/observability';
 
 import { useHostAnchorEmitter } from './use-host-anchor-emitter';
 
+// Numeric sync policy is canonical in `sync-math.ts`; keep these re-exports as
+// the controller's compatibility/test surface while dependency direction stays pure.
 export { classifyDrift, getDriftThresholds };
+export type { DriftAction, DriftThresholds } from '../sync-math';
 
 export function matchTransportState(
   player: MediaPlayerInstance,
@@ -45,8 +48,14 @@ export function matchTransportState(
   }
 }
 
-// Drives the pure syncReducer and applies its effects to the Vidstack player.
-// Decision policy stays in sync-machine/sync-math; this hook owns React/player I/O.
+// ---------------------------------------------------------------------------
+// Hook — drives the pure `syncReducer` (ADR-0011) and applies its effects to
+// the Vidstack player. The reducer owns the lifecycle (following / quality /
+// gesture / role); this hook is the thin executor. Plain functions capture
+// fresh props each render; refs provide stable indirection for the realtime
+// subscription and the reconcile interval.
+// ---------------------------------------------------------------------------
+
 export function useSyncController(
   playerRef: React.RefObject<MediaPlayerInstance | null>,
   room: Room,
@@ -55,6 +64,9 @@ export function useSyncController(
   roomEvents: Pick<RoomRealtimeEvents, 'onAnchor'>,
   broadcastAnchor?: (anchor: PlaybackAnchor) => void,
 ) {
+  // Single source of truth for the sync lifecycle. `stateRef` mirrors it so the
+  // imperative paths read fresh values synchronously after a dispatch — without
+  // a second set of boolean refs (the old isFollowingHostRef/needsGestureRef).
   const [state, setState] = useState<SyncState>(() => initialSyncState(isHost));
   const stateRef = useRef(state);
   const telemetryRef = useTelemetryRef();
@@ -66,16 +78,26 @@ export function useSyncController(
     playbackRate: room.playback_rate,
   });
 
+  // Programmatic window: ignore play/pause/seeked events emitted by reconcile
+  // itself. Required because `isOriginTrusted` is unreliable on YouTube
+  // (synthetic iframe events), which previously caused false sync breakages.
   const programmaticUntilRef = useRef(0);
-  const PROGRAMMATIC_WINDOW_MS = 1500;
+  const PROGRAMMATIC_WINDOW_MS = 1500; // YouTube bridge async; adjust if needed
   const markProgrammatic = () => {
     programmaticUntilRef.current = Date.now() + PROGRAMMATIC_WINDOW_MS;
   };
   const isWithinProgrammaticWindow = () => Date.now() < programmaticUntilRef.current;
 
+  // Stable indirection to the latest dispatch / reconcile, broken out so the
+  // realtime subscription and interval reach the freshest closure (and so the
+  // callbacks below avoid a definition cycle). Synced in an effect, never during
+  // render — see `react-hooks/refs`.
   const dispatchRef = useRef<(event: SyncEvent) => void>(() => {});
   const reconcileNowRef = useRef<() => void>(() => {});
 
+  // Robust play: browsers block unmuted autoplay without a user gesture. Fall
+  // back to muted autoplay (always allowed); if even that fails, surface a
+  // tap-to-play overlay via the GESTURE_REQUIRED event.
   const tryPlay = (player: MediaPlayerInstance) => {
     markProgrammatic();
     player.play().catch(() => {
@@ -87,6 +109,7 @@ export function useSyncController(
     });
   };
 
+  // Compute current drift against the host anchor and feed the machine a tick.
   const reconcileNow = () => {
     const player = playerRef.current;
     if (!player) return;
@@ -97,11 +120,12 @@ export function useSyncController(
     dispatchRef.current({ type: 'DRIFT_TICK', action, drift });
   };
 
+  // Apply one reducer effect to the player. Effects recompute live position from
+  // the current anchor + server clock, so they always act on fresh state.
   const applyEffect = (effect: SyncEffect) => {
     const player = playerRef.current;
     if (!player) return;
     const anchor = anchorRef.current;
-
     switch (effect.type) {
       case 'match-transport':
         matchTransportState(player, anchor, tryPlay, markProgrammatic);
@@ -135,6 +159,8 @@ export function useSyncController(
     }
   };
 
+  // Run the pure reducer, commit the next state, then apply its effects. Called
+  // only from events/effects (never render), so the stateRef write is allowed.
   const dispatch = (event: SyncEvent) => {
     const prev = stateRef.current;
     const { state: next, effects } = syncReducer(prev, event);
@@ -145,11 +171,14 @@ export function useSyncController(
     for (const e of syncTelemetryEvents(prev, event, next)) telemetry.event(e.name, e.attrs);
   };
 
+  // Sync the stable handles after each commit (never during render).
   useEffect(() => {
     dispatchRef.current = dispatch;
     reconcileNowRef.current = reconcileNow;
   });
 
+  // Role flip (host transfer). Dispatched from an effect to respect ref
+  // discipline; ROLE_CHANGED has no effects, so the extra commit is harmless.
   const prevIsHostRef = useRef(isHost);
   useEffect(() => {
     if (prevIsHostRef.current !== isHost) {
@@ -167,6 +196,7 @@ export function useSyncController(
     broadcastAnchor,
   });
 
+  // Adopt the persisted room anchor when the server snapshot is newer.
   useEffect(() => {
     const persistedAnchor = {
       isPlaying: room.is_playing,
@@ -179,6 +209,8 @@ export function useSyncController(
     }
   }, [room.is_playing, room.anchor_position, room.anchor_server_ts, room.playback_rate]);
 
+  // Receive a host anchor over realtime: accept-or-drop, store, then re-engage +
+  // reconcile via the machine (the host stores it but runs no follower effect).
   useEffect(() => {
     return roomEvents.onAnchor((newAnchor: PlaybackAnchor) => {
       if (!shouldAcceptPlaybackAnchor(anchorRef.current, newAnchor)) return;
@@ -188,12 +220,16 @@ export function useSyncController(
     });
   }, [roomEvents]);
 
+  // Periodic follower drift check. We deliberately do NOT gate on
+  // document.hidden: background-tab audio must stay aligned, and the machine
+  // no-ops the tick for hosts / detached followers anyway.
   useEffect(() => {
     if (isHost) return;
     const interval = setInterval(() => reconcileNowRef.current(), 1000);
     return () => clearInterval(interval);
   }, [isHost]);
 
+  // --- Public commands & handlers -------------------------------------------
   const resync = () => dispatchRef.current({ type: 'RESYNC_CMD' });
   const resumeFromGesture = () => dispatchRef.current({ type: 'GESTURE_RESUMED' });
 
@@ -225,6 +261,8 @@ export function useSyncController(
     if (isHost) {
       const player = playerRef.current;
       if (player) {
+        // Force the target state immediately based on host intent to enable
+        // parallel buffering/play.
         const targetPlaying = player.paused;
         emitAnchor({ overridePlaying: targetPlaying });
       }
