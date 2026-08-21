@@ -1,4 +1,6 @@
-import type { DriftAction } from './hooks/use-sync-controller';
+import type { DriftAction } from './sync-math';
+
+export { nudgedRate } from './sync-math';
 
 /**
  * Pure state machine for watch playback sync (ADR-0011).
@@ -11,8 +13,8 @@ import type { DriftAction } from './hooks/use-sync-controller';
  *
  * The reducer decides *which* effect class to run; the numeric math
  * (`calculateExpectedPosition`, `classifyDrift`, `nudgedRate`) stays pure in
- * `sync-math.ts` / here, and a thin executor (step 2) reads the player, calls
- * those helpers, dispatches `DRIFT_TICK`, and applies the returned effects.
+ * `sync-math.ts`, and a thin executor reads the player, calls those helpers,
+ * dispatches `DRIFT_TICK`, and applies the returned effects.
  *
  * It is deliberately behaviour-preserving against the current imperative
  * controller (`hooks/use-sync-controller.ts`); see the test suite for the
@@ -161,8 +163,8 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
       return { state: { ...state, following: false, quality: 'catching-up' }, effects: NONE };
 
     case 'RESYNC_CMD':
-      // Re-engage and snap to the host (controller `resync`, lines 206-222).
-      // quality is left to the next DRIFT_TICK, matching the old code.
+      // Re-engage and snap to the host. Quality is left to the next DRIFT_TICK,
+      // matching the previous controller behavior.
       return {
         state: { ...state, following: true },
         effects: [
@@ -176,8 +178,7 @@ export function syncReducer(state: SyncState, event: SyncEvent): SyncTransition 
       return { state: { ...state, gestureRequired: true }, effects: NONE };
 
     case 'GESTURE_RESUMED':
-      // Real user gesture: unmute, then behave like RESYNC_CMD (controller
-      // `resumeFromGesture`, lines 225-231).
+      // Real user gesture: unmute, then behave like RESYNC_CMD.
       return {
         state: { ...state, gestureRequired: false, following: true },
         effects: [
@@ -210,14 +211,6 @@ export function selectPhase(state: SyncState): SyncPhase {
   if (state.gestureRequired) return 'gesture-required';
   if (!state.following) return 'detached';
   return state.quality;
-}
-
-/**
- * Pure nudge math extracted from the reconcile loop: shift the playback rate one
- * step toward the host, clamped to the player's safe range.
- */
-export function nudgedRate(anchorRate: number, drift: number, nudgeStep: number): number {
-  return Math.max(0.5, Math.min(2.0, anchorRate + Math.sign(drift) * nudgeStep));
 }
 
 export interface SyncTelemetryEvent {

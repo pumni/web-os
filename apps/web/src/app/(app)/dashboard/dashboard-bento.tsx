@@ -11,7 +11,7 @@ import { BentoGrid, BentoGridItem } from '@pumni/ui/os';
 import { Button, Input } from '@pumni/ui/form';
 import { CardWell } from '@pumni/ui/layout';
 
-import type { Room } from '@/features/watch';
+import type { Room } from '@/features/watch/client';
 
 interface DashboardBentoProps {
   recentRooms: ReadonlyArray<Room>;

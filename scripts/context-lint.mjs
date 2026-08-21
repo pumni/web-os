@@ -66,11 +66,11 @@ function runShimCheck(script, label) {
 
 function checkBudgets() {
   const stat = fs.statSync(absolute('AGENTS.md'));
-  if (stat.size > 8000) error(`AGENTS.md size (${stat.size}B) exceeds 8000B.`);
+  if (stat.size > 4096) error(`AGENTS.md size (${stat.size}B) exceeds 4096B.`);
 }
 
 function contextFiles() {
-  const files = new Set(['AGENTS.md', 'CLAUDE.md', '.github/copilot-instructions.md', 'docs/ai/mcp.md']);
+  const files = new Set(['AGENTS.md', 'CLAUDE.md', '.github/copilot-instructions.md']);
 
   walk(ROOT, (fullPath, name) => {
     const file = relative(fullPath);
@@ -79,11 +79,6 @@ function contextFiles() {
     if (file.startsWith('.claude/skills/') && name === 'SKILL.md') files.add(file);
   });
 
-  for (const directory of ['docs/ai', 'docs/conventions', 'docs/architecture']) {
-    walk(absolute(directory), (fullPath, name) => {
-      if (name.endsWith('.md')) files.add(relative(fullPath));
-    });
-  }
   return [...files].filter((file) => fs.existsSync(absolute(file)));
 }
 

@@ -1,5 +1,5 @@
 import { requireUser } from '@pumni/auth';
-import { WatchLobby } from '@/features/watch';
+import { WatchLobby } from '@/features/watch/client';
 import { getEntitlements } from '@/features/billing';
 import { createSupabaseServerClient } from '@pumni/supabase/server';
 

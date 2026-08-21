@@ -6,7 +6,8 @@ import { requireUser } from '@pumni/auth';
 import { DashboardBento, DashboardBentoSkeleton } from './dashboard-bento';
 import { DashboardDock } from './dashboard-dock';
 import { DashboardHeaderCard } from './dashboard-header-card';
-import { RecentRoomsCard, getRecentRooms } from '@/features/watch';
+import { getRecentRooms } from '@/features/watch';
+import { RecentRoomsCard } from '@/features/watch/client';
 
 export const metadata: Metadata = {
   title: 'Dashboard',

@@ -1,12 +1,13 @@
-# Web routes — Next.js App Router
+# Next.js routes — local delta
 
-Root and `apps/web/AGENTS.md` apply. Read `docs/conventions/nextjs-project-profile.md`
-before changing framework behavior.
+Root and `apps/web/AGENTS.md` apply.
 
-- Route files compose feature APIs and shared UI; keep domain logic in features.
-- Keep route-segment config, `"use cache"`, and request-time APIs in Server
-  Components and follow the project cache conventions.
-- Route handlers and Server Actions must enforce authentication and RLS through
-  the owning server/auth modules; UI visibility is not authorization.
-- Verify route/config changes with `bun run lint`, `bun run typecheck`, and
-  `bun run build`.
+- Route files, layouts, pages, and handlers are framework entry points; compose
+  feature APIs and shared UI instead of growing domain logic here.
+- For request-time APIs, cache semantics, route-segment config, or `"use cache"`,
+  consult `docs/conventions/nextjs-project-profile.md` and installed Next.js
+  docs/source before changing behavior.
+- Route handlers and Server Actions must enforce authentication through the
+  owning server/auth modules. UI visibility is not authorization.
+- Run `bun --filter web build` when route/config behavior can affect the bundle
+  or framework compilation.
