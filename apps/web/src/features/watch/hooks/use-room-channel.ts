@@ -1,20 +1,20 @@
 'use client';
 
-import { useCallback, useEffect, useState, useRef } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useQueryClient, type QueryClient } from '@tanstack/react-query';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { createSupabaseBrowserClient } from '@pumni/supabase/browser';
 import type {
-  PlaybackAnchor,
+  ChatMessage,
+  MessageReaction,
   Participant,
-  Room,
+  PlaybackAnchor,
   QueueBroadcastEvent,
+  ReactionEvent,
+  Room,
   RoomBroadcastEvent,
   RoomRealtimeEvents,
-  ChatMessage,
-  ReactionEvent,
-  MessageReaction,
 } from '../types';
 import { watchKeys } from '../query-keys';
 import { getStructuralSignature } from '../sync-math';
@@ -24,14 +24,167 @@ import {
   normalizeParticipants,
   queueBroadcastNotice,
 } from '../room-channel-model';
-import { useTelemetryRef } from '@/shared/lib/observability';
+import { useTelemetryRef, type Telemetry } from '@/shared/lib/observability';
+
+type Cell<T> = { current: T };
+type HandlerCell<T> = Cell<Set<(value: T) => void>>;
+type ChannelConnectionStatus = 'connecting' | 'connected' | 'disconnected';
+
+interface InboundContext {
+  channel: RealtimeChannel;
+  roomId: string;
+  queryClient: QueryClient;
+  structuralSignature: Cell<string>;
+  playbackSignature: Cell<string>;
+  anchorHandlers: HandlerCell<PlaybackAnchor>;
+  chatHandlers: HandlerCell<ChatMessage>;
+  reactionHandlers: HandlerCell<ReactionEvent>;
+  messageReactionHandlers: HandlerCell<MessageReaction>;
+  setParticipants: (participants: Participant[]) => void;
+}
+
+interface SubscriptionContext {
+  channel: RealtimeChannel;
+  roomId: string;
+  userId: string;
+  queryClient: QueryClient;
+  telemetry: Cell<Telemetry>;
+  isHost: Cell<boolean>;
+  joinedAt: Cell<number>;
+  wasDisconnected: Cell<boolean>;
+  setChannelStatus: (status: ChannelConnectionStatus) => void;
+}
+
+function emitIfPresent<T>(handlers: Set<(value: T) => void>, value: T | null | undefined) {
+  if (value != null) handlers.forEach((handler) => handler(value));
+}
+
+function applyRoomSnapshot(nextRoom: Room | null | undefined, context: InboundContext) {
+  if (!nextRoom) return;
+
+  const decision = classifyRoomUpdate(
+    context.structuralSignature.current,
+    context.playbackSignature.current,
+    nextRoom,
+  );
+  context.structuralSignature.current = decision.structuralSignature;
+  context.playbackSignature.current = decision.playbackSignature;
+
+  if (decision.invalidateRoom) {
+    void context.queryClient.invalidateQueries({ queryKey: watchKeys.room(context.roomId) });
+  }
+  emitIfPresent(context.anchorHandlers.current, decision.anchor);
+}
+
+function applyQueueBroadcast(event: QueueBroadcastEvent, context: InboundContext) {
+  void context.queryClient.invalidateQueries({ queryKey: watchKeys.queue(context.roomId) });
+  const notice = queueBroadcastNotice(event);
+  if (notice) toast.info(notice);
+}
+
+function registerInboundListeners(context: InboundContext) {
+  const { channel } = context;
+
+  // Authoritative room snapshots remain the source of truth. The pure model
+  // decides whether the update changes structure, playback, or both; this
+  // transport layer owns only cache invalidation and event delivery.
+  channel.on(
+    'postgres_changes',
+    {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'watch_rooms',
+      filter: `id=eq.${context.roomId}`,
+    },
+    (payload: { new: Room }) => applyRoomSnapshot(payload.new, context),
+  );
+
+  channel.on('broadcast', { event: 'room' }, () => {
+    void context.queryClient.invalidateQueries({ queryKey: watchKeys.room(context.roomId) });
+  });
+
+  channel.on('broadcast', { event: 'queue' }, (message: { payload: QueueBroadcastEvent }) => {
+    applyQueueBroadcast(message.payload, context);
+  });
+
+  // Low-latency host anchor fan-out (ADR-0011). Versioned anchors arrive here
+  // far sooner than the authoritative postgres_changes snapshot; both feed the
+  // same handlers and dedupe via `shouldAcceptPlaybackAnchor`.
+  channel.on('broadcast', { event: 'anchor' }, (message: { payload: PlaybackAnchor }) => {
+    emitIfPresent(context.anchorHandlers.current, message.payload);
+  });
+  channel.on('broadcast', { event: 'chat' }, (message: { payload: ChatMessage }) => {
+    emitIfPresent(context.chatHandlers.current, message.payload);
+  });
+  channel.on('broadcast', { event: 'reaction' }, (message: { payload: ReactionEvent }) => {
+    emitIfPresent(context.reactionHandlers.current, message.payload);
+  });
+  channel.on(
+    'broadcast',
+    { event: 'message-reaction' },
+    (message: { payload: MessageReaction }) => {
+      emitIfPresent(context.messageReactionHandlers.current, message.payload);
+    },
+  );
+
+  channel.on('presence', { event: 'sync' }, () => {
+    context.setParticipants(normalizeParticipants(channel.presenceState()));
+  });
+}
+
+async function handleSubscribed(context: SubscriptionContext) {
+  context.setChannelStatus('connected');
+  if (context.wasDisconnected.current) {
+    context.wasDisconnected.current = false;
+    context.telemetry.current.event('channel.reconnect', { roomId: context.roomId });
+    void context.queryClient.invalidateQueries({ queryKey: watchKeys.room(context.roomId) });
+    void context.queryClient.invalidateQueries({ queryKey: watchKeys.queue(context.roomId) });
+  }
+
+  await context.channel.track({
+    userId: context.userId,
+    isHost: context.isHost.current,
+    joinedAt: context.joinedAt.current,
+  });
+}
+
+function handleDisconnected(status: string, context: SubscriptionContext) {
+  if (!context.wasDisconnected.current) {
+    context.telemetry.current.event('channel.disconnect', { roomId: context.roomId, status });
+  }
+  context.wasDisconnected.current = true;
+  context.setChannelStatus('disconnected');
+}
+
+const DISCONNECTED_STATUSES = new Set(['CHANNEL_ERROR', 'TIMED_OUT', 'CLOSED']);
+
+async function handleSubscriptionStatus(status: string, context: SubscriptionContext) {
+  if (status === 'SUBSCRIBED') {
+    await handleSubscribed(context);
+    return;
+  }
+  if (DISCONNECTED_STATUSES.has(status)) handleDisconnected(status, context);
+}
+
+function trackPresenceIfJoined(
+  channel: RealtimeChannel | null,
+  userId: string,
+  isHost: boolean,
+  joinedAt: number,
+) {
+  if (channel?.state !== 'joined') return;
+  void channel.track({ userId, isHost, joinedAt });
+}
+
+function sendBroadcast<T>(channel: RealtimeChannel | null, event: string, payload: T) {
+  if (channel?.state !== 'joined') return;
+  channel.send({ type: 'broadcast', event, payload });
+}
 
 export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
   const queryClient = useQueryClient();
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [channelStatus, setChannelStatus] = useState<'connecting' | 'connected' | 'disconnected'>(
-    'connecting',
-  );
+  const [channelStatus, setChannelStatus] = useState<ChannelConnectionStatus>('connecting');
   const channelRef = useRef<RealtimeChannel | null>(null);
   const structuralSignatureRef = useRef(getStructuralSignature(room));
   const playbackSignatureRef = useRef(getPlaybackSignature(room));
@@ -39,11 +192,11 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
   const chatHandlersRef = useRef(new Set<(message: ChatMessage) => void>());
   const reactionHandlersRef = useRef(new Set<(reaction: ReactionEvent) => void>());
   const messageReactionHandlersRef = useRef(new Set<(reaction: MessageReaction) => void>());
-
   const isHostRef = useRef(isHost);
   const joinedAtRef = useRef(0);
   const wasDisconnectedRef = useRef(false);
   const telemetryRef = useTelemetryRef();
+
   useEffect(() => {
     isHostRef.current = isHost;
   }, [isHost]);
@@ -59,138 +212,55 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
 
   const onAnchor = useCallback((handler: (anchor: PlaybackAnchor) => void) => {
     anchorHandlersRef.current.add(handler);
-    return () => {
-      anchorHandlersRef.current.delete(handler);
-    };
+    return () => anchorHandlersRef.current.delete(handler);
   }, []);
-
   const onChat = useCallback((handler: (message: ChatMessage) => void) => {
     chatHandlersRef.current.add(handler);
-    return () => {
-      chatHandlersRef.current.delete(handler);
-    };
+    return () => chatHandlersRef.current.delete(handler);
   }, []);
-
   const onReaction = useCallback((handler: (reaction: ReactionEvent) => void) => {
     reactionHandlersRef.current.add(handler);
-    return () => {
-      reactionHandlersRef.current.delete(handler);
-    };
+    return () => reactionHandlersRef.current.delete(handler);
   }, []);
-
   const onMessageReaction = useCallback((handler: (reaction: MessageReaction) => void) => {
     messageReactionHandlersRef.current.add(handler);
-    return () => {
-      messageReactionHandlersRef.current.delete(handler);
-    };
+    return () => messageReactionHandlersRef.current.delete(handler);
   }, []);
 
   const events: RoomRealtimeEvents = { onAnchor, onChat, onReaction, onMessageReaction };
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
-
     const activeChannel = supabase.channel(`room:${room.id}`, {
-      config: {
-        presence: {
-          key: userId,
-        },
-      },
+      config: { presence: { key: userId } },
     });
-
     channelRef.current = activeChannel;
 
-    // Authoritative room snapshots remain the source of truth. The pure model
-    // decides whether the update changes structure, playback, or both; this
-    // effect owns only cache invalidation and event delivery.
-    activeChannel.on(
-      'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'watch_rooms',
-        filter: `id=eq.${room.id}`,
-      },
-      (payload: { new: Room }) => {
-        const nextRoom = payload.new;
-        if (!nextRoom) return;
-
-        const decision = classifyRoomUpdate(
-          structuralSignatureRef.current,
-          playbackSignatureRef.current,
-          nextRoom,
-        );
-        structuralSignatureRef.current = decision.structuralSignature;
-        playbackSignatureRef.current = decision.playbackSignature;
-
-        if (decision.invalidateRoom) {
-          void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
-        }
-        const anchor = decision.anchor;
-        if (anchor) {
-          anchorHandlersRef.current.forEach((handler) => handler(anchor));
-        }
-      },
-    );
-
-    activeChannel.on('broadcast', { event: 'room' }, () => {
-      void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
+    registerInboundListeners({
+      channel: activeChannel,
+      roomId: room.id,
+      queryClient,
+      structuralSignature: structuralSignatureRef,
+      playbackSignature: playbackSignatureRef,
+      anchorHandlers: anchorHandlersRef,
+      chatHandlers: chatHandlersRef,
+      reactionHandlers: reactionHandlersRef,
+      messageReactionHandlers: messageReactionHandlersRef,
+      setParticipants,
     });
 
-    activeChannel.on('broadcast', { event: 'queue' }, (msg: { payload: QueueBroadcastEvent }) => {
-      void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
-      const notice = queueBroadcastNotice(msg.payload);
-      if (notice) toast.info(notice);
-    });
-
-    // Low-latency host anchor fan-out (ADR-0011). Versioned anchors arrive here
-    // far sooner than the authoritative postgres_changes snapshot; both feed the
-    // same handlers and dedupe via `shouldAcceptPlaybackAnchor`.
-    activeChannel.on('broadcast', { event: 'anchor' }, (p: { payload: PlaybackAnchor }) => {
-      if (p.payload) anchorHandlersRef.current.forEach((handler) => handler(p.payload));
-    });
-
-    activeChannel.on('broadcast', { event: 'chat' }, (p: { payload: ChatMessage }) => {
-      if (p.payload) chatHandlersRef.current.forEach((handler) => handler(p.payload));
-    });
-
-    activeChannel.on('broadcast', { event: 'reaction' }, (p: { payload: ReactionEvent }) => {
-      if (p.payload) reactionHandlersRef.current.forEach((handler) => handler(p.payload));
-    });
-
-    activeChannel.on(
-      'broadcast',
-      { event: 'message-reaction' },
-      (p: { payload: MessageReaction }) => {
-        if (p.payload) messageReactionHandlersRef.current.forEach((handler) => handler(p.payload));
-      },
-    );
-
-    activeChannel.on('presence', { event: 'sync' }, () => {
-      setParticipants(normalizeParticipants(activeChannel.presenceState()));
-    });
-
-    activeChannel.subscribe(async (status) => {
-      if (status === 'SUBSCRIBED') {
-        setChannelStatus('connected');
-        if (wasDisconnectedRef.current) {
-          wasDisconnectedRef.current = false;
-          telemetryRef.current.event('channel.reconnect', { roomId: room.id });
-          void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
-          void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
-        }
-        await activeChannel.track({
-          userId,
-          isHost: isHostRef.current,
-          joinedAt: joinedAtRef.current,
-        });
-      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-        if (!wasDisconnectedRef.current) {
-          telemetryRef.current.event('channel.disconnect', { roomId: room.id, status });
-        }
-        wasDisconnectedRef.current = true;
-        setChannelStatus('disconnected');
-      }
+    activeChannel.subscribe((status) => {
+      void handleSubscriptionStatus(status, {
+        channel: activeChannel,
+        roomId: room.id,
+        userId,
+        queryClient,
+        telemetry: telemetryRef,
+        isHost: isHostRef,
+        joinedAt: joinedAtRef,
+        wasDisconnected: wasDisconnectedRef,
+        setChannelStatus,
+      });
     });
 
     return () => {
@@ -203,76 +273,26 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
 
   // Re-track presence when host role flips WITHOUT tearing down the channel.
   useEffect(() => {
-    const ch = channelRef.current;
-    if (ch && ch.state === 'joined') {
-      void ch.track({ userId, isHost, joinedAt: joinedAtRef.current });
-    }
+    trackPresenceIfJoined(channelRef.current, userId, isHost, joinedAtRef.current);
   }, [isHost, userId]);
 
   const broadcastQueueEvent = useCallback((event: QueueBroadcastEvent) => {
-    const ch = channelRef.current;
-    if (ch && ch.state === 'joined') {
-      ch.send({
-        type: 'broadcast',
-        event: 'queue',
-        payload: event,
-      });
-    }
+    sendBroadcast(channelRef.current, 'queue', event);
   }, []);
-
   const broadcastRoomEvent = useCallback((event: RoomBroadcastEvent) => {
-    const ch = channelRef.current;
-    if (ch && ch.state === 'joined') {
-      ch.send({
-        type: 'broadcast',
-        event: 'room',
-        payload: event,
-      });
-    }
+    sendBroadcast(channelRef.current, 'room', event);
   }, []);
-
   const broadcastAnchor = useCallback((anchor: PlaybackAnchor) => {
-    const ch = channelRef.current;
-    if (ch && ch.state === 'joined') {
-      ch.send({
-        type: 'broadcast',
-        event: 'anchor',
-        payload: anchor,
-      });
-    }
+    sendBroadcast(channelRef.current, 'anchor', anchor);
   }, []);
-
   const broadcastChat = useCallback((message: ChatMessage) => {
-    const ch = channelRef.current;
-    if (ch && ch.state === 'joined') {
-      ch.send({
-        type: 'broadcast',
-        event: 'chat',
-        payload: message,
-      });
-    }
+    sendBroadcast(channelRef.current, 'chat', message);
   }, []);
-
   const broadcastReaction = useCallback((reaction: ReactionEvent) => {
-    const ch = channelRef.current;
-    if (ch && ch.state === 'joined') {
-      ch.send({
-        type: 'broadcast',
-        event: 'reaction',
-        payload: reaction,
-      });
-    }
+    sendBroadcast(channelRef.current, 'reaction', reaction);
   }, []);
-
   const broadcastMessageReaction = useCallback((reaction: MessageReaction) => {
-    const ch = channelRef.current;
-    if (ch && ch.state === 'joined') {
-      ch.send({
-        type: 'broadcast',
-        event: 'message-reaction',
-        payload: reaction,
-      });
-    }
+    sendBroadcast(channelRef.current, 'message-reaction', reaction);
   }, []);
 
   return {
