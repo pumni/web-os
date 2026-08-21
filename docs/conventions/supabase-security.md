@@ -31,6 +31,10 @@ For every table in an exposed schema:
 - Set an explicit `search_path`.
 - Revoke execute from `public`, `anon`, and `authenticated` unless the function is
   intentionally callable through the Data API.
+- Quota functions that count rows must serialize the contended key with
+  `pg_advisory_xact_lock` and use `volatile` semantics so concurrent requests
+  cannot pass the same snapshot. The focused billing migration test owns this
+  contract.
 
 ## Client Keys
 
@@ -68,6 +72,10 @@ authorization test; `bun run policy:check` is not SQL/RLS/RPC proof.
 |---|---|---|
 | Service-role imports | `apps/web/eslint.config.mjs` | `service-role-boundary.test.ts` plus web lint |
 | Server/client secret isolation | `server-only` markers and Next.js build | `bun run verify` |
-| RLS, policies, grants, and RPC safety | Focused billing/watch migration tests | `bun run test` |
+| RLS, policies, grants, and RPC safety | `apps/web/src/test/features/billing-rls-migration.test.ts`, `watch-rls-migration.test.ts` | `bun run test` |
 | Atomic quota enforcement | Focused quota migration tests | `bun run test` |
 | Secret exposure defense in depth | `scripts/check-secrets.mjs` | `bun run policy:check` |
+
+`policy:check` is not a substitute for the focused SQL/RLS/RPC tests. When a
+schema change updates generated types, the migration skill owns the
+regeneration and affected workspace typecheck workflow.

@@ -15,7 +15,7 @@ This phase should be primarily deletion, consolidation, pointer correction, and 
 - `scripts/context-lint.mjs`
 - `docs/architecture/overview.md`
 - `docs/conventions/nextjs-project-profile.md`
-- `docs/ai/common-mistakes.md`
+- former generic AI rulebook under `docs/ai/` (delete when no unique knowledge remains)
 - stale/meta content in `docs/conventions/design-system.md`
 - any references broken by the changes
 
@@ -138,7 +138,7 @@ If useful, a non-blocking informational size report is acceptable, but do not fa
 
 It should not become a semantic rule parser or project architecture analyzer.
 
-## 5. Remove `docs/ai/common-mistakes.md` as a generic AI rulebook
+## 5. Remove the generic AI rulebook under `docs/ai/`
 
 Disposition:
 
@@ -193,7 +193,7 @@ If the refactor changes only docs/context scripts and a broad build failure is c
 - No provider adapter contains independent policy.
 - No arbitrary byte/token correctness gate remains.
 - `context:lint` has a narrow structural responsibility.
-- `common-mistakes.md` no longer exists unless a concrete, unique reason is demonstrated during implementation.
+- no generic AI-mistake handbook remains unless a concrete, unique reason is demonstrated during implementation.
 - architecture/Next.js docs point to authoritative sources instead of duplicating them.
 - all context discovery references remain valid.
 - `bun run verify` is green.

@@ -15,7 +15,7 @@ teach agents a private framework language.
 ## Decision
 
 Keep cache guidance in `apps/web/AGENTS.md`, the relevant Next.js convention,
-and `docs/ai/common-mistakes.md`. Let current Next.js TypeScript, ESLint,
+and focused feature tests. Let current Next.js TypeScript, ESLint,
 build/runtime behavior, and focused feature tests own correctness. Do not
 maintain a repository-wide cache parser, rule taxonomy, or allowlist.
 

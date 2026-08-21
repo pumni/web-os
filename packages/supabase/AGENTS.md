@@ -4,19 +4,16 @@ Package delta; root AGENTS.md applies.
 
 ## Summary
 
-Supabase client factories: browser, server, and service-role. Plus the generated database types. This package owns the app↔DB contract.
+Supabase client factories: browser, server, and service-role, plus generated
+database types. This package owns the app↔DB contract.
 
 ## Architecture
 
-- Exports: `.` (index), `./browser`, `./server`, `./service-role`.
-- `./browser` uses the `NEXT_PUBLIC_*` publishable key.
-- `./server` and `./service-role` are server-only and must not be imported by any `"use client"` file.
-- `src/types.ts` is generated; do not hand-edit. Regenerate after schema changes, then `bun run typecheck`.
-- Workspace dep: `@pumni/env`.
-
-## Stack
-
-`@supabase/ssr`, `@supabase/supabase-js`, `next`, `server-only`.
+- Public entry points are `.`, `./browser`, `./server`, and `./service-role`.
+- `./browser` uses publishable `NEXT_PUBLIC_*` values. `./server` and
+  `./service-role` are server-only and cannot enter a `"use client"` module.
+- `src/types.ts` is generated; regenerate it after schema changes and then run
+  typecheck. It is not a hand-edited source file.
 
 ## Commands
 
@@ -27,5 +24,4 @@ Supabase client factories: browser, server, and service-role. Plus the generated
 
 ## Pitfalls
 
-- Service-role client is server-only (security invariant, see [supabase-security.md](../../docs/conventions/supabase-security.md)).
-- Do not change `./server` or `./service-role` to read client env. Server modules read private env; only `./browser` reads `NEXT_PUBLIC_*`.
+- Server clients read private env; only `./browser` reads `NEXT_PUBLIC_*`.

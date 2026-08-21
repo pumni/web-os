@@ -7,4 +7,5 @@ the applicable `AGENTS.md` files. Completed or superseded plans belong under
 
 ## Current
 
-- [`context-layer-v3/`](./context-layer-v3/) — full handoff for modernizing agent context, skills, documentation ownership, and verification harness for current frontier coding models.
+No active implementation plans. Completed handoffs are retained under
+[`archive/`](./archive/).

@@ -1,4 +1,4 @@
-# Pumni Web OS — agent contract
+# Pumni Web OS — repository map
 
 Next.js 16 App Router product in a Bun + Turborepo monorepo. Supabase is the
 database/auth boundary; TanStack Query owns client server-state caching; Zustand
@@ -15,7 +15,7 @@ owns client UI state; Zod owns shared validation.
 - Never commit secrets or weaken an established security boundary as an
   implementation shortcut.
 
-## Architecture invariants
+## Architecture map
 
 - `apps/web/src/app` composes routes; domain behavior belongs in
   `apps/web/src/features`; app-local shared shell/helpers live in
@@ -27,10 +27,11 @@ owns client UI state; Zod owns shared validation.
 - Feature slices expose a small `index.ts` API; do not deep-import another
   feature's internals.
 
-## Context: load just in time
+## Read just in time
 
-Start with the nearest `AGENTS.md`. Read only the references relevant to the
-current task; do not preload research, archived plans, or unrelated conventions.
+Start with the nearest `AGENTS.md`. Read only references relevant to the task;
+plans, research, and archived material are subordinate evidence, not default
+instructions.
 
 | Task surface | Read when needed |
 |---|---|
@@ -43,35 +44,17 @@ current task; do not preload research, archived plans, or unrelated conventions.
 | Live Next.js runtime debugging | `docs/ai/mcp.md` |
 | Domain procedures | `.agents/skills/` |
 
-When implementation details are not specified, inspect the repository, tests,
-types, and installed framework sources before choosing a design. Treat code and
-executable tests as the current source of truth; fix stale owner docs when they
-conflict with verified behavior.
+When implementation details are unclear, use source, tests, types, manifests,
+and installed framework behavior as the current source of truth.
 
-## Commands and validation
+## Validation path
 
 Bun only. Start with the narrowest proof and escalate with the change surface:
 
 - Workspace gate: `bun --filter <workspace> lint`, `typecheck`, or `test`.
 - Web bundle / route behavior: `bun --filter web build`.
-- Context-only changes: `bun run context:lint`.
+- Context/docs integrity: `bun run context:lint` and `bun run docs:lint`.
 - Security / architecture guard changes: `bun run policy:check`.
 - Cross-workspace or pre-merge proof: `bun run verify`.
 
-Do not run `npm`, `pnpm`, or `yarn`. Do not substitute a broad gate for a
-focused failing test while iterating.
-
-## Working contract
-
-The user request defines the outcome and authorized scope. Inspect first, then
-choose the implementation. Preserve public behavior and security boundaries
-unless the request explicitly changes them. Prefer focused diffs and existing
-patterns; introduce an abstraction only when the current requirement or a
-second real caller justifies it.
-
-## Done
-
-- The narrowest sufficient validation is green; broad changes also pass
-  `bun run verify`.
-- No unrelated behavior changed.
-- The canonical owner doc is updated when a documented invariant changes.
+Do not run `npm`, `pnpm`, or `yarn`.

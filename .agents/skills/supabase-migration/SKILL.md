@@ -7,42 +7,43 @@ description: Author Supabase migrations bundling schema, RLS, policies, grants, 
 
 Use this skill when adding or changing files under `supabase/migrations`.
 
-Skeleton: bundle schema + RLS + owner `auth.uid()` policies + minimal grants together in a new migration file under `supabase/migrations`.
+Read the security convention first, then use the repository's migrations and
+focused tests as the behavioral specification.
 
-## Rules
+## Authoritative references
 
-- Read `docs/conventions/supabase-security.md` before writing SQL.
-- Put schema, RLS, policies, and Data API grants in the same migration.
-- Enable RLS for every table in an exposed schema.
-- Revoke broad defaults from `anon` and `authenticated`, then grant only the
-  minimum privileges required.
-- Owner policies must compare ownership to `auth.uid()`.
-- Avoid public `anon` access unless the table is intentionally public.
-- Do not place `security definer` functions in exposed schemas.
-- Functions must set an explicit `search_path` and revoke execute unless they
-  are intentionally callable.
-- Regenerate generated Supabase types after schema changes when the project
-  workflow requires it.
+- Security contract: `docs/conventions/supabase-security.md`.
+- Existing migration patterns: `supabase/migrations/`.
+- Reusable SQL shape: `.agents/skills/supabase-migration/scripts/migration.template.sql`.
+- Focused migration/RLS/quota tests under `apps/web/src/test/` and package test
+  directories.
+- Generated DB contract: `packages/supabase/src/types.ts` and its package
+  workflow.
 
-## Known Failure Modes
+## Non-obvious invariants
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| A new table is accessible to anyone without authentication | Row Level Security (RLS) is not enabled on the table | Run `alter table public.<table> enable row level security;` in the table's migration |
-| API select returns empty array for authorized users | SELECT policies or grants to `authenticated` are missing | Add `create policy ... to authenticated using (...)` and `grant select on table public.<table> to authenticated;` |
-| Security definer function allows execution bypass or executes in wrong schema | Function has no explicit `search_path` or execute privileges are broad | Always set `SET search_path = public` (or private schema) and `revoke execute on function ... from public, anon, authenticated` |
-| Users can read/write other users' private data | RLS owner policy uses client-supplied parameters instead of server-derived context | Ensure user ownership comparison relies on `auth.uid()` (e.g. `user_id = auth.uid()`) inside the policy using/check clauses |
+- Committed migrations are immutable history. Add a new numbered migration; do
+  not edit an existing one.
+- A schema change and its RLS, policies, grants, and function safety belong in
+  the same migration when they form one exposed contract.
+- `bun run policy:check` is defense-in-depth for static policy/secret checks; it
+  is not proof of SQL, RLS, grants, or RPC behavior.
 
-## Checklist
+## Procedure
 
-- [ ] Migration creates or changes the schema object.
-- [ ] RLS is enabled for new exposed tables.
-- [ ] Policies match the real access model and use `auth.uid()` for owners.
-- [ ] Grants are explicit and minimal.
-- [ ] RPCs do not trust `p_user_id` without an `auth.uid()` check.
-- [ ] Function `search_path` is explicit.
-- [ ] `bun run test` passes, including focused migration/RLS/quota tests.
-- [ ] `bun run typecheck` passes after type generation when generated types
-      changed.
-- [ ] If the change also touches secret or feature-boundary code, `bun run
-      policy:check` scans clean; do not treat it as SQL/RLS/RPC proof.
+1. Inspect the security convention, affected migrations, schema/types, and the
+   focused tests before writing SQL.
+2. Add a new migration and keep schema, RLS, policies, minimal grants, and
+   function safety cohesive. Derive ownership from `auth.uid()` rather than
+   client-supplied identity.
+3. Update focused tests when behavior changes. Regenerate database types when
+   the schema contract changes; never hand-edit generated output.
+4. Run focused migration/security tests and the narrowest affected typecheck.
+   Escalate to repository gates when the change crosses packages or changes
+   security boundaries.
+
+## Verification
+
+- `bun run test`
+- `bun run typecheck` when generated types or shared code changes
+- `bun run policy:check` for static secret/architecture defense in depth

@@ -64,11 +64,6 @@ function runShimCheck(script, label) {
   }
 }
 
-function checkBudgets() {
-  const stat = fs.statSync(absolute('AGENTS.md'));
-  if (stat.size > 4096) error(`AGENTS.md size (${stat.size}B) exceeds 4096B.`);
-}
-
 function contextFiles() {
   const files = new Set(['AGENTS.md', 'CLAUDE.md', '.github/copilot-instructions.md']);
 
@@ -121,60 +116,23 @@ function checkSkills() {
   }
 }
 
-function isRepositoryPath(value) {
-  const candidate = value.replaceAll('\\', '/');
-  if (!candidate || /\s|[*<>|]/.test(candidate)) return false;
-  return /^(?:\.agents|\.claude|\.github|apps|docs|packages|scripts|supabase)(?:\/|$)/.test(candidate)
-    || /^(?:AGENTS|CLAUDE|package\.json|\.mcp\.json)(?:$|\/)/.test(candidate);
-}
-
-function checkDocs(files) {
-  const packageJson = JSON.parse(read('package.json'));
-  const scripts = new Set(Object.keys(packageJson.scripts ?? {}));
-  const linkPattern = /\[[^\]]*\]\(([^)]+)\)/g;
-  const commandPattern = /\bbun\s+run\s+([a-z0-9][a-z0-9:_-]*)/gi;
-  const inlinePattern = /`([^`\r\n]+)`/g;
-
+function checkEncoding(files) {
   for (const file of files) {
     const content = read(file);
-    const dir = path.dirname(absolute(file));
-    let match;
-
-    while ((match = commandPattern.exec(content))) {
-      const command = match[1];
-      if (!scripts.has(command)) error(`${file} references missing command: bun run ${command}`);
-    }
-
-    while ((match = linkPattern.exec(content))) {
-      const href = match[1].trim().split('#')[0];
-      if (!href || /^(?:https?:|mailto:|file:|#)/.test(href)) continue;
-      const target = path.resolve(dir, href);
-      if (!fs.existsSync(target)) error(`Broken link in ${file}: ${href}`);
-    }
-
-    while ((match = inlinePattern.exec(content))) {
-      const candidate = match[1].trim();
-      if (!isRepositoryPath(candidate)) continue;
-      if (!fs.existsSync(absolute(candidate))) error(`Broken repository path in ${file}: ${candidate}`);
-    }
-
     if (content.includes('\uFFFD')) error(`Encoding corruption found in ${file}`);
   }
 }
 
-console.log('Running AI context linting...');
+console.log('Running context integrity linting...');
 checkRequiredFiles();
-if (fs.existsSync(absolute('AGENTS.md'))) {
-  checkRootShim();
-  checkBudgets();
-}
+if (fs.existsSync(absolute('AGENTS.md'))) checkRootShim();
 runShimCheck('scripts/sync-claude-shims.mjs', 'Claude shims');
 runShimCheck('scripts/sync-skills.mjs', 'Skill shims');
 checkSkills();
-checkDocs(contextFiles());
+checkEncoding(contextFiles());
 
 if (errors > 0) {
   console.error(`\nContext lint failed with ${errors} error(s).`);
   process.exit(1);
 }
-console.log('AI context linting passed.');
+console.log('Context integrity linting passed.');

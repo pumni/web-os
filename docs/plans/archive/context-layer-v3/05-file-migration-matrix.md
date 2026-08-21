@@ -42,7 +42,7 @@ Legend:
 | `docs/conventions/testing.md` | VERIFY/SLIM | test strategy/location/command ownership | keep operationally useful distinctions; avoid generic testing advice |
 | `docs/conventions/supabase-security.md` | REWRITE/SLIM | canonical durable Supabase security knowledge | name exact mechanical proof owners; remove duplicate workflow text |
 | `docs/conventions/design-system.md` | REWRITE | design-system map/rationale/source ownership | stop being a giant lint rulebook; remove stale review dates/inventories |
-| `docs/ai/common-mistakes.md` | DELETE | none | migrate unique concrete gotchas first; remove generic AI-mistake handbook |
+| former `docs/ai/` common-mistakes handbook | DELETE | none | migrate unique concrete gotchas first; remove generic AI-mistake handbook |
 | `docs/ai/mcp.md` | KEEP/VERIFY | narrow optional runtime-tool guidance | keep trust boundary and fallback; verify version pin/current need |
 | `.mcp.json` | KEEP/VERIFY | optional Next.js runtime aid | exact pin should be source; remove only if no longer useful/trusted |
 | `docs/adr/0026-llm-as-judge-behavioral-eval.md` | KEEP HISTORICAL | historical retired eval decision | do not reactivate regex/LLM scoring infrastructure |

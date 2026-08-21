@@ -6,15 +6,23 @@ description: Next.js project profile — project decisions, compiler settings, c
 
 > **Framework API Reference**: For framework APIs, consult installed package docs in `node_modules/next/dist/docs/` or current Next.js documentation. This profile captures project-specific configurations and architectural decisions only.
 
-## Project Configurations
+## Project decisions
 
-* **Next.js Version**: 16.2 (App Router).
-* **React Compiler**: Enabled in `apps/web/next.config.ts`.
-* **Cache Components**: `cacheComponents: true` enabled in `apps/web/next.config.ts`.
+The exact Next.js/React versions are owned by the workspace manifests. The
+project-specific flags and route headers are owned by
+`apps/web/next.config.ts`; inspect that file before relying on version-sensitive
+behavior. The current app enables the React Compiler and Cache Components.
 
 ## Architecture Invariants & Boundaries
 
-1. **Route Layer Composition**: Route files (`apps/web/src/app/**`) compose UI components and feature slices only; business logic and data operations live in `features/*`.
-2. **Server/Client Isolation**: Server-only modules carry `"server-only"`. Route-segment config exports (`dynamic`, `revalidate`) and `'use cache'` stay in Server Components.
-3. **Data Fetching & Caching**: Server state uses Server Components or TanStack Query; never mirror server state into Zustand.
-4. **Validation Command**: Run `bun run lint && bun run typecheck` to verify Next.js routes and component typing.
+1. Route files under `apps/web/src/app/` compose feature APIs and shared UI;
+   domain behavior belongs in `apps/web/src/features/`.
+2. Server-only modules carry `"server-only"`. Route-segment config and `'use
+   cache'` stay in Server Components.
+3. Server state uses Server Components or TanStack Query; Zustand remains client
+   UI state. See `docs/conventions/data-fetching.md` for the ownership split.
+
+For framework semantics, read the installed Next.js docs/source in
+`node_modules/next/` after checking the project config. Use
+`bun --filter web lint`, `typecheck`, and `build` according to the changed
+surface.

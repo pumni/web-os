@@ -19,5 +19,8 @@ Pumni Web OS uses a strict monorepo architecture with Bun workspaces and Turbore
 
 ## Dependency Graph
 
-Use workspace `package.json` files and `bun run policy:check` when reasoning
-about package edges or validating cross-package changes.
+Workspace `package.json` files are the dependency source of truth. TypeScript,
+ESLint import restrictions, tests, and the framework build validate the edges
+when their respective boundaries are affected. `bun run policy:check` is limited
+to secret exposure and the feature-boundary characterization; it does not
+generally prove workspace dependency correctness.

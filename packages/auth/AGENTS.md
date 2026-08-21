@@ -4,27 +4,19 @@ Package delta; root AGENTS.md applies.
 
 ## Summary
 
-High-level, server-only authentication helpers (`getCurrentUser`, `requireUser`) built on `@pumni/supabase/server`. This is where request-scoped identity is resolved before any privileged write.
+High-level, server-only authentication helpers (`getCurrentUser`, `requireUser`)
+built on `@pumni/supabase/server`. This is where request-scoped identity is
+resolved before any privileged write.
 
 ## Architecture
 
-- Server-only package (security invariant, see [supabase-security.md](../../docs/conventions/supabase-security.md)). Keep "server-only" declarations.
-- Consumers: `apps/web` Server Components, Server Actions, and route handlers. Client components must never import from here.
-- Workspace dep: `@pumni/supabase`.
-
-## Stack
-
-`@supabase/ssr`, `@pumni/supabase`, `next`, `server-only`.
-
-## Commands
-
-- `bun --filter @pumni/auth typecheck`
-- `bun run typecheck`
-- `bun run lint` and `bun run typecheck`; run the repository `policy:check` when
-  changing secret handling or feature-boundary code
+- Keep the package server-only and preserve its `@pumni/supabase` dependency.
+- Consumers are Server Components, Server Actions, and route handlers; client
+  components must not import it.
 
 ## Pitfalls
 
-- Mutating Server Actions must call `requireUser()` (or an equivalent auth check) **before** any Supabase write.
-- Do not add a browser/`NEXT_PUBLIC_*` entry point here. Browser identity flows through `@pumni/supabase/browser` and Supabase Auth, not this package.
+- Mutating Server Actions must call `requireUser()` before any Supabase write.
+- Browser identity flows through `@pumni/supabase/browser`; do not add a browser
+  or `NEXT_PUBLIC_*` entry point here.
 - Changing `requireUser`/`getCurrentUser` affects every protected route.
