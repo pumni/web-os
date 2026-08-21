@@ -159,7 +159,7 @@ function SegmentedPicker<T extends string>({
         aria-hidden
         data-slot="segmented-picker-indicator"
         className={cn(
-          "pointer-events-none absolute z-0 rounded-md bg-(--segmented-active) border border-segmented-active-border shadow-segmented-active transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          "pointer-events-none absolute z-0 rounded-md bg-(--segmented-active) border border-segmented-active-border shadow-segmented-active transition-all duration-(--duration-base) ease-[cubic-bezier(0.16,1,0.3,1)]",
           orientation === 'vertical'
             ? "left-0.75 right-0.75 top-0"
             : "top-0.75 bottom-0.75 left-0"
@@ -191,7 +191,7 @@ function SegmentedPicker<T extends string>({
           >
             <span
               className={cn(
-                'inline-flex items-center justify-center gap-1.5 transition-colors duration-200',
+                'inline-flex items-center justify-center gap-1.5 transition-colors duration-(--duration-base)',
                 checked ? 'text-foreground font-medium' : 'text-muted-foreground font-normal'
               )}
             >

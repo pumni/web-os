@@ -61,7 +61,7 @@ export const pumniUiBoundary = [
  * OKLCH values, Tier-1 primitive scale vars, or Tailwind's built-in colour palette. Until now
  * this lived only in prose review — these patterns make a violation fail `lint`.
  *
- * Uses esquery regex attribute matchers on string Literals and TemplateElements (where
+ * Uses a focused plugin rule on string Literals and TemplateElements (where
  * className strings live). Patterns are intentionally narrow to avoid false positives.
  */
 const RAW_COLOR_PATTERNS = [
@@ -78,15 +78,6 @@ const RAW_COLOR_PATTERNS = [
 const RAW_COLOR_MESSAGE =
   'Design system is token-first: use a semantic token (bg-primary, text-foreground, border-border, bg-overlay, text-gradient-brand…) instead of a raw OKLCH value, Tier-1 primitive var, or Tailwind built-in palette utility. See docs/conventions/design-system.md.';
 
-/** @type {import("eslint").Linter.RuleEntry} */
-export const restrictedRawColor = [
-  'error',
-  ...RAW_COLOR_PATTERNS.flatMap((pattern) => [
-    { selector: `Literal[value=/${pattern}/]`, message: RAW_COLOR_MESSAGE },
-    { selector: `TemplateElement[value.raw=/${pattern}/]`, message: RAW_COLOR_MESSAGE },
-  ]),
-];
-
 /**
  * Flat-config fragment forbidding raw colour/primitive usage in TS/TSX source.
  * Tests are excluded: they legitimately reference colour strings (e.g. "oklch(")
@@ -96,9 +87,22 @@ export const pumniNoRawColor = [
   {
     name: 'pumni/no-raw-color',
     files: ['src/**/*.{ts,tsx}'],
-    ignores: ['src/test/**', '**/*.test.{ts,tsx}'],
+    ignores: [
+      'src/test/**',
+      '**/*.test.{ts,tsx}',
+      // The APCA/design-system pages intentionally render raw colour samples
+      // and computed previews; those values are the subject of the page, not
+      // styling choices copied into product components.
+      '**/features/design-system/**',
+      // These pages intentionally render interactive raw colour previews to
+      // explain glass/OKLCH behaviour.
+      '**/features/design-trends/glass-2026-primitives.tsx',
+      '**/features/design-trends/glass-playground.tsx',
+      // This package utility owns the OKLCH parser/formatter itself.
+      '**/lib/oklch.ts',
+    ],
     rules: {
-      'no-restricted-syntax': restrictedRawColor,
+      'pumni/no-raw-color': 'error',
     },
   },
 ];
@@ -119,14 +123,6 @@ const AD_HOC_SURFACE_PATTERNS = [
 
 const AD_HOC_SURFACE_MESSAGE =
   'Surface system is closed: no raw backdrop-blur (use GlassSurface/glass-* for floating layers), no bg-{card,background,popover}/NN opacity (surfaces are opaque), no raw shadow-lg/xl/2xl (content=shadow-sm, floating=glass utility), no hand-rolled `border bg-muted` inset wells (use <CardWell> / <Card variant="inset">; status pills use <Badge>, icon chips use <IconBadge>). See docs/conventions/design-system.md §Surface vocabulary.';
-
-export const restrictedAdHocSurface = [
-  'error',
-  ...AD_HOC_SURFACE_PATTERNS.flatMap((pattern) => [
-    { selector: `Literal[value=/${pattern}/]`, message: AD_HOC_SURFACE_MESSAGE },
-    { selector: `TemplateElement[value.raw=/${pattern}/]`, message: AD_HOC_SURFACE_MESSAGE },
-  ]),
-];
 
 export const pumniNoAdHocSurface = [
   {
@@ -151,7 +147,7 @@ export const pumniNoAdHocSurface = [
       '**/window.tsx',
     ],
     rules: {
-      'no-restricted-syntax': restrictedAdHocSurface,
+      'pumni/no-ad-hoc-surface': 'error',
     },
   },
 ];
@@ -162,7 +158,7 @@ export const pumniNoAdHocSurface = [
  * and `duration-(--duration-base)` instead of raw Tailwind `duration-200` /
  * `duration-300` / `ease-out` / `ease-in-out`. Until now this lived only in prose.
  *
- * Uses esquery regex attribute matchers on string Literals and TemplateElements
+ * Uses a focused plugin rule on string Literals and TemplateElements
  * (where className strings live). Patterns are intentionally narrow to avoid false
  * positives on legitimate tw-animate-css utilities (fade-in, zoom-in, etc.) and
  * non-duration values.
@@ -183,14 +179,6 @@ const RAW_TIMING_PATTERNS = [
 const RAW_TIMING_MESSAGE =
   'Timing is token-first: use a design-system easing (ease-fluid, ease-snappy) and duration (duration-(--duration-base), duration-(--duration-slow), duration-(--duration-fast)) instead of raw Tailwind duration-{N} or ease-{curve}. See docs/conventions/design-system.md §Motion.';
 
-export const restrictedRawTiming = [
-  'error',
-  ...RAW_TIMING_PATTERNS.flatMap((pattern) => [
-    { selector: `Literal[value=/${pattern}/]`, message: RAW_TIMING_MESSAGE },
-    { selector: `TemplateElement[value.raw=/${pattern}/]`, message: RAW_TIMING_MESSAGE },
-  ]),
-];
-
 export const pumniNoRawTiming = [
   {
     name: 'pumni/no-raw-timing',
@@ -200,11 +188,11 @@ export const pumniNoRawTiming = [
       '**/*.test.{ts,tsx}',
       // CSS files are excluded from this rule (timing tokens live in CSS).
       '**/*.css',
-      // Motion-section showcases the old tokens as documentation — safe.
-      '**/motion-section.tsx',
+      // The design-system pages showcase raw motion values as documentation — safe.
+      '**/features/design-system/**',
     ],
     rules: {
-      'no-restricted-syntax': restrictedRawTiming,
+      'pumni/no-raw-timing': 'error',
     },
   },
 ];
@@ -341,12 +329,88 @@ const RAW_Z_INDEX_MESSAGE =
   'Use a Tailwind utility bridged from a token (e.g. z-(--z-modal)) instead of a raw z-class. ' +
   'See docs/conventions/design-system.md §Z-index.';
 
-export const restrictedRawZIndex = [
-  'warn',
-  ...RAW_Z_INDEX_PATTERNS.flatMap((pattern) => [
-    { selector: `Literal[value=/${pattern}/]`, message: RAW_Z_INDEX_MESSAGE },
-    { selector: `TemplateElement[value.raw=/${pattern}/]`, message: RAW_Z_INDEX_MESSAGE },
-  ]),
+const SERVICE_ROLE_IMPORT = '@pumni/supabase/service-role';
+
+function createStringPatternRule(name, patterns, message) {
+  return {
+    meta: {
+      type: 'problem',
+      docs: { description: name },
+      schema: [],
+    },
+    create(context) {
+      const regexes = patterns.map((pattern) => new RegExp(pattern));
+
+      function inspectString(node, value) {
+        if (typeof value === 'string' && regexes.some((regex) => regex.test(value))) {
+          context.report({ node, message });
+        }
+      }
+
+      return {
+        Literal(node) {
+          inspectString(node, node.value);
+        },
+        TemplateElement(node) {
+          inspectString(node, node.value.raw);
+        },
+      };
+    },
+  };
+}
+
+const noUnapprovedServiceRoleImport = {
+  meta: {
+    type: 'problem',
+    docs: { description: 'Restrict service-role imports to approved server modules.' },
+    schema: [],
+  },
+  create(context) {
+    return {
+      ImportDeclaration(node) {
+        if (node.source.value === SERVICE_ROLE_IMPORT) {
+          context.report({
+            node: node.source,
+            message:
+              'Security boundary: service-role imports are restricted to the explicitly approved server modules. Add a focused authorization test before changing this allowlist.',
+          });
+        }
+      },
+    };
+  },
+};
+
+export const pumniEslintPlugin = {
+  rules: {
+    'no-raw-color': createStringPatternRule(
+      'Forbid raw colors and primitive color tokens.',
+      RAW_COLOR_PATTERNS,
+      RAW_COLOR_MESSAGE,
+    ),
+    'no-ad-hoc-surface': createStringPatternRule(
+      'Forbid ad-hoc surface utilities.',
+      AD_HOC_SURFACE_PATTERNS,
+      AD_HOC_SURFACE_MESSAGE,
+    ),
+    'no-raw-timing': createStringPatternRule(
+      'Forbid raw transition timing utilities.',
+      RAW_TIMING_PATTERNS,
+      RAW_TIMING_MESSAGE,
+    ),
+    'no-raw-z-index': createStringPatternRule(
+      'Warn on raw cross-component z-index utilities.',
+      RAW_Z_INDEX_PATTERNS,
+      RAW_Z_INDEX_MESSAGE,
+    ),
+    'no-unapproved-service-role-import': noUnapprovedServiceRoleImport,
+  },
+};
+
+export const pumniEslintPluginConfig = [
+  {
+    name: 'pumni/rules',
+    plugins: { pumni: pumniEslintPlugin },
+  },
 ];
 
 /**
@@ -365,7 +429,7 @@ export const pumniNoRawZIndex = [
       '**/window.tsx',
     ],
     rules: {
-      'no-restricted-syntax': restrictedRawZIndex,
+      'pumni/no-raw-z-index': 'warn',
     },
   },
 ];

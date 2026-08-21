@@ -8,11 +8,13 @@ import {
   pumniNoRawTiming,
   pumniFeatureBoundary,
   pumniNoRawZIndex,
+  pumniEslintPluginConfig,
 } from '@pumni/config/eslint';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  ...pumniEslintPluginConfig,
   // Token-first guard: forbid raw OKLCH / primitive / Tailwind palette colours in app source.
   ...pumniNoRawColor,
   // Surface-first guard: forbid ad-hoc surfaces.
@@ -26,10 +28,8 @@ const eslintConfig = defineConfig([
   // Z-index guard: warn on raw Tailwind z-classes in cross-component layers.
   ...pumniNoRawZIndex,
 
-  // Service-role imports are an explicit server-side exception. Keep this
-  // fragment after other no-restricted-syntax fragments: flat config replaces
-  // a rule entry rather than merging its selector arrays. The focused boundary
-  // test proves both this deny-by-default rule and the exact exceptions below.
+  // Service-role imports are an explicit server-side exception. Its dedicated
+  // rule ID cannot clobber the independent design-system rules above.
   {
     name: 'pumni/service-role-import-boundary',
     files: ['src/**/*.{ts,tsx}'],
@@ -45,14 +45,7 @@ const eslintConfig = defineConfig([
       'src/shared/lib/audit.ts',
     ],
     rules: {
-      'no-restricted-syntax': [
-        'error',
-        {
-          selector: "ImportDeclaration[source.value='@pumni/supabase/service-role']",
-          message:
-            'Security boundary: service-role imports are restricted to the explicitly approved server modules. Add a focused authorization test before changing this allowlist.',
-        },
-      ],
+      'pumni/no-unapproved-service-role-import': 'error',
     },
   },
 

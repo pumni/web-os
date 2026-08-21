@@ -70,7 +70,7 @@ export function CropDialog({
 
         <DialogBody className="mx-6 my-4">
           <div
-            className="relative h-64 w-full overflow-hidden rounded-md border border-border bg-(--neutral-950)"
+            className="relative h-64 w-full overflow-hidden rounded-md border border-border bg-background"
           >
             {rawFileUrl && (
               <Cropper
