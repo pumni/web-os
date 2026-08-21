@@ -126,8 +126,9 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
         if (decision.invalidateRoom) {
           void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
         }
-        if (decision.anchor) {
-          anchorHandlersRef.current.forEach((handler) => handler(decision.anchor!));
+        const anchor = decision.anchor;
+        if (anchor) {
+          anchorHandlersRef.current.forEach((handler) => handler(anchor));
         }
       },
     );
