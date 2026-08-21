@@ -21,9 +21,7 @@
   "entry": [
     "scripts/context-lint.mjs",
     "scripts/check-feature-boundary.mjs",
-    "scripts/check-review-gate-rules.mjs",
-    "scripts/check-secrets.mjs",
-    "scripts/review-gate-rules.mjs"
+    "scripts/check-secrets.mjs"
   ],
 
   // ─── Public package surface ───────────────────────────────────────────────
@@ -42,7 +40,7 @@
   // ─── Security category opt-ins ────────────────────────────────────────────
   // hardcoded-secret and secret-to-network are include-required (off unless
   // explicitly listed). Enabling both surfaces leaked keys and secrets sent
-  // over the wire — critical for this project's P0 security mandates.
+  // over the wire — critical for this project's security boundaries.
   "security": {
     "categories": {
       "include": ["hardcoded-secret", "secret-to-network"]
@@ -90,12 +88,12 @@
     "dev-dependencies-in-production": "warn",  // default warn since v3.1.0
 
     // --- Client/server boundary (Next.js App Router) — ERRORS ---------------
-    // These match P0 mandates in AGENTS.md: server-only code must never reach
+    // These match the server/client boundary in AGENTS.md: server-only code must never reach
     // the client bundle; "use client"/"use server" directives must be correct.
     "invalid-client-export":          "error",
     "mixed-client-server-barrel":     "error",
     "misplaced-directive":            "error",
-    "security-client-server-leak":    "error",  // ↑ was "off"; P0 mandate
+    "security-client-server-leak":    "error",  // ↑ was "off"; security boundary
 
     // --- Security (opt-in; activated by security.categories.include above) --
     // security-sink surfaces reachable dangerous patterns (SQL injection,

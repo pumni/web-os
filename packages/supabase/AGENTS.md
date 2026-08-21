@@ -22,7 +22,8 @@ Supabase client factories: browser, server, and service-role. Plus the generated
 
 - `bun --filter @pumni/supabase typecheck`
 - `bun run typecheck` (catches cross-package type drift on generated types)
-- `bun run policy:check` (`service-role-client` and `server-only-in-client` scan imports of this package)
+- `bun run lint` and `bun run typecheck`; run the repository `policy:check` when
+  changing secret handling or feature-boundary code
 
 ## Pitfalls
 

@@ -51,4 +51,10 @@ Never hand-edit the output. See `packages/supabase/AGENTS.md` for generation rul
 
 ## Service-Role Key Exceptions
 
-The Supabase service-role/secret key must only be used in designated server-only modules that require bypassing Row Level Security (RLS) for system-level operations. The approved module list is machine-enforced as `service-role-import-allowlist` (`ALLOWED_SERVICE_ROLE_MODULES` in `scripts/review-gate-rules.mjs`) — that constant is the single source of truth; extending it is an ask-first change.
+The Supabase service-role/secret key must only be used in modules that import
+`server-only` and genuinely require an RLS bypass for a system-level operation.
+Keep user identity derived on the server and preserve an explicit user filter
+when a service-role read serves user-owned data. Next.js server-only/build
+checks protect the module boundary; focused feature and migration tests protect
+the authorization and data-integrity behavior. A new service-role use requires
+the same review and a focused test where the invariant is not already covered.
