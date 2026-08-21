@@ -30,8 +30,9 @@ owns client UI state; Zod owns shared validation.
 ## Read just in time
 
 Start with the nearest `AGENTS.md`. Read only references relevant to the task;
-plans, research, and archived material are subordinate evidence, not default
-instructions.
+active plans are subordinate to current source and conventions. Historical
+research, completed plans, and retired decisions are retrieved from Git history
+only when explicitly needed.
 
 | Task surface | Read when needed |
 |---|---|

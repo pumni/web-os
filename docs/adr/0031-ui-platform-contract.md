@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-08-21
 - **Owner:** UI platform / frontend
+- **Supersedes:** ADR-0010, ADR-0021
 
 ## Context
 

@@ -26,11 +26,15 @@ For every table in an exposed schema:
 
 ## Functions
 
-- Do not place `security definer` functions in exposed schemas.
-- Prefer a private schema for privileged helper functions.
-- Set an explicit `search_path`.
-- Revoke execute from `public`, `anon`, and `authenticated` unless the function is
-  intentionally callable through the Data API.
+- Privileged implementation helpers belong in a private schema.
+- A `security definer` function may exist in an exposed schema only as an
+  intentional RPC boundary. It must set an explicit `search_path`, revoke
+  execute from `PUBLIC`, `anon`, and `authenticated`, grant only the required
+  role, and have focused authorization tests. The billing entitlement wrapper
+  in [022_billing_core.sql](../../supabase/migrations/022_billing_core.sql) is
+  this kind of service-role-only boundary.
+- Revoke execute from `PUBLIC`, `anon`, and `authenticated` unless the function
+  is intentionally callable through the Data API.
 - Quota functions that count rows must serialize the contended key with
   `pg_advisory_xact_lock` and use `volatile` semantics so concurrent requests
   cannot pass the same snapshot. The focused billing migration test owns this

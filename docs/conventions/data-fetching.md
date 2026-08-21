@@ -13,8 +13,9 @@ Use standard Server Components for initial load screens:
 - Public page static assets
 
 When data is safe to reuse across requests, prefer Next.js 16 Cache Components.
-Canonical mechanics (placement, `cacheLife`, `cacheTag`, `updateTag`,
-`revalidateTag`, PPR/Suspense): `docs/conventions/nextjs-project-profile.md`.
+Project configuration and boundaries: `docs/conventions/nextjs-project-profile.md`.
+Framework API semantics (placement, `cacheLife`, `cacheTag`, `updateTag`,
+`revalidateTag`, PPR/Suspense): installed Next.js docs/source.
 
 ## Client-Side Asynchronous Querying (TanStack Query)
 

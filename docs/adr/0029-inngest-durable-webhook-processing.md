@@ -19,11 +19,12 @@ enqueues a durable event, and returns success after enqueueing. The Inngest
 handler isolates subscription/customer updates, cache invalidation, analytics,
 audit, and processed-state updates in durable steps.
 
-When Inngest is unavailable, the route uses the synchronous handler as a local
-and operational fallback. A scheduled reconciliation job compares provider
-subscriptions with provider-scoped local rows and repairs missing or drifted
-state. Both paths use the provider discriminator and server-only service-role
-access.
+When `INNGEST_SIGNING_KEY` is absent, the route uses the synchronous handler
+for local and test operation. The route does not silently switch to that path
+when an already-configured Inngest send fails. A scheduled reconciliation job
+compares provider subscriptions with provider-scoped local rows and repairs
+missing or drifted state. Both paths use the provider discriminator and
+server-only service-role access.
 
 ## Consequences
 

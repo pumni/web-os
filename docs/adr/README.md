@@ -37,8 +37,10 @@ Then use these four sections, in order:
 ## Lifecycle
 
 Use status transitions to show the current decision: Proposed → Accepted →
-Deprecated → Superseded. A replacement ADR must reference the decision it
-supersedes, and the older record must point to the replacement.
+Deprecated → Superseded. When a replacement is needed, the replacement ADR
+records `Supersedes: ADR-XXXX` in its metadata and captures the surviving
+current outcome. Current references migrate to the replacement, then the old
+ADR is removed from the working tree; Git history preserves the old record.
 
 Only current, load-bearing ADRs remain in the tree. Retired, superseded, or
 implementation-history decisions are removed after their current outcome is

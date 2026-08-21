@@ -17,8 +17,10 @@ behavior. The current app enables the React Compiler and Cache Components.
 
 1. Route files under `apps/web/src/app/` compose feature APIs and shared UI;
    domain behavior belongs in `apps/web/src/features/`.
-2. Server-only modules carry `"server-only"`. Route-segment config and `'use
-   cache'` stay in Server Components.
+2. Server-only modules carry `"server-only"`. Route-segment config belongs to
+   route files. `'use cache'` is server-side only and may apply at supported
+   Server Component or server-function scopes; verify its placement and cache
+   semantics against the installed Next.js docs/source.
 3. Server state uses Server Components or TanStack Query; Zustand remains client
    UI state. See `docs/conventions/data-fetching.md` for the ownership split.
 

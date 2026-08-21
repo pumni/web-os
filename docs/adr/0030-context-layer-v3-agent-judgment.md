@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-08-21
 - **Owner:** Engineering Team
+- **Supersedes:** ADR-0027
 
 ## Context
 

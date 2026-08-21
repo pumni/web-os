@@ -9,7 +9,9 @@ Keep tests focused on core behavior.
 ## Test Locations & Imports
 
 - **Web tests**: Unit and component tests for Next.js app code live in `apps/web/src/test/`, mirroring the feature structure (e.g. `src/test/features/watch-sync-machine.test.ts`).
-- **Package tests**: Tests for packages live in `packages/<pkg>/src/test/`.
+- **Package tests**: Follow the package's existing convention. For example,
+  `@pumni/ui` colocates component tests with components and keeps cross-cutting
+  package tests under `src/test/`.
 - **Deep imports**: Test files under `apps/web/src/test/` are the **only** code allowed to deep-import feature internals. See `apps/web/src/features/AGENTS.md`.
 
 ## Unit Tests
@@ -29,17 +31,10 @@ bun run test
 
 ## Type Checking
 
-Every TypeScript package must expose:
-
-```json
-{
-  "scripts": {
-    "typecheck": "tsc --noEmit"
-  }
-}
-```
-
-Run all package type checks with:
+Workspace manifests and the Turbo graph own the available typecheck script
+names. Run the applicable workspace command from its manifest; for example,
+the catalog workspace uses `catalog:typecheck`. The repository-wide typecheck
+gate is:
 
 ```pwsh
 bun run typecheck
