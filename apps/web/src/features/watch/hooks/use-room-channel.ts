@@ -18,11 +18,13 @@ import type {
 } from '../types';
 import { watchKeys } from '../query-keys';
 import { getStructuralSignature } from '../sync-math';
+import {
+  classifyRoomUpdate,
+  getPlaybackSignature,
+  normalizeParticipants,
+  queueBroadcastNotice,
+} from '../room-channel-model';
 import { useTelemetryRef } from '@/shared/lib/observability';
-
-function getPlaybackSignature(room: Room): string {
-  return `${room.is_playing}|${room.anchor_position}|${room.anchor_server_ts}|${room.playback_rate}`;
-}
 
 export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
   const queryClient = useQueryClient();
@@ -88,7 +90,6 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
 
-    // Create channel
     const activeChannel = supabase.channel(`room:${room.id}`, {
       config: {
         presence: {
@@ -99,8 +100,9 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
 
     channelRef.current = activeChannel;
 
-    // 1. Listen to authoritative room row changes. Playback state comes from
-    // `watch_rooms`, so RLS remains the real host/follower boundary.
+    // Authoritative room snapshots remain the source of truth. The pure model
+    // decides whether the update changes structure, playback, or both; this
+    // effect owns only cache invalidation and event delivery.
     activeChannel.on(
       'postgres_changes',
       {
@@ -113,44 +115,31 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
         const nextRoom = payload.new;
         if (!nextRoom) return;
 
-        const nextSignature = getStructuralSignature(nextRoom);
-        if (nextSignature !== structuralSignatureRef.current) {
-          structuralSignatureRef.current = nextSignature;
+        const decision = classifyRoomUpdate(
+          structuralSignatureRef.current,
+          playbackSignatureRef.current,
+          nextRoom,
+        );
+        structuralSignatureRef.current = decision.structuralSignature;
+        playbackSignatureRef.current = decision.playbackSignature;
+
+        if (decision.invalidateRoom) {
           void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
         }
-
-        const nextPlaybackSignature = getPlaybackSignature(nextRoom);
-        if (nextPlaybackSignature !== playbackSignatureRef.current) {
-          playbackSignatureRef.current = nextPlaybackSignature;
-          anchorHandlersRef.current.forEach((handler) =>
-            handler({
-              isPlaying: nextRoom.is_playing,
-              anchorPosition: nextRoom.anchor_position,
-              anchorServerTs: new Date(nextRoom.anchor_server_ts).getTime(),
-              playbackRate: nextRoom.playback_rate,
-            }),
-          );
+        if (decision.anchor) {
+          anchorHandlersRef.current.forEach((handler) => handler(decision.anchor!));
         }
       },
     );
 
-    // 2. Listen to broadcast event for structural room changes.
     activeChannel.on('broadcast', { event: 'room' }, () => {
       void queryClient.invalidateQueries({ queryKey: watchKeys.room(room.id) });
     });
 
-    // 3. Listen to broadcast event for queue changes.
     activeChannel.on('broadcast', { event: 'queue' }, (msg: { payload: QueueBroadcastEvent }) => {
       void queryClient.invalidateQueries({ queryKey: watchKeys.queue(room.id) });
-      const { action, title } = msg.payload ?? {};
-      const name = title || 'Không tên';
-      if (action === 'add') {
-        toast.info(`Video "${name}" đã được thêm vào hàng chờ`);
-      } else if (action === 'remove') {
-        toast.info(`Video "${name}" đã bị xóa khỏi hàng chờ`);
-      } else if (action === 'reorder') {
-        toast.info('Thứ tự hàng chờ vừa được cập nhật');
-      }
+      const notice = queueBroadcastNotice(msg.payload);
+      if (notice) toast.info(notice);
     });
 
     // Low-latency host anchor fan-out (ADR-0011). Versioned anchors arrive here
@@ -176,32 +165,10 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
       },
     );
 
-    // 4. Listen to presence events
     activeChannel.on('presence', { event: 'sync' }, () => {
-      const state = activeChannel.presenceState();
-      const list: Participant[] = [];
-      Object.keys(state).forEach((key) => {
-        const presences = state[key];
-        if (Array.isArray(presences) && presences.length > 0) {
-          const latest = presences[presences.length - 1] as unknown as {
-            presenceRef?: string;
-            userId?: string;
-            isHost?: boolean;
-            joinedAt?: number;
-          };
-          list.push({
-            presenceRef: latest.presenceRef,
-            userId: latest.userId || key,
-            isHost: !!latest.isHost,
-            joinedAt: latest.joinedAt || Date.now(),
-          });
-        }
-      });
-      list.sort((a, b) => a.joinedAt - b.joinedAt);
-      setParticipants(list);
+      setParticipants(normalizeParticipants(activeChannel.presenceState()));
     });
 
-    // Subscribe to channel
     activeChannel.subscribe(async (status) => {
       if (status === 'SUBSCRIBED') {
         setChannelStatus('connected');
@@ -274,35 +241,35 @@ export function useRoomChannel(room: Room, userId: string, isHost: boolean) {
     }
   }, []);
 
-  const broadcastChat = useCallback((m: ChatMessage) => {
+  const broadcastChat = useCallback((message: ChatMessage) => {
     const ch = channelRef.current;
     if (ch && ch.state === 'joined') {
       ch.send({
         type: 'broadcast',
         event: 'chat',
-        payload: m,
+        payload: message,
       });
     }
   }, []);
 
-  const broadcastReaction = useCallback((r: ReactionEvent) => {
+  const broadcastReaction = useCallback((reaction: ReactionEvent) => {
     const ch = channelRef.current;
     if (ch && ch.state === 'joined') {
       ch.send({
         type: 'broadcast',
         event: 'reaction',
-        payload: r,
+        payload: reaction,
       });
     }
   }, []);
 
-  const broadcastMessageReaction = useCallback((r: MessageReaction) => {
+  const broadcastMessageReaction = useCallback((reaction: MessageReaction) => {
     const ch = channelRef.current;
     if (ch && ch.state === 'joined') {
       ch.send({
         type: 'broadcast',
         event: 'message-reaction',
-        payload: r,
+        payload: reaction,
       });
     }
   }, []);
