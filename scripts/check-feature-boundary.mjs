@@ -1,17 +1,10 @@
 /**
  * check-feature-boundary — guards the feature-boundary ESLint firewall.
  *
- * The firewall in `packages/config/eslint.mjs` used to enumerate features in a
- * hand-maintained `FEATURES` array: a new `apps/web/src/features/<name>/` slice
- * stayed un-firewalled until someone remembered to append its name, failing
- * silently. The rules are now derived from the filesystem via
- * `readFeatureNames`.
- *
- * It also guards against the flat-config override trap: emitting one config
- * object per feature left only the last one's `no-restricted-imports` enforced
- * (the rest were silently clobbered). The boundary now uses a single rule per
- * file scope listing every feature, so this check asserts every feature is
- * present in each scope's rule.
+ * The firewall in `packages/config/eslint.mjs` derives feature names from the
+ * filesystem and emits one restricted-import rule per disjoint file scope. It
+ * allows exactly two public feature import shapes: `@/features/<name>` and
+ * `@/features/<name>/client`; deeper paths remain private.
  *
  * Modes:
  *   --self-test   run only the fixture assertions (no repo state read)
@@ -36,17 +29,14 @@ function assert(condition, message) {
   }
 }
 
-/** The named config object from a flat-config array. */
 function configByName(config, name) {
   return config.find((entry) => entry.name === name) ?? null;
 }
 
-/** Restricted-import pattern groups declared by a named config object. */
 function patternsOf(entry) {
   return entry?.rules?.['no-restricted-imports']?.[1]?.patterns ?? [];
 }
 
-/** Sorted, de-duped feature names a config's restricted-import patterns cover. */
 function featuresEnforcedBy(entry) {
   const found = new Set();
   for (const pattern of patternsOf(entry)) {
@@ -58,14 +48,38 @@ function featuresEnforcedBy(entry) {
   return [...found].sort();
 }
 
+function featurePattern(entry, feature) {
+  return (
+    patternsOf(entry).find((pattern) =>
+      pattern.group.includes(`**/features/${feature}/**/*`),
+    ) ?? null
+  );
+}
+
 function eq(actual, expected) {
   return JSON.stringify(actual) === JSON.stringify(expected);
+}
+
+function assertPublicEntries(entry, feature) {
+  const pattern = featurePattern(entry, feature);
+  assert(pattern, `${entry.name} must restrict deep imports for ${feature}`);
+  assert(
+    pattern.group.includes(`**/features/${feature}/*`),
+    `${entry.name} must restrict first-level internals for ${feature}`,
+  );
+  assert(
+    pattern.group.includes(`!**/features/${feature}/client`),
+    `${entry.name} must re-include only the exact client public entry for ${feature}`,
+  );
+  assert(
+    !pattern.group.includes(`!**/features/${feature}/client/*`),
+    `${entry.name} must not expose nested client internals for ${feature}`,
+  );
 }
 
 function runSelfTest() {
   const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'pumni-feature-boundary-'));
   try {
-    // Two real slices, plus decoys that must be ignored: a file and a dot-dir.
     fs.mkdirSync(path.join(fixture, 'zeta'));
     fs.mkdirSync(path.join(fixture, 'alpha'));
     fs.mkdirSync(path.join(fixture, '.hidden'));
@@ -82,7 +96,6 @@ function runSelfTest() {
     );
 
     const config = pumniFeatureBoundary(fixture);
-
     const internalTs = configByName(config, 'pumni/feature-boundary-internal');
     const internalTsx = configByName(config, 'pumni/feature-boundary-internal-tsx');
     const external = configByName(config, 'pumni/feature-boundary-external');
@@ -90,9 +103,6 @@ function runSelfTest() {
     assert(internalTsx, 'pumniFeatureBoundary must emit a feature-boundary-internal-tsx config');
     assert(external, 'pumniFeatureBoundary must emit a feature-boundary-external config');
 
-    // Override-trap guard: exactly the three scoped configs may set
-    // no-restricted-imports, over disjoint file scopes (.ts inside features,
-    // .tsx inside features, everything outside features) so none clobbers another.
     const rImports = config.filter((c) => c.rules?.['no-restricted-imports']);
     assert(
       rImports.length === 3,
@@ -104,15 +114,14 @@ function runSelfTest() {
       'feature-boundary-external must ignore src/features/** so it never overlaps the internal scopes',
     );
 
-    // Every scope must enforce EVERY feature, not just the last one.
     for (const entry of [internalTs, internalTsx, external]) {
       assert(
         eq(featuresEnforcedBy(entry), ['alpha', 'zeta']),
         `${entry.name} must enforce every feature simultaneously`,
       );
+      for (const feature of ['alpha', 'zeta']) assertPublicEntries(entry, feature);
     }
 
-    // Both internal scopes keep the routing-layer portability guard...
     for (const entry of [internalTs, internalTsx]) {
       assert(
         patternsOf(entry).some((p) => p.group.includes('@/app/**')),
@@ -120,7 +129,6 @@ function runSelfTest() {
       );
     }
 
-    // ...and only the .tsx (UI) scope adds the presentation purity guard.
     const hasPresentation = (entry) =>
       patternsOf(entry).some((p) => p.group.includes('@pumni/supabase'));
     assert(
@@ -132,7 +140,9 @@ function runSelfTest() {
       'the presentation guard must apply only to feature .tsx files, not .ts or external scopes',
     );
 
-    console.log('Feature-boundary self-test passed (filesystem-derived rules, no override gap).');
+    console.log(
+      'Feature-boundary self-test passed (filesystem-derived rules, explicit root/client APIs, no override gap).',
+    );
   } finally {
     fs.rmSync(fixture, { recursive: true, force: true });
   }
@@ -146,11 +156,13 @@ function verifyLiveConfig() {
   );
 
   const config = pumniFeatureBoundary(FEATURES_DIR);
-  const enforced = featuresEnforcedBy(configByName(config, 'pumni/feature-boundary-external'));
+  const external = configByName(config, 'pumni/feature-boundary-external');
+  const enforced = featuresEnforcedBy(external);
   assert(
     eq(enforced, features),
     `Live boundary rules drifted from the features directory.\n  dirs:  ${features.join(', ')}\n  rules: ${enforced.join(', ')}`,
   );
+  for (const feature of features) assertPublicEntries(external, feature);
 
   console.log(
     `Feature-boundary live check passed (${features.length} feature(s) firewalled: ${features.join(', ')}).`,
