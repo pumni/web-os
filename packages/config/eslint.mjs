@@ -220,8 +220,9 @@ export function readFeatureNames(featuresDir) {
 /**
  * Feature boundary + presentation guard. Enforces that:
  * 1. Features do not import from the routing layer (src/app/**) to ensure portability.
- * 2. Code outside a specific feature (including other features) must not import its internal files,
- *    forcing them to use the public API (root index.ts of the feature).
+ * 2. Code outside a specific feature (including other features) can import only
+ *    its explicit public entry points: `@/features/<name>` and
+ *    `@/features/<name>/client`. Deeper paths remain private.
  * 3. Feature UI components (.tsx) do not import Supabase clients or auth helpers
  *    directly, keeping them pure presentation layers.
  * Test files are exempted from these rules.
@@ -242,14 +243,16 @@ export function readFeatureNames(featuresDir) {
  * @returns {import("eslint").Linter.Config[]}
  */
 export function pumniFeatureBoundary(featuresDir) {
-  // One restricted-import pattern per feature, forbidding deep imports of its
-  // internals from anywhere (the public-API root `@/features/<name>` has no
-  // trailing segment, so it never matches and stays allowed). A single shared
-  // array is reused by every scope below so ALL features are enforced at once
-  // rather than only the last-declared one.
+  // Forbid every deep feature import, then carve out the exact `client` entry.
+  // ESLint pattern groups are gitignore-style: the final negation re-includes
+  // only `/client`; `/client/*`, `/components/*`, `/hooks/*`, etc. stay private.
   const internalPatterns = readFeatureNames(featuresDir).map((feature) => ({
-    group: [`**/features/${feature}/*`, `**/features/${feature}/**/*`],
-    message: `Feature boundary violation: Do not import internals of "${feature}" feature. Only import from the public API "@/features/${feature}".`,
+    group: [
+      `**/features/${feature}/*`,
+      `**/features/${feature}/**/*`,
+      `!**/features/${feature}/client`,
+    ],
+    message: `Feature boundary violation: Do not import internals of "${feature}". Use "@/features/${feature}" (server-safe API) or "@/features/${feature}/client" (client API).`,
   }));
 
   // Features must stay portable: no reaching back into the routing layer.
@@ -294,7 +297,7 @@ export function pumniFeatureBoundary(featuresDir) {
     },
     {
       // Outside any feature (routes, shared components, lib): consume features
-      // only through their public API, never their internals.
+      // only through their explicit public entry points, never their internals.
       name: 'pumni/feature-boundary-external',
       files: ['src/**/*.{ts,tsx}'],
       ignores: ['src/features/**', 'src/test/**', '**/*.test.{ts,tsx}'],
