@@ -79,7 +79,7 @@ The exact surviving set may change if current source proves a document is still 
 
 Do not:
 
-- create `docs/archive-v2`, `docs/history`, or another location for deleted historical Markdown;
+- create another archive/history directory under `docs/` for deleted historical Markdown;
 - keep deprecated/superseded ADRs merely for traceability when Git already provides traceability;
 - add a generated ADR index or documentation graph;
 - introduce document token budgets or arbitrary size gates;
