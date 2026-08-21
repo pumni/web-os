@@ -89,8 +89,8 @@ export function normalizeParticipants(
 
 /** Returns user-facing queue activity copy; `advance` intentionally stays silent. */
 export function queueBroadcastNotice(
-  event: Partial<QueueBroadcastEvent> | null | undefined,
+  event: QueueBroadcastEvent | null | undefined,
 ): string | null {
-  const action = event?.action ?? 'advance';
-  return QUEUE_NOTICE[action](event?.title || 'Không tên');
+  if (!event) return null;
+  return QUEUE_NOTICE[event.action](event.title ?? 'Không tên');
 }
