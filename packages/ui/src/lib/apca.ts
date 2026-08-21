@@ -94,7 +94,7 @@ export function apcaContrast(fg: [number, number, number], bg: [number, number, 
 /* ───────────────────────── Inverse APCA ─────────────────────────
  * Given a background, derive a foreground that hits a target Lc — so brand
  * colours produce accessible text/UI *by construction* instead of by hand-tuning
- * (ADR-0010). Works on the OKLCH lightness axis via the same `oklchToSrgb` +
+ * (ADR-0031). Works on the OKLCH lightness axis via the same `oklchToSrgb` +
  * `apcaContrast` pair the contrast gate uses, so generated colours satisfy the
  * gate up front. |Lc| is monotonic in foreground lightness for a fixed
  * background, which makes the bisection below well-defined.

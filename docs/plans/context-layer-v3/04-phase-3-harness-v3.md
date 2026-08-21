@@ -78,7 +78,7 @@ Avoid duplicating the same local link checks in multiple scripts/workflows unles
 
 ## 3. Add a superseding Context Layer v3 ADR
 
-Do not edit historical ADR-0027 to pretend the earlier decision used today's model capabilities.
+Do not rewrite the retired context decision to pretend the earlier decision used today's model capabilities.
 
 Create a new ADR that records the operational update.
 

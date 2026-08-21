@@ -40,9 +40,10 @@ Use status transitions to show the current decision: Proposed → Accepted →
 Deprecated → Superseded. A replacement ADR must reference the decision it
 supersedes, and the older record must point to the replacement.
 
-Load-bearing ADRs remain in the tree. WIP or context-layer material that only
-creates retrieval noise may be removed after its decision is preserved in the
-relevant current guide or convention; its number remains retired.
+Only current, load-bearing ADRs remain in the tree. Retired, superseded, or
+implementation-history decisions are removed after their current outcome is
+captured by a surviving ADR, convention, source, or test. Git history is the
+record for the deleted document; its number remains burned and is never reused.
 
 The filesystem is the ADR register. No generated index or synchronization
 command is required.

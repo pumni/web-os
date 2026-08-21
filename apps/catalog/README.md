@@ -2,8 +2,8 @@
 
 A [Storybook](https://storybook.js.org) catalog for browsing `@pumni/ui` components in
 isolation with the real token cascade, theme toggle, and personalization
-(accent / glass / density). Added by **ADR-0021** (reopening ADR-0010's Storybook
-rejection).
+(accent / glass / density). The catalog policy is part of the current
+[UI platform contract](../../docs/adr/0031-ui-platform-contract.md).
 
 ## Run
 
@@ -16,7 +16,7 @@ bun run catalog:typecheck
 
 The scripts are intentionally prefixed (`catalog:*`) so the catalog is **not**
 pulled into the repo's default `turbo` gates (`build` / `typecheck` / `test`) —
-per ADR-0021 it must not become a second app the team is obligated to keep green.
+per ADR-0031 it must not become a second app the team is obligated to keep green.
 They run as dedicated `catalog:*` tasks in `turbo.json`, so they get Turborepo
 caching and are invalidated by `@pumni/ui` source changes.
 

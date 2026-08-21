@@ -25,11 +25,11 @@ This is intentionally stricter than merely labeling old material as archived or 
 
 The Context Layer v3 implementation is mechanically healthy, but the documentation corpus still carries knowledge debt:
 
-- many completed plans remain under `docs/plans/archive/` even though Git preserves their history;
-- date-stamped research under `docs/research/` has already been distilled into current ADRs/conventions and can re-enter retrieval despite being marked non-normative;
+- many completed plans remain in a searchable archive even though Git preserves their history;
+- date-stamped research has already been distilled into current ADRs/conventions and can re-enter retrieval despite being marked non-normative;
 - several ADRs are superseded, deprecated, negative non-decisions, implementation snapshots, or heavily amended documents rather than compact durable decisions;
-- `docs/product/glossary.md` mixes real domain vocabulary with generic software-design vocabulary and duplicates state/security conventions;
-- `docs/conventions/transpile-packages.md` records volatile framework behavior/absence rather than a durable project contract;
+- the product glossary mixes real domain vocabulary with generic software-design vocabulary and duplicates state/security conventions;
+- the transpile-packages note records volatile framework behavior/absence rather than a durable project contract;
 - `docs/README.md` still points at the older Context Layer v2 decision and does not accurately describe the current knowledge hierarchy.
 
 ## Principles

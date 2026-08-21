@@ -5,7 +5,7 @@
  * (`theme.css`) reads these brand inputs instead of pointing at primitives
  * directly, so a new project changes its identity by redefining `--brand-*`
  * here (or under a project-scoped selector imported AFTER the @pumni/ui styles)
- * WITHOUT editing platform core. See ADR-0010.
+ * WITHOUT editing platform core. See ADR-0031.
  *
  * Defaults below are Pumni's own warm coral/clay identity (Claude "book cloth"
  * family). Light uses the deeper coral-600 and dark the slightly lighter

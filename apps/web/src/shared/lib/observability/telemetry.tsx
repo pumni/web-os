@@ -9,7 +9,7 @@ import { createContext, useContext, useEffect, useRef, type ReactNode } from 're
  * ships a **no-op default**, so there is zero vendor lock-in and zero cost until
  * a consuming project wires a real sink (Sentry / OpenTelemetry / analytics) via
  * {@link TelemetryProvider}. Promote to a `@pumni/observability` package only
- * when a second consumer needs it (same reasoning as ADR-0010's exports map).
+ * when a second consumer needs it, following the package-boundary rule in ADR-0031.
  */
 
 export type TelemetryPrimitive = string | number | boolean | null | undefined;

@@ -3,7 +3,7 @@ import { apcaContrast, backgroundFor, foregroundFor } from '@pumni/ui/lib/apca';
 import { oklchToSrgb } from '@pumni/ui/lib/oklch';
 
 /*
- * Inverse-APCA generator (ADR-0010, pillar #2).
+ * Inverse-APCA generator for the UI platform contrast contract.
  * Proves that `foregroundFor` / `backgroundFor` derive colours that actually
  * satisfy the requested Lc, using the same oklchToSrgb + apcaContrast pair the
  * contrast gate uses — so generated brand colours pass the gate by construction.

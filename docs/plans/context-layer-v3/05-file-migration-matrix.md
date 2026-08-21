@@ -45,8 +45,8 @@ Legend:
 | former `docs/ai/` common-mistakes handbook | DELETE | none | migrate unique concrete gotchas first; remove generic AI-mistake handbook |
 | `docs/ai/mcp.md` | KEEP/VERIFY | narrow optional runtime-tool guidance | keep trust boundary and fallback; verify version pin/current need |
 | `.mcp.json` | KEEP/VERIFY | optional Next.js runtime aid | exact pin should be source; remove only if no longer useful/trusted |
-| `docs/adr/0026-llm-as-judge-behavioral-eval.md` | KEEP HISTORICAL | historical retired eval decision | do not reactivate regex/LLM scoring infrastructure |
-| `docs/adr/0027-context-layer-v2-standards-alignment.md` | KEEP HISTORICAL | v2 rationale/history | supersede operational guidance with new ADR rather than editing history |
+| former LLM-evaluation ADR | DELETE | retired evaluation decision | do not reactivate regex/LLM scoring infrastructure |
+| former Context Layer v2 ADR | DELETE | superseded rationale/history | keep current guidance in the v3 ADR rather than editing history |
 | new v3 ADR (expected `0030-*`) | CREATE | current context philosophy | choose next available ADR number at implementation time |
 | `docs/plans/README.md` | UPDATE | active-plan discovery | link this handoff while active; remove/archive link when completed |
 | `docs/plans/context-layer-v3/**` | KEEP TEMPORARILY | execution state/handoff | archive when full refactor is merged and stable |

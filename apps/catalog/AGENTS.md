@@ -11,7 +11,7 @@ Root `AGENTS.md` applies. The catalog is an isolated preview surface for
 - **Typechecking:** `bun run catalog:typecheck`
 
 The scripts are prefixed with `catalog:` and stay outside the default gates;
-this operational decision is recorded in [ADR-0021](../../docs/adr/0021-revisit-platform-rejections.md).
+this operational decision is recorded in [ADR-0031](../../docs/adr/0031-ui-platform-contract.md).
 
 ## Relationship to `@pumni/ui`
 

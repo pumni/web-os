@@ -95,7 +95,7 @@ Deduplicate command lists and root security doctrine. Keep the few package-speci
 
 ### `apps/catalog/AGENTS.md`
 
-Shorten the explanation of why catalog gates are separate. Keep the operational fact and point to ADR-0021 for rationale.
+Shorten the explanation of why catalog gates are separate. Keep the operational fact and point to ADR-0031 for rationale.
 
 ### `supabase/migrations/AGENTS.md`
 

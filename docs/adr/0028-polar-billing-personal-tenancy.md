@@ -1,4 +1,4 @@
-# 0028. Polar Billing and Personal Tenancy for SaaS Platform
+# 0028. Polar Billing and Personal Tenancy
 
 - **Status:** Accepted
 - **Date:** 2026-07-12
@@ -6,30 +6,43 @@
 
 ## Context
 
-We are introducing paid features to the Pumni Web OS. To implement SaaS billing, we must lock in several foundational architectural choices regarding payment provider selection, tier packaging, data tenancy model, and the first gated feature set. These choices will establish hard constraints on our schema design and operational workflow.
-
-The core forces acting on these decisions are:
-1. **VAT/Global Taxes:** Handling global taxes, invoice generation, and financial compliance is a significant operational burden, especially for a Vietnam-based developer/entity.
-2. **Tenancy & Schema Complexity:** Introducing a multi-tenant organization structure adds schema and query complexity (joins, team-scoped RLS).
-3. **Packaging Drift:** The billing provider's product configurations (prices, tier structures) must match our internal Postgres policies without causing hard-to-maintain drift.
+Billing establishes provider, tenancy, entitlement, and authorization
+boundaries that are expensive to change after subscriptions and rooms exist.
+The system must also keep provider-specific payment details from becoming the
+database model.
 
 ## Decision
 
-We make the following four unified decisions (D1–D4):
-1. **Payment Provider (D1):** We select **Polar** as our Merchant of Record (MoR) to offload VAT/tax calculations and global invoicing. However, the database schema remains provider-agnostic via a `provider` discriminator column (e.g. `'polar'`) so that PayOS or direct Vietnamese payment gateways can be integrated later without a major schema rewrite.
-2. **Packaging (D2):** We define three tiers: `free`, `pro`, and `max`, with monthly and yearly pricing options. The entitlements (capabilities and numeric limits) are resolved on the server-side via Postgres functions from the active tier.
-3. **Tenancy (D3):** We adopt a **Personal Tenancy** model where subscription state anchors directly on `user_id`. There is no organizations table or team membership mapping in the billing layer.
-4. **First Gated Feature (D4):** We gate watch-rooms. The `free` tier is capped on active rooms owned and members per room. The `pro` tier increases these limits, and the `max` tier is completely uncapped. These quotas are enforced directly via Postgres RLS policies and functions (RPC) rather than relying solely on UI hides.
+Polar is the initial Merchant of Record. Billing tables retain a provider
+discriminator so a later provider can be introduced without replacing the
+schema. Billing identity and subscription state are anchored to `user_id`
+(personal tenancy); organizations are not part of the current billing model.
+
+Entitlements are resolved server-side by Postgres functions. Watch-room quotas
+are enforced through database policies/functions in addition to any UI
+feedback. The provider adapter maps Polar product IDs to the current tier
+model; source and migrations own the exact products and limits.
 
 ## Consequences
 
-- **Tax Offloading:** Polar handles VAT/tax compliance and invoicing globally, removing a significant regulatory burden.
-- **Provider Agnosticism:** We must always query and write to the database using the `provider` discriminator, avoiding vendor lock-in.
-- **Organization Migration Risk:** Adopting a personal tenancy model means that introducing team/organization-level billing in the future will require a significant database schema migration to map rooms to organization IDs rather than direct user IDs.
-- **Postgres-Enforced Security:** Enforcing quotas at the database level guarantees security (defense-in-depth) even if client-side validation is bypassed, but requires mapping Postgres RLS rejection codes (`42501`) to user-friendly messages in the application layer.
+Polar carries the initial tax and invoicing burden while the provider column
+preserves an escape hatch. Personal tenancy keeps the first schema and RLS
+model small, but an eventual organization model would require a deliberate
+schema migration. Database-owned entitlement and quota decisions remain the
+authorization boundary even when clients are bypassed.
 
 ## Alternatives considered
 
-- **Stripe:** Rejected because Stripe does not act as a Merchant of Record, meaning we would have to handle VAT tax registration and filings ourselves globally.
-- **Organization Tenancy from Day 1:** Rejected because it introduces premature complexity (organization management, invitation flows, complex RLS joins) before proving the value of the paid watch-room features.
-- **Client-Side Entitlement Resolution:** Rejected because it is trivial to bypass. Entitlements and tier checks must live in the database as the Single Source of Truth (SSOT).
+- **Stripe or direct gateway first:** rejected for the initial Merchant of
+  Record and tax-compliance burden.
+- **Organization tenancy from day one:** rejected because it adds team/RLS
+  complexity before the product has demonstrated that requirement.
+- **Client-side entitlement resolution:** rejected because UI state is not an
+  authorization boundary.
+
+## References
+
+- [billing schema and RLS](../../supabase/migrations/022_billing_core.sql)
+- [atomic watch quotas](../../supabase/migrations/024_atomic_quota_checks.sql)
+- [billing queries](../../apps/web/src/features/billing/queries.ts)
+- [billing migration tests](../../apps/web/src/test/features/billing-rls-migration.test.ts)

@@ -40,10 +40,10 @@ Follow `02-docs-tree-disposition.md`.
 
 Deletion-first targets:
 
-- `docs/plans/archive/`;
-- `docs/research/`;
-- `docs/product/glossary.md` unless unique current domain meaning is proven;
-- `docs/conventions/transpile-packages.md`;
+- completed-plan archive;
+- research corpus;
+- product glossary unless unique current domain meaning is proven;
+- volatile transpile-packages convention;
 - obsolete ADRs from the disposition table.
 
 Then fix references and rewrite the small surviving docs where needed.
@@ -194,7 +194,7 @@ A surviving ADR fails if any answer below is "no":
 Pass only if:
 
 - working-tree docs are current operational knowledge;
-- no `docs/research/` corpus remains unless a new concrete current use is demonstrated;
+- no research corpus remains unless a new concrete current use is demonstrated;
 - no completed-plan archive remains in the working tree;
 - no deprecated/superseded ADR file remains solely for historical traceability;
 - the ADR set is approximately the target set in `01-adr-disposition.md` or every deviation has explicit current evidence;

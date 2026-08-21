@@ -231,6 +231,6 @@ Pass only if:
 When all implementation PRs merge:
 
 1. update the final v3 ADR status/links if needed;
-2. move this folder under `docs/plans/archive/` or delete it if the ADR and resulting repository state fully capture durable knowledge;
+2. delete this folder if the surviving ADRs and resulting repository state fully capture durable knowledge;
 3. remove its active-plan link from `docs/plans/README.md`;
 4. do not leave this handoff as permanent always-relevant context.

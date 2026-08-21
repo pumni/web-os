@@ -1,49 +1,24 @@
 /**
- * docs:lint — deterministic integrity checks for active documentation.
+ * docs:lint — deterministic integrity checks for current documentation.
  *
- * Context discovery structure belongs to context:lint. This check owns only
- * low-noise documentation references that can be verified from the repository
- * or package manifest; it deliberately does not interpret prose as policy.
+ * Every Markdown file remaining in the working tree is current enough to
+ * validate. Source and tests own behavioral truth; this script only checks
+ * local links, explicit repository paths, bun commands, and encoding.
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { absolute, createErrorReporter, relative, ROOT, walk } from './context-utils.mjs';
-const SKIP_DIRS = new Set(['.git', '.next', '.turbo', 'node_modules', 'archive']);
+
 const reporter = createErrorReporter();
 const { error } = reporter;
 
 function documentationFiles() {
   const files = [];
-  walk(ROOT, (fullPath) => collectDocumentationFile(files, fullPath), SKIP_DIRS);
+  walk(ROOT, (fullPath) => {
+    if (fullPath.toLowerCase().endsWith('.md')) files.push(relative(fullPath));
+  });
   return files.sort();
-}
-
-function collectDocumentationFile(files, fullPath) {
-  if (!fullPath.toLowerCase().endsWith('.md')) return;
-  const file = relative(fullPath);
-  if (!isActiveDocumentation(file, fullPath)) return;
-  files.push(file);
-}
-
-function isActiveDocumentation(file, fullPath) {
-  return !isRetiredEvidence(file) && isActiveAdr(file, fullPath);
-}
-
-function isRetiredEvidence(file) {
-  return file.startsWith('docs/plans/archive/') || file.startsWith('docs/research/');
-}
-
-function isActiveAdr(file, fullPath) {
-  if (!file.startsWith('docs/adr/')) return true;
-  if (file === 'docs/adr/README.md') return true;
-  const content = fs.readFileSync(fullPath, 'utf8');
-  return !isRetiredAdrStatus(content);
-}
-
-function isRetiredAdrStatus(content) {
-  const status = content.match(/^[-*]\s+\*\*Status:\*\*\s+(.+)$/m)?.[1] ?? '';
-  return /^(?:Deprecated|Superseded)\b/i.test(status);
 }
 
 function decodePath(value) {
@@ -89,7 +64,6 @@ function hasRepositoryPrefix(candidate) {
 }
 
 function checkRepositoryPaths(file, content) {
-  if (file.startsWith('docs/adr/')) return;
   const inlinePattern = /`([^`\r\n]+)`/g;
   let match;
 

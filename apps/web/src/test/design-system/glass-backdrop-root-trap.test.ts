@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { repoRoot } from './token-test-utils';
 
 /**
- * Backdrop-root trap guard (ADR-0012 perf discipline; MDN backdrop-filter §
+ * Backdrop-root trap guard (glass performance discipline; MDN backdrop-filter §
  * "Backdrop root", https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter).
  *
  * `backdrop-filter` only paints content *behind* the nearest backdrop root —

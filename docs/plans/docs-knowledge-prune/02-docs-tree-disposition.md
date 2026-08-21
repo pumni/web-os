@@ -73,7 +73,7 @@ This is narrow, project-specific runtime tooling guidance. It correctly distingu
 
 Keep it concise. Version pin remains owned by `.mcp.json`; avoid duplicating an exact version number in prose.
 
-## `docs/product/`
+## Product documentation
 
 ### `product/glossary.md` — DELETE by default
 
@@ -88,9 +88,9 @@ That makes it more likely to steer model vocabulary than to expose unique produc
 
 Before deletion, inspect for any genuinely unique user-facing/domain term not represented in source or current billing/watch docs. Migrate only such unique domain meaning to the owning convention or feature documentation. Do not preserve generic vocabulary merely to keep the glossary alive.
 
-If no unique durable product language remains, remove the entire `docs/product/` directory.
+If no unique durable product language remains, remove the product documentation directory.
 
-## `docs/research/` — DELETE FROM WORKING TREE
+## Research corpus — DELETE FROM WORKING TREE
 
 Current directory contains date-stamped research including large context-layer audits/architecture studies and glass standards research. Their conclusions have already flowed into current context/design decisions.
 
@@ -103,7 +103,7 @@ Action:
 
 Git history remains the retrieval path for past research.
 
-## `docs/plans/archive/` — DELETE FROM WORKING TREE
+## Completed-plan archive — DELETE FROM WORKING TREE
 
 This directory contains many completed plans, including multiple generations of context-layer and design/glass refactors. Labeling them non-normative does not prevent search/retrieval noise.
 

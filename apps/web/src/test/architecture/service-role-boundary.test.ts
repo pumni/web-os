@@ -18,7 +18,7 @@ const designRuleIds = [
 ];
 // The full verify command runs ESLint, Vitest, and Next build concurrently.
 // Allow the mechanical guard to initialize under that expected CI load.
-const ESLINT_GUARD_TIMEOUT_MS = 60_000;
+const ESLINT_GUARD_TIMEOUT_MS = 180_000;
 
 const eslint = new ESLint({
   cwd: appRoot,

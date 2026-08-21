@@ -18,7 +18,7 @@ These are imported once in `apps/web/src/app/globals.css`.
 
 ## Brand contract (project override surface)
 
-`brand.css` is the **one place a consuming project rebrands the platform** (ADR-0010). The semantic layer reads `--brand-primary` / `--brand-ring` / `--brand-gradient-*` instead of pointing at primitives, so a new project changes identity by overriding `--brand-*` without editing core. The coral brand splits its stop per theme (light uses deep `coral-600`, dark the lighter `coral-500`) so white `--primary-foreground` clears the APCA gate in both. sRGB values stay the gated authority. When overriding, keep enough lightness that white foreground clears the `glass-contrast` gate. Accents in `personalization.css` stays selectable user palette, not the brand.
+`brand.css` is the **one place a consuming project rebrands the platform** (ADR-0031). The semantic layer reads `--brand-primary` / `--brand-ring` / `--brand-gradient-*` instead of pointing at primitives, so a new project changes identity by overriding `--brand-*` without editing core. The coral brand splits its stop per theme (light uses deep `coral-600`, dark the lighter `coral-500`) so white `--primary-foreground` clears the APCA gate in both. sRGB values stay the gated authority. When overriding, keep enough lightness that white foreground clears the `glass-contrast` gate. Accents in `personalization.css` stays selectable user palette, not the brand.
 To derive an accessible foreground for an overridden brand colour, use `foregroundFor` / `backgroundFor` from `@pumni/ui` (`packages/ui/src/lib/apca.ts`) which binary-searches the lightness axis to clear the APCA gate (Lc 60 body, Lc 25 UI edges).
 
 ## Source ownership
