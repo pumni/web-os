@@ -1,6 +1,6 @@
 -- migration.template.sql — copy next to the new table's migration, rename, fill in.
 --
--- Skeleton for a P0-safe migration: schema + RLS + owner policies + minimal
+-- Skeleton for a security-safe migration: schema + RLS + owner policies + minimal
 -- grants together. Owner must compare against (select auth.uid()). No
 -- using (true) on private data; no anon grant on private tables.
 -- Replace <thing>, <thing_id>, <owner_id>, and the policy names.

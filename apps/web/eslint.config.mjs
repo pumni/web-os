@@ -8,11 +8,13 @@ import {
   pumniNoRawTiming,
   pumniFeatureBoundary,
   pumniNoRawZIndex,
+  pumniEslintPluginConfig,
 } from '@pumni/config/eslint';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  ...pumniEslintPluginConfig,
   // Token-first guard: forbid raw OKLCH / primitive / Tailwind palette colours in app source.
   ...pumniNoRawColor,
   // Surface-first guard: forbid ad-hoc surfaces.
@@ -25,6 +27,27 @@ const eslintConfig = defineConfig([
   ...pumniFeatureBoundary(new URL('./src/features', import.meta.url)),
   // Z-index guard: warn on raw Tailwind z-classes in cross-component layers.
   ...pumniNoRawZIndex,
+
+  // Service-role imports are an explicit server-side exception. Its dedicated
+  // rule ID cannot clobber the independent design-system rules above.
+  {
+    name: 'pumni/service-role-import-boundary',
+    files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      'src/test/**',
+      '**/*.test.{ts,tsx}',
+      'src/app/api/webhooks/polar/route.ts',
+      'src/features/billing/jobs/functions.ts',
+      'src/features/billing/queries.ts',
+      'src/features/billing/webhook-handlers.ts',
+      'src/features/profile/queries.ts',
+      'src/features/watch/queries.ts',
+      'src/shared/lib/audit.ts',
+    ],
+    rules: {
+      'pumni/no-unapproved-service-role-import': 'error',
+    },
+  },
 
   // Override default ignores of eslint-config-next.
   globalIgnores([

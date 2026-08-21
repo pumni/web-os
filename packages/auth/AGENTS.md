@@ -20,7 +20,8 @@ High-level, server-only authentication helpers (`getCurrentUser`, `requireUser`)
 
 - `bun --filter @pumni/auth typecheck`
 - `bun run typecheck`
-- `bun run policy:check` (`server-action-missing-auth`, `service-role-client`, `server-only-in-client` govern consumption)
+- `bun run lint` and `bun run typecheck`; run the repository `policy:check` when
+  changing secret handling or feature-boundary code
 
 ## Pitfalls
 

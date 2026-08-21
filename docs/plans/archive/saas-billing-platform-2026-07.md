@@ -1,5 +1,8 @@
 # Plan: SaaS billing platform (Polar, tiered entitlements, watch-room gating)
 
+> Historical and non-normative. The planned implementation is present in the
+> repository; use current source and conventions instead of executing this plan.
+
 - **Status:** Proposed (spec confirmed via grill-requirements 2026-07-10)
 - **Date:** 2026-07-10
 - **Owner:** backend platform (`packages/*` + `apps/web/src/features/billing` + `supabase/migrations`)

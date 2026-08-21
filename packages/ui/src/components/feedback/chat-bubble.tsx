@@ -5,7 +5,7 @@ import * as React from 'react';
 import { cn } from '../../lib/cn';
 
 const chatBubbleVariants = cva(
-  'rounded-2xl px-4 py-2.5 wrap-break-word shadow-sm select-text transition-all duration-200',
+  'rounded-2xl px-4 py-2.5 wrap-break-word shadow-sm select-text transition-all duration-(--duration-base)',
   {
     variants: {
       variant: {

@@ -1,5 +1,5 @@
 /**
- * ai:secrets
+ * check-secrets
  *
  * Scans the working tree for accidental secret exposure:
  *   - Hardcoded API keys, tokens, passwords in tracked source files
@@ -187,10 +187,10 @@ if (findings.length === 0) {
 
 console.log(`\n${'-'.repeat(60)}`);
 if (errors > 0) {
-  console.error(`\nai:secrets FAILED - ${errors} error(s), ${warnings} warning(s)\n`);
+  console.error(`\nSecret scan FAILED - ${errors} error(s), ${warnings} warning(s)\n`);
   process.exit(1);
 } else if (warnings > 0) {
-  console.warn(`\nai:secrets PASSED with ${warnings} warning(s)\n`);
+  console.warn(`\nSecret scan PASSED with ${warnings} warning(s)\n`);
 } else {
-  console.log(`\nai:secrets PASSED\n`);
+  console.log(`\nSecret scan PASSED\n`);
 }

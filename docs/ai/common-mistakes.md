@@ -4,7 +4,11 @@ description: High-signal architectural & design failure modes (honor system / no
 
 # Common Architectural Pitfalls
 
-> Automated security and architectural rules (RLS, key isolation, boundary firewall, Next.js cache usage) are statically enforced via `bun run policy:check`. This document covers design-level patterns that require human/agent judgment.
+> `bun run policy:check` provides defense-in-depth for secret exposure and the
+> feature-boundary characterization. TypeScript, ESLint, the Next.js build, and
+> focused database/feature tests own the corresponding architecture and security
+> contracts. This document covers design-level patterns that still require
+> human/agent judgment.
 
 ## 1. Premature Abstraction (Simplicity)
 

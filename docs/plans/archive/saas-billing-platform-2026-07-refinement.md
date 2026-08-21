@@ -1,5 +1,8 @@
 # Refinement Plan: SaaS Billing Platform — pre-Phase-3 acceptance remediation
 
+> Historical and non-normative. This refinement record is retained for audit;
+> verify all claims against current source before taking any action.
+
 - **Status:** Ready for execution
 - **Date:** 2026-07-12
 - **Scope:** Bring the landed Phase 0–2 work (commit `e6d872d`, unpushed, **not yet applied to any remote DB**) to the best state before Phase 3 is authorised.

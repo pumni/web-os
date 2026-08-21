@@ -51,4 +51,23 @@ Never hand-edit the output. See `packages/supabase/AGENTS.md` for generation rul
 
 ## Service-Role Key Exceptions
 
-The Supabase service-role/secret key must only be used in designated server-only modules that require bypassing Row Level Security (RLS) for system-level operations. The approved module list is machine-enforced as `service-role-import-allowlist` (`ALLOWED_SERVICE_ROLE_MODULES` in `scripts/review-gate-rules.mjs`) — that constant is the single source of truth; extending it is an ask-first change.
+The Supabase service-role/secret key must only be used in modules that import
+`server-only` and genuinely require an RLS bypass for a system-level operation.
+Keep user identity derived on the server and preserve an explicit user filter
+when a service-role read serves user-owned data. Next.js server-only/build
+checks protect the module boundary. The exact service-role import allowlist is
+owned mechanically by the ESLint boundary in `apps/web/eslint.config.mjs`, and
+its approved/denied behavior is covered by a focused architecture test. Focused
+feature and migration tests protect authorization and data-integrity behavior.
+A new service-role use requires changing that allowlist and adding a focused
+authorization test; `bun run policy:check` is not SQL/RLS/RPC proof.
+
+## Verification ownership
+
+| Invariant | Mechanical/current owner | Proof |
+|---|---|---|
+| Service-role imports | `apps/web/eslint.config.mjs` | `service-role-boundary.test.ts` plus web lint |
+| Server/client secret isolation | `server-only` markers and Next.js build | `bun run verify` |
+| RLS, policies, grants, and RPC safety | Focused billing/watch migration tests | `bun run test` |
+| Atomic quota enforcement | Focused quota migration tests | `bun run test` |
+| Secret exposure defense in depth | `scripts/check-secrets.mjs` | `bun run policy:check` |

@@ -123,7 +123,7 @@ context weight beyond one lean convention doc.
 - **File(s):** `docs/ai/MEMORY.md:23-24`
 - **Action:** Replace the two SaaS-billing changelog entries with one pointer
   line: billing platform Phases 0–3 landed → see
-  `docs/plans/saas-billing-platform-2026-07-implementation.md`, ADR-0028,
+  `docs/plans/archive/saas-billing-platform-2026-07-implementation.md`, ADR-0028,
   ADR-0029 (keep dates). No other lines change.
 - **Verification:** `bun run ai:check` (size budget 2,300 bytes enforced);
   file < 1,900 bytes.
@@ -282,7 +282,7 @@ context weight beyond one lean convention doc.
 
 - **File(s):** `scripts/ai-metrics.mjs` (~lines 84–101), `docs/ai/MEMORY.md`
 - **Action:** Emit `behavioralBaseline: { status: 'invalid', reason:
-  'grader non-functional 2026-07-10 run; see docs/plans/context-layer-remediation-2026-07.md' }`
+  'grader non-functional 2026-07-10 run; see docs/plans/archive/context-layer-remediation-2026-07.md' }`
   instead of stale numbers when `last-run.json` predates the retire date or
   carries `trialsPerMode < 3`. Replace the MEMORY ADR-0026 line's implicit
   "landed and working" with "instrument retired pending grader fix". Scripts

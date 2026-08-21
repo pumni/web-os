@@ -1,10 +1,12 @@
 /**
  * policy:check — Static code & policy enforcement gate for Pumni Web OS.
  *
- * Runs deterministic static policy checks:
- *   1. Review Gate static rules (architecture + RLS + Query/Zustand boundaries)
- *   2. Secrets scan (.env committed, hardcoded keys, service-role literals)
- *   3. Feature boundary check
+ * Runs the small checks that do not already have a stronger owner:
+ *   1. Secret exposure defense-in-depth (.env files and hardcoded keys)
+ *   2. Characterization of the generated ESLint feature boundary
+ *
+ * TypeScript, ESLint, Next.js build, Vitest migration tests, and Supabase RLS
+ * own the correctness rules that used to be approximated by a general parser.
  */
 
 import path from 'node:path';
@@ -29,17 +31,11 @@ function runScript(label, scriptName, extraArgs = []) {
   }
 }
 
-// 0. Sanity-check the analyzer itself before trusting its verdict.
-runScript('Review Gate self-test', 'check-review-gate-rules.mjs', ['--self-test']);
+// Secret exposure remains useful as low-noise defense in depth.
+runScript('Secret scan', 'check-secrets.mjs');
 
-// 1. Static architecture / security rules across the codebase.
-runScript('Review Gate static rules', 'check-review-gate-rules.mjs');
-
-// 2. Secrets scan.
-runScript('Secrets scan', 'check-secrets.mjs');
-
-// 3. Feature-boundary firewall: rules stay derived from the real features tree.
-runScript('Feature boundary check', 'check-feature-boundary.mjs');
+// The test must exercise the same ESLint config consumed by apps/web.
+runScript('Feature boundary characterization', 'check-feature-boundary.mjs');
 
 if (failed) {
   console.error('\n[FAIL] Static policy checks failed.');

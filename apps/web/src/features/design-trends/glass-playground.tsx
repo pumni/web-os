@@ -218,7 +218,7 @@ export function GlassPlayground() {
                 </CardDescription>
               </div>
               {/* Background style switcher */}
-              <div className="flex items-center gap-1 rounded-xl border bg-muted/30 p-1 text-xs">
+              <div className="flex items-center gap-1 rounded-xl border bg-field p-1 text-xs">
                 {BACKDROP_PRESETS.map((p) => (
                   <Button
                     key={p.value}
@@ -262,7 +262,7 @@ export function GlassPlayground() {
                     <div className="space-y-3">
                       <h2
                         style={{ ...textStyle, fontWeight, fontSize: `${fontSize}px` }}
-                        className="text-2xl leading-snug tracking-tight transition-all duration-200"
+                        className="text-2xl leading-snug tracking-tight transition-all duration-(--duration-base)"
                       >
                         Sự tiến hóa của giao diện Web: Không gian màu OKLCH, và Tiêu chuẩn tương
                         phản nhận thức APCA.
@@ -334,7 +334,7 @@ export function GlassPlayground() {
                         }}
                       />
                       <div
-                        className="absolute size-20 rounded-full transition-transform duration-200 ease-out"
+                        className="absolute size-20 rounded-full transition-transform duration-(--duration-base) ease-fluid"
                         style={{
                           backgroundColor: 'oklch(0.65 0.22 330)',
                           boxShadow: 'inset 0 0 15px rgba(255,255,255,0.5)',

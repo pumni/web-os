@@ -6,7 +6,7 @@
 - **Date:** 2026-07-17
 - **Source:** Tier-by-tier *content* review (session 2026-07-17, round 2 —
   full-text read of every tier, claims verified against code). Follows
-  `docs/plans/context-layer-remediation-2026-07.md` (round 1, executed on
+  `docs/plans/archive/context-layer-remediation-2026-07.md` (round 1, executed on
   `chore/context-layer-remediation`, now merged to `main`).
 - **Branch:** `chore/context-content-remediation` (new, off `main`).
 - **Skill:** `refactor-plan`. Commit-per-step **off** unless the user opts in.
@@ -129,7 +129,7 @@ changes are docs/context/scripts; zero runtime behavior changes.
 
 - **File(s):** `docs/conventions/supabase-security.md:41-44`
 - **Action:** Finish the sentence with the repo's actual workflow (source:
-  `docs/plans/saas-billing-platform-2026-07-refinement.md:80`):
+  `docs/plans/archive/saas-billing-platform-2026-07-refinement.md:80`):
   a fenced block with
   `bunx supabase gen types typescript --local > packages/supabase/src/types.ts`
   followed by `bun run typecheck`, and the "never hand-edit the output" rule

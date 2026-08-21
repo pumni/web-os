@@ -143,15 +143,15 @@ function AvatarUpload({
           </Avatar>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-overlay opacity-0 transition-opacity duration-(--duration-base) group-hover:opacity-100">
-            <Camera className="h-5 w-5" style={{ color: 'white' }} />
-            <span className="mt-1 text-[10px] font-medium" style={{ color: 'white' }}>
+            <Camera className="h-5 w-5 text-primary-foreground" />
+            <span className="mt-1 text-[10px] font-medium text-primary-foreground">
               Change
             </span>
           </div>
 
           {isUploading && (
             <div className="absolute inset-0 flex items-center justify-center bg-overlay">
-              <Spinner className="text-white" />
+              <Spinner className="text-primary-foreground" />
             </div>
           )}
         </div>
