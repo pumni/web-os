@@ -41,6 +41,8 @@ Skeleton: bundle schema + RLS + owner `auth.uid()` policies + minimal grants tog
 - [ ] Grants are explicit and minimal.
 - [ ] RPCs do not trust `p_user_id` without an `auth.uid()` check.
 - [ ] Function `search_path` is explicit.
-- [ ] `bun run policy:check` scans clean.
+- [ ] `bun run test` passes, including focused migration/RLS/quota tests.
 - [ ] `bun run typecheck` passes after type generation when generated types
       changed.
+- [ ] If the change also touches secret or feature-boundary code, `bun run
+      policy:check` scans clean; do not treat it as SQL/RLS/RPC proof.
